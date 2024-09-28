@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
-import { useColorScheme } from 'react-native';
+import React, { createContext, useContext, useRef, useState } from 'react';
+import { Animated, useColorScheme } from 'react-native';
 
 const AppContext = createContext();
 
@@ -12,8 +12,33 @@ const AppProvider = ({ children }) => {
 		background: '#fff',
 	});
 
+	const [moveValue, setMoveValue] = useState(300);
+	const moveAnim = useRef(new Animated.Value(0)).current;
+	const startAnimation = () => {
+		if (moveValue === 300) {
+			setMoveValue(0);
+		} else {
+			setMoveValue(300);
+		}
+
+		Animated.timing(moveAnim, {
+			toValue: moveValue,
+			duration: 1000,
+			useNativeDriver: true,
+		}).start();
+	};
+
 	return (
-		<AppContext.Provider value={{ theme, setTheme }}>
+		<AppContext.Provider
+			value={{
+				theme,
+				setTheme,
+				moveValue,
+				setMoveValue,
+				startAnimation,
+				moveAnim,
+			}}
+		>
 			{children}
 		</AppContext.Provider>
 	);
