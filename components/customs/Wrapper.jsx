@@ -12,7 +12,7 @@ const Wrapper = ({ children }) => {
 			<View className="">{children}</View>
 			<StatusBar
 				barStyle={
-					theme.text === '#000' ? 'dark-content' : 'white-content'
+					theme.text === '#000' ? 'light-content' : 'dark-content'
 				}
 			/>
 		</SafeAreaView>
