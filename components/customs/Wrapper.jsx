@@ -5,11 +5,14 @@ import { useAppProvider } from '@/contexts/AppProvider';
 const Wrapper = ({ children }) => {
 	const { theme } = useAppProvider();
 	return (
-		<SafeAreaView className="p-4 pt-[40px] flex-1 items-center justify-center">
+		<SafeAreaView
+			style={{ backgroundColor: theme.background }}
+			className="p-4 mt-[40px] flex-1 items-center justify-center"
+		>
 			<View className="">{children}</View>
 			<StatusBar
 				barStyle={
-					theme.text === 'white' ? 'light-content' : 'dark-content'
+					theme.text === '#000' ? 'dark-content' : 'white-content'
 				}
 			/>
 		</SafeAreaView>
