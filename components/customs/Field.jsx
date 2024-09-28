@@ -10,6 +10,7 @@ const Field = ({
 	label,
 	wrapperStyles = '',
 	inputStyles = '',
+	icon = null,
 }) => {
 	const { theme } = useAppProvider();
 	return (
@@ -19,16 +20,21 @@ const Field = ({
 			<Text className={`mb-1 text-sm text-gray font-pregular`}>
 				{label}
 			</Text>
-			<TextInput
-				placeholderTextColor={theme.text}
-				style={{ color: theme.text }}
-				type={type}
-				className={`px-4 py-2 rounded-xl border-gray w-full border font-pregular ${inputStyles}`}
-				placeholder={placeholder}
-				onTextInput={(e) => {
-					onChange(e.nativeEvent.text);
-				}}
-			/>
+			<View
+				className={`px-4 flex flex-row items-center justify-start py-2 rounded-xl border-gray w-full border font-pregular ${inputStyles}`}
+			>
+				{icon && icon}
+				<TextInput
+					className="ml-2"
+					placeholderTextColor={theme.text}
+					style={{ color: theme.text }}
+					type={type}
+					placeholder={placeholder}
+					onTextInput={(e) => {
+						onChange(e.nativeEvent.text);
+					}}
+				/>
+			</View>
 		</View>
 	);
 };

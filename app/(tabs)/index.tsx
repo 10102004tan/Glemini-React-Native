@@ -5,10 +5,12 @@ import Field from '../../components/customs/Field';
 import { useRef, useState } from 'react';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { useUserProvider } from '@/contexts/UserProvider';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
 	const { theme } = useAppProvider();
 	const { switchUserType, user } = useUserProvider();
+	const router = useRouter();
 	// Animation
 	const moveAnim = useRef(new Animated.Value(0)).current;
 	const [moveValue, setMoveValue] = useState(300);
@@ -57,6 +59,15 @@ export default function HomeScreen() {
 			<Button
 				onPress={switchUserType}
 				text={user.user_type}
+				otherStyles={'mt-4 p-4'}
+				textStyles={'text-center'}
+			/>
+
+			<Button
+				onPress={() => {
+					router.push('/quizz/create');
+				}}
+				text={'Create Quizz'}
 				otherStyles={'mt-4 p-4'}
 				textStyles={'text-center'}
 			/>

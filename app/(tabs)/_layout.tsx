@@ -3,16 +3,10 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useUserProvider } from '@/contexts/UserProvider';
-import { Animated, TouchableOpacity } from 'react-native';
-import { useAppProvider } from '@/contexts/AppProvider';
+import { TouchableOpacity } from 'react-native';
 
 export default function TabLayout() {
 	const { user } = useUserProvider();
-	const { moveValue, setMoveValue, moveAnim } = useAppProvider();
-
-	useEffect(() => {
-		console.log(user);
-	}, [user]);
 
 	return (
 		<Tabs
@@ -28,7 +22,7 @@ export default function TabLayout() {
 					width: '90%',
 					shadowOpacity: 0,
 					borderTopWidth: 0,
-					transform: [{ translateY: moveAnim }],
+					zIndex: -1,
 				},
 				tabBarActiveTintColor: '#1C2833',
 				headerShown: false,
@@ -77,7 +71,6 @@ export default function TabLayout() {
 				}}
 			/>
 
-			{/* Library Tab (chỉ hiển thị cho giáo viên) */}
 			<Tabs.Screen
 				name="library"
 				options={{
@@ -96,7 +89,6 @@ export default function TabLayout() {
 				}}
 			/>
 
-			{/* Student Tab (chỉ hiển thị cho học sinh) */}
 			<Tabs.Screen
 				name="student"
 				options={{
@@ -112,6 +104,20 @@ export default function TabLayout() {
 						user?.user_type === 'student' ? (
 							<TouchableOpacity {...props} />
 						) : null,
+				}}
+			/>
+			<Tabs.Screen
+				name="quizz/create"
+				options={{
+					title: 'Create Quizz',
+					tabBarIcon: ({ color, focused }) => (
+						<TabBarIcon
+							name={focused ? 'school' : 'school-outline'}
+							color={color}
+						/>
+					),
+					// Ẩn tab nếu người dùng là giáo viên
+					tabBarButton: (props) => null,
 				}}
 			/>
 		</Tabs>

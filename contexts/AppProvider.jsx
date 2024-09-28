@@ -12,31 +12,11 @@ const AppProvider = ({ children }) => {
 		background: '#fff',
 	});
 
-	const [moveValue, setMoveValue] = useState(300);
-	const moveAnim = useRef(new Animated.Value(0)).current;
-	const startAnimation = () => {
-		if (moveValue === 300) {
-			setMoveValue(0);
-		} else {
-			setMoveValue(300);
-		}
-
-		Animated.timing(moveAnim, {
-			toValue: moveValue,
-			duration: 1000,
-			useNativeDriver: true,
-		}).start();
-	};
-
 	return (
 		<AppContext.Provider
 			value={{
 				theme,
 				setTheme,
-				moveValue,
-				setMoveValue,
-				startAnimation,
-				moveAnim,
 			}}
 		>
 			{children}
