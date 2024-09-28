@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 const Button = ({
 	text,
@@ -12,14 +13,18 @@ const Button = ({
 	type = 'fill',
 	loading = false,
 }) => {
+	const { theme } = useAppProvider();
 	return (
 		<TouchableOpacity
 			onPress={() => {
 				onPress();
 			}}
-			className={`p-2 rounded-xl bg-blue-500 ${otherStyles}`}
+			className={`p-2 rounded-xl bg-primary ${otherStyles}`}
 		>
-			<Text className={`text-white ${textStyles} font-pregular`}>
+			<Text
+				className={`${textStyles} font-pregular`}
+				style={{ color: theme.background }}
+			>
 				{text}
 			</Text>
 		</TouchableOpacity>

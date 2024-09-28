@@ -6,8 +6,10 @@ const AppContext = createContext();
 // Example about a context provider in React Native
 const AppProvider = ({ children }) => {
 	const [theme, setTheme] = useState({
-		text: useColorScheme() === 'dark' ? 'white' : 'black',
-		background: useColorScheme() === 'dark' ? 'black' : 'white',
+		// text: useColorScheme() === 'dark' ? '#fff' : '#000',
+		// background: useColorScheme() === 'dark' ? '#000' : '#fff',
+		text: '#000',
+		background: '#fff',
 	});
 
 	return (
