@@ -4,8 +4,10 @@ import Button from '../../components/customs/Button';
 import Field from '../../components/customs/Field';
 import { useRef, useState } from 'react';
 import { useAppProvider } from '@/contexts/AppProvider';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
+	const router = useRouter();
 	const { theme } = useAppProvider();
 	// Animation
 	const moveAnim = useRef(new Animated.Value(0)).current;
@@ -59,6 +61,15 @@ export default function HomeScreen() {
 				onChange={() => {}}
 				label={'Label'}
 				placeholder={'Placeholder'}
+			/>
+
+				<Button
+				onPress={() => {
+					router.push('/quizzdetail/detailquizz');
+				}}
+				text={'Detail Quizz'}
+				otherStyles={'mt-4 p-4'}
+				textStyles={'text-center'}
 			/>
 		</Wrapper>
 	);
