@@ -46,13 +46,13 @@ export default function RootLayout() {
 			<AppProvider>
 				<UserProvider>
 					<GestureHandlerRootView>
-						<Stack>
+						<Stack initialRouteName="quiz/edit_quiz_question.jsx">
 							<Stack.Screen
 								name="(tabs)"
 								options={{ headerShown: false }}
 							/>
 							<Stack.Screen
-								name="quiz/createtitle"
+								name="quiz/create_title"
 								options={{ headerShown: false }}
 							/>
 							<Stack.Screen
@@ -60,14 +60,13 @@ export default function RootLayout() {
 								options={{ headerShown: false }}
 							/>
 							<Stack.Screen
-								name="quiz/editquizquestion"
+								name="quiz/edit_quiz_question"
 								options={{ headerShown: false }}
 							/>
 							<Stack.Screen
-							name="SinglePlay"
-							options={{ headerShown: false }}
-							
-						/>
+								name="single_play"
+								options={{ headerShown: false }}
+							/>
 							<Stack.Screen name="+not-found" />
 						</Stack>
 					</GestureHandlerRootView>
