@@ -13,31 +13,30 @@ import { useRouter } from 'expo-router';
 import Overlay from '../../../components/customs/Overlay';
 
 const CreateQuizzScreen = () => {
-	const { setIsShowBottomSheet, isShowBottomSheet } = useAppProvider();
+	const { isHiddenNavigationBar, setIsHiddenNavigationBar } =
+		useAppProvider();
 	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
 	const router = useRouter();
 
 	const handleCreateQuiz = () => {
-		setIsShowBottomSheet(true);
+		setIsHiddenNavigationBar(true);
 		setVisibleBottomSheet(true);
 	};
 
 	const handleCloseBottomSheet = () => {
-		setIsShowBottomSheet(false);
+		setIsHiddenNavigationBar(false);
 		setVisibleBottomSheet(false);
 	};
 
 	return (
 		<Wrapper>
 			{/* Overlay */}
-			{isShowBottomSheet && <Overlay onPress={handleCloseBottomSheet} />}
+			{visibleBottomSheet && <Overlay onPress={handleCloseBottomSheet} />}
 
 			{/* Bottom Sheet */}
 			<BottomSheet visible={visibleBottomSheet}>
 				<View className="flex flex-col items-start justify-start">
-					<Text className="text-lg font-pregular">
-						Tạo bài kiểm tra với AI
-					</Text>
+					<Text className="text-lg">Tạo bài kiểm tra với AI</Text>
 					<View className="flex items-center justify-start flex-row mt-4">
 						<QuizzCreateAction
 							title={'Tạo bài kiểm tra'}
@@ -61,9 +60,7 @@ const CreateQuizzScreen = () => {
 							}
 						/>
 					</View>
-					<Text className="text-lg font-pregular mt-8">
-						Tạo thủ công
-					</Text>
+					<Text className="text-lg mt-8">Tạo thủ công</Text>
 					<View className="flex items-center justify-start flex-row mt-4">
 						<QuizzCreateAction
 							title={'Tải lên mẫu'}
@@ -76,7 +73,7 @@ const CreateQuizzScreen = () => {
 							}
 						/>
 						<QuizzCreateAction
-							onPress={() => router.push('/quiz/createtitle')}
+							onPress={() => router.push('/quiz/create_title')}
 							otherStyles="ml-2"
 							title={'Tạo bằng tay'}
 							icon={
