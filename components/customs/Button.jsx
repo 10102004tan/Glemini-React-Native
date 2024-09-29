@@ -22,7 +22,7 @@ const Button = ({
 			className={`p-2 rounded-xl bg-primary ${otherStyles}`}
 		>
 			<Text
-				className={`${textStyles} font-pregular`}
+				className={`${textStyles}`}
 				style={{ color: theme.background }}
 			>
 				{text}

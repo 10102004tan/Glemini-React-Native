@@ -1,16 +1,17 @@
 import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
-import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
-import "react-native-reanimated";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import AppProvider from "@/contexts/AppProvider";
-import UserProvider from "@/contexts/UserProvider";
+	DarkTheme,
+	DefaultTheme,
+	ThemeProvider,
+} from '@react-navigation/native';
+import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+import 'react-native-reanimated';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import AppProvider from '@/contexts/AppProvider';
+import UserProvider from '@/contexts/UserProvider';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -38,18 +39,32 @@ export default function RootLayout() {
     return null;
   }
 
-  return (
+	return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <AppProvider>
         <UserProvider>
-          <Stack initialRouteName="quizzdetail/detailquizz">
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-            <Stack.Screen
-              name="quizzdetail/detailquizz"
-              options={{ headerShown: false }}
-            />
-          </Stack>
+          <GestureHandlerRootView>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="quiz/createtitle"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="quiz/overview"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="quiz/editquizquestion"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="quizzdetail/detailquizz"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </GestureHandlerRootView>
         </UserProvider>
       </AppProvider>
     </ThemeProvider>
