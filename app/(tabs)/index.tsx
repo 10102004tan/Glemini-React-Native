@@ -37,14 +37,14 @@ export default function HomeScreen() {
 			>
 				<Text
 					style={{ color: theme.text }}
-					className={`text-center text-2xl uppercase font-pregular`}
+					className={`text-center text-2xl uppercase`}
 				>
 					Welcome to the app
 				</Text>
 			</Animated.View>
 			<Text
 				style={{ color: theme.text }}
-				className={`text-xl mt-2 text-center font-pregular`}
+				className={`text-xl mt-2 text-center`}
 			>
 				View Components
 			</Text>
@@ -65,7 +65,7 @@ export default function HomeScreen() {
 
 			<Button
 				onPress={() => {
-					router.push('/quizz/create');
+					router.push('/quiz/create');
 				}}
 				text={'Create Quizz'}
 				otherStyles={'mt-4 p-4'}

@@ -17,16 +17,14 @@ const Field = ({
 		<View
 			className={`flex flex-col items-start justify-center ${wrapperStyles}`}
 		>
-			<Text className={`mb-1 text-sm text-gray font-pregular`}>
-				{label}
-			</Text>
+			<Text className={`mb-1 text-sm text-gray`}>{label}</Text>
 			<View
-				className={`px-4 flex flex-row items-center justify-start py-2 rounded-xl border-gray w-full border font-pregular ${inputStyles}`}
+				className={`px-4 flex flex-row items-center justify-start py-2 rounded-xl border-gray border w-full ${inputStyles}`}
 			>
-				{icon && icon}
+				{icon && <View className="mr-2">{icon}</View>}
+
 				<TextInput
-					className="ml-2"
-					placeholderTextColor={theme.text}
+					placeholderTextColor={'#757575'}
 					style={{ color: theme.text }}
 					type={type}
 					placeholder={placeholder}

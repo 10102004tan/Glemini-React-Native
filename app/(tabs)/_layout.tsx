@@ -108,7 +108,7 @@ export default function TabLayout() {
 				}}
 			/>
 			<Tabs.Screen
-				name="quizz/create"
+				name="quiz/create"
 				options={{
 					title: 'Create Quizz',
 					tabBarIcon: ({ color, focused }) => (
