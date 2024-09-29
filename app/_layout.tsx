@@ -64,9 +64,9 @@ export default function RootLayout() {
 								options={{ headerShown: false }}
 							/>
 							<Stack.Screen
-								name="single_play"
-								options={{ headerShown: false }}
-							/>
+                name="play/single"
+                options={{ headerShown: false }}
+						  />
 							<Stack.Screen name="+not-found" />
 						</Stack>
 					</GestureHandlerRootView>

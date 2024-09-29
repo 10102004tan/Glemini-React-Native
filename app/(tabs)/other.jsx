@@ -8,7 +8,7 @@ const other = () => {
 	const { theme } = useAppProvider();
 	return (
 		<Wrapper>
-			<Button onPress={() => {router.push('/SinglePlay');}} title='Click Quiz'/>
+			<Button onPress={() => {router.push('/play/single');}} title='Click Quiz'/>
 		</Wrapper>
 	);
 };
