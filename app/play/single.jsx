@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
-import Wrapper from '../components/customs/Wrapper';
-import Button from '../components/customs/Button'; // Sử dụng Button tùy chỉnh
+import Wrapper from '../../components/customs/Wrapper';
+import Button from '../../components/customs/Button'; // Sử dụng Button tùy chỉnh
 
 const SinglePlay = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -13,6 +13,7 @@ const SinglePlay = () => {
   const questions = [
     {
       question: 'What is the capital of France?',
+
       answers: ['Paris', 'London', 'Berlin', 'Rome'],
       correctAnswer: 'Paris',
     },
@@ -20,11 +21,6 @@ const SinglePlay = () => {
       question: 'Who wrote "Hamlet"?',
       answers: ['Shakespeare', 'Tolstoy', 'Hemingway', 'Austen'],
       correctAnswer: 'Shakespeare',
-    },
-    {
-      question: 'What is the largest planet in our solar system?',
-      answers: ['Earth', 'Mars', 'Jupiter', 'Saturn'],
-      correctAnswer: 'Jupiter',
     },
     {
       question: 'What is the largest planet in our solar system?',
@@ -39,7 +35,7 @@ const SinglePlay = () => {
 
   const handleSubmit = () => {
     if (selectedAnswer === null) {
-      Alert.alert('Please select an answer');
+      Alert.alert('Vui lòng chọn dáp án!!');
       return;
     }
 
@@ -81,10 +77,10 @@ const SinglePlay = () => {
   }
 
   return (
-    <View className="flex-1 mt-[40px]">
-      {/* Phần trên hiển thị title và button */}
-      <View className="flex-row justify-between items-center px-5 py-4 bg-black">
-        <Text className='font-bold text-lg text-white'>Title Quiz</Text>
+    <View className="flex-1">
+      {/* Hiển thị thông tin cơ bản */}
+      <View className="flex-row justify-between items-center px-5 pt-10 pb-3 bg-black">
+        <Text className='font-bold text-lg text-white '>Title Quiz</Text>
         <Button
           text="Kết thúc"
           onPress={() => console.log('Button pressed!')}
@@ -95,38 +91,41 @@ const SinglePlay = () => {
         />
       </View>
 
-      {/* Phần dưới hiển thị câu hỏi và lựa chọn */}
-      <View className="flex-col bg-[#1C2833] px-5 py-4">
-        <Text className="text-lg mb-2 bg-slate-200 w-fit">
-          0 điểm
-        </Text>
-       
-        <Text style={{ fontSize: 24, marginBottom: 20 }}>
-          {questions[currentQuestionIndex].question}
-        </Text>
-        {questions[currentQuestionIndex].answers.map((answer, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => handleAnswerPress(answer)}
-            style={{
-              backgroundColor:
-                selectedAnswer === answer ? '#4CAF50' : '#f1f1f1',
-              padding: 10,
-              marginVertical: 5,
-              borderRadius: 5,
-            }}
-          >
-            <Text style={{ fontSize: 18 }}>{answer}</Text>
-          </TouchableOpacity>
-        ))}
+      {/* Tương tác người dùng */}
+      <View className="flex-1 bg-[#1C2833] px-5 py-4 justify-between">
+          <Text className="text-lg bg-[#484E54] rounded text-white px-[10px] py-1 self-start">
+            {`Điểm: ${score}`}
+          </Text>
+          <View className='bg-[#484E54] rounded-lg px-3 py-10'>
+          <Text className='text-2xl  text-white'> {questions[currentQuestionIndex].question}
+          </Text>
+          </View>
+        <View>
+
+           
+          {questions[currentQuestionIndex].answers.map((answer, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleAnswerPress(answer)}
+              style={{
+                backgroundColor:
+                  selectedAnswer === answer ? '#0D70D2' : '#484E54',
+                padding: 10,
+                marginVertical: 5,
+                borderRadius: 5,
+              }}
+            >
+              <Text className='text-white text-lg m-4'>{answer}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
         <Button
           text="Xác nhận"
           onPress={handleSubmit}
           type="fill"
-          otherStyles={'bg-blue-200 p-4'}
-          textStyles={'text-center text-lg font-bold'}
-
+          otherStyles={'bg-[#0D70D2] p-4'}
+          textStyles={'text-center text-lg text-white font-bold'}
         />
       </View>
     </View>
