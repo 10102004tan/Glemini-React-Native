@@ -64,7 +64,7 @@ export default function RootLayout() {
 								options={{ headerShown: false }}
 							/>
 							<Stack.Screen
-							name="SinglePlay"
+							name="play/single"
 							options={{ headerShown: false }}
 							
 						/>
