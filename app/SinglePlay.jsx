@@ -26,6 +26,11 @@ const SinglePlay = () => {
       answers: ['Earth', 'Mars', 'Jupiter', 'Saturn'],
       correctAnswer: 'Jupiter',
     },
+    {
+      question: 'What is the largest planet in our solar system?',
+      answers: ['Earth', 'Mars', 'Jupiter', 'Saturn'],
+      correctAnswer: 'Jupiter',
+    },
   ];
 
   const handleAnswerPress = (answer) => {
@@ -76,25 +81,26 @@ const SinglePlay = () => {
   }
 
   return (
-    <View className="flex-1 p-4 mt-[40px]">
+    <View className="flex-1 mt-[40px]">
       {/* Phần trên hiển thị title và button */}
-      <View className="flex-row justify-between items-center mb-4">
-        <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Title Quiz</Text>
+      <View className="flex-row justify-between items-center px-5 py-4 bg-black">
+        <Text className='font-bold text-lg text-white'>Title Quiz</Text>
         <Button
-          text="Submit"
+          text="Kết thúc"
           onPress={() => console.log('Button pressed!')}
           loading={false}
           type="fill"
-          otherStyles={{ marginVertical: 10 }}
-          textStyles={{ fontSize: 18 }}
+          otherStyles={'bg-[#F41D1D]'}
+          textStyles={'font-medium text-sm text-white'}
         />
       </View>
 
       {/* Phần dưới hiển thị câu hỏi và lựa chọn */}
-      <View className="flex-[9]">
-        <Text className="text-xl mb-2">
-          {`Question ${currentQuestionIndex + 1} of ${questions.length}`}
+      <View className="flex-col bg-[#1C2833] px-5 py-4">
+        <Text className="text-lg mb-2 bg-slate-200 w-fit">
+          0 điểm
         </Text>
+       
         <Text style={{ fontSize: 24, marginBottom: 20 }}>
           {questions[currentQuestionIndex].question}
         </Text>
@@ -115,10 +121,12 @@ const SinglePlay = () => {
         ))}
 
         <Button
-          text="Submit Answer"
+          text="Xác nhận"
           onPress={handleSubmit}
           type="fill"
-          otherStyles={{ marginVertical: 10 }}
+          otherStyles={'bg-blue-200 p-4'}
+          textStyles={'text-center text-lg font-bold'}
+
         />
       </View>
     </View>

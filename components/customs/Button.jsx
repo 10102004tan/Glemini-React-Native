@@ -19,11 +19,10 @@ const Button = ({
 			onPress={() => {
 				onPress();
 			}}
-			className={`p-2 rounded-xl bg-primary ${otherStyles}`}
+			className={`p-2 rounded-xl ${otherStyles}`}
 		>
 			<Text
 				className={`${textStyles} font-pregular`}
-				style={{ color: theme.background }}
 			>
 				{text}
 			</Text>

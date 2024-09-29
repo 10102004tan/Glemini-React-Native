@@ -48,7 +48,7 @@ export default function HomeScreen() {
 			<Button
 				onPress={startAnimation}
 				text={'Button'}
-				otherStyles={'mt-4 p-4'}
+				otherStyles={'mt-4 p-4 bg-black'}
 				textStyles={'text-center'}
 			/>
 
