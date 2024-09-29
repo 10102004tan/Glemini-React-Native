@@ -8,13 +8,21 @@ const UserProvider = ({ children }) => {
 		user_fullname: 'Datto',
 		user_email: 'dat@gmail.com',
 		user_password: 'admin',
-		user_type: 'admin',
+		user_type: 'student',
 		user_phone: '',
 		user_avatar: '',
 		status: 'active',
 	});
+
+	const switchUserType = () => {
+		setUser({
+			...user,
+			user_type: user.user_type === 'student' ? 'teacher' : 'student',
+		});
+	};
+
 	return (
-		<UserContext.Provider value={{ user, setUser }}>
+		<UserContext.Provider value={{ user, setUser, switchUserType }}>
 			{children}
 		</UserContext.Provider>
 	);
