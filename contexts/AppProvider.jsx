@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useRef, useState } from 'react';
-import { Animated, useColorScheme } from 'react-native';
-
 const AppContext = createContext();
 
 // Example about a context provider in React Native

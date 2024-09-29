@@ -8,10 +8,15 @@ import { useAppProvider } from '../../contexts/AppProvider';
 import Overlay from '../../components/customs/Overlay';
 import BottomSheet from '../../components/customs/BottomSheet';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { router } from 'expo-router';
 
 const QuizzOverViewScreen = () => {
-	const [visibleBottomSheet, setVisibleBottomSheet] = useState(true);
+	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
 	const { isShowBottomSheet, setIsShowBottomSheet } = useAppProvider();
+
+	const createQuestion = () => {
+		router.push('quiz/editquizquestion');
+	};
 
 	const handleCreateQuizQuestion = () => {
 		setIsShowBottomSheet(true);
@@ -34,7 +39,10 @@ const QuizzOverViewScreen = () => {
 					<View className="mt-4">
 						<Text className="text-sm text-gray">Đánh giá</Text>
 						<View className="flex flex-col items-start justify-start mt-2">
-							<TouchableOpacity className="flex flex-row items-center justify-start">
+							<TouchableOpacity
+								className="flex flex-row items-center justify-start"
+								onPress={createQuestion}
+							>
 								<MaterialCommunityIcons
 									name="checkbox-outline"
 									size={20}

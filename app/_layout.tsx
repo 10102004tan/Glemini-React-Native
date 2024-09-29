@@ -59,6 +59,10 @@ export default function RootLayout() {
 								name="quiz/overview"
 								options={{ headerShown: false }}
 							/>
+							<Stack.Screen
+								name="quiz/editquizquestion"
+								options={{ headerShown: false }}
+							/>
 							<Stack.Screen name="+not-found" />
 						</Stack>
 					</GestureHandlerRootView>
