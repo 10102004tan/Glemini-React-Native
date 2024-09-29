@@ -1,9 +1,10 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Wrapper from "@/components/customs/Wrapper";
 import Entypo from "@expo/vector-icons/Entypo";
 import { Image } from "react-native";
+
 
 import icon from "../../assets/images/icon.png";
 import Button from "../../components/customs/Button.jsx";
@@ -13,8 +14,12 @@ const detailquizz = () => {
     <Wrapper>
       <View className="flex m-4 ">
         <View className="flex-row justify-between">
-          <AntDesign name="arrowleft" size={24} color="black" />
-          <Entypo name="dots-three-vertical" size={24} color="black" />
+          <TouchableOpacity>
+            <AntDesign name="arrowleft" size={24} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Entypo name="dots-three-vertical" size={24} color="black" />
+          </TouchableOpacity>
         </View>
         <View className="h-[100px] w-full border rounded-xl mt-4 flex-row">
           <View className="flex justify-center items-center ml-2">
