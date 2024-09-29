@@ -19,10 +19,13 @@ const Button = ({
 			onPress={() => {
 				onPress();
 			}}
-			className={`p-2 rounded-xl bg-primary ${otherStyles}`}
+			className={`p-2 rounded-xl bg-primary flex-row flex items-center justify-start ${otherStyles}`}
 		>
+
+			
+			{icon}
 			<Text
-				className={`${textStyles}`}
+				className={`ml-2 ${textStyles}`}
 				style={{ color: theme.background }}
 			>
 				{text}

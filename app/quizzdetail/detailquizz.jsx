@@ -1,23 +1,68 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Wrapper from "@/components/customs/Wrapper";
 import Entypo from "@expo/vector-icons/Entypo";
 import { Image } from "react-native";
 
-
 import icon from "../../assets/images/icon.png";
 import Button from "../../components/customs/Button.jsx";
+import { useAppProvider } from "@/contexts/AppProvider";
+import BottomSheet from "@/components/customs/BottomSheet";
+import Overlay from "@/components/customs/Overlay";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 const detailquizz = () => {
+  const { setIsShowBottomSheet, isShowBottomSheet } = useAppProvider();
+  const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
+
+  const OpenBottomSheet = () => {
+    setIsShowBottomSheet(true);
+    setVisibleBottomSheet(true);
+  };
+
+  const handleCloseBottomSheet = () => {
+    setIsShowBottomSheet(false);
+    setVisibleBottomSheet(false);
+  };
   return (
     <Wrapper>
-      <View className="flex m-4 ">
+      {/* Overlay */}
+      {visibleBottomSheet && <Overlay onPress={handleCloseBottomSheet} />}
+
+      {/* Bottom Sheet */}
+      <BottomSheet visible={visibleBottomSheet}>
+        <Button
+          text={"Chỉnh sửa"}
+          otherStyles={"m-2"}
+          icon={<Entypo name="edit" size={16} color="white" />}
+        ></Button>
+        <Button
+          text={"Xóa"}
+          otherStyles={"m-2"}
+          icon={<MaterialIcons name="delete" size={18} color="white" />}
+        ></Button>
+        <Button
+          text={"Chia sẻ bài kiểm tra"}
+          otherStyles={"m-2"}
+          icon={<AntDesign name="sharealt" size={18} color="white" />}
+        ></Button>
+        <Button
+          text={"Lưu vào bộ sưu tập"}
+          otherStyles={"m-2"}
+          icon={<Entypo name="save" size={18} color="white" />}
+        ></Button>
+      </BottomSheet>
+
+      <View className="flex m-2 ">
         <View className="flex-row justify-between">
+          {/* nút quay lại */}
           <TouchableOpacity>
             <AntDesign name="arrowleft" size={24} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity>
+
+          {/* nút 3 chấm */}
+          <TouchableOpacity onPress={OpenBottomSheet}>
             <Entypo name="dots-three-vertical" size={24} color="black" />
           </TouchableOpacity>
         </View>
