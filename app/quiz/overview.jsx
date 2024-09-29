@@ -12,19 +12,20 @@ import { router } from 'expo-router';
 
 const QuizzOverViewScreen = () => {
 	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
-	const { isShowBottomSheet, setIsShowBottomSheet } = useAppProvider();
+	const { setIsHiddenNavigationBar } = useAppProvider();
 
 	const createQuestion = () => {
-		router.push('quiz/editquizquestion');
+		handleCloseBottomSheet();
+		router.push('quiz/edit_quiz_question');
 	};
 
 	const handleCreateQuizQuestion = () => {
-		setIsShowBottomSheet(true);
+		setIsHiddenNavigationBar(true);
 		setVisibleBottomSheet(true);
 	};
 
 	const handleCloseBottomSheet = () => {
-		setIsShowBottomSheet(false);
+		setIsHiddenNavigationBar(false);
 		setVisibleBottomSheet(false);
 	};
 

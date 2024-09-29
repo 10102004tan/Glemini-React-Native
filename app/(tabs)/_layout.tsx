@@ -8,7 +8,8 @@ import { useAppProvider } from '@/contexts/AppProvider';
 
 export default function TabLayout() {
 	const { user } = useUserProvider();
-	const { isShowBottomSheet, setIsShowBottomSheet } = useAppProvider();
+	const { isHiddenNavigationBar, setIsHiddenNavigationBar } =
+		useAppProvider();
 	return (
 		<Tabs
 			screenOptions={{
@@ -23,7 +24,7 @@ export default function TabLayout() {
 					width: '90%',
 					shadowOpacity: 0,
 					borderTopWidth: 0,
-					zIndex: isShowBottomSheet ? -1 : 1,
+					zIndex: isHiddenNavigationBar ? -1 : 1,
 				},
 				tabBarActiveTintColor: '#1C2833',
 				headerShown: false,

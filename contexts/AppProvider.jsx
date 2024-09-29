@@ -10,15 +10,15 @@ const AppProvider = ({ children }) => {
 		background: '#fff',
 	});
 
-	const [isShowBottomSheet, setIsShowBottomSheet] = useState(false);
+	const [isHiddenNavigationBar, setIsHiddenNavigationBar] = useState(false);
 
 	return (
 		<AppContext.Provider
 			value={{
 				theme,
 				setTheme,
-				isShowBottomSheet,
-				setIsShowBottomSheet,
+				isHiddenNavigationBar,
+				setIsHiddenNavigationBar,
 			}}
 		>
 			{children}
