@@ -4,10 +4,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useUserProvider } from '@/contexts/UserProvider';
 import { TouchableOpacity } from 'react-native';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 export default function TabLayout() {
 	const { user } = useUserProvider();
-
+	const { isShowBottomSheet, setIsShowBottomSheet } = useAppProvider();
 	return (
 		<Tabs
 			screenOptions={{
@@ -22,7 +23,7 @@ export default function TabLayout() {
 					width: '90%',
 					shadowOpacity: 0,
 					borderTopWidth: 0,
-					zIndex: -1,
+					zIndex: isShowBottomSheet ? -1 : 1,
 				},
 				tabBarActiveTintColor: '#1C2833',
 				headerShown: false,

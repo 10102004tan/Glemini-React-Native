@@ -12,11 +12,15 @@ const AppProvider = ({ children }) => {
 		background: '#fff',
 	});
 
+	const [isShowBottomSheet, setIsShowBottomSheet] = useState(false);
+
 	return (
 		<AppContext.Provider
 			value={{
 				theme,
 				setTheme,
+				isShowBottomSheet,
+				setIsShowBottomSheet,
 			}}
 		>
 			{children}
