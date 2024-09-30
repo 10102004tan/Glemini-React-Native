@@ -43,13 +43,12 @@ const detail_quizz_collection = () => {
 
   const OpenBottomSheet = () => {
     setIsHiddenNavigationBar(true);
-    
+
     setVisibleBottomSheet(true);
   };
   const openEditBottomSheet = () => {
     setVisibleEditBottomSheet(true);
     setIsHiddenNavigationBar(true);
-
   };
 
   const handleCloseBottomSheet = () => {
@@ -67,17 +66,17 @@ const detail_quizz_collection = () => {
       <BottomSheet visible={visibleBottomSheet}>
         <Button
           text={"Chỉnh sửa"}
-          otherStyles={"m-2"}
+          otherStyles={"m-2 flex-row"}
           icon={<Entypo name="edit" size={16} color="white" />}
         ></Button>
         <Button
           text={"Xóa"}
-          otherStyles={"m-2"}
+          otherStyles={"m-2 flex-row"}
           icon={<MaterialIcons name="delete" size={16} color="white" />}
         ></Button>
         <Button
           text={"Chia sẻ bài kiểm tra"}
-          otherStyles={"m-2"}
+          otherStyles={"m-2 flex-row"}
           icon={<AntDesign name="sharealt" size={16} color="white" />}
           onPress={openEditBottomSheet}
         ></Button>
@@ -105,13 +104,10 @@ const detail_quizz_collection = () => {
 
         {/* Button Hủy và Chọn */}
         <View className="flex flex-row justify-between">
-          <Button
-            text="Hủy"
-            otherStyles="w-[30%] bg-gray-200 p-2 rounded-xl ml-[150px]"
-          />
+          <Button text="Hủy" otherStyles="w-[45%] bg-gray-200 p-2 rounded-xl" />
           <Button
             text="Chọn"
-            otherStyles="w-[30%] bg-blue-500 p-2 rounded-xl ml-1"
+            otherStyles="w-[50%] bg-blue-500 p-2 rounded-xl"
             textStyles="text-white"
           />
         </View>
@@ -205,7 +201,7 @@ const detail_quizz_collection = () => {
         <Button
           text={"Tạo phòng"}
           otherStyles={"p-4"}
-          textStyles={"Text-center"}
+          textStyles={"text-center"}
         ></Button>
       </View>
     </Wrapper>

@@ -4,25 +4,25 @@ import { TouchableOpacity } from "react-native";
 import { useAppProvider } from "@/contexts/AppProvider";
 
 const Button = ({
-	text = '',
-	onPress = () => {},
-	otherStyles = '',
-	textStyles = '',
-	icon = null,
-	disabled = false,
-	type = 'fill',
-	loading = false,
+  text = "",
+  onPress = () => {},
+  otherStyles = "",
+  textStyles = "",
+  icon = null,
+  disabled = false,
+  type = "fill",
+  loading = false,
 }) => {
-	const { theme } = useAppProvider();
-	return (
+  const { theme } = useAppProvider();
+  return (
     <TouchableOpacity
       onPress={() => {
         onPress();
       }}
-      className={`p-2 rounded-xl bg-primary flex flex-row items-center  ${otherStyles}`}
+      className={`p-2 rounded-xl bg-primary   ${otherStyles}`}
     >
       {icon}
-      <Text className={`${textStyles} text-white ml-2`}>{text}</Text>
+      <Text className={`text-white ml-2 ${textStyles}`}>{text}</Text>
     </TouchableOpacity>
   );
 };
