@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import Button from '../../components/customs/Button'; // Sử dụng Button tùy chỉnh
 import ResultSingle from '../result/single'; // Import component kết quả
-
+import AlertNoti from '../../components/customs/AlertNoti'
 const SinglePlay = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -43,8 +43,7 @@ const SinglePlay = () => {
 
   const handleSubmit = () => {
     if (selectedAnswer === null) {
-      Alert.alert('Vui lòng chọn đáp án!!');
-      return;
+      return (<AlertNoti/>)
     }
 
     const correctAnswer = questions[currentQuestionIndex].correctAnswer;
@@ -126,29 +125,23 @@ const SinglePlay = () => {
 
         <View>
           {questions[currentQuestionIndex].answers.map((answer, index) => {
-            // Tạo điều kiện để hiển thị màu nền dựa trên kết quả đúng/sai
-            let backgroundColor = '#484E54'; // Mặc định
+            let backgroundColor = '#484E54'; 
             if (showCorrectAnswer) {
               if (answer === questions[currentQuestionIndex].correctAnswer) {
-                backgroundColor = '#4CAF50'; // Xanh lá nếu là đáp án đúng
+                backgroundColor = '#4CAF50'; 
               } else if (answer === selectedAnswer) {
-                backgroundColor = '#F44336'; // Đỏ nếu là đáp án sai
+                backgroundColor = '#F44336'; 
               }
             } else if (selectedAnswer === answer) {
-              backgroundColor = '#0D70D2'; // Màu khi người dùng chọn
+              backgroundColor = '#0D70D2'; 
             }
 
             return (
               <TouchableOpacity
                 key={index}
                 onPress={() => handleAnswerPress(answer)}
-                style={{
-                  backgroundColor,
-                  padding: 10,
-                  marginVertical: 5,
-                  borderRadius: 5,
-                }}
-                disabled={showCorrectAnswer} // Vô hiệu hóa nút khi đang hiển thị đáp án đúng
+                className={`bg-[${backgroundColor}] p-2 my-2 rounded-md`}
+                disabled={showCorrectAnswer}
               >
                 <Text className='text-white font-pregular text-lg m-4'>{answer}</Text>
               </TouchableOpacity>
@@ -157,12 +150,12 @@ const SinglePlay = () => {
         </View>
 
         <Button
-          text={buttonText} // Text của button thay đổi dựa vào kết quả
+          text={buttonText}
           onPress={handleSubmit}
           type="fill"
-          otherStyles={`${buttonColor} p-4`} // Màu nền của button
-          textStyles={`${buttonTextColor} text-center text-lg`} // Màu chữ của button
-          disabled={!isChosen || showCorrectAnswer} // Vô hiệu hóa nút nếu chưa chọn câu hoặc đang hiển thị đáp án
+          otherStyles={`${buttonColor} p-4`}
+          textStyles={`${buttonTextColor} text-center text-lg`} 
+          disabled={!isChosen || showCorrectAnswer}
         />
       </View>
     </View>

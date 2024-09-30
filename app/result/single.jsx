@@ -105,7 +105,7 @@ const ResultSingle = ({ score, handleRestart, questions }) => {
                         <Text className='text-sm text-slate-200'>Tổng số câu hỏi</Text>
                         <Text className='text-xl text-slate-100 font-semibold'>3</Text>
                     </View>
-                    <View className='ml-2 bg-violet-400 rounded-lg p-1'>
+                    <View className='ml-2 bg-violet-500 rounded-lg p-1'>
                         <Icon name='help-circle-outline' size={25} className='text-white'/>
                     </View>
                 </View>
