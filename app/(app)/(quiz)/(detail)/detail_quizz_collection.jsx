@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import Wrapper from "@/components/customs/Wrapper";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
-import icon from "../../assets/images/icon.png";
-import Button from "../../components/customs/Button.jsx";
+import icon from "../../../../assets/images/icon.png";
+import Button from "../../../../components/customs/Button.jsx";
 import { Image } from "react-native";
 import { useAppProvider } from "@/contexts/AppProvider";
 import BottomSheet from "@/components/customs/BottomSheet";
@@ -35,22 +35,25 @@ const detail_quizz_collection = () => {
   ];
 
   // BottomSheet
-  const { setIsShowBottomSheet, isShowBottomSheet } = useAppProvider();
+  const { isHiddenNavigationBar, setIsHiddenNavigationBar } = useAppProvider();
   const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
   const [visibleEditBottomSheet, setVisibleEditBottomSheet] = useState(false);
   const [selectedSchool, setSelectedSchool] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
 
   const OpenBottomSheet = () => {
-    setIsShowBottomSheet(true);
+    setIsHiddenNavigationBar(true);
+    
     setVisibleBottomSheet(true);
   };
   const openEditBottomSheet = () => {
     setVisibleEditBottomSheet(true);
+    setIsHiddenNavigationBar(true);
+
   };
 
   const handleCloseBottomSheet = () => {
-    setIsShowBottomSheet(false);
+    setIsHiddenNavigationBar(false);
     setVisibleBottomSheet(false);
     setVisibleEditBottomSheet(false);
   };
@@ -66,17 +69,17 @@ const detail_quizz_collection = () => {
           text={"Chỉnh sửa"}
           otherStyles={"m-2"}
           icon={<Entypo name="edit" size={16} color="white" />}
-          onPress={openEditBottomSheet}
         ></Button>
         <Button
           text={"Xóa"}
           otherStyles={"m-2"}
-          icon={<MaterialIcons name="delete" size={18} color="white" />}
+          icon={<MaterialIcons name="delete" size={16} color="white" />}
         ></Button>
         <Button
           text={"Chia sẻ bài kiểm tra"}
           otherStyles={"m-2"}
-          icon={<AntDesign name="sharealt" size={18} color="white" />}
+          icon={<AntDesign name="sharealt" size={16} color="white" />}
+          onPress={openEditBottomSheet}
         ></Button>
       </BottomSheet>
 
@@ -94,11 +97,10 @@ const detail_quizz_collection = () => {
         {/* Selected của lớp */}
         <View className="mb-4">
           <Text className="text-lg font-semibold m-2">Chọn lớp</Text>
-          <SelectList 
+          <SelectList
             setSelected={(val) => setSelectedClass(val)}
             data={nameClass.map((item) => item.title)}
           />
-
         </View>
 
         {/* Button Hủy và Chọn */}

@@ -11,23 +11,39 @@ import RichTextEditor from '../../../components/customs/RichTextEditor';
 export default function HomeScreen() {
 	const router = useRouter();
 	return (
-		<Wrapper>
-			<Button
-				onPress={() => {
-					router.replace('(app)/(quiz)/overview');
-				}}
-				text={'Create Quizz'}
-				otherStyles={'mt-4 p-4'}
-				textStyles={'text-center'}
-			/>
-			<Button
-				onPress={() => {
-					router.push('/(app)/(home)/teacher_home_screen');
-				}}
-				text={'Quizz'}
-				otherStyles={'mt-4 p-4'}
-				textStyles={'text-center'}
-			/>
-		</Wrapper>
-	);
+    <Wrapper>
+      <Button
+        onPress={() => {
+          router.replace("(app)/(quiz)/overview");
+        }}
+        text={"Create Quizz"}
+        otherStyles={"mt-4 p-4"}
+        textStyles={"text-center"}
+      />
+      <Button
+        onPress={() => {
+          router.push("/(app)/(home)/teacher_home_screen");
+        }}
+        text={"Quizz"}
+        otherStyles={"mt-4 p-4"}
+        textStyles={"text-center"}
+      />
+      <Button
+        onPress={() => {
+          router.push("(app)/(quiz)/(detail)/detail_quizz");
+        }}
+        text={"Quizz Detail"}
+        otherStyles={"mt-4 p-4"}
+        textStyles={"text-center"}
+      />
+      <Button
+        onPress={() => {
+          router.push("(app)/(quiz)/(detail)/detail_quizz_collection");
+        }}
+        text={"Quizz Detail Collection"}
+        otherStyles={"mt-4 p-4"}
+        textStyles={"text-center"}
+      />
+    </Wrapper>
+  );
 }

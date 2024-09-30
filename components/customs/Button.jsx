@@ -15,15 +15,16 @@ const Button = ({
 }) => {
 	const { theme } = useAppProvider();
 	return (
-		<TouchableOpacity
-			onPress={() => {
-				onPress();
-			}}
-			className={`p-2 rounded-xl bg-primary ${otherStyles}`}
-		>
-			<Text className={`${textStyles} text-white`}>{text}</Text>
-		</TouchableOpacity>
-	);
+    <TouchableOpacity
+      onPress={() => {
+        onPress();
+      }}
+      className={`p-2 rounded-xl bg-primary flex flex-row items-center  ${otherStyles}`}
+    >
+      {icon}
+      <Text className={`${textStyles} text-white ml-2`}>{text}</Text>
+    </TouchableOpacity>
+  );
 };
 
 export default Button;
