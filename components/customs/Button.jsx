@@ -21,7 +21,7 @@ const Button = ({
 			}}
 			className={`p-2 rounded-xl bg-primary ${otherStyles}`}
 		>
-			<Text className={`${textStyles} text-white`}>{text}</Text>
+			<Text className={`${textStyles}`}>{text}</Text>
 		</TouchableOpacity>
 	);
 };

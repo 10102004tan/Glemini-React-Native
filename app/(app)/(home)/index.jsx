@@ -18,7 +18,7 @@ export default function HomeScreen() {
 				}}
 				text={'Create Quizz'}
 				otherStyles={'mt-4 p-4'}
-				textStyles={'text-center'}
+				textStyles={'text-center text-white'}
 			/>
 			<Button
 				onPress={() => {
@@ -26,7 +26,15 @@ export default function HomeScreen() {
 				}}
 				text={'Quizz'}
 				otherStyles={'mt-4 p-4'}
-				textStyles={'text-center'}
+				textStyles={'text-center text-white'}
+			/>
+			<Button
+				onPress={() => {
+					router.push('/(app)/(play)/single');
+				}}
+				text={'Single'}
+				otherStyles={'mt-4 p-4'}
+				textStyles={'text-center text-white'}
 			/>
 		</Wrapper>
 	);
