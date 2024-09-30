@@ -1,30 +1,31 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
-import Wrapper from '../../components/customs/Wrapper';
+import Wrapper from '../../../components/customs/Wrapper';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import Button from '../../components/customs/Button';
-import { useAppProvider } from '../../contexts/AppProvider';
-import Overlay from '../../components/customs/Overlay';
-import BottomSheet from '../../components/customs/BottomSheet';
+import Button from '../../../components/customs/Button';
+import { useAppProvider } from '../../../contexts/AppProvider';
+import Overlay from '../../../components/customs/Overlay';
+import BottomSheet from '../../../components/customs/BottomSheet';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { router } from 'expo-router';
 
 const QuizzOverViewScreen = () => {
 	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
-	const { isShowBottomSheet, setIsShowBottomSheet } = useAppProvider();
+	const { setIsHiddenNavigationBar } = useAppProvider();
 
 	const createQuestion = () => {
-		router.push('quiz/editquizquestion');
+		handleCloseBottomSheet();
+		router.push('(app)/(quiz)/edit_quiz_question');
 	};
 
 	const handleCreateQuizQuestion = () => {
-		setIsShowBottomSheet(true);
+		setIsHiddenNavigationBar(true);
 		setVisibleBottomSheet(true);
 	};
 
 	const handleCloseBottomSheet = () => {
-		setIsShowBottomSheet(false);
+		setIsHiddenNavigationBar(false);
 		setVisibleBottomSheet(false);
 	};
 

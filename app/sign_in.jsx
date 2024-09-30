@@ -2,12 +2,12 @@ import { View, Text } from 'react-native';
 import React from 'react';
 import Wrapper from '@/components/customs/Wrapper';
 
-const StudentScreen = () => {
+const SignInScreen = () => {
 	return (
 		<Wrapper>
-			<Text>StudentScreen</Text>
+			<Text className="text-black">SignInScreen</Text>
 		</Wrapper>
 	);
 };
 
-export default StudentScreen;
+export default SignInScreen;
