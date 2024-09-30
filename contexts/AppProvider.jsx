@@ -1,6 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
-import { useColorScheme } from 'react-native';
-
+import React, { createContext, useContext, useRef, useState } from 'react';
 const AppContext = createContext();
 
 // Example about a context provider in React Native
@@ -12,8 +10,17 @@ const AppProvider = ({ children }) => {
 		background: '#fff',
 	});
 
+	const [isHiddenNavigationBar, setIsHiddenNavigationBar] = useState(false);
+
 	return (
-		<AppContext.Provider value={{ theme, setTheme }}>
+		<AppContext.Provider
+			value={{
+				theme,
+				setTheme,
+				isHiddenNavigationBar,
+				setIsHiddenNavigationBar,
+			}}
+		>
 			{children}
 		</AppContext.Provider>
 	);

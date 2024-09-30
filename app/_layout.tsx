@@ -11,6 +11,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import AppProvider from '@/contexts/AppProvider';
 import UserProvider from '@/contexts/UserProvider';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -44,7 +45,35 @@ export default function RootLayout() {
 		>
 			<AppProvider>
 				<UserProvider>
-					<Slot/>
+					<GestureHandlerRootView>
+						<Stack initialRouteName="quiz/edit_quiz_question.jsx">
+							<Stack.Screen
+								name="(tabs)"
+								options={{ headerShown: false }}
+							/>
+							<Stack.Screen
+								name="quiz/create_title"
+								options={{ headerShown: false }}
+							/>
+							<Stack.Screen
+								name="quiz/overview"
+								options={{ headerShown: false }}
+							/>
+							<Stack.Screen
+								name="quiz/edit_quiz_question"
+								options={{ headerShown: false }}
+							/>
+							<Stack.Screen
+							name="play/single"
+							options={{ headerShown: false }}
+							/>
+							<Stack.Screen
+							name="result/single"
+							options={{ headerShown: false }}
+							/>
+							<Stack.Screen name="+not-found" />
+						</Stack>
+					</GestureHandlerRootView>
 				</UserProvider>
 			</AppProvider>
 		</ThemeProvider>

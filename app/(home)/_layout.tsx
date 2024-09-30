@@ -1,19 +1,15 @@
 import { Tabs } from 'expo-router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { useUserProvider } from '@/contexts/UserProvider';
+import { TouchableOpacity } from 'react-native';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 export default function TabLayout() {
-	const colorScheme = useColorScheme();
 	const { user } = useUserProvider();
-
-	useEffect(() => {
-		console.log(user);
-	}, [user]);
-
+	const { isHiddenNavigationBar, setIsHiddenNavigationBar } =
+		useAppProvider();
 	return (
 		<Tabs
 			screenOptions={{
@@ -25,14 +21,17 @@ export default function TabLayout() {
 					backgroundColor: '#fff',
 					left: '5%',
 					right: '5%',
-					width: '90%', // Set a fixed width or percentage width
-					shadowOpacity: 0, // Remove shadow on iOS
-					borderTopWidth: 0, // Remove top border on TabBar
+					width: '90%',
+					shadowOpacity: 0,
+					borderTopWidth: 0,
+					zIndex: isHiddenNavigationBar ? -1 : 1,
 				},
 				tabBarActiveTintColor: '#1C2833',
 				headerShown: false,
+				tabBarShowLabel: false,
 			}}
 		>
+			{/* Common Tabs (hiển thị cho mọi loại người dùng) */}
 			<Tabs.Screen
 				name="index"
 				options={{
@@ -71,6 +70,56 @@ export default function TabLayout() {
 							color={color}
 						/>
 					),
+				}}
+			/>
+
+			<Tabs.Screen
+				name="library"
+				options={{
+					title: 'Library',
+					tabBarIcon: ({ color, focused }) => (
+						<TabBarIcon
+							name={focused ? 'library' : 'library-outline'}
+							color={color}
+						/>
+					),
+					// Ẩn tab nếu người dùng là học sinh
+					tabBarButton: (props) =>
+						user?.user_type === 'teacher' ? (
+							<TouchableOpacity {...props} />
+						) : null,
+				}}
+			/>
+
+			<Tabs.Screen
+				name="student"
+				options={{
+					title: 'Student',
+					tabBarIcon: ({ color, focused }) => (
+						<TabBarIcon
+							name={focused ? 'school' : 'school-outline'}
+							color={color}
+						/>
+					),
+					// Ẩn tab nếu người dùng là giáo viên
+					tabBarButton: (props) =>
+						user?.user_type === 'student' ? (
+							<TouchableOpacity {...props} />
+						) : null,
+				}}
+			/>
+			<Tabs.Screen
+				name="quiz/create"
+				options={{
+					title: 'Create Quizz',
+					tabBarIcon: ({ color, focused }) => (
+						<TabBarIcon
+							name={focused ? 'school' : 'school-outline'}
+							color={color}
+						/>
+					),
+					// Ẩn tab nếu người dùng là giáo viên
+					tabBarButton: (props) => null,
 				}}
 			/>
 		</Tabs>

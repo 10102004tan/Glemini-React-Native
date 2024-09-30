@@ -4,9 +4,14 @@ import Button from '../../components/customs/Button';
 import Field from '../../components/customs/Field';
 import { useRef, useState } from 'react';
 import { useAppProvider } from '@/contexts/AppProvider';
+import { useUserProvider } from '@/contexts/UserProvider';
+import { useRouter } from 'expo-router';
+import RichTextEditor from '../../components/customs/RichTextEditor';
 
 export default function HomeScreen() {
 	const { theme } = useAppProvider();
+	const { switchUserType, user } = useUserProvider();
+	const router = useRouter();
 	// Animation
 	const moveAnim = useRef(new Animated.Value(0)).current;
 	const [moveValue, setMoveValue] = useState(300);
@@ -33,14 +38,14 @@ export default function HomeScreen() {
 			>
 				<Text
 					style={{ color: theme.text }}
-					className={`text-center text-2xl uppercase font-pregular`}
+					className={`text-center text-2xl uppercase`}
 				>
 					Welcome to the app
 				</Text>
 			</Animated.View>
 			<Text
 				style={{ color: theme.text }}
-				className={`text-xl mt-2 text-center font-pregular`}
+				className={`text-xl mt-2 text-center`}
 			>
 				View Components
 			</Text>
@@ -48,6 +53,30 @@ export default function HomeScreen() {
 			<Button
 				onPress={startAnimation}
 				text={'Button'}
+				otherStyles={'mt-4 p-4 bg-black'}
+				textStyles={'text-center'}
+			/>
+
+			<Button
+				onPress={switchUserType}
+				text={user.user_type}
+				otherStyles={'mt-4 p-4'}
+				textStyles={'text-center'}
+			/>
+
+			<Button
+				onPress={() => {
+					router.push('/quiz/create');
+				}}
+				text={'Create Quizz'}
+				otherStyles={'mt-4 p-4'}
+				textStyles={'text-center'}
+			/>
+			<Button
+				onPress={() => {
+					router.push('/quiz/edit_quiz_question');
+				}}
+				text={'Quizz'}
 				otherStyles={'mt-4 p-4'}
 				textStyles={'text-center'}
 			/>
