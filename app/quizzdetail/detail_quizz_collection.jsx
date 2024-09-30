@@ -1,19 +1,18 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import Wrapper from "@/components/customs/Wrapper";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
-import { Image } from "react-native";
-
 import icon from "../../assets/images/icon.png";
 import Button from "../../components/customs/Button.jsx";
+import { Image } from "react-native";
 import { useAppProvider } from "@/contexts/AppProvider";
 import BottomSheet from "@/components/customs/BottomSheet";
+import { MaterialIcons } from "@expo/vector-icons";
 import Overlay from "@/components/customs/Overlay";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { SelectList } from "react-native-dropdown-select-list";
 
-const detailquizz = () => {
+const detail_quizz_collection = () => {
   //Dropdown
   const nameSchool = [
     { title: "trường Cao Đẳng Công Nghệ Thủ Đức" },
@@ -35,27 +34,27 @@ const detailquizz = () => {
     { title: "CD22TT11" },
   ];
 
+  // BottomSheet
   const { setIsShowBottomSheet, isShowBottomSheet } = useAppProvider();
   const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
   const [visibleEditBottomSheet, setVisibleEditBottomSheet] = useState(false);
   const [selectedSchool, setSelectedSchool] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
 
-
-  // BottomSheet
   const OpenBottomSheet = () => {
     setIsShowBottomSheet(true);
     setVisibleBottomSheet(true);
   };
-    const openEditBottomSheet = () => {
-      setVisibleEditBottomSheet(true);
-    };
+  const openEditBottomSheet = () => {
+    setVisibleEditBottomSheet(true);
+  };
 
   const handleCloseBottomSheet = () => {
     setIsShowBottomSheet(false);
     setVisibleBottomSheet(false);
     setVisibleEditBottomSheet(false);
   };
+
   return (
     <Wrapper>
       {/* Overlay */}
@@ -79,11 +78,6 @@ const detailquizz = () => {
           otherStyles={"m-2"}
           icon={<AntDesign name="sharealt" size={18} color="white" />}
         ></Button>
-        <Button
-          text={"Lưu vào bộ sưu tập"}
-          otherStyles={"m-2"}
-          icon={<Entypo name="save" size={18} color="white" />}
-        ></Button>
       </BottomSheet>
 
       {/* Edit Bottom Sheet */}
@@ -100,10 +94,11 @@ const detailquizz = () => {
         {/* Selected của lớp */}
         <View className="mb-4">
           <Text className="text-lg font-semibold m-2">Chọn lớp</Text>
-          <SelectList
+          <SelectList 
             setSelected={(val) => setSelectedClass(val)}
             data={nameClass.map((item) => item.title)}
           />
+
         </View>
 
         {/* Button Hủy và Chọn */}
@@ -132,7 +127,7 @@ const detailquizz = () => {
             <Entypo name="dots-three-vertical" size={24} color="black" />
           </TouchableOpacity>
         </View>
-        <View className="h-[100px] w-full border rounded-xl mt-4 flex-row">
+        <View className="h-[100px] w-full border border-gray rounded-xl mt-4 flex-row">
           <View className="flex justify-center items-center ml-2">
             <Image
               source={icon}
@@ -158,7 +153,7 @@ const detailquizz = () => {
       </View>
 
       <View className="flex m-4 ">
-        <View className="w-full border rounded-xl mt-4">
+        <View className="w-full border border-gray rounded-xl mt-4">
           <View className="flex-row m-2">
             <View className="w-[35px] h-[35px] bg-black flex justify-center items-center rounded-md">
               <Text className="text-white">1</Text>
@@ -206,13 +201,13 @@ const detailquizz = () => {
       <View className="w-full h-[1px] bg-gray mt-[320px]"></View>
       <View className="p-2">
         <Button
-          text={"Bắt đầu Quiz"}
+          text={"Tạo phòng"}
           otherStyles={"p-4"}
-          textStyles={"text-center"}
+          textStyles={"Text-center"}
         ></Button>
       </View>
     </Wrapper>
   );
 };
 
-export default detailquizz;
+export default detail_quizz_collection;

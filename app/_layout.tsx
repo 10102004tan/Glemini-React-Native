@@ -62,6 +62,11 @@ export default function RootLayout() {
                 name="quizzdetail/detailquizz"
                 options={{ headerShown: false }}
               />
+              <Stack.Screen
+                name="quizzdetail/detail_quizz_collection"
+                options={{ headerShown: false }}
+              />
+
               <Stack.Screen name="+not-found" />
             </Stack>
           </GestureHandlerRootView>
