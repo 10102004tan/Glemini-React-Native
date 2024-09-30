@@ -1,16 +1,14 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Button } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Wrapper from '../../components/customs/Wrapper';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Entypo from '@expo/vector-icons/Entypo';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import Button from '../../components/customs/Button';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import QuestionAnswerItem from '../../components/customs/QuestionAnswerItem';
-import { Colors } from '../../constants/Colors';
-import { useAppProvider } from '../../contexts/AppProvider';
-import ExplainQuestionBoard from '../../components/customs/ExplainQuestionBoard';
-import Overlay from '../../components/customs/Overlay';
+import { Colors } from '../../../constants/Colors';
+import { useAppProvider } from '../../../contexts/AppProvider';
+import ExplainQuestionBoard from '../../../components/customs/ExplainQuestionBoard';
+import Overlay from '../../../components/customs/Overlay';
+import Wrapper from '../../../components/customs/Wrapper';
 
 const MAX_ANSWER = 8;
 

@@ -73,7 +73,9 @@ const CreateQuizzScreen = () => {
 							}
 						/>
 						<QuizzCreateAction
-							onPress={() => router.push('/quiz/create_title')}
+							onPress={() =>
+								router.push('(app)/(quiz)/create_title')
+							}
 							otherStyles="ml-2"
 							title={'Tạo bằng tay'}
 							icon={
