@@ -1,13 +1,20 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import React from 'react';
-
-const QuestionAnswerItem = ({ answer, color }) => {
+import Entypo from '@expo/vector-icons/Entypo';
+import { View } from 'react-native';
+const QuestionAnswerItem = ({ answer, color, onPress, isCorrect }) => {
 	return (
 		<TouchableOpacity
-			className="p-4 rounded-xl w-full mb-3"
+			onPress={() => {
+				onPress();
+			}}
+			className="p-4 rounded-xl w-full mb-3 flex flex-row items-center justify-between"
 			style={{ backgroundColor: color }}
 		>
 			<Text className="text-white text-center">{answer}</Text>
+			<View className="">
+				{isCorrect && <Entypo name="check" size={20} color="white" />}
+			</View>
 		</TouchableOpacity>
 	);
 };

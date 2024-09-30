@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, ScrollView, View } from 'react-native';
 import {
 	actions,
@@ -8,20 +8,54 @@ import {
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as ImagePicker from 'expo-image-picker';
+import { useQuestionProvider } from '@/contexts/QuestionProvider';
+import { Status } from '@/constants/status';
 
-const handleHead = ({ tintColor }) => (
-	<FontAwesome5 name="heading" size={18} color={tintColor} />
-);
-
-const handleImage = ({ tintColor }) => {
-	return <FontAwesome name="image" size={18} color={tintColor} />;
-};
-
-const RichTextEditor = () => {
+const RichTextEditor = ({ typingType, content, selectedAnswer }) => {
+	const [editorValue, setEditorValue] = useState('');
+	const { question, setQuestion, editAnswerContent } = useQuestionProvider();
 	const richText = React.useRef();
 
+	// Tạo các customs icon cho toolbar của RichEditor
+	const handleHead = ({ tintColor }) => (
+		<FontAwesome5 name="heading" size={18} color={tintColor} />
+	);
+
+	const handleImage = ({ tintColor }) => {
+		return <FontAwesome name="image" size={18} color={tintColor} />;
+	};
+
+	// Cập nhật nội dung của RichEditor
+	useEffect(() => {
+		if (richText) {
+			richText.current.setContentHTML(content);
+		}
+	}, [content, richText]);
+
+	useEffect(() => {
+		console.log(editorValue);
+		// Xử lý các trường hợp khác nhau của RichTextEditor
+		switch (typingType) {
+			// Trương hợp dùng rich text editor tạo giải thích cho câu hỏi
+			case Status.quiz.EXPLAINATION:
+				setQuestion({ ...question, question_explanation: editorValue });
+				break;
+			// Trường hợp dùng rich text editor tạo nội dung câu hỏi
+			case Status.quiz.QUESTION:
+				setQuestion({ ...question, question_excerpt: editorValue });
+				break;
+			// Trường hợp dùng rich text editor tạo nội dung câu trả lời
+			case Status.quiz.ANSWER:
+				editAnswerContent(selectedAnswer, editorValue);
+				break;
+
+			default:
+				break;
+		}
+	}, [editorValue]);
+
+	// Hàm tải ảnh lên server
 	const uploadImage = async (imageUri) => {
-		console.log('Here');
 		const formData = new FormData();
 		formData.append('image', {
 			uri: imageUri,
@@ -40,7 +74,7 @@ const RichTextEditor = () => {
 		const data = await response.json();
 		return data.url; // URL của ảnh trên server
 	};
-
+	// Hàm chọn ảnh từ thư viện
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
 			mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -62,14 +96,15 @@ const RichTextEditor = () => {
 	};
 
 	return (
-		<View className="w-full h-full p-4">
-			<ScrollView className="max-h-[500px]">
+		<View className="w-full flex-1 p-4">
+			<ScrollView className="">
 				<RichEditor
+					initialContentHTML={`${content}`}
 					placeholder="Nhập giải thích cho câu hỏi ở đây ..."
 					style={{ width: '100%', height: 300 }}
 					ref={richText}
 					onChange={(descriptionText) => {
-						console.log('descriptionText:', descriptionText);
+						setEditorValue(descriptionText);
 					}}
 				/>
 			</ScrollView>
