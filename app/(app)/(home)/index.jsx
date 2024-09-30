@@ -14,7 +14,7 @@ export default function HomeScreen() {
 		<Wrapper>
 			<Button
 				onPress={() => {
-					router.replace('(app)/(quiz)/overview');
+					router.replace('/(app)/(quiz)/edit_quiz_question');
 				}}
 				text={'Create Quizz'}
 				otherStyles={'mt-4 p-4'}
