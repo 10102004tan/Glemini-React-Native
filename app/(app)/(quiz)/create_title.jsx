@@ -1,13 +1,13 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
-import Wrapper from '../../components/customs/Wrapper';
-import Field from '../../components/customs/Field';
-import Button from '../../components/customs/Button';
+import Wrapper from '../../../components/customs/Wrapper';
+import Field from '../../../components/customs/Field';
+import Button from '../../../components/customs/Button';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 const CreateTitleQuizzScreen = () => {
 	const handleCreateQuizTitle = () => {
-		router.push('quiz/overview');
+		router.push('(app)/(quiz)/overview');
 	};
 
 	return (
