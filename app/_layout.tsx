@@ -6,6 +6,7 @@ import 'react-native-reanimated';
 import AppProvider from '@/contexts/AppProvider';
 import UserProvider from '@/contexts/UserProvider';
 import QuestionProvider from '@/contexts/QuestionProvider';
+import QuizProvider from '@/contexts/QuizProvider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -34,14 +35,16 @@ export default function RootLayout() {
 	}
 
 	return (
-		<AppProvider>
-			<UserProvider>
-				<QuestionProvider>
-					<GestureHandlerRootView>
-						<Slot />
-					</GestureHandlerRootView>
-				</QuestionProvider>
-			</UserProvider>
-		</AppProvider>
+		<GestureHandlerRootView>
+			<AppProvider>
+				<UserProvider>
+					<QuizProvider>
+						<QuestionProvider>
+							<Slot />
+						</QuestionProvider>
+					</QuizProvider>
+				</UserProvider>
+			</AppProvider>
+		</GestureHandlerRootView>
 	);
 }

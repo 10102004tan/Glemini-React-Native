@@ -5,7 +5,7 @@ import Animated, {
 	withTiming,
 } from 'react-native-reanimated';
 import RichTextEditor from './RichTextEditor';
-import { Status } from '../../constants/status';
+import { Status } from '../../constants';
 import { Text, TouchableOpacity, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import Button from './Button';
@@ -81,7 +81,7 @@ const QuestionEditBoard = ({
 								handleClose();
 							}
 						}}
-						otherStyles="bg-error mt-2"
+						otherStyles="bg-error mt-2 justify-center"
 						text="Loại bỏ đáp án này"
 						icon={
 							<Feather name="trash-2" size={18} color="white" />
