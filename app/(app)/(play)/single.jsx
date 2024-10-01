@@ -11,28 +11,131 @@ const SinglePlay = () => {
 	const [isChosen, setIsChosen] = useState(false);
 	const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
 	const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
-	const [buttonText, setButtonText] = useState('Xác nhận'); 
-	const [buttonColor, setButtonColor] = useState('bg-white'); 
-	const [buttonTextColor, setButtonTextColor] = useState('text-black'); 
+	const [buttonText, setButtonText] = useState('Xác nhận');
+	const [buttonColor, setButtonColor] = useState('bg-white');
+	const [buttonTextColor, setButtonTextColor] = useState('text-black');
 
 	// Danh sách câu hỏi
+	const [question, setQuestion] = useState([
+		{
+			_id: 1,
+			quiz_id: 1,
+			question_excerpt: 'What is the capital of France?',
+			question_description: 'This is a test question',
+			question_image: '',
+			question_audio: '',
+			question_video: '',
+			question_point: 1,
+			question_time: 10,
+			question_explanation: 'This is the explanation',
+			question_type: 'single', // mutiple, box, true/false, blank
+			question_answer_ids: [
+				{
+					_id: 1,
+					text: "Paris",
+					image: null,
+				},
+				{
+					_id: 2,
+					text: "Hanoi",
+					image: null,
+				},
+				{
+					_id: 3,
+					text: "London",
+					image: null,
+				},
+				{
+					_id: 4,
+					text: "Tokyo",
+					image: null,
+				},
+			],
+			question_correct: 1,
+		},
+		{
+			_id: 2,
+			quiz_id: 2,
+			question_excerpt: 'What is the largest planet in our solar system?',
+			question_description: 'This is a test question',
+			question_image: '',
+			question_audio: '',
+			question_video: '',
+			question_point: 1,
+			question_time: 10,
+			question_explanation: 'This is the explanation',
+			question_type: 'single', // mutiple, box, true/false, blank
+			question_answer_ids: [
+				{
+					_id: 1,
+					text: "Earth",
+					image: null,
+				},
+				{
+					_id: 2,
+					text: "Mars",
+					image: null,
+				},
+				{
+					_id: 3,
+					text: "Jupiter",
+					image: null,
+				},
+				{
+					_id: 4,
+					text: "Saturn",
+					image: null,
+				},
+			],
+			question_correct: 3,
+		},
+		{
+			_id: 3,
+			quiz_id: 3,
+			question_excerpt: 'Who wrote "Hamlet"?',
+			question_description: 'This is a test question',
+			question_image: '',
+			question_audio: '',
+			question_video: '',
+			question_point: 1,
+			question_time: 10,
+			question_explanation: 'This is the explanation',
+			question_type: 'single', // mutiple, box, true/false, blank
+			question_answer_ids: [
+				{
+					_id: 1,
+					text: "Shakespeare",
+					image: null,
+				},
+				{
+					_id: 2,
+					text: "Tolstoy",
+					image: null,
+				},
+				{
+					_id: 3,
+					text: "Hemingway",
+					image: null,
+				},
+				{
+					_id: 4,
+					text: "Austen",
+					image: null,
+				},
+			],
+			question_correct: 1,
+		},
+	]);
+
 	const questions = [
 		{
-			question: 'What is the capital of France?',
-			answers: ['Paris', 'London', 'Berlin', 'Rome'],
-			correctAnswer: 'Paris',
-		},
-		{
-			question: 'Who wrote "Hamlet"?',
-			answers: ['Shakespeare', 'Tolstoy', 'Hemingway', 'Austen'],
-			correctAnswer: 'Shakespeare',
-		},
-		{
-			question: 'What is the largest planet in our solar system?',
-			answers: ['Earth', 'Mars', 'Jupiter', 'Saturn'],
-			correctAnswer: 'Jupiter',
-		},
-	];
+			question: 'Who am I?',
+			answers: ['Siêu Nhân', 'Giáo viên', 'Ca sĩ', 'Bác sĩ'],
+			correctAnswer: 'Ca sĩ'
+		}
+	]
+
+	
 
 	const handleAnswerPress = (answer) => {
 		setSelectedAnswer(answer);
@@ -43,6 +146,8 @@ const SinglePlay = () => {
 
 	const handleSubmit = () => {
 		if (selectedAnswer === null) {
+			console.log(question);
+			
 			Alert.alert('Vui lòng chọn đáp án!!');
 			return;
 		}
