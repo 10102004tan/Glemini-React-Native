@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import AppProvider from '@/contexts/AppProvider';
 import UserProvider from '@/contexts/UserProvider';
+import QuestionProvider from '@/contexts/QuestionProvider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -35,9 +36,11 @@ export default function RootLayout() {
 	return (
 		<AppProvider>
 			<UserProvider>
-				<GestureHandlerRootView>
-					<Slot />
-				</GestureHandlerRootView>
+				<QuestionProvider>
+					<GestureHandlerRootView>
+						<Slot />
+					</GestureHandlerRootView>
+				</QuestionProvider>
 			</UserProvider>
 		</AppProvider>
 	);

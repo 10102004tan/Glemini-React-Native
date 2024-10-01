@@ -19,9 +19,10 @@ const Button = ({
 			onPress={() => {
 				onPress();
 			}}
-			className={`p-2 rounded-xl bg-primary ${otherStyles}`}
+			className={`p-2 rounded-xl flex items-center justify-start flex-row bg-primary ${otherStyles}`}
 		>
-			<Text className={`${textStyles}`}>{text}</Text>
+			{icon && icon}
+			<Text className={`${textStyles} text-white ml-2`}>{text}</Text>
 		</TouchableOpacity>
 	);
 };
