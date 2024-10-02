@@ -4,7 +4,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import AppProvider from '@/contexts/AppProvider';
-import UserProvider from '@/contexts/UserProvider';
+import {AuthProvider} from '@/contexts/AuthContext';
+
 import QuestionProvider from '@/contexts/QuestionProvider';
 import QuizProvider from '@/contexts/QuizProvider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -35,16 +36,12 @@ export default function RootLayout() {
   }
 
 	return (
-		<GestureHandlerRootView>
-      <AppProvider>
-				<UserProvider>
-					<QuizProvider>
-						<QuestionProvider>
-							<Slot />
-						</QuestionProvider>
-					</QuizProvider>
-				</UserProvider>
-			</AppProvider>
-		</GestureHandlerRootView>
+		<AppProvider>
+			<AuthProvider>
+				<GestureHandlerRootView>
+					<Slot />
+				</GestureHandlerRootView>
+			</AuthProvider>
+		</AppProvider>
 	);
 }

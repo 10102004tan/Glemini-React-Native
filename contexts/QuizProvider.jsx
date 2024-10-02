@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useUserProvider } from './UserProvider';
+import { AuthContext } from './AuthContext';
+// import { useUserProvider } from './UserProvider';
 const API_URL = 'http://192.168.1.8:8000/api/v1/quizzes';
 const QuizContext = createContext();
 
@@ -8,7 +9,7 @@ const QuizProvider = ({ children }) => {
 	const [currentQuizQuestion, setCurrentQuizQuestion] = useState([]);
 	const [quizzes, setQuizzes] = useState([]);
 	const [createQuestionType, setCreateQuestionType] = useState('multiple');
-	const { user } = useUserProvider();
+	const { userData:{_id,accessToken} } = useContext(AuthContext);
 	const [needUpdate, setNeedUpdate] = useState(false);
 
 	// Get all quizzes of the user
@@ -17,10 +18,10 @@ const QuizProvider = ({ children }) => {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'x-client-id': user._id,
-				authorization: user.accessToken,
+				'x-client-id': _id,
+				authorization: accessToken,
 			},
-			body: JSON.stringify({ user_id: user._id }),
+			body: JSON.stringify({ user_id: _id }),
 		});
 		const data = await response.json();
 		if (data.statusCode === 200) {
