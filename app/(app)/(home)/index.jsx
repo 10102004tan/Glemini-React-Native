@@ -18,7 +18,7 @@ export default function HomeScreen() {
 				}}
 				text={'Create Quizz'}
 				otherStyles={'mt-4 p-4'}
-				textStyles={'text-center text-white'}
+				textStyles={'mx-auto'}
 			/>
 			<Button
 				onPress={() => {
@@ -26,7 +26,7 @@ export default function HomeScreen() {
 				}}
 				text={'Quizz'}
 				otherStyles={'mt-4 p-4'}
-				textStyles={'text-center text-white'}
+				textStyles={'mx-auto'}
 			/>
 			<Button
 				onPress={() => {
@@ -34,7 +34,7 @@ export default function HomeScreen() {
 				}}
 				text={'Single'}
 				otherStyles={'mt-4 p-4'}
-				textStyles={'text-center text-white'}
+				textStyles={'mx-auto'}
 			/>
 		</Wrapper>
 	);

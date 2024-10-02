@@ -14,8 +14,8 @@ import Button from '../../../components/customs/Button';
 import QuestionEditBoard from '../../../components/customs/QuestionEditBoard';
 import { Status } from '../../../constants/status.js';
 import BottomSheet from '../../../components/customs/BottomSheet';
-import { Points } from '../../../constants/points.js';
-import { Times } from '../../../constants/times.js';
+import { Points } from '../../../constants/Points.js';
+import { Times } from '../../../constants/Times.js';
 const MAX_ANSWER = 8;
 
 const EditQuizQuestion = () => {

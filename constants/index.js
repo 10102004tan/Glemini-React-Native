@@ -1,3 +1,3 @@
-import Images from './images';
+import Images from './Images';
 
 export { Images };

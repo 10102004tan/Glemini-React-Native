@@ -22,7 +22,7 @@ const Button = ({
 			className={`p-2 rounded-xl flex items-center justify-start flex-row bg-primary ${otherStyles}`}
 		>
 			{icon && icon}
-			<Text className={`${textStyles} text-white ml-2`}>{text}</Text>
+			<Text className={`text-white text-center ${textStyles}`}>{text}</Text>
 		</TouchableOpacity>
 	);
 };
