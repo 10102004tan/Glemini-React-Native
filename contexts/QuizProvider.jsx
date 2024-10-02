@@ -8,6 +8,7 @@ const QuizProvider = ({ children }) => {
 	const [currentQuizQuestion, setCurrentQuizQuestion] = useState([]);
 	const [quizzes, setQuizzes] = useState([]);
 	const [createQuestionType, setCreateQuestionType] = useState('multiple');
+	const [actionQuizType, setActionQuizType] = useState('create');
 	const { user } = useUserProvider();
 	const [needUpdate, setNeedUpdate] = useState(false);
 
@@ -39,7 +40,6 @@ const QuizProvider = ({ children }) => {
 			body: JSON.stringify({ quiz_id: selectedQuiz._id }),
 		});
 		const data = await response.json();
-		console.log(data);
 		if (data.statusCode === 200) {
 			console.log(data.metadata);
 			setCurrentQuizQuestion(data.metadata);
@@ -79,6 +79,8 @@ const QuizProvider = ({ children }) => {
 				setNeedUpdate,
 				currentQuizQuestion,
 				setCurrentQuizQuestion,
+				actionQuizType,
+				setActionQuizType,
 			}}
 		>
 			{children}

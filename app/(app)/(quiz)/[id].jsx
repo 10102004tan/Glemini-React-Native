@@ -28,6 +28,8 @@ const QuizzOverViewScreen = () => {
 		setCreateQuestionType,
 		currentQuizQuestion,
 		setCurrentQuizQuestion,
+		actionQuizType,
+		setActionQuizType,
 	} = useQuizProvider();
 
 	useEffect(() => {
@@ -57,11 +59,6 @@ const QuizzOverViewScreen = () => {
 		}
 	}, [id]);
 
-	useEffect(() => {
-		console.log('===== Current Quiz Question =====');
-		console.log(currentQuizQuestion);
-	}, [currentQuizQuestion]);
-
 	// lấy danh sách câu hỏi của bộ quiz hiện tại
 
 	const createQuestion = () => {
@@ -70,6 +67,7 @@ const QuizzOverViewScreen = () => {
 	};
 
 	const handleCreateQuizQuestion = () => {
+		setActionQuizType('create');
 		setIsHiddenNavigationBar(true);
 		setVisibleBottomSheet(true);
 	};
@@ -189,7 +187,7 @@ const QuizzOverViewScreen = () => {
 				<Button
 					onPress={handleCreateQuizQuestion}
 					text={'Tạo câu hỏi'}
-					otherStyles={'p-4'}
+					otherStyles={'p-4 justify-center'}
 					textStyles={'text-center'}
 				/>
 			</View>

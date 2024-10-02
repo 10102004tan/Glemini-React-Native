@@ -1,10 +1,15 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import RenderHTML from 'react-native-render-html';
 import { useWindowDimensions } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useQuizProvider } from '@/contexts/QuizProvider';
+import { useQuestionProvider } from '@/contexts/QuestionProvider';
 const QuestionOverview = ({ question, index }) => {
+	const [showExpain, setShowExpain] = useState(false);
 	const { width } = useWindowDimensions();
+	const { actionQuizType, setActionQuizType } = useQuizProvider();
+	const { setUpdateQuestionId } = useQuestionProvider();
 	return (
 		<View className="p-2 rounded-2xl border border-gray mb-2">
 			<View className="flex w-full items-center justify-between flex-row">
@@ -23,10 +28,11 @@ const QuestionOverview = ({ question, index }) => {
 					điểm
 				</Text>
 			</View>
-			<View className="mt-2">
+			<View className="mt-2 overflow-hidden">
 				<RenderHTML
 					defaultTextProps={{
 						style: {
+							width: '100%',
 							color: 'black',
 							fontSize: 16,
 							fontWeight: '500',
@@ -79,28 +85,43 @@ const QuestionOverview = ({ question, index }) => {
 				})}
 			</View>
 			<View>
-				<TouchableOpacity className="flex items-center justify-end flex-row">
+				<TouchableOpacity
+					className="flex items-center justify-end flex-row"
+					onPress={() => {
+						setActionQuizType('edit');
+						setUpdateQuestionId(question._id);
+					}}
+				>
+					<Text className="text-gray">Chỉnh sửa</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					className="flex items-center justify-end flex-row"
+					onPress={() => setShowExpain(!showExpain)}
+				>
 					<Text className="text-gray">Xem giải thích</Text>
 				</TouchableOpacity>
 			</View>
-			<View>
-				<Text>Giải thích:</Text>
-				<RenderHTML
-					defaultTextProps={{
-						style: {
-							color: 'black',
-							fontSize: 14,
-							fontWeight: '400',
-						},
-					}}
-					contentWidth={width}
-					source={{
-						html:
-							question.question_explaination ||
-							'Chưa có giải thích cho câu hỏi này',
-					}}
-				/>
-			</View>
+			{showExpain && (
+				<View className="overflow-hidden">
+					<Text className="mb-2 font-semibold">Giải thích:</Text>
+					<RenderHTML
+						defaultViewProps={{}}
+						defaultTextProps={{
+							style: {
+								width: '100%',
+								color: 'black',
+								fontSize: 14,
+							},
+						}}
+						contentWidth={width}
+						source={{
+							html:
+								question.question_explanation ||
+								'Chưa có giải thích cho câu hỏi này',
+						}}
+					/>
+				</View>
+			)}
 		</View>
 	);
 };
