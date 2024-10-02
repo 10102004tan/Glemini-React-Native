@@ -12,6 +12,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+<<<<<<< HEAD
   const [loaded] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
@@ -23,6 +24,19 @@ export default function RootLayout() {
     "Poppins-SemiBold": require("../assets/fonts/Poppins-SemiBold.ttf"),
     "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
   });
+=======
+	const [loaded] = useFonts({
+		'Poppins-Black': require('../assets/fonts/Poppins-Black.ttf'),
+		'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
+		'Poppins-ExtraBold': require('../assets/fonts/Poppins-ExtraBold.ttf'),
+		'Poppins-ExtraLight': require('../assets/fonts/Poppins-ExtraLight.ttf'),
+		'Poppins-Light': require('../assets/fonts/Poppins-Light.ttf'),
+		'Poppins-Medium': require('../assets/fonts/Poppins-Medium.ttf'),
+		'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
+		'Poppins-SemiBold': require('../assets/fonts/Poppins-SemiBold.ttf'),
+		'Poppins-Thin': require('../assets/fonts/Poppins-Thin.ttf'),
+	});
+>>>>>>> 578809ec55e9c50c3fc545477018fc7196e302d2
 
   useEffect(() => {
     if (loaded) {
@@ -35,7 +49,12 @@ export default function RootLayout() {
   }
 
 	return (
+<<<<<<< HEAD
 			<AppProvider>
+=======
+		<GestureHandlerRootView>
+      <AppProvider>
+>>>>>>> 578809ec55e9c50c3fc545477018fc7196e302d2
 				<UserProvider>
 					<QuizProvider>
 						<QuestionProvider>
@@ -44,5 +63,9 @@ export default function RootLayout() {
 					</QuizProvider>
 				</UserProvider>
 			</AppProvider>
+<<<<<<< HEAD
+=======
+		</GestureHandlerRootView>
+>>>>>>> 578809ec55e9c50c3fc545477018fc7196e302d2
 	);
 }
