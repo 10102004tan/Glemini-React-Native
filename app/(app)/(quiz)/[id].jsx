@@ -138,34 +138,41 @@ const QuizzOverViewScreen = () => {
 					<Text className="ml-2 text-white">Lưu bài quiz</Text>
 				</TouchableOpacity>
 			</View>
-			<View className="p-4 flex items-center justify-center flex-col">
-				<TouchableOpacity className="flex items-center justify-center flex-col rounded-2xl bg-overlay w-full min-h-[120px]">
-					<Ionicons name="image-outline" size={24} color="black" />
-					<Text className="text-center mt-1">Thêm hình ảnh</Text>
-				</TouchableOpacity>
-			</View>
-			{/* Quiz infor */}
-			<View className="mt-4 p-4">
-				<View className="flex items-center justify-between flex-row">
-					<View>
-						<Text className="text-lg">
-							{selectedQuiz.quiz_name}
-						</Text>
-						<Text className="text-gray">
-							{selectedQuiz.quiz_description ||
-								'Thêm mô tả cho bộ quiz này'}
-						</Text>
-					</View>
-					<TouchableOpacity>
-						<MaterialIcons name="edit" size={24} color="black" />
+			<ScrollView className="mb-[100px]">
+				<View className="p-4 flex items-center justify-center flex-col">
+					<TouchableOpacity className="flex items-center justify-center flex-col rounded-2xl bg-overlay w-full min-h-[120px]">
+						<Ionicons
+							name="image-outline"
+							size={24}
+							color="black"
+						/>
+						<Text className="text-center mt-1">Thêm hình ảnh</Text>
 					</TouchableOpacity>
 				</View>
-			</View>
-			{/* Quiz Questions */}
-			<View className="mt-4 p-4">
-				<Text className="text3xl text-primary">ID: {id}</Text>
-
-				<ScrollView>
+				{/* Quiz infor */}
+				<View className="mt-4 p-4">
+					<View className="flex items-center justify-between flex-row">
+						<View>
+							<Text className="text-lg">
+								{selectedQuiz.quiz_name}
+							</Text>
+							<Text className="text-gray">
+								{selectedQuiz.quiz_description ||
+									'Thêm mô tả cho bộ quiz này'}
+							</Text>
+						</View>
+						<TouchableOpacity>
+							<MaterialIcons
+								name="edit"
+								size={24}
+								color="black"
+							/>
+						</TouchableOpacity>
+					</View>
+				</View>
+				{/* Quiz Questions */}
+				<View className="mt-2 p-4">
+					<Text className="mb-2">Chỉnh sửa câu hỏi</Text>
 					{currentQuizQuestion.length > 0 &&
 						currentQuizQuestion.map((question, index) => {
 							return (
@@ -176,8 +183,8 @@ const QuizzOverViewScreen = () => {
 								/>
 							);
 						})}
-				</ScrollView>
-			</View>
+				</View>
+			</ScrollView>
 			<View className="p-4 absolute bg-white bottom-0 w-full">
 				<Button
 					onPress={handleCreateQuizQuestion}
