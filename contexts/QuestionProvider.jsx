@@ -1,14 +1,12 @@
-import { View, Text } from 'react-native';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { router } from 'expo-router';
-import { useUserProvider } from './UserProvider';
+import { useAuthContext } from './AuthContext';
 const QuestionContext = createContext();
 const API_URL = 'http://192.168.1.8:8000/api/v1/questions';
 const QuestionProvider = ({ children }) => {
-	const { user } = useUserProvider();
 	const [questions, setQuestions] = useState([]);
 	const [updateQuestionId, setUpdateQuestionId] = useState(null);
-
+	const { userData } = useAuthContext();
 	const getCurrentUpdateQuestion = async () => {
 		const response = await fetch(API_URL + '/get-details', {
 			method: 'POST',
@@ -212,8 +210,8 @@ const QuestionProvider = ({ children }) => {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'x-client-id': user._id,
-					authorization: user.accessToken,
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
 				},
 				body: JSON.stringify({ ...question, quiz_id: quizId }),
 			});
@@ -233,14 +231,13 @@ const QuestionProvider = ({ children }) => {
 
 	const editQuestion = async (quizId, questionId) => {
 		try {
-			console.log('Chaysdf');
 			// Gọi API cập nhật câu hỏi
 			const response = await fetch(API_URL + '/update', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					authorization: user.accessToken,
-					'x-client-id': user._id,
+					authorization: userData.accessToken,
+					'x-client-id': userData._id,
 				},
 				body: JSON.stringify({ ...question, quiz_id: quizId }),
 			});

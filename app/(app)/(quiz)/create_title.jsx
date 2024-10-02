@@ -1,30 +1,30 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import Wrapper from '../../../components/customs/Wrapper';
 import Field from '../../../components/customs/Field';
 import Button from '../../../components/customs/Button';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
-import { AuthContext } from '@/contexts/AuthContext';
+import { useAuthContext } from '@/contexts/AuthContext';
 const CreateTitleQuizzScreen = () => {
-	const { userData:{_id,accessToken} } = useContext(AuthContext);
+	const { userData } = useAuthContext();
 	const [quizName, setQuizName] = useState('');
-	const { setNeedUpdate } = useQuizProvider();
+	const { setNeedUpdate, setSelectedQuiz } = useQuizProvider();
 	const handleCreateQuizTitle = async () => {
 		// Xử lý tạo quiz rỗng
-		if (user) {
+		if (userData) {
 			const response = await fetch(
 				'http://192.168.1.8:8000/api/v1/quizzes/create',
 				{
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						'x-client-id': _id,
-						authorization: accessToken,
+						'x-client-id': userData._id,
+						authorization: userData.accessToken,
 					},
 					body: JSON.stringify({
-						user_id: user._id,
+						user_id: userData._id,
 						quiz_name: quizName,
 					}),
 				}

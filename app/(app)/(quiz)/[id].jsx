@@ -13,13 +13,14 @@ import { ScrollView } from 'react-native';
 import QuestionOverview from '../../../components/customs/QuestionOverview';
 import { useQuestionProvider } from '../../../contexts/QuestionProvider';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
+import { useAuthContext } from '../../../contexts/AuthContext';
 
 const QuizzOverViewScreen = () => {
 	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
 	const { setIsHiddenNavigationBar } = useAppProvider();
 	// const { questions } = useQuestionProvider();
 	const { id } = useGlobalSearchParams();
-	const { userData:{_id,accessToken} } = useContext(AuthContext);
+	const { userData } = useAuthContext();
 	const {
 		selectedQuiz,
 		setSelectedQuiz,
@@ -30,33 +31,35 @@ const QuizzOverViewScreen = () => {
 		actionQuizType,
 		setActionQuizType,
 	} = useQuizProvider();
+	const fetchQuiz = async () => {
+		const response = await fetch(
+			`http://192.168.1.8:8000/api/v1/quizzes/get-details`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({ quiz_id: id }),
+			}
+		);
+
+		const data = await response.json();
+		console.log(data);
+		if (data.statusCode === 200) {
+			setSelectedQuiz(data.metadata);
+		}
+	};
 
 	useEffect(() => {
+		// console.log(id);
+		// console.log(userData);
 		// Lấy dữ liệu của quiz hiện tại
-		const fetchQuiz = async () => {
-			const response = await fetch(
-				`http://192.168.1.8:8000/api/v1/quizzes/get-details`,
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'x-client-id':_id,
-						authorization: accessToken,
-					},
-					body: JSON.stringify({ quiz_id: id }),
-				}
-			);
-
-			const data = await response.json();
-			if (data.statusCode === 200) {
-				setSelectedQuiz(data.metadata);
-			}
-		};
-
-		if (user && id) {
+		if (userData) {
 			fetchQuiz();
 		}
-	}, [id]);
+	}, [id, userData]);
 
 	// lấy danh sách câu hỏi của bộ quiz hiện tại
 
