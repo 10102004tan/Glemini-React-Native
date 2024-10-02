@@ -1,8 +1,8 @@
-import { View, Text, TouchableOpacity } from 'react-native';
-import React, { useEffect } from 'react';
+import { Text, TouchableOpacity } from 'react-native';
+import React from 'react';
 import Wrapper from '../../../components/customs/Wrapper';
-import { useQuizProvider } from '../../../contexts/QuizProvider';
 import { router } from 'expo-router';
+import { useQuizProvider } from '../../../contexts/QuizProvider';
 const ListQuizz = () => {
 	const { quizzes } = useQuizProvider();
 	return (
