@@ -13,6 +13,14 @@ import Overlay from "@/components/customs/Overlay";
 import { SelectList } from "react-native-dropdown-select-list";
 
 const detail_quizz_collection = () => {
+  //Information teacher
+  const inforTeacher = {
+    quiz_name: "Toán",
+    quiz_description: "Môn học thú vị",
+    quiz_status: "Hay",
+    quiz_thumb: icon,
+  };
+
   //Dropdown
   const nameSchool = [
     { title: "trường Cao Đẳng Công Nghệ Thủ Đức" },
@@ -128,16 +136,16 @@ const detail_quizz_collection = () => {
         <View className="h-[100px] w-full border border-gray rounded-xl mt-4 flex-row">
           <View className="flex justify-center items-center ml-2">
             <Image
-              source={icon}
+              source={inforTeacher.quiz_thumb}
               className="w-[80px] h-[80px] rounded-xl"
             ></Image>
           </View>
           <View className="flex-col">
-            <Text className="ml-4 mt-2">Tên Quizz</Text>
+            <Text className="ml-4 mt-2">{inforTeacher.quiz_name}</Text>
             <Text className="ml-4 mt-2">
-              ............................................
+              {inforTeacher.quiz_description}
             </Text>
-            <Text className="ml-4 mt-2">.......................</Text>
+            <Text className="ml-4 mt-2">{inforTeacher.quiz_status}</Text>
           </View>
         </View>
       </View>
@@ -157,7 +165,7 @@ const detail_quizz_collection = () => {
               <Text className="text-white">1</Text>
             </View>
             <Text className="ml-3 mt-2">Loại câu hỏi</Text>
-            <Text className="ml-[150px] mt-2 text-gray ">30 giây - 1 điểm</Text>
+            <Text className="ml-[130px] mt-2 text-gray ">30 giây - 1 điểm</Text>
           </View>
           <Text className="ml-2 font-bold">Đây là nội dung của câu hỏi</Text>
 
