@@ -24,19 +24,19 @@ export default function RootLayout() {
 		'Poppins-Thin': require('../assets/fonts/Poppins-Thin.ttf'),
 	});
 
-	useEffect(() => {
-		if (loaded) {
-			SplashScreen.hideAsync();
-		}
-	}, [loaded]);
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
 
-	if (!loaded) {
-		return null;
-	}
+  if (!loaded) {
+    return null;
+  }
 
 	return (
 		<GestureHandlerRootView>
-			<AppProvider>
+      <AppProvider>
 				<UserProvider>
 					<QuizProvider>
 						<QuestionProvider>

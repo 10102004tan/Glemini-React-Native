@@ -52,6 +52,22 @@ export default function HomeScreen() {
 				otherStyles={'mt-4 p-4'}
 				textStyles={'text-center text-white'}
 			/>
+      <Button
+        onPress={() => {
+          router.push("(app)/(quiz)/(detail)/detail_quizz");
+        }}
+        text={"Quizz Detail"}
+        otherStyles={"mt-4 p-4"}
+        textStyles={"text-center"}
+      />
+      <Button
+        onPress={() => {
+          router.push("(app)/(quiz)/(detail)/detail_quizz_collection");
+        }}
+        text={"Quizz Detail Collection"}
+        otherStyles={"mt-4 p-4"}
+        textStyles={"text-center"}
+      />
 		</Wrapper>
 	);
 }
