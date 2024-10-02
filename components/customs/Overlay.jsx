@@ -1,22 +1,26 @@
-import { View, TouchableWithoutFeedback, StyleSheet } from 'react-native';
+import {
+	View,
+	TouchableWithoutFeedback,
+	StyleSheet,
+	TouchableOpacity,
+} from 'react-native';
 import React from 'react';
 import { BlurView } from 'expo-blur';
 
 const Overlay = ({ onPress }) => {
 	return (
-		<TouchableWithoutFeedback
+		<TouchableOpacity
+			className="absolute top-0 left-0 bottom-0 right-0 bg-overlay z-10"
 			onPress={() => {
 				onPress();
 			}}
 		>
-			<View className="absolute top-0 left-0 bottom-0 right-0 bg-overlay z-10">
-				<BlurView
-					intensity={90}
-					tint="dark"
-					style={styles.absolute}
-				></BlurView>
-			</View>
-		</TouchableWithoutFeedback>
+			<BlurView
+				intensity={90}
+				tint="dark"
+				style={styles.absolute}
+			></BlurView>
+		</TouchableOpacity>
 	);
 };
 

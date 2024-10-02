@@ -1,4 +1,11 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import {
+	View,
+	Text,
+	TouchableOpacity,
+	ScrollView,
+	Keyboard,
+	TouchableWithoutFeedback,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -31,7 +38,12 @@ const EditQuizQuestion = () => {
 	const [showQuestionBoard, setShowQuestionBoard] = useState(false); // hiển thị giải thích cho câu hỏi
 	const [editorType, setEditorType] = useState(''); // loại editor
 	const [editorContent, setEditorContent] = useState(''); // nội dung của editor
-	const { selectedQuiz, createQuestionType, setSelectedQuiz } = useQuizProvider();
+	const {
+		selectedQuiz,
+		createQuestionType,
+		setSelectedQuiz,
+		actionQuizType,
+	} = useQuizProvider();
 	const {
 		question,
 		addAnswer,
@@ -39,6 +51,8 @@ const EditQuizQuestion = () => {
 		saveQuestion,
 		updateQuestionTime,
 		updateQuestionPoint,
+		editQuestion,
+		checkCorrectAnswer,
 	} = useQuestionProvider();
 	const [answerEditSelected, setAnswerEditSelected] = useState(0); // đáp án được chọn
 	const { width } = useWindowDimensions();
@@ -84,6 +98,7 @@ const EditQuizQuestion = () => {
 							{Points.questionPoints.map((point, index) => {
 								return (
 									<TouchableOpacity
+										key={index}
 										className="flex flex-row items-center justify-start p-2 mb-2 rounded-xl bg-overlay"
 										onPress={() => {
 											setSelectedPoint(point);
@@ -112,6 +127,7 @@ const EditQuizQuestion = () => {
 							{Times.questionTimes.map((time, index) => {
 								return (
 									<TouchableOpacity
+										key={index}
 										className="flex flex-row items-center justify-start p-2 mb-2 rounded-xl bg-overlay"
 										onPress={() => {
 											setSelectedTime(time);
@@ -216,16 +232,18 @@ const EditQuizQuestion = () => {
 					</View>
 					{/* Answers */}
 					<View className="mt-4 flex items-center justify-center flex-col">
-						{question.answers.map((answer, index) => {
+						{question.question_answer_ids.map((answer, index) => {
 							return (
 								<QuestionAnswerItem
 									onPress={() => {
 										setEditorType(Status.quiz.ANSWER);
 										setEditorContent(answer.text);
-										setAnswerEditSelected(answer.id);
+										setAnswerEditSelected(answer._id);
 										setShowQuestionBoard(true);
 									}}
-									isCorrect={answer.correct}
+									isCorrect={
+										answer.correct ? answer.correct : false
+									}
 									key={index}
 									answer={answer.text}
 									color={Colors.answerColors[index]}
@@ -237,7 +255,10 @@ const EditQuizQuestion = () => {
 						<TouchableOpacity
 							className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
 							onPress={() => {
-								if (question.answers.length < MAX_ANSWER) {
+								if (
+									question.question_answer_ids.length <
+									MAX_ANSWER
+								) {
 									addAnswer();
 								} else {
 									// Alert to user here
@@ -253,9 +274,17 @@ const EditQuizQuestion = () => {
 			<View className="p-4">
 				<Button
 					onPress={() => {
-						saveQuestion(selectedQuiz._id);
+						if (actionQuizType === 'create') {
+							saveQuestion(selectedQuiz._id);
+						} else if (actionQuizType === 'edit') {
+							editQuestion(selectedQuiz._id, question._id);
+						}
 					}}
-					text={'Lưu câu hỏi'}
+					text={
+						actionQuizType === 'create'
+							? 'Thêm câu hỏi'
+							: 'Lưu câu hỏi'
+					}
 					otherStyles={'p-4 justify-center'}
 					textStyles={'text-center'}
 				/>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, ScrollView, View } from 'react-native';
+import { Text, ScrollView, View, Keyboard } from 'react-native';
 import {
 	actions,
 	RichEditor,
@@ -11,10 +11,18 @@ import * as ImagePicker from 'expo-image-picker';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import { Status } from '@/constants';
 
-const RichTextEditor = ({ typingType, content, selectedAnswer }) => {
+const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 	const [editorValue, setEditorValue] = useState('');
 	const { question, setQuestion, editAnswerContent } = useQuestionProvider();
 	const richText = React.useRef();
+
+	useEffect(() => {
+		if (focus) {
+			richText.current.focusContentEditor();
+		} else {
+			richText.current.blurContentEditor();
+		}
+	}, [focus]);
 
 	// Tạo các customs icon cho toolbar của RichEditor
 	const handleHead = ({ tintColor }) => (
@@ -105,6 +113,7 @@ const RichTextEditor = ({ typingType, content, selectedAnswer }) => {
 		<View className="w-full flex-1 p-4">
 			<ScrollView className="">
 				<RichEditor
+					defaultParagraphSeparator=""
 					initialContentHTML={`${content}`}
 					placeholder="Nhập giải thích cho câu hỏi ở đây ..."
 					style={{ width: '100%', height: 300 }}
