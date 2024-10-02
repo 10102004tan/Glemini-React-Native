@@ -8,7 +8,7 @@ import PressAction from '../../../components/customs/PressAction';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import BottomSheet from '../../../components/customs/BottomSheet';
 import { useAppProvider } from '../../../contexts/AppProvider';
-import QuizzCreateAction from '../../../components/customs/QuizzCreateAction';
+import QuizCreateAction from '../../../components/customs/QuizCreateAction';
 import { useRouter } from 'expo-router';
 import Overlay from '../../../components/customs/Overlay';
 
@@ -38,7 +38,7 @@ const CreateQuizzScreen = () => {
 				<View className="flex flex-col items-start justify-start">
 					<Text className="text-lg">Tạo bài kiểm tra với AI</Text>
 					<View className="flex items-center justify-start flex-row mt-4">
-						<QuizzCreateAction
+						<QuizCreateAction
 							title={'Tạo bài kiểm tra'}
 							icon={
 								<Ionicons
@@ -48,7 +48,7 @@ const CreateQuizzScreen = () => {
 								/>
 							}
 						/>
-						<QuizzCreateAction
+						<QuizCreateAction
 							otherStyles="ml-2"
 							title={'Tạo từ văn bản'}
 							icon={

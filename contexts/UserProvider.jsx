@@ -4,7 +4,7 @@ const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
 	const [user, setUser] = useState({
-		_id: 1,
+		_id: '66fa6bed27be1817947b4281',
 		user_fullname: 'Datto',
 		user_email: 'dat@gmail.com',
 		user_password: 'admin',
@@ -12,6 +12,8 @@ const UserProvider = ({ children }) => {
 		user_phone: '',
 		user_avatar: '',
 		status: 'active',
+		accessToken:
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjZmYTZiZWQyN2JlMTgxNzk0N2I0MjgxIiwidXNlcl9lbWFpbCI6ImRhdDYxMjIyQGdtYWlsLmNvbSIsInVzZXJfdHlwZSI6InN0dWRlbnQiLCJpYXQiOjE3Mjc3NzM2OTAsImV4cCI6MTcyNzk0NjQ5MH0.x69vpwo9MaRKU8lZzAoBoYCG1qSYFvuQ_GnvhU9QQyk',
 	});
 
 	const switchUserType = () => {

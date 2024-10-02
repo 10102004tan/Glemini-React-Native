@@ -13,18 +13,18 @@ const Button = ({
   type = "fill",
   loading = false,
 }) => {
-  const { theme } = useAppProvider();
-  return (
-    <TouchableOpacity
-      onPress={() => {
-        onPress();
-      }}
-      className={`p-2 rounded-xl bg-primary   ${otherStyles}`}
-    >
-      {icon}
-      <Text className={`text-white ml-2 ${textStyles}`}>{text}</Text>
-    </TouchableOpacity>
-  );
+	const { theme } = useAppProvider();
+	return (
+		<TouchableOpacity
+			onPress={() => {
+				onPress();
+			}}
+			className={`p-2 rounded-xl flex items-center justify-start flex-row bg-primary ${otherStyles}`}
+		>
+			{icon && icon}
+			<Text className={`text-white ${textStyles}`}>{text}</Text>
+		</TouchableOpacity>
+	);
 };
 
 export default Button;

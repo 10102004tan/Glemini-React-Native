@@ -24,12 +24,13 @@ const Field = ({
 				{icon && <View className="mr-2">{icon}</View>}
 
 				<TextInput
+					value={value}
 					placeholderTextColor={'#757575'}
 					style={{ color: theme.text }}
 					type={type}
 					placeholder={placeholder}
-					onTextInput={(e) => {
-						onChange(e.nativeEvent.text);
+					onChangeText={(text) => {
+						onChange(text);
 					}}
 				/>
 			</View>
