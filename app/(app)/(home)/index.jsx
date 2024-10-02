@@ -2,11 +2,8 @@ import { Animated, Text, View } from 'react-native';
 import Wrapper from '../../../components/customs/Wrapper';
 import Button from '../../../components/customs/Button';
 import Field from '../../../components/customs/Field';
-import { useRef, useState } from 'react';
-import { useAppProvider } from '@/contexts/AppProvider';
-import { useUserProvider } from '@/contexts/UserProvider';
+import { useContext, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
-import RichTextEditor from '../../../components/customs/RichTextEditor';
 
 export default function HomeScreen() {
 	const router = useRouter();

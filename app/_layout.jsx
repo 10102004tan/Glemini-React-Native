@@ -8,15 +8,13 @@ import { Slot, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import AppProvider from '@/contexts/AppProvider';
-import UserProvider from '@/contexts/UserProvider';
+import {AuthProvider} from '@/contexts/AuthContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-	const colorScheme = useColorScheme();
 	const [loaded] = useFonts({
 		'Poppins-Black': require('../assets/fonts/Poppins-Black.ttf'),
 		'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
@@ -40,16 +38,12 @@ export default function RootLayout() {
 	}
 
 	return (
-		<ThemeProvider
-			value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-		>
-			<AppProvider>
-				<UserProvider>
-					<GestureHandlerRootView>
-						<Slot />
-					</GestureHandlerRootView>
-				</UserProvider>
-			</AppProvider>
-		</ThemeProvider>
+		<AppProvider>
+			<AuthProvider>
+				<GestureHandlerRootView>
+					<Slot />
+				</GestureHandlerRootView>
+			</AuthProvider>
+		</AppProvider>
 	);
 }
