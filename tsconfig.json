@@ -14,5 +14,5 @@
     "**/*.jsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "app/(tabs)/student.jsx", "app/(app)/(home)/index.jsx", "app/sign_in.jsx", "app/sign_up.jsx", "app/(app)/(home)/_layout.jsx"  ]
+, "app/(tabs)/student.jsx", "app/(app)/(home)/index.jsx", "app/(auths)/sign-in.jsx", "app/(auths)/(sign-up)/sign-up.jsx", "app/(app)/(home)/_layout.jsx", "app/_layout.jsx"  ]
 }

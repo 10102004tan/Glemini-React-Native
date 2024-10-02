@@ -12,7 +12,6 @@ import { router, useGlobalSearchParams } from 'expo-router';
 import { ScrollView } from 'react-native';
 import QuestionOverview from '../../../components/customs/QuestionOverview';
 import { useQuestionProvider } from '../../../contexts/QuestionProvider';
-import { useUserProvider } from '../../../contexts/UserProvider';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
 
 const QuizzOverViewScreen = () => {
@@ -20,7 +19,7 @@ const QuizzOverViewScreen = () => {
 	const { setIsHiddenNavigationBar } = useAppProvider();
 	// const { questions } = useQuestionProvider();
 	const { id } = useGlobalSearchParams();
-	const { user } = useUserProvider();
+	const { userData:{_id,accessToken} } = useContext(AuthContext);
 	const {
 		selectedQuiz,
 		setSelectedQuiz,
@@ -41,8 +40,8 @@ const QuizzOverViewScreen = () => {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						'x-client-id': user._id,
-						authorization: user.accessToken,
+						'x-client-id':_id,
+						authorization: accessToken,
 					},
 					body: JSON.stringify({ quiz_id: id }),
 				}

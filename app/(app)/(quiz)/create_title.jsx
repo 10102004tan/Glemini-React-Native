@@ -1,14 +1,14 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Wrapper from '../../../components/customs/Wrapper';
 import Field from '../../../components/customs/Field';
 import Button from '../../../components/customs/Button';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { useUserProvider } from '../../../contexts/UserProvider';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
+import { AuthContext } from '@/contexts/AuthContext';
 const CreateTitleQuizzScreen = () => {
-	const { user } = useUserProvider();
+	const { userData:{_id,accessToken} } = useContext(AuthContext);
 	const [quizName, setQuizName] = useState('');
 	const { setNeedUpdate } = useQuizProvider();
 	const handleCreateQuizTitle = async () => {
@@ -20,8 +20,8 @@ const CreateTitleQuizzScreen = () => {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						'x-client-id': user._id,
-						authorization: user.accessToken,
+						'x-client-id': _id,
+						authorization: accessToken,
 					},
 					body: JSON.stringify({
 						user_id: user._id,
