@@ -9,11 +9,11 @@ const SinglePlay = () => {
 	const [score, setScore] = useState(0);
 	const [isCompleted, setIsCompleted] = useState(false);
 	const [isChosen, setIsChosen] = useState(false);
-	const [isAnswerCorrect, setIsAnswerCorrect] = useState(null); // Trạng thái cho biết câu trả lời đúng hay sai
-	const [showCorrectAnswer, setShowCorrectAnswer] = useState(false); // Trạng thái hiển thị đáp án đúng
-	const [buttonText, setButtonText] = useState('Xác nhận'); // Text của button
-	const [buttonColor, setButtonColor] = useState('bg-white'); // Màu của button
-	const [buttonTextColor, setButtonTextColor] = useState('text-black'); // Màu chữ của button
+	const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
+	const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
+	const [buttonText, setButtonText] = useState('Xác nhận'); 
+	const [buttonColor, setButtonColor] = useState('bg-white'); 
+	const [buttonTextColor, setButtonTextColor] = useState('text-black'); 
 
 	// Danh sách câu hỏi
 	const questions = [

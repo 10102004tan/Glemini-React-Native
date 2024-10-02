@@ -1,13 +1,46 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import Wrapper from '../../../components/customs/Wrapper';
 import Field from '../../../components/customs/Field';
 import Button from '../../../components/customs/Button';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
+import { useQuizProvider } from '../../../contexts/QuizProvider';
+import { AuthContext } from '@/contexts/AuthContext';
 const CreateTitleQuizzScreen = () => {
-	const handleCreateQuizTitle = () => {
-		router.push('(app)/(quiz)/overview');
+	const { userData:{_id,accessToken} } = useContext(AuthContext);
+	const [quizName, setQuizName] = useState('');
+	const { setNeedUpdate } = useQuizProvider();
+	const handleCreateQuizTitle = async () => {
+		// Xử lý tạo quiz rỗng
+		if (user) {
+			const response = await fetch(
+				'http://192.168.1.8:8000/api/v1/quizzes/create',
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'x-client-id': _id,
+						authorization: accessToken,
+					},
+					body: JSON.stringify({
+						user_id: user._id,
+						quiz_name: quizName,
+					}),
+				}
+			);
+			const data = await response.json();
+			// console.log(data);
+			if (data.statusCode === 200) {
+				setNeedUpdate(true);
+				router.replace('(app)/(quiz)/' + data.metadata._id);
+			} else {
+				// Alert to user here
+				console.log('Error when create quiz');
+			}
+		} else {
+			console.log('User not found');
+		}
 	};
 
 	return (
@@ -22,6 +55,8 @@ const CreateTitleQuizzScreen = () => {
 					Hãy đặt tên cho bộ Quiz của bạn
 				</Text>
 				<Field
+					value={quizName}
+					onChange={(text) => setQuizName(text)}
 					placeholder={'Nhập tên bài kiểm tra'}
 					wrapperStyles="w-full"
 					inputStyles="p-4"

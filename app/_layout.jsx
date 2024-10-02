@@ -1,8 +1,3 @@
-import {
-	DarkTheme,
-	DefaultTheme,
-	ThemeProvider,
-} from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Slot, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -10,6 +5,9 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import AppProvider from '@/contexts/AppProvider';
 import {AuthProvider} from '@/contexts/AuthContext';
+
+import QuestionProvider from '@/contexts/QuestionProvider';
+import QuizProvider from '@/contexts/QuizProvider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -27,15 +25,15 @@ export default function RootLayout() {
 		'Poppins-Thin': require('../assets/fonts/Poppins-Thin.ttf'),
 	});
 
-	useEffect(() => {
-		if (loaded) {
-			SplashScreen.hideAsync();
-		}
-	}, [loaded]);
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
 
-	if (!loaded) {
-		return null;
-	}
+  if (!loaded) {
+    return null;
+  }
 
 	return (
 		<AppProvider>
