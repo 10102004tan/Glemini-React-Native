@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Wrapper from "@/components/customs/Wrapper";
 import Entypo from "@expo/vector-icons/Entypo";
@@ -11,15 +11,38 @@ import BottomSheet from "@/components/customs/BottomSheet";
 import Overlay from "@/components/customs/Overlay";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { SelectList } from "react-native-dropdown-select-list";
+import UserProvider from "@/contexts/UserProvider";
 
 const detailquizz = () => {
-  //Information teacher
-  const inforTeacher = {
-    quiz_name: "Toán",
-    quiz_description: "Môn học thú vị",
-    quiz_status: "Hay",
-    quiz_thumb: icon,
-  };
+  const [quizInfo, setQuizInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch quiz data from API
+  useEffect(() => {
+    const fetchQuizData = async () => {
+      try {
+        const response = await fetch(
+          "http://192.168.1.221:8000/api/v1/quizzes"
+        );
+        const data = await response.json();
+        setQuizInfo(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch quiz data", error);
+        setLoading(false);
+      }
+    };
+
+    fetchQuizData();
+  }, []);
+
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
+
+  if (!quizInfo) {
+    return <Text>No quiz data available</Text>;
+  }
 
   //Dropdown
   const nameSchool = [
@@ -139,14 +162,17 @@ const detailquizz = () => {
         <View className="h-[100px] w-full border rounded-xl mt-4 flex-row">
           <View className="flex justify-center items-center ml-2">
             <Image
-              source={inforTeacher.quiz_thumb}
-              className="w-[80px] h-[80px] rounded-xl"
-            ></Image>
+              source={
+                quizInfo && quizInfo.quiz_thumb
+                  ? { uri: `http://192.168.1.8:8000${quizInfo.quiz_thumb}` }
+                  : icon
+              }
+            />
           </View>
           <View className="flex-col">
-            <Text className="ml-4 mt-2">{inforTeacher.quiz_name}</Text>
-            <Text className="ml-4 mt-2">{inforTeacher.quiz_description}</Text>
-            <Text className="ml-4 mt-2">{inforTeacher.quiz_status}</Text>
+            <Text className="ml-4 mt-2">{quizInfo.quiz_name}</Text>{" "}
+            <Text className="ml-4 mt-2">{quizInfo.quiz_description}</Text>{" "}
+            <Text className="ml-4 mt-2">{quizInfo.quiz_status}</Text>{" "}
           </View>
         </View>
       </View>

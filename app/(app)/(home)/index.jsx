@@ -11,25 +11,6 @@ import RichTextEditor from '../../../components/customs/RichTextEditor';
 export default function HomeScreen() {
 	const router = useRouter();
 	return (
-<<<<<<< HEAD
-    <Wrapper>
-      <Button
-        onPress={() => {
-          router.replace("(app)/(quiz)/overview");
-        }}
-        text={"Create Quizz"}
-        otherStyles={"mt-4 p-4"}
-        textStyles={"text-center"}
-      />
-      <Button
-        onPress={() => {
-          router.push("/(app)/(home)/teacher_home_screen");
-        }}
-        text={"Quizz"}
-        otherStyles={"mt-4 p-4"}
-        textStyles={"text-center"}
-      />
-=======
 		<Wrapper>
 			<Button
 				onPress={() => {
@@ -71,7 +52,6 @@ export default function HomeScreen() {
 				otherStyles={'mt-4 p-4'}
 				textStyles={'text-center text-white'}
 			/>
->>>>>>> 578809ec55e9c50c3fc545477018fc7196e302d2
       <Button
         onPress={() => {
           router.push("(app)/(quiz)/(detail)/detail_quizz");
@@ -88,11 +68,6 @@ export default function HomeScreen() {
         otherStyles={"mt-4 p-4"}
         textStyles={"text-center"}
       />
-<<<<<<< HEAD
     </Wrapper>
   );
-=======
-		</Wrapper>
-	);
->>>>>>> 578809ec55e9c50c3fc545477018fc7196e302d2
 }
