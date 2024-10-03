@@ -6,9 +6,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import RichTextEditor from './RichTextEditor';
 import { Status } from '../../constants';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
-import Button from './Button';
+import Button from '../../components/customs/Button';
 import { useQuestionProvider } from '../../contexts/QuestionProvider';
 
 const QuestionEditBoard = ({
@@ -34,7 +34,7 @@ const QuestionEditBoard = ({
 		};
 	});
 
-	const { deleteAnswer, markCorrectAnswer, findAnswer } =
+	const { deleteAnswer, markCorrectAnswer, checkCorrectAnswer } =
 		useQuestionProvider();
 
 	return (
@@ -45,6 +45,7 @@ const QuestionEditBoard = ({
 		>
 			{/* Dùng để chỉnh sửa câu hỏi, đáp án của quiz */}
 			<RichTextEditor
+				focus={visible}
 				typingType={type}
 				content={content}
 				selectedAnswer={answerEditSelected}
@@ -62,7 +63,7 @@ const QuestionEditBoard = ({
 						}}
 						otherStyles="bg-success"
 						text={
-							!findAnswer(answerEditSelected).correct
+							!checkCorrectAnswer(answerEditSelected)
 								? 'Đánh dấu là đáp án chính xác'
 								: 'Bỏ đánh dấu là đáp án chính xác'
 						}

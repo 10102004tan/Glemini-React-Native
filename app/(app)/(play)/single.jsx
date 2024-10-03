@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import Button from '../../../components/customs/Button'; 
 import ResultSingle from '../(result)/single'; 
-import { useUserProvider } from '../../../contexts/UserProvider';
+import { useAuthContext } from '@/contexts/AuthContext';
 import Toast from 'react-native-toast-message'; 
 
 const SinglePlay = () => {
@@ -18,7 +18,7 @@ const SinglePlay = () => {
 	const [buttonText, setButtonText] = useState('Xác nhận');
 	const [buttonColor, setButtonColor] = useState('bg-white');
 	const [buttonTextColor, setButtonTextColor] = useState('text-black');
-	const { user } = useUserProvider();
+	const { user } = useAuthContext();
 	const [isProcessing, setIsProcessing] = useState(false);
 
 	// Danh sách câu hỏi

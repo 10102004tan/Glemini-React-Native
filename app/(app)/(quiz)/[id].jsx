@@ -12,15 +12,15 @@ import { router, useGlobalSearchParams } from 'expo-router';
 import { ScrollView } from 'react-native';
 import QuestionOverview from '../../../components/customs/QuestionOverview';
 import { useQuestionProvider } from '../../../contexts/QuestionProvider';
-import { useUserProvider } from '../../../contexts/UserProvider';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
+import { useAuthContext } from '../../../contexts/AuthContext';
 
 const QuizzOverViewScreen = () => {
 	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
 	const { setIsHiddenNavigationBar } = useAppProvider();
 	// const { questions } = useQuestionProvider();
 	const { id } = useGlobalSearchParams();
-	const { user } = useUserProvider();
+	const { userData } = useAuthContext();
 	const {
 		selectedQuiz,
 		setSelectedQuiz,
@@ -28,39 +28,38 @@ const QuizzOverViewScreen = () => {
 		setCreateQuestionType,
 		currentQuizQuestion,
 		setCurrentQuizQuestion,
+		actionQuizType,
+		setActionQuizType,
 	} = useQuizProvider();
+	const fetchQuiz = async () => {
+		const response = await fetch(
+			`http://192.168.1.8:8000/api/v1/quizzes/get-details`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({ quiz_id: id }),
+			}
+		);
+
+		const data = await response.json();
+		console.log(data);
+		if (data.statusCode === 200) {
+			setSelectedQuiz(data.metadata);
+		}
+	};
 
 	useEffect(() => {
+		// console.log(id);
+		// console.log(userData);
 		// Lấy dữ liệu của quiz hiện tại
-		const fetchQuiz = async () => {
-			const response = await fetch(
-				`http://192.168.1.8:8000/api/v1/quizzes/get-details`,
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'x-client-id': user._id,
-						authorization: user.accessToken,
-					},
-					body: JSON.stringify({ quiz_id: id }),
-				}
-			);
-
-			const data = await response.json();
-			if (data.statusCode === 200) {
-				setSelectedQuiz(data.metadata);
-			}
-		};
-
-		if (user && id) {
+		if (userData) {
 			fetchQuiz();
 		}
-	}, [id]);
-
-	useEffect(() => {
-		console.log('===== Current Quiz Question =====');
-		console.log(currentQuizQuestion);
-	}, [currentQuizQuestion]);
+	}, [id, userData]);
 
 	// lấy danh sách câu hỏi của bộ quiz hiện tại
 
@@ -70,6 +69,7 @@ const QuizzOverViewScreen = () => {
 	};
 
 	const handleCreateQuizQuestion = () => {
+		setActionQuizType('create');
 		setIsHiddenNavigationBar(true);
 		setVisibleBottomSheet(true);
 	};
@@ -189,7 +189,7 @@ const QuizzOverViewScreen = () => {
 				<Button
 					onPress={handleCreateQuizQuestion}
 					text={'Tạo câu hỏi'}
-					otherStyles={'p-4'}
+					otherStyles={'p-4 justify-center'}
 					textStyles={'text-center'}
 				/>
 			</View>
