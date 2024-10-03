@@ -12,9 +12,7 @@ const validatePassword = (password) => {
 }
 
 const validateFullname = (fullname) => {
-    // name must be at least 2 characters long
-    const re = /^[a-zA-Z]{2,}$/;
-    return re.test(fullname);
+    return 1;
 };
 
 export { validateEmail, validatePassword,validateFullname };

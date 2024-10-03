@@ -9,6 +9,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { AuthContext } from '@/contexts/AuthContext';
 import { validateEmail, validateFullname, validatePassword } from '@/utils';
 import { useAppProvider } from '@/contexts/AppProvider';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 
 const TYPEIMAGE = {
@@ -32,8 +33,20 @@ const SignUpScreen = () => {
     const [imageConfirm, setImageConfirm] = useState('');
     const [imageCurrent, setImageCurrent] = useState('');
     const [isOpenedModal, setIsOpenedModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handlerSignUp = async () => {
+        
+        if (!fullname) {
+            Alert.alert(i18n.t('error.notification'), i18n.t('error.fullnameRequired'));
+            return;
+        }
+
+        if (!validateFullname(fullname)) {
+            Alert.alert('Thông báo', 'Họ tên không hợp lệ');
+            return;
+        };
+        
         // check validate
         if (!email) {
             Alert.alert(i18n.t('error.notification'), i18n.t('error.emailRequired'));
@@ -47,10 +60,7 @@ const SignUpScreen = () => {
             Alert.alert(i18n.t('error.notification'), i18n.t('error.passwordRequired'));
             return;
         }
-        if (!fullname) {
-            Alert.alert(i18n.t('error.notification'), i18n.t('error.fullnameRequired'));
-            return;
-        }
+       
         if (password !== passwordVerify) {
             Alert.alert('Thông báo', 'Mật khẩu không khớp');
             return;
@@ -61,10 +71,7 @@ const SignUpScreen = () => {
             return;
         };
 
-        if (!validateFullname(fullname)) {
-            Alert.alert('Thông báo', 'Họ tên không hợp lệ');
-            return;
-        };
+      
 
         // if type = teacher => check image
         if (type === "teacher") {
@@ -74,6 +81,7 @@ const SignUpScreen = () => {
             }
         }
 
+        setIsLoading(true);
         // call api
         await signUp({email, password, fullname, type,images:[imageIDCard,imageCard,imageConfirm]})
         .then((res) => {
@@ -87,6 +95,8 @@ const SignUpScreen = () => {
         .catch((err) => {
             Alert.alert('Thông báo', 'Đăng ký thất bại');
         });
+
+        setIsLoading(false);
     };
 
     const handlerPickImage = async (type) => {
@@ -149,6 +159,12 @@ const SignUpScreen = () => {
         }
         setIsOpenedModal(true);
     };
+
+    
+    //loading
+    if (isLoading) {
+        return (<View><Text>Loading ...</Text></View>)
+    }
 
     return (
         <View>
