@@ -4,7 +4,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import AppProvider from '@/contexts/AppProvider';
-import UserProvider from '@/contexts/UserProvider';
+import { AuthProvider } from '@/contexts/AuthContext';
+
 import QuestionProvider from '@/contexts/QuestionProvider';
 import QuizProvider from '@/contexts/QuizProvider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -24,26 +25,26 @@ export default function RootLayout() {
     "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
   });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+	useEffect(() => {
+		if (loaded) {
+			SplashScreen.hideAsync();
+		}
+	}, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+	if (!loaded) {
+		return null;
+	}
 
 	return (
 		<GestureHandlerRootView>
-      <AppProvider>
-				<UserProvider>
+			<AppProvider>
+				<AuthProvider>
 					<QuizProvider>
 						<QuestionProvider>
 							<Slot />
 						</QuestionProvider>
 					</QuizProvider>
-				</UserProvider>
+				</AuthProvider>
 			</AppProvider>
 		</GestureHandlerRootView>
 	);

@@ -5,26 +5,26 @@ import Field from '../../../components/customs/Field';
 import Button from '../../../components/customs/Button';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { useUserProvider } from '../../../contexts/UserProvider';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
+import { useAuthContext } from '@/contexts/AuthContext';
 const CreateTitleQuizzScreen = () => {
-	const { user } = useUserProvider();
+	const { userData } = useAuthContext();
 	const [quizName, setQuizName] = useState('');
-	const { setNeedUpdate } = useQuizProvider();
+	const { setNeedUpdate, setSelectedQuiz } = useQuizProvider();
 	const handleCreateQuizTitle = async () => {
 		// Xử lý tạo quiz rỗng
-		if (user) {
+		if (userData) {
 			const response = await fetch(
 				'http://192.168.1.8:8000/api/v1/quizzes/create',
 				{
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						'x-client-id': user._id,
-						authorization: user.accessToken,
+						'x-client-id': userData._id,
+						authorization: userData.accessToken,
 					},
 					body: JSON.stringify({
-						user_id: user._id,
+						user_id: userData._id,
 						quiz_name: quizName,
 					}),
 				}
