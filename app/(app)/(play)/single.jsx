@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
-import Button from '../../../components/customs/Button'; 
-import ResultSingle from '../(result)/single'; 
+import { View, Text, TouchableOpacity } from 'react-native';
+import Button from '../../../components/customs/Button';
+import ResultSingle from '../(result)/single';
 import { useAuthContext } from '@/contexts/AuthContext';
-import Toast from 'react-native-toast-message'; 
+import Toast from 'react-native-toast-message';
 
 const SinglePlay = () => {
+	const API_URL = 'http://10.0.107.92:3000/api/v1'
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 	const [selectedAnswers, setSelectedAnswers] = useState([]);
-	const [correctCount, setCorrectCount] = useState(0); // Số câu đúng
-	const [wrongCount, setWrongCount] = useState(0); // Số câu sai
-	const [score, setScore] = useState(0); // Điểm
+	const [correctCount, setCorrectCount] = useState(0);
+	const [wrongCount, setWrongCount] = useState(0);
+	const [score, setScore] = useState(0);
 	const [isCompleted, setIsCompleted] = useState(false);
 	const [isCorrect, setIsCorrect] = useState(false);
 	const [isChosen, setIsChosen] = useState(false);
@@ -18,7 +19,7 @@ const SinglePlay = () => {
 	const [buttonText, setButtonText] = useState('Xác nhận');
 	const [buttonColor, setButtonColor] = useState('bg-white');
 	const [buttonTextColor, setButtonTextColor] = useState('text-black');
-	const { user } = useAuthContext();
+	const { userData } = useAuthContext();
 	const [isProcessing, setIsProcessing] = useState(false);
 
 	// Danh sách câu hỏi
@@ -121,93 +122,79 @@ const SinglePlay = () => {
 				{ _id: 3, text: "Cá heo", image: null },
 				{ _id: 4, text: "Tôm hùm", image: null },
 			],
-			question_correct: [3,4],
+			question_correct: [3, 4],
 		},
 	]);
 
 	const saveQuestionResult = async (questionId, answerId, correct, score) => {
 		try {
-		  const response = await fetch('http://10.0.107.92:3000/api/v1/result/save-question', {
-			method: 'POST',
-			headers: {
-			  'Content-Type': 'application/json',
-						'x-client-id': user._id,
-						authorization: user.accessToken,
-			},
-			body: JSON.stringify({
-			  exercise_id: null, 
-			  user_id: user._id,
-			  quiz_id: questions[currentQuestionIndex].quiz_id,
-			  question_id: questionId,
-			  answer: answerId,
-			  correct,
-			  score,
-			}),
-		  });
-	  
-		  const data = await response.json();
-		  if (!response.ok) {
-			throw new Error(data.message || 'Có lỗi xảy ra khi lưu kết quả.');
-		  }
-		  console.log('Kết quả đã được lưu:', data);
-		} catch (error) {
-		  console.error('Lỗi khi lưu kết quả:', error);
-		}
-	  };
-	  
-	  const completed = async () => {
-		try {
-			const response = await fetch('http://10.0.107.92:3000/api/v1/result/complete-quiz', {
+			const response = await fetch(API_URL + '/result/save-question', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'x-client-id': user._id,
-					authorization: user.accessToken,
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
 				},
 				body: JSON.stringify({
 					exercise_id: null,
-					user_id: user._id,
-					quiz_id: questions[0].quiz_id, 
+					user_id: userData._id,
+					quiz_id: questions[currentQuestionIndex].quiz_id,
+					question_id: questionId,
+					answer: answerId,
+					correct,
+					score,
+				}),
+			});
+		} catch (error) {
+			console.error('Lỗi khi lưu kết quả:', error);
+		}
+	};
+
+	const completed = async () => {
+		try {
+			const response = await fetch(API_URL + '/result/complete-quiz', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({
+					exercise_id: null,
+					user_id: userData._id,
+					quiz_id: questions[0].quiz_id,
 					status: 'Đã hoàn thành',
 				}),
 			});
-	
-			const data = await response.json();
-			if (!response.ok) {
-				throw new Error(data.message || 'Có lỗi xảy ra khi cập nhật trạng thái hoàn thành.');
-			}
-	
-			console.log('Trạng thái đã được cập nhật:', data);
+
 		} catch (error) {
 			console.error('Lỗi khi cập nhật trạng thái hoàn thành:', error);
 		}
 	};
-	
+
 
 	const handleAnswerPress = (answerId) => {
-		
+
 		// Nếu câu hỏi là single-choice, chỉ cần lưu một đáp án
 		if (questions[currentQuestionIndex].question_type === 'single') {
-			setSelectedAnswers([answerId]); 
+			setSelectedAnswers([answerId]);
 			setIsChosen(true);
 			setButtonColor('bg-[#0D70D2]');
 			setButtonTextColor('text-white');
 		} else {
 			// Nếu là multiple-choice, lưu nhiều đáp án
 			if (selectedAnswers.includes(answerId)) {
-				// Nếu đã chọn rồi thì bỏ chọn
 				setSelectedAnswers(selectedAnswers.filter(id => id !== answerId));
 			} else {
-				// Nếu chưa chọn thì thêm vào
 				setSelectedAnswers([...selectedAnswers, answerId]);
 			}
 		}
 	};
-	
+
 
 	const handleSubmit = () => {
 
-		if (isProcessing) return; // Chặn nếu đang xử lý
+		if (isProcessing) return;
 		setIsProcessing(true);
 
 		if (selectedAnswers.length === 0) {
@@ -215,24 +202,24 @@ const SinglePlay = () => {
 				type: 'error',
 				text1: 'Cảnh báo!',
 				text2: 'Vui lòng chọn ít nhất một đáp án!',
-			  });
-			  setIsProcessing(false); 
+			});
+			setIsProcessing(false);
 			return;
 		}
-	
+
 		const currentQuestion = questions[currentQuestionIndex];
-		const correctAnswerIds = currentQuestion.question_correct; // Dãy đáp án đúng
-	
+		const correctAnswerIds = currentQuestion.question_correct;
+
 		let isAnswerCorrect;
-	
+
 		if (currentQuestion.question_type === 'single') {
-			isAnswerCorrect = selectedAnswers[0] === correctAnswerIds[0]; // So sánh với phần tử đầu tiên của mảng correctAnswerIds
+			isAnswerCorrect = selectedAnswers[0] === correctAnswerIds[0];
 		} else {
 			isAnswerCorrect =
 				selectedAnswers.length === correctAnswerIds.length &&
 				selectedAnswers.every((answerId) => correctAnswerIds.includes(answerId));
 		}
-	
+
 		if (isAnswerCorrect) {
 			setIsCorrect(true);
 			setCorrectCount(correctCount + 1);
@@ -245,22 +232,21 @@ const SinglePlay = () => {
 			setButtonColor('bg-[#F44336]');
 			setButtonText('Sai rồi!!');
 		}
-	
-		// Lưu kết quả câu hỏi
+
 		saveQuestionResult(
 			currentQuestion._id,
-			selectedAnswers, // Gửi cả mảng đáp án đã chọn
+			selectedAnswers,
 			isAnswerCorrect,
 			currentQuestion.question_point
 		);
-	
+
 		setShowCorrectAnswer(true);
-	
+
 		setTimeout(() => {
 			setIsProcessing(false)
 			if (currentQuestionIndex < questions.length - 1) {
 				setCurrentQuestionIndex(currentQuestionIndex + 1);
-				setSelectedAnswers([]); // Reset đáp án đã chọn
+				setSelectedAnswers([]);
 				setIsChosen(false);
 				setShowCorrectAnswer(false);
 				setButtonText('Xác nhận');
@@ -272,15 +258,15 @@ const SinglePlay = () => {
 			}
 		}, 1500);
 	};
-	
-	
+
+
 
 	const handleRestart = () => {
 		setIsCorrect(false)
 		setCurrentQuestionIndex(0);
 		setCorrectCount(0);
 		setWrongCount(0);
-		setScore(0); // Đặt lại điểm
+		setScore(0);
 		setIsCompleted(false);
 		setSelectedAnswers([]);
 		setIsChosen(false);
@@ -322,7 +308,7 @@ const SinglePlay = () => {
 			{/* Tương tác người dùng */}
 			<View className="flex-1 bg-[#1C2833] px-5 py-4 justify-between">
 				<Text className="text-lg bg-[#484E54] rounded text-white px-[10px] py-1 font-pregular self-start">
-					{`Điểm: ${score}`} {/* Hiển thị điểm */}
+					{`Điểm: ${score}`}
 				</Text>
 				<View className="bg-[#484E54] rounded-lg px-3 py-10">
 					<Text className="text-sm font-pregular text-slate-200">
@@ -334,46 +320,45 @@ const SinglePlay = () => {
 				</View>
 
 				<View>
-	{questions[currentQuestionIndex].question_answer_ids.map((answer, index) => {
-		let backgroundColor = '#484E54';
-		if (showCorrectAnswer) {
-			if (questions[currentQuestionIndex].question_type === 'single') {
-				if (answer._id === questions[currentQuestionIndex].question_correct[0]) {
-					backgroundColor = '#4CAF50'; 
-				} else if (answer._id === selectedAnswers[0]) {
-					backgroundColor = '#F44336'; 
-				}
-			} else {
-				// Multiple-choice: Kiểm tra nếu đáp án nằm trong đáp án đúng
-				if (questions[currentQuestionIndex].question_correct.includes(answer._id)) {
-					backgroundColor = '#4CAF50'; 
-				} else if (selectedAnswers.includes(answer._id)) {
-					backgroundColor = '#F44336'; 
-				}
-			}
-		} else if (selectedAnswers.includes(answer._id)) {
-			backgroundColor = '#0D70D2'; 
-		}
+					{questions[currentQuestionIndex].question_answer_ids.map((answer, index) => {
+						let backgroundColor = '#484E54';
+						if (showCorrectAnswer) {
+							if (questions[currentQuestionIndex].question_type === 'single') {
+								if (answer._id === questions[currentQuestionIndex].question_correct[0]) {
+									backgroundColor = '#4CAF50';
+								} else if (answer._id === selectedAnswers[0]) {
+									backgroundColor = '#F44336';
+								}
+							} else {
+								if (questions[currentQuestionIndex].question_correct.includes(answer._id)) {
+									backgroundColor = '#4CAF50';
+								} else if (selectedAnswers.includes(answer._id)) {
+									backgroundColor = '#F44336';
+								}
+							}
+						} else if (selectedAnswers.includes(answer._id)) {
+							backgroundColor = '#0D70D2';
+						}
 
-		return (
-			<TouchableOpacity
-				key={index}
-				onPress={() => handleAnswerPress(answer._id)}
-				style={{
-					backgroundColor,
-					padding: 10,
-					marginVertical: 5,
-					borderRadius: 5,
-				}}
-				disabled={showCorrectAnswer}
-			>
-				<Text className="text-white font-pregular text-lg m-4">
-					{answer.text}
-				</Text>
-			</TouchableOpacity>
-		);
-	})}
-</View>
+						return (
+							<TouchableOpacity
+								key={index}
+								onPress={() => handleAnswerPress(answer._id)}
+								style={{
+									backgroundColor,
+									padding: 10,
+									marginVertical: 5,
+									borderRadius: 5,
+								}}
+								disabled={showCorrectAnswer}
+							>
+								<Text className="text-white font-pregular text-lg m-4">
+									{answer.text}
+								</Text>
+							</TouchableOpacity>
+						);
+					})}
+				</View>
 
 
 				<Button

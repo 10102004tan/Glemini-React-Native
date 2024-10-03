@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 
 export const AuthContext = createContext();
-const API_URL = 'http://10.0.106.188:3000/api/v1';
+const API_URL = 'http://10.0.107.92:3000/api/v1';
 export const AuthProvider = ({ children }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [userData, setUserData] = useState(null);
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 		};
 
 		fetchAccessToken();
-	}, [userData]);
+	}, []);
 	const signIn = async ({ email, password }) => {
 		const response = await fetch(API_URL + '/login', {
 			method: 'POST',

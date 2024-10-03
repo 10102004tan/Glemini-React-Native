@@ -7,7 +7,7 @@ const AppContext = createContext();
 
 // Example about a context provider in React Native
 const AppProvider = ({ children }) => {
-	const [language, setLanguage] = useState('ja');
+	const [language, setLanguage] = useState('vi');
 	const i18n = new I18n({
 		en,
 		ja,

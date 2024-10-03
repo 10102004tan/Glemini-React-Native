@@ -3,7 +3,6 @@ import { View, Text, Image } from 'react-native';
 import Button from '../../../components/customs/Button'; // Sử dụng Button tùy chỉnh
 import Icon from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
-
 const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleRestart }) => {
 	console.log(correctCount, wrongCount);
 	

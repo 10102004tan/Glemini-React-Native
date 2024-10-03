@@ -12,6 +12,7 @@ export default function TabLayout() {
 	return (
 		<Tabs
 			screenOptions={{
+				headerShown: false,
 				tabBarStyle: {
 					height: 60,
 					position: 'absolute',
