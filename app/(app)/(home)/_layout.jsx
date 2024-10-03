@@ -26,7 +26,6 @@ export default function TabLayout() {
 					zIndex: isHiddenNavigationBar ? -1 : 1,
 				},
 				tabBarActiveTintColor: '#1C2833',
-				// headerShown: false,
 				tabBarShowLabel: false,
 			}}
 		>
@@ -42,10 +41,37 @@ export default function TabLayout() {
 					),
 				}}
 			/>
+
+			<Tabs.Screen
+				name="search"
+				options={{
+					title: 'Tìm kiếm',
+					tabBarIcon: ({ color, focused }) => (
+						<TabBarIcon
+							name={focused ? 'search-circle-sharp' : 'search-outline'}
+							color={color}
+						/>
+					),
+				}}
+			/>
+
+			<Tabs.Screen
+				name="report"
+				options={{
+					title: 'Báo cáo',
+					tabBarIcon: ({ color, focused }) => (
+						<TabBarIcon
+							name={focused ? 'document-sharp' : 'document-outline'}
+							color={color}
+						/>
+					),
+				}}
+			/>
+
 			<Tabs.Screen
 				name="teacher_home_screen"
 				options={{
-					title: 'Home',
+					title: 'Lớp học',
 					tabBarIcon: ({ color, focused }) => (
 						<TabBarIcon
 							name={focused ? 'people' : 'people-outline'}
@@ -65,14 +91,14 @@ export default function TabLayout() {
 			<Tabs.Screen
 				name="student_home_screen"
 				options={{
-					title: 'Home',
+					title: 'Classes',
 					tabBarIcon: ({ color, focused }) => (
 						<TabBarIcon
 							name={focused ? 'school' : 'school-outline'}
 							color={color}
 						/>
 					),
-					
+
 					tabBarButton: (props) => {
 						if (user_type === 'teacher') {
 							return null;
@@ -89,17 +115,17 @@ export default function TabLayout() {
 					title: 'Tài khoản',
 					tabBarIcon: ({ color, focused }) => (
 						<TabBarIcon
-							name={focused ? 'settings' : 'settings-outline'}
+							name={focused ? 'moon' : 'moon-outline'}
 							color={color}
 						/>
 					),
-					headerRight:()=>{
+					headerRight: () => {
 						return (
 							<Link style={{
 								marginRight: 20
 							}} href={{
 								pathname: '(app)/settings',
-								
+
 							}}>
 								<TabBarIcon name="settings" color="#1C2833" />
 							</Link>
@@ -107,6 +133,9 @@ export default function TabLayout() {
 					},
 				}}
 			/>
+
+
+
 
 		</Tabs>
 	);

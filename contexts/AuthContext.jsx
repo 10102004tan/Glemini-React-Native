@@ -5,8 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 
 export const AuthContext = createContext();
-// const API_URL = 'http://10.0.106.188:3000/api/v1';
-const API_URL = 'http://192.168.1.8:8000/api/v1';
+const API_URL = 'http://10.0.106.188:3000/api/v1';
 export const AuthProvider = ({ children }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [userData, setUserData] = useState(null);
@@ -19,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 		};
 
 		fetchAccessToken();
-	}, []);
+	}, [userData]);
 	const signIn = async ({ email, password }) => {
 		const response = await fetch(API_URL + '/login', {
 			method: 'POST',
@@ -57,13 +56,31 @@ export const AuthProvider = ({ children }) => {
 
 		return data.message;
 	};
-	const signUp = async ({ email, password, fullname, type }) => {
+	const signUp = async ({ email, password, fullname, type,images }) => {
+
+		let formData = new FormData();
+		formData.append('email', email);
+		formData.append('password', password);
+		formData.append('fullname', fullname);
+		formData.append('type', type);
+		// if type = teacher => add image to form data
+		if (type === 'teacher' && images.length > 0){
+			images.forEach((image, index) => {
+				console.log(image);
+				formData.append('images', {
+					uri: image.uri,
+					name: image.name,
+					type: `${image.type}/${image.name.split('.')[1]}`,
+				});
+			});
+		}
+
 		const response = await fetch(API_URL + '/signup', {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json',
+				'Content-Type': 'multipart/form-data',
 			},
-			body: JSON.stringify({ email, password, fullname, type }),
+			body: formData,
 		});
 
 		const data = await response.json();
@@ -85,6 +102,7 @@ export const AuthProvider = ({ children }) => {
 			setUserData(dataStore);
 			return 1;
 		}
+		
 		return 0;
 	};
 
@@ -101,11 +119,13 @@ export const AuthProvider = ({ children }) => {
 		if (data.statusCode === 200) {
 			await AsyncStorage.removeItem('userData');
 			setUserData(null);
-			Alert.alert('Logout', 'Logout successfully');
 		} else {
 			if (data.message === 'expired') {
 				await processAccessTokenExpired();
-				console.log('session expired');
+			}
+			else{
+				await AsyncStorage.removeItem('userData');
+				setUserData(null);
 			}
 		}
 	};
@@ -183,10 +203,6 @@ export const AuthProvider = ({ children }) => {
 			Alert.alert('Session expired', 'Please login again');
 		}
 	};
-
-	// useEffect(() => {
-	// 	console.log(userData);
-	// }, [userData]);
 
 	return (
 		<AuthContext.Provider
