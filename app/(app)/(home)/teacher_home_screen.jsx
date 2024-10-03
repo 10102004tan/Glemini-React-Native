@@ -11,8 +11,10 @@ import { useAppProvider } from '../../../contexts/AppProvider';
 import QuizCreateAction from '../../../components/customs/QuizCreateAction';
 import { useRouter } from 'expo-router';
 import Overlay from '../../../components/customs/Overlay';
+import LockFeature from '@/components/customs/LockFeature';
 
 const CreateQuizzScreen = () => {
+
 	const { isHiddenNavigationBar, setIsHiddenNavigationBar } =
 		useAppProvider();
 	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
@@ -27,6 +29,12 @@ const CreateQuizzScreen = () => {
 		setIsHiddenNavigationBar(false);
 		setVisibleBottomSheet(false);
 	};
+
+	if (1 == 1){
+		return (
+			<LockFeature/>
+		)
+	}
 
 	return (
 		<Wrapper>

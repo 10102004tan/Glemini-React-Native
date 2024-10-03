@@ -1,0 +1,71 @@
+{
+    "signIn":{
+        "title": "Đăng nhập",
+        "email": "Email",
+        "password": "Mật khẩu",
+        "login": "Đăng nhập",
+        "forgot": "Quên mật khẩu?",
+        "signUp": "Đăng ký tại đây",
+        "notHaveAccount":"Chưa có tài khoản?",
+        "error": "Email hoặc mật khẩu không hợp lệ",
+        "startNow":"Bắt đầu thôi",
+        "welcome":"Chào mừng đến với ứng dụng Glemini"
+    },
+    "signUp":{
+        "title": "Tạo tài khoản mới",
+        "email": "Email",
+        "password": "Mật khẩu",
+        "confirmPassword": "Xác nhận mật khẩu",
+        "signUp": "Tạo tài khoản",
+        "haveAccount":"Đã có tài khoản?",
+        "signInNow":"Đăng nhập ngay",
+        "startNow":"Bắt đầu thôi",
+        "fullname":"Họ và tên",
+        "welcome":"Welcome to Glemini App",
+        "choice":{
+            "student":"Học sinh",
+            "teacher":"Giáo viên",
+            "studentDescription":"Tham gia các hoạt động lớp học vui nhộn",
+            "teacherDescription":"Quản lý các bài kiểm tra, lớp học và kết quả",
+            "title":"Chọn loại tài khoản"
+        },
+        "card":"Ảnh thẻ",
+        "cardID":"CCCD",
+        "documentConfirm":"Giấy tờ xác nhận",
+        "cardDescription":"Ảnh thẻ hoặc CCCD",
+        "documentDescription":"Ảnh giấy tờ xác nhận",
+        "cardIdDescription":"Ảnh thẻ hoặc CCCD"
+    },
+    "error":{
+        "emailInvalid":"Email không hợp lệ",
+        "passwordInvalid":"Mật khẩu phải có ít nhất 8 ký tự",
+        "confirmPassword":"Mật khẩu xác nhận không khớp",
+        "fullnameInvalid":"Họ và tên không hợp lệ",
+        "emailRequired":"Email là bắt buộc",
+        "notification":"Thông báo",
+        "emailExist":"Email đã tồn tại",
+        "passwordRequired":"Mật khẩu là bắt buộc",
+        "confirmPasswordRequired":"Xác nhận mật khẩu là bắt buộc",
+        "fullnameRequired":"Họ và tên là bắt buộc",
+        "cardRequired":"Ảnh thẻ là bắt buộc",
+        "cardIDRequired":"CCCD là bắt buộc",
+        "documentConfirmRequired":"Giấy tờ xác nhận là bắt buộc"
+    },
+    "success":{
+        "signUp":"Đăng ký thành công"
+    },
+    "language":{
+        "title":"Chọn ngôn ngữ",
+        "english":"Tiếng Anh",
+        "vietnamese":"Tiếng Việt",
+        "japanese":"Tiếng Nhật",
+        "changeLanguage":"Thay đổi ngôn ngữ",
+        "edit":"Chỉnh sửa ngay"
+    },
+    "logout":{
+        "title":"Đăng xuất",
+        "message":"Bạn có chắc chắn muốn đăng xuất không?",
+        "cancel":"Hủy",
+        "logout":"Đăng xuất"
+    }
+}
