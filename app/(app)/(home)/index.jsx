@@ -22,11 +22,27 @@ export default function HomeScreen() {
 			/>
 			<Button
 				onPress={() => {
-					router.push('/(app)/(home)/teacher_home_screen');
+					router.push('/(app)/(quiz)/create_title');
 				}}
 				text={'Quizz'}
 				otherStyles={'mt-4 p-4'}
 				textStyles={'mx-auto'}
+			/>
+			<Button
+				onPress={() => {
+					router.push('/(app)/(quiz)/1');
+				}}
+				text={'Quizz overview'}
+				otherStyles={'mt-4 p-4'}
+				textStyles={'text-center text-white'}
+			/>
+			<Button
+				onPress={() => {
+					router.push('/(app)/(quiz)/list');
+				}}
+				text={'List quizzes'}
+				otherStyles={'mt-4 p-4'}
+				textStyles={'text-center text-white'}
 			/>
 			<Button
 				onPress={() => {
@@ -36,6 +52,22 @@ export default function HomeScreen() {
 				otherStyles={'mt-4 p-4'}
 				textStyles={'mx-auto'}
 			/>
+      <Button
+        onPress={() => {
+          router.push("(app)/(quiz)/(detail)/detail_quizz");
+        }}
+        text={"Quizz Detail"}
+        otherStyles={"mt-4 p-4"}
+        textStyles={"text-center"}
+      />
+      <Button
+        onPress={() => {
+          router.push("(app)/(quiz)/(detail)/detail_quizz_collection");
+        }}
+        text={"Quizz Detail Collection"}
+        otherStyles={"mt-4 p-4"}
+        textStyles={"text-center"}
+      />
 		</Wrapper>
 	);
 }

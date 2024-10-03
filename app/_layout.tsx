@@ -6,7 +6,9 @@ import 'react-native-reanimated';
 import AppProvider from '@/contexts/AppProvider';
 import UserProvider from '@/contexts/UserProvider';
 import QuestionProvider from '@/contexts/QuestionProvider';
+import QuizProvider from '@/contexts/QuizProvider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -23,25 +25,28 @@ export default function RootLayout() {
 		'Poppins-Thin': require('../assets/fonts/Poppins-Thin.ttf'),
 	});
 
-	useEffect(() => {
-		if (loaded) {
-			SplashScreen.hideAsync();
-		}
-	}, [loaded]);
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
 
-	if (!loaded) {
-		return null;
-	}
+  if (!loaded) {
+    return null;
+  }
 
 	return (
-		<AppProvider>
-			<UserProvider>
-				<QuestionProvider>
-					<GestureHandlerRootView>
-						<Slot />
-					</GestureHandlerRootView>
-				</QuestionProvider>
-			</UserProvider>
-		</AppProvider>
+		<GestureHandlerRootView>
+      <AppProvider>
+				<UserProvider>
+					<QuizProvider>
+						<QuestionProvider>
+							<Slot />
+						</QuestionProvider>
+					</QuizProvider>
+				</UserProvider>
+				<Toast/>
+			</AppProvider>
+		</GestureHandlerRootView>
 	);
 }

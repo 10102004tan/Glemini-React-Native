@@ -9,7 +9,7 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as ImagePicker from 'expo-image-picker';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
-import { Status } from '@/constants/status';
+import { Status } from '@/constants';
 
 const RichTextEditor = ({ typingType, content, selectedAnswer }) => {
 	const [editorValue, setEditorValue] = useState('');
@@ -43,6 +43,12 @@ const RichTextEditor = ({ typingType, content, selectedAnswer }) => {
 			// Trường hợp dùng rich text editor tạo nội dung câu hỏi
 			case Status.quiz.QUESTION:
 				setQuestion({ ...question, question_excerpt: editorValue });
+				if (editorValue === '') {
+					setQuestion({
+						...question,
+						question_excerpt: '<div>Nội dung câu hỏi</div>',
+					});
+				}
 				break;
 			// Trường hợp dùng rich text editor tạo nội dung câu trả lời
 			case Status.quiz.ANSWER:

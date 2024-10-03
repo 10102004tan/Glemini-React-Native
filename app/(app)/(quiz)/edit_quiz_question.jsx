@@ -12,15 +12,16 @@ import Wrapper from '../../../components/customs/Wrapper';
 import QuestionAnswerItem from '../../../components/customs/QuestionAnswerItem';
 import Button from '../../../components/customs/Button';
 import QuestionEditBoard from '../../../components/customs/QuestionEditBoard';
-import { Status } from '../../../constants/status.js';
 import BottomSheet from '../../../components/customs/BottomSheet';
-import { Points } from '../../../constants/Points.js';
-import { Times } from '../../../constants/Times.js';
+import { Points, Times, Status } from '../../../constants';
+import RenderHTML from 'react-native-render-html';
+import { useWindowDimensions } from 'react-native';
+import { useQuizProvider } from '../../../contexts/QuizProvider';
 const MAX_ANSWER = 8;
 
 const EditQuizQuestion = () => {
 	const [pointBotttomSheetVisible, setPointBotttomSheetVisible] =
-		useState(true); // bottom sheet để chọn số điểm
+		useState(false); // bottom sheet để chọn số điểm
 	const [timeBotttomSheetVisible, setTimeBotttomSheetVisible] =
 		useState(false); // bottom sheet để chọn số điểm
 	const { isHiddenNavigationBar } = useAppProvider();
@@ -30,9 +31,17 @@ const EditQuizQuestion = () => {
 	const [showQuestionBoard, setShowQuestionBoard] = useState(false); // hiển thị giải thích cho câu hỏi
 	const [editorType, setEditorType] = useState(''); // loại editor
 	const [editorContent, setEditorContent] = useState(''); // nội dung của editor
-	const { question, addAnswer, resetMarkCorrectAnswer } =
-		useQuestionProvider();
+	const { selectedQuiz, createQuestionType, setSelectedQuiz } = useQuizProvider();
+	const {
+		question,
+		addAnswer,
+		resetMarkCorrectAnswer,
+		saveQuestion,
+		updateQuestionTime,
+		updateQuestionPoint,
+	} = useQuestionProvider();
 	const [answerEditSelected, setAnswerEditSelected] = useState(0); // đáp án được chọn
+	const { width } = useWindowDimensions();
 
 	// Khi người dùng chuyển từ chế độ chọn nhiều câu hỏi sang một câu hỏi thì bỏ chọn tất cả
 	useEffect(() => {
@@ -78,6 +87,7 @@ const EditQuizQuestion = () => {
 										className="flex flex-row items-center justify-start p-2 mb-2 rounded-xl bg-overlay"
 										onPress={() => {
 											setSelectedPoint(point);
+											updateQuestionPoint(point);
 											setPointBotttomSheetVisible(false);
 										}}
 									>
@@ -105,6 +115,7 @@ const EditQuizQuestion = () => {
 										className="flex flex-row items-center justify-start p-2 mb-2 rounded-xl bg-overlay"
 										onPress={() => {
 											setSelectedTime(time);
+											updateQuestionTime(time);
 											setTimeBotttomSheetVisible(false);
 										}}
 									>
@@ -159,45 +170,51 @@ const EditQuizQuestion = () => {
 			</View>
 			{/* Edit View */}
 			<View className="flex-1 bg-primary p-4">
-				<View className="border border-gray rounded-2xl h-[140px] flex items-center justify-center">
-					<TouchableOpacity
-						onPress={() => {
-							setEditorType(Status.quiz.QUESTION);
-							setEditorContent(question.question_excerpt);
-							setShowQuestionBoard(true);
-						}}
-					>
-						<Text className="text-white">
-							{question.question_excerpt}
-						</Text>
-					</TouchableOpacity>
-					<TouchableOpacity className="absolute top-4 right-4">
-						<FontAwesome name="image" size={20} color="white" />
-					</TouchableOpacity>
-				</View>
-				<View className="flex items-center justify-between mt-4 flex-row">
-					<TouchableOpacity
-						onPress={() => setMutipleChoice(!mutipleChoice)}
-						className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
-						style={
-							mutipleChoice ? { backgroundColor: '#0BCA5E' } : {}
-						}
-					>
-						<Text className="text-white">Nhiều lựa chọn</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
-						onPress={() => {
-							setShowQuestionBoard(true);
-							setEditorContent(question.question_explanation);
-							setEditorType(Status.quiz.EXPLAINATION);
-						}}
-					>
-						<Text className="text-white">Thêm giải thích</Text>
-					</TouchableOpacity>
-				</View>
-				{/* Answers */}
 				<ScrollView>
+					<View className="border border-gray overflow-hidden rounded-2xl min-h-[140px] max-h-[400px] flex items-center justify-center">
+						<TouchableOpacity
+							onPress={() => {
+								setEditorType(Status.quiz.QUESTION);
+								setEditorContent(question.question_excerpt);
+								setShowQuestionBoard(true);
+							}}
+						>
+							<RenderHTML
+								defaultTextProps={{
+									style: { color: 'white' },
+								}}
+								contentWidth={width}
+								source={{ html: question.question_excerpt }}
+							/>
+						</TouchableOpacity>
+						<TouchableOpacity className="absolute top-4 right-4">
+							<FontAwesome name="image" size={20} color="white" />
+						</TouchableOpacity>
+					</View>
+					<View className="flex items-center justify-between mt-4 flex-row">
+						<TouchableOpacity
+							onPress={() => setMutipleChoice(!mutipleChoice)}
+							className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
+							style={
+								mutipleChoice
+									? { backgroundColor: '#0BCA5E' }
+									: {}
+							}
+						>
+							<Text className="text-white">Nhiều lựa chọn</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
+							onPress={() => {
+								setShowQuestionBoard(true);
+								setEditorContent(question.question_explanation);
+								setEditorType(Status.quiz.EXPLAINATION);
+							}}
+						>
+							<Text className="text-white">Thêm giải thích</Text>
+						</TouchableOpacity>
+					</View>
+					{/* Answers */}
 					<View className="mt-4 flex items-center justify-center flex-col">
 						{question.answers.map((answer, index) => {
 							return (
@@ -216,27 +233,30 @@ const EditQuizQuestion = () => {
 							);
 						})}
 					</View>
+					<View className="flex items-center justify-between mt-4 flex-row">
+						<TouchableOpacity
+							className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
+							onPress={() => {
+								if (question.answers.length < MAX_ANSWER) {
+									addAnswer();
+								} else {
+									// Alert to user here
+								}
+							}}
+						>
+							<Text className="text-white">Thêm phương án</Text>
+						</TouchableOpacity>
+					</View>
 				</ScrollView>
-				<View className="flex items-center justify-between mt-4 flex-row">
-					<TouchableOpacity
-						className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
-						onPress={() => {
-							if (question.answers.length < MAX_ANSWER) {
-								addAnswer();
-							} else {
-								// Alert to user here
-							}
-						}}
-					>
-						<Text className="text-white">Thêm phương án</Text>
-					</TouchableOpacity>
-				</View>
 			</View>
 			{/* Button */}
 			<View className="p-4">
 				<Button
+					onPress={() => {
+						saveQuestion(selectedQuiz._id);
+					}}
 					text={'Lưu câu hỏi'}
-					otherStyles={'p-4'}
+					otherStyles={'p-4 justify-center'}
 					textStyles={'text-center'}
 				/>
 			</View>
