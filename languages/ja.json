@@ -1,0 +1,73 @@
+{
+    "signIn":{
+        "title": "サインイン",
+        "email": "メール",
+        "password": "パスワード",
+        "login": "サインイン",
+        "forgot": "パスワードを忘れた場合",
+        "signUp": "サインアップ",
+        "notHaveAccount":"アカウントをお持ちでない場合",
+        "error": "無効なメールアドレスまたはパスワード",
+        "startNow":"今すぐ始める",
+        "welcome":"当社のアプリへようこそ"
+    },
+    "signUp":{
+        "title": "サインアップ",
+        "email": "メール",
+        "password": "パスワード",
+        "confirmPassword": "パスワードを確認",
+        "signUp": "アカウントを作成",
+        "haveAccount":"すでにアカウントをお持ちですか？",
+        "signInNow":"今すぐサインイン",
+        "fullname":"フルネーム",
+        "startNow":"今すぐ始める",
+        "welcome":"当社のアプリへようこそ",
+        "choice":{
+            "student":"学生",
+            "teacher":"先生",
+            "studentDescription":"楽しい教室活動に参加する",
+            "teacherDescription":"クイズ、教室、結果を管理する",
+            "title":"アカウントタイプを選択"
+        },
+        "success":"サインアップに成功しました",
+        "card":"カード画像",
+        "cardID":"IDカード",
+        "documentConfirm":"文書確認",
+        "cardDescription":"カード画像またはIDカード",
+        "documentDescription":"文書確認",
+        "cardIdDescription":"カード画像またはIDカード"
+    },
+    "error":{
+        "notification":"通知",
+        "emailInvalid":"無効なメールアドレス",
+        "passwordInvalid":"パスワードは少なくとも8文字である必要があります",
+        "confirmPassword":"パスワードの確認が一致しません",
+        "fullnameInvalid":"無効なフルネーム",
+        "emailRequired":"メールアドレスが必要です",
+        "emailExist":"メールアドレスは既に存在します",
+        "passwordRequired":"パスワードが必要です",
+        "confirmPasswordRequired":"パスワードの確認が必要です",
+        "fullnameRequired":"フルネームが必要です",
+        "cardRequired":"カード画像が必要です",
+        "cardIDRequired":"IDカードが必要です",
+        "documentConfirmRequired":"文書確認が必要です",
+        "nameNotIncludeChar":"フルネームに特殊文字を含めることはできません"
+    },
+    "success":{
+        "signUp":"サインアップに成功しました"
+    },
+    "language":{
+        "title":"言語を選択",
+        "english":"英語",
+        "vietnamese":"ベトナム語",
+        "japanese":"日本語",
+        "changeLanguage":"言語を変更",
+        "edit":"今すぐ編集"
+    },
+    "logout":{
+        "title":"ログアウト",
+        "logout":"ログアウト",
+        "notification":"通知",
+        "logoutSuccess":"ログアウトしました"
+    }
+}

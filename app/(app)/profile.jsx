@@ -1,17 +1,17 @@
 import { useContext, useEffect, useState } from "react";
 import { Alert, Text, View, Image, Pressable } from "react-native";
 import { AuthContext } from "../../contexts/AuthContext";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import * as ImagePicker from 'expo-image-picker';
+import CardSetting from "@/components/customs/CardSetting";
+import { useAppProvider } from "@/contexts/AppProvider";
 
 export default function ProfileScreen() {
     const { userData: { accessToken, _id }, signOut, processAccessTokenExpired } = useContext(AuthContext);
     const [isLoading, setIsLoading] = useState(true);
     const [info, setInfo] = useState(null);
     const [avatar, setAvatar] = useState(null);
-
-
 
 
     useEffect(() => {
@@ -72,10 +72,10 @@ export default function ProfileScreen() {
                 </Pressable>
             </View>
             <View className="px-3">
-                <CardSetting title="Họ và tên" description="Chỉnh sửa ngay" isActice={true} />
-                <CardSetting title="Trường" description="Chỉnh sửa ngay" />
-                <CardSetting title="Email" description="Chỉnh sửa ngay" />
-                <CardSetting title="Mật khẩu" description="Chỉnh sửa ngay" />
+                <CardSetting onPress={()=> {router.push({pathname:'/profile-edit',params:{title:'Họ và tên'}});}} title="Họ và tên" description="Chỉnh sửa ngay" isActice={true} />
+                <CardSetting onPress={()=> {router.push({pathname:'/profile-edit',params:{title:'Trường'}});}}  title="Trường" description="Chỉnh sửa ngay" />
+                <CardSetting onPress={()=> {router.push({pathname:'/profile-edit',params:{title:'Email'}});}} title="Email" description="Chỉnh sửa ngay" />
+                <CardSetting onPress={()=> {router.push({pathname:'/profile-edit',params:{title:'Mật khẩu'}});}} title="Mật khẩu" description="Chỉnh sửa ngay" />
                 <Pressable >
                     <View className="py-3 border mt-5">
                         <Text className="text-center">Lưu</Text>
@@ -87,15 +87,5 @@ export default function ProfileScreen() {
 
 }
 
-function CardSetting({ isActice, title, description }) {
-    return (
-        <View className="flex flex-row justify-between py-3 border-b-[1px] border-b-[#eee] mb-3">
-            <Text>{title}</Text>
-            <View className="flex flex-row gap-2 items-center">
-                <Text className={(isActice ? "text-[#e36334]" : "text-[#8d8c8c]")}>{description}</Text>
-                <FontAwesome name="chevron-right" size={16} color="black" />
-            </View>
-        </View>
-    )
-}
+
 

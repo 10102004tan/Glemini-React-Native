@@ -1,5 +1,5 @@
 import { View, Text, Image, TouchableWithoutFeedback } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Wrapper from '../../../components/customs/Wrapper';
 import { Images } from '../../../constants';
 import Field from '../../../components/customs/Field';
@@ -11,8 +11,12 @@ import { useAppProvider } from '../../../contexts/AppProvider';
 import QuizCreateAction from '../../../components/customs/QuizCreateAction';
 import { useRouter } from 'expo-router';
 import Overlay from '../../../components/customs/Overlay';
+import LockFeature from '@/components/customs/LockFeature';
+import { AuthContext } from '@/contexts/AuthContext';
 
 const CreateQuizzScreen = () => {
+
+	const {teacherStatus} = useContext(AuthContext);
 	const { isHiddenNavigationBar, setIsHiddenNavigationBar } =
 		useAppProvider();
 	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
@@ -27,6 +31,12 @@ const CreateQuizzScreen = () => {
 		setIsHiddenNavigationBar(false);
 		setVisibleBottomSheet(false);
 	};
+
+	if (teacherStatus === 'inactive') {
+		return (
+			<LockFeature/>
+		)
+	}
 
 	return (
 		<Wrapper>
