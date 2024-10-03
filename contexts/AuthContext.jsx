@@ -3,11 +3,13 @@ import { Slot } from 'expo-router';
 import { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
+import { useAppProvider } from './AppProvider';
 
 export const AuthContext = createContext();
-// const API_URL = 'http://10.0.106.188:3000/api/v1';
-const API_URL = 'http://192.168.1.8:8000/api/v1';
+// const apiUrl = 'http://10.0.106.188:3000/api/v1';
+// const apiUrl = 'http://192.168.1.145:8000/api/v1';
 export const AuthProvider = ({ children }) => {
+	const { apiUrl } = useAppProvider();
 	const [isLoading, setIsLoading] = useState(true);
 	const [userData, setUserData] = useState(null);
 
@@ -21,7 +23,7 @@ export const AuthProvider = ({ children }) => {
 		fetchAccessToken();
 	}, []);
 	const signIn = async ({ email, password }) => {
-		const response = await fetch(API_URL + '/login', {
+		const response = await fetch(apiUrl + '/login', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -58,7 +60,7 @@ export const AuthProvider = ({ children }) => {
 		return data.message;
 	};
 	const signUp = async ({ email, password, fullname, type }) => {
-		const response = await fetch(API_URL + '/signup', {
+		const response = await fetch(apiUrl + '/signup', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -89,7 +91,7 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	const signOut = async () => {
-		const response = await fetch(API_URL + '/logout', {
+		const response = await fetch(apiUrl + '/logout', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -113,7 +115,7 @@ export const AuthProvider = ({ children }) => {
 	const changePassword = async ({ oldPassword, newPassword }) => {
 		if (!userData) return;
 		const { accessToken, _id: user_id } = userData;
-		const response = await fetch(API_URL + '/change-password', {
+		const response = await fetch(apiUrl + '/change-password', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -158,7 +160,7 @@ export const AuthProvider = ({ children }) => {
 	 * @description : Xu ly khi access token het han, su dung refresh token de lay access token moi
 	 */
 	const processAccessTokenExpired = async () => {
-		const response = await fetch(API_URL + 'refresh-token', {
+		const response = await fetch(apiUrl + 'refresh-token', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
