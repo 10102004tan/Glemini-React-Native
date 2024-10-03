@@ -49,7 +49,8 @@
         "fullnameRequired":"Họ và tên là bắt buộc",
         "cardRequired":"Ảnh thẻ là bắt buộc",
         "cardIDRequired":"CCCD là bắt buộc",
-        "documentConfirmRequired":"Giấy tờ xác nhận là bắt buộc"
+        "documentConfirmRequired":"Giấy tờ xác nhận là bắt buộc",
+        "nameNotIncludeChar":"Họ và tên không được chứa ký tự đặc biệt"
     },
     "success":{
         "signUp":"Đăng ký thành công"

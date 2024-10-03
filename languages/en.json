@@ -49,7 +49,8 @@
         "fullnameRequired":"Fullname is required",
         "cardRequired":"Card image is required",
         "cardIDRequired":"ID Card is required",
-        "documentConfirmRequired":"Document Comfirm is required"
+        "documentConfirmRequired":"Document Comfirm is required",
+        "nameNotIncludeChar":"Fullname can't include special characters"
     },
     "success":{
         "signUp":"Sign up successfully"
