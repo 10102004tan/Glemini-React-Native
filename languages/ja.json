@@ -50,7 +50,8 @@
         "fullnameRequired":"フルネームが必要です",
         "cardRequired":"カード画像が必要です",
         "cardIDRequired":"IDカードが必要です",
-        "documentConfirmRequired":"文書確認が必要です"
+        "documentConfirmRequired":"文書確認が必要です",
+        "nameNotIncludeChar":"フルネームに特殊文字を含めることはできません"
     },
     "success":{
         "signUp":"サインアップに成功しました"

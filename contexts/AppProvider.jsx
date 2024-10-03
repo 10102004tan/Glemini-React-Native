@@ -22,6 +22,7 @@ const AppProvider = ({ children }) => {
 	});
 
 	const [isHiddenNavigationBar, setIsHiddenNavigationBar] = useState(false);
+	const [titleCurrent, setTitleCurrent] = useState('');
 
 	return (
 		<AppContext.Provider
@@ -33,6 +34,8 @@ const AppProvider = ({ children }) => {
 				language,
 				i18n,
 				setLanguage,
+				titleCurrent,
+				setTitleCurrent,
 			}}
 		>
 			{children}

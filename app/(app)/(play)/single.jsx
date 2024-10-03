@@ -4,9 +4,9 @@ import Button from '../../../components/customs/Button';
 import ResultSingle from '../(result)/single';
 import { useAuthContext } from '@/contexts/AuthContext';
 import Toast from 'react-native-toast-message';
+import { API_URL, API_VERSION } from '../../../configs/api.config';
 
 const SinglePlay = () => {
-	const API_URL = 'http://10.0.107.92:3000/api/v1'
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 	const [selectedAnswers, setSelectedAnswers] = useState([]);
 	const [correctCount, setCorrectCount] = useState(0);
@@ -128,7 +128,7 @@ const SinglePlay = () => {
 
 	const saveQuestionResult = async (questionId, answerId, correct, score) => {
 		try {
-			const response = await fetch(API_URL + '/result/save-question', {
+			const response = await fetch(API_URL + API_VERSION.V1 + '/result/save-question', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ const SinglePlay = () => {
 
 	const completed = async () => {
 		try {
-			const response = await fetch(API_URL + '/result/complete-quiz', {
+			const response = await fetch(API_URL + API_VERSION.V1 +  '/result/complete-quiz', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

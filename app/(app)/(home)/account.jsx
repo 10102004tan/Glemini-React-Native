@@ -6,8 +6,7 @@ import { AuthContext } from "@/contexts/AuthContext";
 import AccoutntStatusItem from "@/components/customs/AccountStatusItem";
 
 export default function AccountScreen() {
-    const {userData:{user_fullname,user_email},userData} = useContext(AuthContext);
-    console.log(userData);
+    const {userData:{user_fullname,user_email},userData,teacherStatus} = useContext(AuthContext);
     return (
         <View className="bg-white h-[100%] px-[20px]">
             <View>
@@ -16,7 +15,7 @@ export default function AccountScreen() {
                     <View className="flex-1">
                         <Text className="font-semibold text-[14px]">{user_fullname}</Text>
                         <Text className="text-gray text-[12px]">{user_email}</Text>
-                        <AccoutntStatusItem status={'active'}/>
+                        <AccoutntStatusItem status={teacherStatus}/>
                     </View>
                     <Link href={'(app)/profile'}>
                         <View className="flex flex-row items-center">
@@ -25,7 +24,6 @@ export default function AccountScreen() {
                         </View>
                     </Link>
                 </View>
-
             </View>
         </View>
     )
