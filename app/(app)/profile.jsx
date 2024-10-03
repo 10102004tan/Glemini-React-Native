@@ -4,6 +4,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { Link } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import * as ImagePicker from 'expo-image-picker';
+import CardSetting from "@/components/customs/CardSetting";
 
 export default function ProfileScreen() {
     const { userData: { accessToken, _id }, signOut, processAccessTokenExpired } = useContext(AuthContext);
@@ -76,6 +77,7 @@ export default function ProfileScreen() {
                 <CardSetting title="Trường" description="Chỉnh sửa ngay" />
                 <CardSetting title="Email" description="Chỉnh sửa ngay" />
                 <CardSetting title="Mật khẩu" description="Chỉnh sửa ngay" />
+                
                 <Pressable >
                     <View className="py-3 border mt-5">
                         <Text className="text-center">Lưu</Text>
@@ -87,15 +89,5 @@ export default function ProfileScreen() {
 
 }
 
-function CardSetting({ isActice, title, description }) {
-    return (
-        <View className="flex flex-row justify-between py-3 border-b-[1px] border-b-[#eee] mb-3">
-            <Text>{title}</Text>
-            <View className="flex flex-row gap-2 items-center">
-                <Text className={(isActice ? "text-[#e36334]" : "text-[#8d8c8c]")}>{description}</Text>
-                <FontAwesome name="chevron-right" size={16} color="black" />
-            </View>
-        </View>
-    )
-}
+
 
