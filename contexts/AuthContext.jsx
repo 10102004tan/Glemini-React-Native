@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }) => {
 		const data = await response.json();
 		const {
 			tokens: { accessToken, refreshToken },
-			user: { user_type, user_fullname, _id, user_avatar, user_email },
+			user: { user_type, user_fullname, _id, user_avatar, user_email ,teacher_status},
 		} = data.metadata;
 		if (data.statusCode === 200) {
 			const dataStore = {
@@ -101,6 +101,8 @@ export const AuthProvider = ({ children }) => {
 			};
 			await AsyncStorage.setItem('userData', JSON.stringify(dataStore));
 			setUserData(dataStore);
+			// set teacher status
+			teacher_status && setTeacherStatus(teacher_status);
 			return 1;
 		}
 
