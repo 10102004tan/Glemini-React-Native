@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuthContext } from './AuthContext';
-import { useAppProvider } from './AppProvider';
+import { API_URL, API_VERSION, END_POINTS } from '../configs/api.config';
+
 const QuizContext = createContext();
 
 const QuizProvider = ({ children }) => {
@@ -13,20 +14,22 @@ const QuizProvider = ({ children }) => {
 	const [needUpdate, setNeedUpdate] = useState(false);
 	const [quizFetching, setQuizFetching] = useState(false);
 	const [questionFetching, setQuestionFetching] = useState(false);
-	const { apiUrl } = useAppProvider();
 
 	// Get all quizzes of the user
 	const fetchQuizzes = async () => {
 		setQuizFetching(true);
-		const response = await fetch(`${apiUrl}/quizzes/get-by-user`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'x-client-id': userData._id,
-				authorization: userData.accessToken,
-			},
-			body: JSON.stringify({ user_id: userData._id }),
-		});
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({ user_id: userData._id }),
+			}
+		);
 		const data = await response.json();
 
 		if (data.statusCode === 200) {
@@ -38,15 +41,18 @@ const QuizProvider = ({ children }) => {
 	// Get all questions of the selected quiz
 	const fetchQuestions = async () => {
 		setQuestionFetching(true);
-		const response = await fetch(`${apiUrl}/quizzes/get-questions`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'x-client-id': userData._id,
-				authorization: userData.accessToken,
-			},
-			body: JSON.stringify({ quiz_id: selectedQuiz._id }),
-		});
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({ quiz_id: selectedQuiz._id }),
+			}
+		);
 		const data = await response.json();
 		// console.log(data.metadata);
 		if (data.statusCode === 200) {

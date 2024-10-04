@@ -1,11 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import { useAuthContext } from './AuthContext';
-import { useAppProvider } from './AppProvider';
+import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 const QuestionContext = createContext();
-// const apiUrl = 'http://192.168.1.145:8000/api/v1/questions';
 const QuestionProvider = ({ children }) => {
-	const { apiUrl } = useAppProvider();
 	const [question, setQuestion] = useState({
 		question_excerpt: '<div>Nội dung câu hỏi</div>',
 		question_description: '',
@@ -50,15 +48,18 @@ const QuestionProvider = ({ children }) => {
 
 	// Get the current question to update
 	const getCurrentUpdateQuestion = async () => {
-		const response = await fetch(apiUrl + '/questions/get-details', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'x-client-id': userData._id,
-				authorization: userData.accessToken,
-			},
-			body: JSON.stringify({ question_id: updateQuestionId }),
-		});
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUESTION_DETAIL}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({ question_id: updateQuestionId }),
+			}
+		);
 		const data = await response.json();
 		// console.log(data.metadata.question_answer_ids);
 		if (data.statusCode === 200) {
@@ -217,15 +218,18 @@ const QuestionProvider = ({ children }) => {
 	const saveQuestion = async (quizId) => {
 		try {
 			// Gọi API lưu câu hỏi
-			const response = await fetch(apiUrl + '/questions/create', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'x-client-id': userData._id,
-					authorization: userData.accessToken,
-				},
-				body: JSON.stringify({ ...question, quiz_id: quizId }),
-			});
+			const response = await fetch(
+				`${API_URL}${API_VERSION.V1}${END_POINTS.QUESTION_CREATE}`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'x-client-id': userData._id,
+						authorization: userData.accessToken,
+					},
+					body: JSON.stringify({ ...question, quiz_id: quizId }),
+				}
+			);
 			const data = await response.json();
 			if (data.statusCode === 200) {
 				console.log('Lưu câu hỏi thành công');
@@ -243,15 +247,18 @@ const QuestionProvider = ({ children }) => {
 	const editQuestion = async (quizId, questionId) => {
 		try {
 			// Gọi API cập nhật câu hỏi
-			const response = await fetch(apiUrl + '/questions/update', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					authorization: userData.accessToken,
-					'x-client-id': userData._id,
-				},
-				body: JSON.stringify({ ...question, quiz_id: quizId }),
-			});
+			const response = await fetch(
+				`${API_URL}${API_VERSION.V1}${END_POINTS.QUESTION_UPDATE}`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						authorization: userData.accessToken,
+						'x-client-id': userData._id,
+					},
+					body: JSON.stringify({ ...question, quiz_id: quizId }),
+				}
+			);
 			const data = await response.json();
 			if (data.statusCode === 200) {
 				console.log('Cập nhật câu hỏi thành công');
