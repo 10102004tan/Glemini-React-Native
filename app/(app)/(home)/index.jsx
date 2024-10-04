@@ -6,6 +6,7 @@ import { useContext, useRef, useState } from "react";
 import { useRouter } from "expo-router";
 
 export default function HomeScreen() {
+
   const router = useRouter();
   return (
     <Wrapper>
@@ -52,4 +53,5 @@ export default function HomeScreen() {
       />
     </Wrapper>
   );
+
 }

@@ -15,53 +15,62 @@ const QuizProvider = ({ children }) => {
   const [quizFetching, setQuizFetching] = useState(false);
   const [questionFetching, setQuestionFetching] = useState(false);
 
-  // Get all quizzes of the user
-  const fetchQuizzes = async () => {
-    setQuizFetching(true);
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({ user_id: userData._id }),
-      }
-    );
-    const data = await response.json();
 
-    if (data.statusCode === 200) {
-      setQuizzes(data.metadata);
-      setQuizFetching(false);
-    }
-    // Handle error when fetch quizzes
-  };
-  // Get all questions of the selected quiz
-  const fetchQuestions = async () => {
-    setQuestionFetching(true);
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({ quiz_id: selectedQuiz._id }),
-      }
-    );
-    const data = await response.json();
-    // console.log(data.metadata);
-    if (data.statusCode === 200) {
-      setCurrentQuizQuestion(data.metadata);
-    } else {
-      setCurrentQuizQuestion([]);
-    }
-    setQuestionFetching(false);
-  };
+	// Get all quizzes of the user
+	const fetchQuizzes = async () => {
+		console.log(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`
+		);
+		setQuizFetching(true);
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({ user_id: userData._id }),
+			}
+		);
+		const data = await response.json();
+		console.log(data);
+
+		if (data.statusCode === 200) {
+			setQuizzes(data.metadata);
+			setQuizFetching(false);
+		}
+		// Handle error when fetch quizzes
+	};
+	// Get all questions of the selected quiz
+	const fetchQuestions = async () => {
+		console.log(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`
+		);
+		setQuestionFetching(true);
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({ quiz_id: selectedQuiz._id }),
+			}
+		);
+		const data = await response.json();
+		// console.log(data.metadata);
+		if (data.statusCode === 200) {
+			setCurrentQuizQuestion(data.metadata);
+		} else {
+			setCurrentQuizQuestion([]);
+		}
+		setQuestionFetching(false);
+	};
+
 
   // Get all quizzes of the user
   useEffect(() => {
