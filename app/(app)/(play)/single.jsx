@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
 import Button from '../../../components/customs/Button';
 import ResultSingle from '../(result)/single';
 import { useAuthContext } from '@/contexts/AuthContext';
 import Toast from 'react-native-toast-message';
 import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
+import RenderHTML from 'react-native-render-html';
 
 const SinglePlay = () => {
+	const { width } = useWindowDimensions();
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 	const [selectedAnswers, setSelectedAnswers] = useState([]);
 	const [correctCount, setCorrectCount] = useState(0);
@@ -21,138 +23,56 @@ const SinglePlay = () => {
 	const [buttonTextColor, setButtonTextColor] = useState('text-black');
 	const { userData } = useAuthContext();
 	const [isProcessing, setIsProcessing] = useState(false);
+	const [questions, setQuestions] = useState([]);
 
-	// Danh sách câu hỏi
-	const [questions, setQuestions] = useState([
-		{
-			_id: 1,
-			quiz_id: 1,
-			question_excerpt: 'Thủ đô của Pháp là gì?',
-			question_description: 'Đây là một câu hỏi kiểm tra kiến thức.',
-			question_image: '',
-			question_audio: '',
-			question_video: '',
-			question_point: 10,
-			question_time: 10,
-			question_explanation: 'Thủ đô của Pháp là Paris.',
-			question_type: 'single',
-			question_answer_ids: [
-				{ _id: 1, text: "Paris", image: null },
-				{ _id: 2, text: "Hà Nội", image: null },
-				{ _id: 3, text: "London", image: null },
-				{ _id: 4, text: "Tokyo", image: null },
-			],
-			question_correct: [1],
-		},
-		{
-			_id: 2,
-			quiz_id: 1,
-			question_excerpt: 'Hành tinh lớn nhất trong hệ Mặt Trời là gì?',
-			question_description: 'Đây là một câu hỏi kiểm tra kiến thức.',
-			question_image: '',
-			question_audio: '',
-			question_video: '',
-			question_point: 1,
-			question_time: 10,
-			question_explanation: 'Hành tinh lớn nhất trong hệ Mặt Trời là Sao Mộc.',
-			question_type: 'single',
-			question_answer_ids: [
-				{ _id: 1, text: "Trái Đất", image: null },
-				{ _id: 2, text: "Sao Hỏa", image: null },
-				{ _id: 3, text: "Sao Mộc", image: null },
-				{ _id: 4, text: "Sao Thổ", image: null },
-			],
-			question_correct: [3],
-		},
-		{
-			_id: 3,
-			quiz_id: 1,
-			question_excerpt: 'Ai là người sáng lập ra nước Việt Nam Dân chủ Cộng hòa?',
-			question_description: 'Câu hỏi lịch sử Việt Nam.',
-			question_image: '',
-			question_audio: '',
-			question_video: '',
-			question_point: 10,
-			question_time: 10,
-			question_explanation: 'Người sáng lập ra nước Việt Nam Dân chủ Cộng hòa là Chủ tịch Hồ Chí Minh.',
-			question_type: 'single',
-			question_answer_ids: [
-				{ _id: 1, text: "Chủ tịch Hồ Chí Minh", image: null },
-				{ _id: 2, text: "Lê Duẩn", image: null },
-				{ _id: 3, text: "Phạm Văn Đồng", image: null },
-				{ _id: 4, text: "Võ Nguyên Giáp", image: null },
-			],
-			question_correct: [1],
-		},
-		{
-			_id: 4,
-			quiz_id: 1,
-			question_excerpt: 'Quốc gia nào có diện tích lớn nhất thế giới?',
-			question_description: 'Câu hỏi địa lý.',
-			question_image: '',
-			question_audio: '',
-			question_video: '',
-			question_point: 5,
-			question_time: 10,
-			question_explanation: 'Quốc gia có diện tích lớn nhất thế giới là Nga.',
-			question_type: 'single',
-			question_answer_ids: [
-				{ _id: 1, text: "Hoa Kỳ", image: null },
-				{ _id: 2, text: "Trung Quốc", image: null },
-				{ _id: 3, text: "Canada", image: null },
-				{ _id: 4, text: "Nga", image: null },
-			],
-			question_correct: [4],
-		},
-		{
-			_id: 5,
-			quiz_id: 1,
-			question_excerpt: 'Loài động vật nhanh nhất trên cạn là gì?',
-			question_description: 'Câu hỏi về thế giới động vật.',
-			question_image: '',
-			question_audio: '',
-			question_video: '',
-			question_point: 8,
-			question_time: 10,
-			question_explanation: 'Loài đông vật sống trên cạn.',
-			question_type: 'multiple',
-			question_answer_ids: [
-				{ _id: 1, text: "Báo", image: null },
-				{ _id: 2, text: "Sư tử", image: null },
-				{ _id: 3, text: "Cá heo", image: null },
-				{ _id: 4, text: "Tôm hùm", image: null },
-			],
-			question_correct: [3, 4],
-		},
-	]);
+	// Fetch questions from API
+	useEffect(() => {
+		const fetchQuestions = async () => {
+			try {
+				const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.GET_QUIZ_QUESTIONS, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'x-client-id': userData._id,
+						authorization: userData.accessToken,
+					},
+					body: JSON.stringify({
+						quiz_id: '66ff96503d588cd7943a0032',
+					}),
+				});
+
+				const data = await res.json();
+				setQuestions(data.metadata);
+			} catch (error) {
+				console.error('Lỗi khi lấy câu hỏi:', error);
+			}
+		};
+		fetchQuestions();
+	}, [userData]);
 
 	const saveQuestionResult = async (questionId, answerId, correct, score) => {
-		try {
-			const response = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_SAVE_QUESTION, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'x-client-id': userData._id,
-					authorization: userData.accessToken,
-				},
-				body: JSON.stringify({
-					exercise_id: null,
-					user_id: userData._id,
-					quiz_id: questions[currentQuestionIndex].quiz_id,
-					question_id: questionId,
-					answer: answerId,
-					correct,
-					score,
-				}),
-			});
-		} catch (error) {
-			console.error('Lỗi khi lưu kết quả:', error);
-		}
+		await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_SAVE_QUESTION, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'x-client-id': userData._id,
+				authorization: userData.accessToken,
+			},
+			body: JSON.stringify({
+				exercise_id: null,
+				user_id: userData._id,
+				quiz_id: questions[currentQuestionIndex].quiz_id,
+				question_id: questionId,
+				answer: answerId,
+				correct,
+				score,
+			}),
+		});
 	};
 
 	const completed = async () => {
 		try {
-			const response = await fetch(API_URL + API_VERSION.V1 +  END_POINTS.RESULT_COMPLETED, {
+			await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -166,34 +86,27 @@ const SinglePlay = () => {
 					status: 'Đã hoàn thành',
 				}),
 			});
-
 		} catch (error) {
 			console.error('Lỗi khi cập nhật trạng thái hoàn thành:', error);
 		}
 	};
 
-
 	const handleAnswerPress = (answerId) => {
-
-		// Nếu câu hỏi là single-choice, chỉ cần lưu một đáp án
 		if (questions[currentQuestionIndex].question_type === 'single') {
 			setSelectedAnswers([answerId]);
 			setIsChosen(true);
 			setButtonColor('bg-[#0D70D2]');
 			setButtonTextColor('text-white');
 		} else {
-			// Nếu là multiple-choice, lưu nhiều đáp án
 			if (selectedAnswers.includes(answerId)) {
-				setSelectedAnswers(selectedAnswers.filter(id => id !== answerId));
+				setSelectedAnswers(selectedAnswers.filter((id) => id !== answerId));
 			} else {
 				setSelectedAnswers([...selectedAnswers, answerId]);
 			}
 		}
 	};
 
-
 	const handleSubmit = () => {
-
 		if (isProcessing) return;
 		setIsProcessing(true);
 
@@ -201,14 +114,15 @@ const SinglePlay = () => {
 			Toast.show({
 				type: 'error',
 				text1: 'Cảnh báo!',
-				text2: 'Vui lòng chọn ít nhất một đáp án!',
+				text2: 'Vui lòng chọn đáp án!',
 			});
 			setIsProcessing(false);
 			return;
 		}
 
 		const currentQuestion = questions[currentQuestionIndex];
-		const correctAnswerIds = currentQuestion.question_correct;
+		const correctAnswerIds = currentQuestion.correct_answer_ids.map(answer => answer._id);
+		console.log(selectedAnswers, correctAnswerIds);
 
 		let isAnswerCorrect;
 
@@ -230,6 +144,7 @@ const SinglePlay = () => {
 			setIsCorrect(false);
 			setWrongCount(wrongCount + 1);
 			setButtonColor('bg-[#F44336]');
+			setButtonTextColor('text-white')
 			setButtonText('Sai rồi!!');
 		}
 
@@ -243,7 +158,7 @@ const SinglePlay = () => {
 		setShowCorrectAnswer(true);
 
 		setTimeout(() => {
-			setIsProcessing(false)
+			setIsProcessing(false);
 			if (currentQuestionIndex < questions.length - 1) {
 				setCurrentQuestionIndex(currentQuestionIndex + 1);
 				setSelectedAnswers([]);
@@ -259,10 +174,8 @@ const SinglePlay = () => {
 		}, 1500);
 	};
 
-
-
 	const handleRestart = () => {
-		setIsCorrect(false)
+		setIsCorrect(false);
 		setCurrentQuestionIndex(0);
 		setCorrectCount(0);
 		setWrongCount(0);
@@ -290,11 +203,8 @@ const SinglePlay = () => {
 
 	return (
 		<View className="flex-1">
-			{/* Hiển thị thông tin cơ bản */}
 			<View className="flex-row justify-between items-center px-5 pt-10 pb-3 bg-black">
-				<Text className="font-bold text-lg text-white">
-					Tiêu đề bộ câu đố
-				</Text>
+				<Text className="font-bold text-lg text-white">Tiêu đề bộ câu đố</Text>
 				<Button
 					text="Kết thúc"
 					onPress={() => console.log('Button pressed!!')}
@@ -305,39 +215,50 @@ const SinglePlay = () => {
 				/>
 			</View>
 
-			{/* Tương tác người dùng */}
 			<View className="flex-1 bg-[#1C2833] px-5 py-4 justify-between">
 				<Text className="text-lg bg-[#484E54] rounded text-white px-[10px] py-1 font-pregular self-start">
 					{`Điểm: ${score}`}
 				</Text>
 				<View className="bg-[#484E54] rounded-lg px-3 py-10">
-					<Text className="text-sm font-pregular text-slate-200">
+					<Text className="text-sm font-pregular text-slate-200 absolute top-2 left-2">
 						{"Câu hỏi số:  " + (currentQuestionIndex + 1) + " / " + questions.length}
 					</Text>
-					<Text className="text-2xl font-pregular text-white">
-						{questions[currentQuestionIndex].question_excerpt}
-					</Text>
+
+					<RenderHTML
+						defaultTextProps={{
+							style: {
+								color: 'white',
+								fontSize: 25,
+								fontWeight: '700',
+							},
+						}}
+						contentWidth={width}
+						source={{
+							html: questions[currentQuestionIndex]?.question_excerpt,
+						}}
+					/>
 				</View>
 
 				<View>
-					{questions[currentQuestionIndex].question_answer_ids.map((answer, index) => {
-						let backgroundColor = '#484E54';
+					{questions[currentQuestionIndex]?.question_answer_ids.map((answer, index) => {
+						let backgroundColor = '#484E54'; // Màu mặc định
+
 						if (showCorrectAnswer) {
 							if (questions[currentQuestionIndex].question_type === 'single') {
-								if (answer._id === questions[currentQuestionIndex].question_correct[0]) {
-									backgroundColor = '#4CAF50';
+								if (answer._id === questions[currentQuestionIndex].correct_answer_ids[0]._id) {
+									backgroundColor = '#4CAF50'; // Green - Đúng
 								} else if (answer._id === selectedAnswers[0]) {
-									backgroundColor = '#F44336';
+									backgroundColor = '#F44336'; // Red - Sai
 								}
-							} else {
-								if (questions[currentQuestionIndex].question_correct.includes(answer._id)) {
-									backgroundColor = '#4CAF50';
+							} else {								
+								if (questions[currentQuestionIndex].correct_answer_ids.map(answer => answer._id).includes(answer._id)) {
+									backgroundColor = '#4CAF50'; // Green - Đúng
 								} else if (selectedAnswers.includes(answer._id)) {
-									backgroundColor = '#F44336';
+									backgroundColor = '#F44336'; // Red - Sai
 								}
 							}
 						} else if (selectedAnswers.includes(answer._id)) {
-							backgroundColor = '#0D70D2';
+							backgroundColor = '#0D70D2'; // Màu xanh khi người dùng chọn
 						}
 
 						return (
@@ -350,7 +271,7 @@ const SinglePlay = () => {
 									marginVertical: 5,
 									borderRadius: 5,
 								}}
-								disabled={showCorrectAnswer}
+								disabled={showCorrectAnswer} // Vô hiệu hóa khi đã hiển thị kết quả
 							>
 								<Text className="text-white font-pregular text-lg m-4">
 									{answer.text}
