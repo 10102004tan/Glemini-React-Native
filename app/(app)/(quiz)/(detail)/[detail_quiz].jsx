@@ -16,6 +16,7 @@ import { useGlobalSearchParams } from "expo-router";
 import { useQuizProvider } from "@/contexts/QuizProvider";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 import QuestionOverview from "@/components/customs/QuestionOverview";
+import { ScrollView } from "react-native-gesture-handler";
 
 const detailquizz = () => {
   const { detail_quiz } = useGlobalSearchParams();
@@ -203,13 +204,13 @@ const detailquizz = () => {
       <View className="w-full h-[1px] bg-gray"></View>
 
       <View>
-        <Text className="text-gray mt-8 text-right right-4">
+        <Text className="text-gray mt-4 mb-4 text-right right-4">
           100 người đã tham gia
         </Text>
       </View>
 
-      <View className="flex m-4 ">
-        {/* Quiz Questions */}
+      <ScrollView>
+        {/* kết quả của ô màn hình */}
         {questionFetching ? (
           <Text>Loading</Text>
         ) : (
@@ -226,8 +227,9 @@ const detailquizz = () => {
               })}
           </View>
         )}
-      </View>
-      <View className="w-full h-[1px] bg-gray mt-[320px]"></View>
+      </ScrollView>
+
+      <View className="w-full h-[1px] bg-gray"></View>
       <View className="p-2">
         <Button
           text={"Bắt đầu Quiz"}
