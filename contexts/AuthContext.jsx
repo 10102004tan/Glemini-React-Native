@@ -40,7 +40,9 @@ export const AuthProvider = ({ children }) => {
 					_id,
 					user_avatar,
 					user_email,
+					teacher_status
 				},
+
 			} = data.metadata;
 			const dataStore = {
 				user_type,
@@ -53,6 +55,7 @@ export const AuthProvider = ({ children }) => {
 			};
 			await AsyncStorage.setItem('userData', JSON.stringify(dataStore));
 			setUserData(dataStore);
+			teacher_status && setTeacherStatus(teacher_status);
 			return data.message;
 		}
 
@@ -87,7 +90,7 @@ export const AuthProvider = ({ children }) => {
 		const data = await response.json();
 		const {
 			tokens: { accessToken, refreshToken },
-			user: { user_type, user_fullname, _id, user_avatar, user_email ,teacher_status},
+			user: { user_type, user_fullname, _id, user_avatar, user_email},
 		} = data.metadata;
 		if (data.statusCode === 200) {
 			const dataStore = {
@@ -102,7 +105,6 @@ export const AuthProvider = ({ children }) => {
 			await AsyncStorage.setItem('userData', JSON.stringify(dataStore));
 			setUserData(dataStore);
 			// set teacher status
-			teacher_status && setTeacherStatus(teacher_status);
 			return 1;
 		}
 
