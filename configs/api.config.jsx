@@ -1,7 +1,7 @@
 'use strict';
 
 const dev = {
-    API_URL: 'http://192.168.2.119:3000/api',
+    API_URL: 'http://192.168.137.102:3000/api',
     API_VERSION: {
         V1: '/v1'
     },
@@ -13,6 +13,8 @@ const dev = {
         PROFILE: '/auth/profile',
         CHANGE_PASSWORD:'/auth/change-password',
         USER_STATUS:'/auth/status',
+        RESULT_SAVE_QUESTION: '/result/save-question',
+        RESULT_COMPLETED: '/result/complete-quiz'
     }
 }
 

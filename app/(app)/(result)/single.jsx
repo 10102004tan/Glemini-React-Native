@@ -3,9 +3,11 @@ import { View, Text, Image } from 'react-native';
 import Button from '../../../components/customs/Button'; // Sử dụng Button tùy chỉnh
 import Icon from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useAuthContext } from '@/contexts/AuthContext';
+
 const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleRestart }) => {
-	console.log(correctCount, wrongCount);
-	
+	// console.log(correctCount, wrongCount);
+	const {userData} = useAuthContext()
 	const correctPercentage = (correctCount / totalQuestions) * 100;
     const wrongPercentage = (wrongCount / totalQuestions) * 100;
 
@@ -57,7 +59,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 				/>
 				<View className="flex ml-5 justify-around">
 					<Text className="text-lg text-slate-200">
-						Tên người chơi
+						{userData.user_fullname}
 					</Text>
 					<Text className="bg-slate-500 rounded-full text-sm px-2 text-slate-200">
 						{' '}
