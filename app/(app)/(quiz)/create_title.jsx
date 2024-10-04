@@ -7,27 +7,29 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { useAppProvider } from '@/contexts/AppProvider';
+import { API_URL, END_POINTS, API_VERSION } from '@/configs/api.config';
 const CreateTitleQuizzScreen = () => {
 	const { userData } = useAuthContext();
 	const [quizName, setQuizName] = useState('');
 	const { setNeedUpdate, setSelectedQuiz } = useQuizProvider();
-	const { apiUrl } = useAppProvider();
 	const handleCreateQuizTitle = async () => {
 		// Xử lý tạo quiz rỗng
 		if (userData) {
-			const response = await fetch(apiUrl + '/quizzes/create', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'x-client-id': userData._id,
-					authorization: userData.accessToken,
-				},
-				body: JSON.stringify({
-					user_id: userData._id,
-					quiz_name: quizName,
-				}),
-			});
+			const response = await fetch(
+				`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_CREATE}`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'x-client-id': userData._id,
+						authorization: userData.accessToken,
+					},
+					body: JSON.stringify({
+						user_id: userData._id,
+						quiz_name: quizName,
+					}),
+				}
+			);
 			const data = await response.json();
 			console.log(data);
 			if (data.statusCode === 200) {
