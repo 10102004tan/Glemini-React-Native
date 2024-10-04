@@ -1,92 +1,275 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
-import Button from '../../../components/customs/Button'; // Sử dụng Button tùy chỉnh
-import ResultSingle from '../(result)/single'; // Import component kết quả
+import { View, Text, TouchableOpacity } from 'react-native';
+import Button from '../../../components/customs/Button';
+import ResultSingle from '../(result)/single';
+import { useAuthContext } from '@/contexts/AuthContext';
+import Toast from 'react-native-toast-message';
+import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
 
 const SinglePlay = () => {
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-	const [selectedAnswer, setSelectedAnswer] = useState(null);
+	const [selectedAnswers, setSelectedAnswers] = useState([]);
+	const [correctCount, setCorrectCount] = useState(0);
+	const [wrongCount, setWrongCount] = useState(0);
 	const [score, setScore] = useState(0);
 	const [isCompleted, setIsCompleted] = useState(false);
+	const [isCorrect, setIsCorrect] = useState(false);
 	const [isChosen, setIsChosen] = useState(false);
-	const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
 	const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
-	const [buttonText, setButtonText] = useState('Xác nhận'); 
-	const [buttonColor, setButtonColor] = useState('bg-white'); 
-	const [buttonTextColor, setButtonTextColor] = useState('text-black'); 
+	const [buttonText, setButtonText] = useState('Xác nhận');
+	const [buttonColor, setButtonColor] = useState('bg-white');
+	const [buttonTextColor, setButtonTextColor] = useState('text-black');
+	const { userData } = useAuthContext();
+	const [isProcessing, setIsProcessing] = useState(false);
 
 	// Danh sách câu hỏi
-	const questions = [
+	const [questions, setQuestions] = useState([
 		{
-			question: 'What is the capital of France?',
-			answers: ['Paris', 'London', 'Berlin', 'Rome'],
-			correctAnswer: 'Paris',
+			_id: 1,
+			quiz_id: 1,
+			question_excerpt: 'Thủ đô của Pháp là gì?',
+			question_description: 'Đây là một câu hỏi kiểm tra kiến thức.',
+			question_image: '',
+			question_audio: '',
+			question_video: '',
+			question_point: 10,
+			question_time: 10,
+			question_explanation: 'Thủ đô của Pháp là Paris.',
+			question_type: 'single',
+			question_answer_ids: [
+				{ _id: 1, text: "Paris", image: null },
+				{ _id: 2, text: "Hà Nội", image: null },
+				{ _id: 3, text: "London", image: null },
+				{ _id: 4, text: "Tokyo", image: null },
+			],
+			question_correct: [1],
 		},
 		{
-			question: 'Who wrote "Hamlet"?',
-			answers: ['Shakespeare', 'Tolstoy', 'Hemingway', 'Austen'],
-			correctAnswer: 'Shakespeare',
+			_id: 2,
+			quiz_id: 1,
+			question_excerpt: 'Hành tinh lớn nhất trong hệ Mặt Trời là gì?',
+			question_description: 'Đây là một câu hỏi kiểm tra kiến thức.',
+			question_image: '',
+			question_audio: '',
+			question_video: '',
+			question_point: 1,
+			question_time: 10,
+			question_explanation: 'Hành tinh lớn nhất trong hệ Mặt Trời là Sao Mộc.',
+			question_type: 'single',
+			question_answer_ids: [
+				{ _id: 1, text: "Trái Đất", image: null },
+				{ _id: 2, text: "Sao Hỏa", image: null },
+				{ _id: 3, text: "Sao Mộc", image: null },
+				{ _id: 4, text: "Sao Thổ", image: null },
+			],
+			question_correct: [3],
 		},
 		{
-			question: 'What is the largest planet in our solar system?',
-			answers: ['Earth', 'Mars', 'Jupiter', 'Saturn'],
-			correctAnswer: 'Jupiter',
+			_id: 3,
+			quiz_id: 1,
+			question_excerpt: 'Ai là người sáng lập ra nước Việt Nam Dân chủ Cộng hòa?',
+			question_description: 'Câu hỏi lịch sử Việt Nam.',
+			question_image: '',
+			question_audio: '',
+			question_video: '',
+			question_point: 10,
+			question_time: 10,
+			question_explanation: 'Người sáng lập ra nước Việt Nam Dân chủ Cộng hòa là Chủ tịch Hồ Chí Minh.',
+			question_type: 'single',
+			question_answer_ids: [
+				{ _id: 1, text: "Chủ tịch Hồ Chí Minh", image: null },
+				{ _id: 2, text: "Lê Duẩn", image: null },
+				{ _id: 3, text: "Phạm Văn Đồng", image: null },
+				{ _id: 4, text: "Võ Nguyên Giáp", image: null },
+			],
+			question_correct: [1],
 		},
-	];
+		{
+			_id: 4,
+			quiz_id: 1,
+			question_excerpt: 'Quốc gia nào có diện tích lớn nhất thế giới?',
+			question_description: 'Câu hỏi địa lý.',
+			question_image: '',
+			question_audio: '',
+			question_video: '',
+			question_point: 5,
+			question_time: 10,
+			question_explanation: 'Quốc gia có diện tích lớn nhất thế giới là Nga.',
+			question_type: 'single',
+			question_answer_ids: [
+				{ _id: 1, text: "Hoa Kỳ", image: null },
+				{ _id: 2, text: "Trung Quốc", image: null },
+				{ _id: 3, text: "Canada", image: null },
+				{ _id: 4, text: "Nga", image: null },
+			],
+			question_correct: [4],
+		},
+		{
+			_id: 5,
+			quiz_id: 1,
+			question_excerpt: 'Loài động vật nhanh nhất trên cạn là gì?',
+			question_description: 'Câu hỏi về thế giới động vật.',
+			question_image: '',
+			question_audio: '',
+			question_video: '',
+			question_point: 8,
+			question_time: 10,
+			question_explanation: 'Loài đông vật sống trên cạn.',
+			question_type: 'multiple',
+			question_answer_ids: [
+				{ _id: 1, text: "Báo", image: null },
+				{ _id: 2, text: "Sư tử", image: null },
+				{ _id: 3, text: "Cá heo", image: null },
+				{ _id: 4, text: "Tôm hùm", image: null },
+			],
+			question_correct: [3, 4],
+		},
+	]);
 
-	const handleAnswerPress = (answer) => {
-		setSelectedAnswer(answer);
-		setIsChosen(true);
-		setButtonColor('bg-[#0D70D2]'); // Chuyển sang nền xanh dương khi chọn đáp án
-		setButtonTextColor('text-white'); // Chuyển chữ thành trắng khi chọn đáp án
+	const saveQuestionResult = async (questionId, answerId, correct, score) => {
+		try {
+			const response = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_SAVE_QUESTION, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({
+					exercise_id: null,
+					user_id: userData._id,
+					quiz_id: questions[currentQuestionIndex].quiz_id,
+					question_id: questionId,
+					answer: answerId,
+					correct,
+					score,
+				}),
+			});
+		} catch (error) {
+			console.error('Lỗi khi lưu kết quả:', error);
+		}
 	};
 
+	const completed = async () => {
+		try {
+			const response = await fetch(API_URL + API_VERSION.V1 +  END_POINTS.RESULT_COMPLETED, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({
+					exercise_id: null,
+					user_id: userData._id,
+					quiz_id: questions[0].quiz_id,
+					status: 'Đã hoàn thành',
+				}),
+			});
+
+		} catch (error) {
+			console.error('Lỗi khi cập nhật trạng thái hoàn thành:', error);
+		}
+	};
+
+
+	const handleAnswerPress = (answerId) => {
+
+		// Nếu câu hỏi là single-choice, chỉ cần lưu một đáp án
+		if (questions[currentQuestionIndex].question_type === 'single') {
+			setSelectedAnswers([answerId]);
+			setIsChosen(true);
+			setButtonColor('bg-[#0D70D2]');
+			setButtonTextColor('text-white');
+		} else {
+			// Nếu là multiple-choice, lưu nhiều đáp án
+			if (selectedAnswers.includes(answerId)) {
+				setSelectedAnswers(selectedAnswers.filter(id => id !== answerId));
+			} else {
+				setSelectedAnswers([...selectedAnswers, answerId]);
+			}
+		}
+	};
+
+
 	const handleSubmit = () => {
-		if (selectedAnswer === null) {
-			Alert.alert('Vui lòng chọn đáp án!!');
+
+		if (isProcessing) return;
+		setIsProcessing(true);
+
+		if (selectedAnswers.length === 0) {
+			Toast.show({
+				type: 'error',
+				text1: 'Cảnh báo!',
+				text2: 'Vui lòng chọn ít nhất một đáp án!',
+			});
+			setIsProcessing(false);
 			return;
 		}
 
-		const correctAnswer = questions[currentQuestionIndex].correctAnswer;
+		const currentQuestion = questions[currentQuestionIndex];
+		const correctAnswerIds = currentQuestion.question_correct;
 
-		// Kiểm tra câu trả lời đúng sai và cập nhật trạng thái
-		if (selectedAnswer === correctAnswer) {
-			setScore(score + 10);
-			setIsAnswerCorrect(true);
-			setButtonColor('bg-[#4CAF50]');
-			setButtonText('+10 điểm!');
+		let isAnswerCorrect;
+
+		if (currentQuestion.question_type === 'single') {
+			isAnswerCorrect = selectedAnswers[0] === correctAnswerIds[0];
 		} else {
-			setIsAnswerCorrect(false);
+			isAnswerCorrect =
+				selectedAnswers.length === correctAnswerIds.length &&
+				selectedAnswers.every((answerId) => correctAnswerIds.includes(answerId));
+		}
+
+		if (isAnswerCorrect) {
+			setIsCorrect(true);
+			setCorrectCount(correctCount + 1);
+			setScore(score + currentQuestion.question_point);
+			setButtonColor('bg-[#4CAF50]');
+			setButtonText(`+${currentQuestion.question_point} điểm!`);
+		} else {
+			setIsCorrect(false);
+			setWrongCount(wrongCount + 1);
 			setButtonColor('bg-[#F44336]');
 			setButtonText('Sai rồi!!');
 		}
 
+		saveQuestionResult(
+			currentQuestion._id,
+			selectedAnswers,
+			isAnswerCorrect,
+			currentQuestion.question_point
+		);
+
 		setShowCorrectAnswer(true);
 
-		// Sau một khoảng thời gian ngắn, chuyển sang câu tiếp theo
 		setTimeout(() => {
+			setIsProcessing(false)
 			if (currentQuestionIndex < questions.length - 1) {
 				setCurrentQuestionIndex(currentQuestionIndex + 1);
-				setSelectedAnswer(null);
+				setSelectedAnswers([]);
 				setIsChosen(false);
 				setShowCorrectAnswer(false);
-				setIsAnswerCorrect(null);
 				setButtonText('Xác nhận');
 				setButtonColor('bg-white');
 				setButtonTextColor('text-black');
 			} else {
 				setIsCompleted(true);
+				completed();
 			}
 		}, 1500);
 	};
 
+
+
 	const handleRestart = () => {
+		setIsCorrect(false)
 		setCurrentQuestionIndex(0);
+		setCorrectCount(0);
+		setWrongCount(0);
 		setScore(0);
 		setIsCompleted(false);
-		setSelectedAnswer(null);
+		setSelectedAnswers([]);
 		setIsChosen(false);
-		setIsAnswerCorrect(null);
 		setShowCorrectAnswer(false);
 		setButtonText('Xác nhận');
 		setButtonColor('bg-white');
@@ -94,12 +277,13 @@ const SinglePlay = () => {
 	};
 
 	if (isCompleted) {
-		// Hiển thị kết quả khi hoàn thành
 		return (
 			<ResultSingle
+				correctCount={correctCount}
+				wrongCount={wrongCount}
 				score={score}
+				totalQuestions={questions.length}
 				handleRestart={handleRestart}
-				questions={questions}
 			/>
 		);
 	}
@@ -127,58 +311,63 @@ const SinglePlay = () => {
 					{`Điểm: ${score}`}
 				</Text>
 				<View className="bg-[#484E54] rounded-lg px-3 py-10">
+					<Text className="text-sm font-pregular text-slate-200">
+						{"Câu hỏi số:  " + (currentQuestionIndex + 1) + " / " + questions.length}
+					</Text>
 					<Text className="text-2xl font-pregular text-white">
-						{questions[currentQuestionIndex].question}
+						{questions[currentQuestionIndex].question_excerpt}
 					</Text>
 				</View>
 
 				<View>
-					{questions[currentQuestionIndex].answers.map(
-						(answer, index) => {
-							// Tạo điều kiện để hiển thị màu nền dựa trên kết quả đúng/sai
-							let backgroundColor = '#484E54'; // Mặc định
-							if (showCorrectAnswer) {
-								if (
-									answer ===
-									questions[currentQuestionIndex]
-										.correctAnswer
-								) {
-									backgroundColor = '#4CAF50'; // Xanh lá nếu là đáp án đúng
-								} else if (answer === selectedAnswer) {
-									backgroundColor = '#F44336'; // Đỏ nếu là đáp án sai
+					{questions[currentQuestionIndex].question_answer_ids.map((answer, index) => {
+						let backgroundColor = '#484E54';
+						if (showCorrectAnswer) {
+							if (questions[currentQuestionIndex].question_type === 'single') {
+								if (answer._id === questions[currentQuestionIndex].question_correct[0]) {
+									backgroundColor = '#4CAF50';
+								} else if (answer._id === selectedAnswers[0]) {
+									backgroundColor = '#F44336';
 								}
-							} else if (selectedAnswer === answer) {
-								backgroundColor = '#0D70D2'; // Màu khi người dùng chọn
+							} else {
+								if (questions[currentQuestionIndex].question_correct.includes(answer._id)) {
+									backgroundColor = '#4CAF50';
+								} else if (selectedAnswers.includes(answer._id)) {
+									backgroundColor = '#F44336';
+								}
 							}
-
-							return (
-								<TouchableOpacity
-									key={index}
-									onPress={() => handleAnswerPress(answer)}
-									style={{
-										backgroundColor,
-										padding: 10,
-										marginVertical: 5,
-										borderRadius: 5,
-									}}
-									disabled={showCorrectAnswer} // Vô hiệu hóa nút khi đang hiển thị đáp án đúng
-								>
-									<Text className="text-white font-pregular text-lg m-4">
-										{answer}
-									</Text>
-								</TouchableOpacity>
-							);
+						} else if (selectedAnswers.includes(answer._id)) {
+							backgroundColor = '#0D70D2';
 						}
-					)}
+
+						return (
+							<TouchableOpacity
+								key={index}
+								onPress={() => handleAnswerPress(answer._id)}
+								style={{
+									backgroundColor,
+									padding: 10,
+									marginVertical: 5,
+									borderRadius: 5,
+								}}
+								disabled={showCorrectAnswer}
+							>
+								<Text className="text-white font-pregular text-lg m-4">
+									{answer.text}
+								</Text>
+							</TouchableOpacity>
+						);
+					})}
 				</View>
 
+
 				<Button
-					text={buttonText} // Text của button thay đổi dựa vào kết quả
+					text={buttonText}
 					onPress={handleSubmit}
 					type="fill"
-					otherStyles={`${buttonColor} p-4`} // Màu nền của button
-					textStyles={`${buttonTextColor} text-center text-lg`} // Màu chữ của button
-					disabled={!isChosen || showCorrectAnswer} // Vô hiệu hóa nút nếu chưa chọn câu hoặc đang hiển thị đáp án
+					otherStyles={`${buttonColor} p-4`}
+					textStyles={`text-white ${buttonTextColor} mx-auto text-lg`}
+					disabled={!isChosen || showCorrectAnswer}
 				/>
 			</View>
 		</View>

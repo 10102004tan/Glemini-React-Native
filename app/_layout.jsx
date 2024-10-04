@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import AppProvider from '@/contexts/AppProvider';
 import { AuthProvider } from '@/contexts/AuthContext';
-
+import Toast from 'react-native-toast-message';
 import QuestionProvider from '@/contexts/QuestionProvider';
 import QuizProvider from '@/contexts/QuizProvider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -48,6 +48,7 @@ export default function RootLayout() {
 						</QuestionProvider>
 					</QuizProvider>
 				</AuthProvider>
+				<Toast/>
 			</AppProvider>
 		</GestureHandlerRootView>
 	);
