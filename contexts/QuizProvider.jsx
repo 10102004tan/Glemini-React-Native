@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuthContext } from './AuthContext';
-const API_URL = 'http://192.168.1.8:8000/api/v1/quizzes';
+import { useAppProvider } from './AppProvider';
 const QuizContext = createContext();
 
 const QuizProvider = ({ children }) => {
@@ -11,10 +11,14 @@ const QuizProvider = ({ children }) => {
 	// const [createQuestionType, setCreateQuestionType] = useState('multiple');
 	const { userData } = useAuthContext();
 	const [needUpdate, setNeedUpdate] = useState(false);
+	const [quizFetching, setQuizFetching] = useState(false);
+	const [questionFetching, setQuestionFetching] = useState(false);
+	const { apiUrl } = useAppProvider();
 
 	// Get all quizzes of the user
 	const fetchQuizzes = async () => {
-		const response = await fetch(`${API_URL}/get-by-user`, {
+		setQuizFetching(true);
+		const response = await fetch(`${apiUrl}/quizzes/get-by-user`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -24,15 +28,17 @@ const QuizProvider = ({ children }) => {
 			body: JSON.stringify({ user_id: userData._id }),
 		});
 		const data = await response.json();
-		// console.log(data);
+
 		if (data.statusCode === 200) {
 			setQuizzes(data.metadata);
+			setQuizFetching(false);
 		}
+		// Handle error when fetch quizzes
 	};
 	// Get all questions of the selected quiz
 	const fetchQuestions = async () => {
-		console.log('first');
-		const response = await fetch(`${API_URL}/get-questions`, {
+		setQuestionFetching(true);
+		const response = await fetch(`${apiUrl}/quizzes/get-questions`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -42,12 +48,13 @@ const QuizProvider = ({ children }) => {
 			body: JSON.stringify({ quiz_id: selectedQuiz._id }),
 		});
 		const data = await response.json();
-		console.log(data.metadata);
+		// console.log(data.metadata);
 		if (data.statusCode === 200) {
 			setCurrentQuizQuestion(data.metadata);
 		} else {
 			setCurrentQuizQuestion([]);
 		}
+		setQuestionFetching(false);
 	};
 
 	// Get all quizzes of the user
@@ -67,7 +74,7 @@ const QuizProvider = ({ children }) => {
 
 	// Get all questions of the selected quiz
 	useEffect(() => {
-		console.log(selectedQuiz._id);
+		// console.log(selectedQuiz._id);
 		if (userData && selectedQuiz._id) {
 			fetchQuizzes();
 			fetchQuestions();
@@ -87,6 +94,8 @@ const QuizProvider = ({ children }) => {
 				setCurrentQuizQuestion,
 				actionQuizType,
 				setActionQuizType,
+				quizFetching,
+				questionFetching,
 			}}
 		>
 			{children}

@@ -3,10 +3,13 @@ import { Slot } from 'expo-router';
 import { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
+import { useAppProvider } from './AppProvider';
+
 import { API_URL, END_POINTS, API_VERSION } from '../configs/api.config';
 
 export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
+	const { apiUrl } = useAppProvider();
 	const [isLoading, setIsLoading] = useState(true);
 	const [userData, setUserData] = useState(null);
 	const [teacherStatus, setTeacherStatus] = useState(null);	
@@ -21,6 +24,7 @@ export const AuthProvider = ({ children }) => {
 		fetchAccessToken();
 	}, []);
 	const signIn = async ({ email, password }) => {
+		// const response = await fetch(apiUrl + '/login', {
 		const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.LOGIN}`, {
 			method: 'POST',
 			headers: {
@@ -58,8 +62,8 @@ export const AuthProvider = ({ children }) => {
 
 		return data.message;
 	};
-	const signUp = async ({ email, password, fullname, type, images }) => {
 
+	const signUp = async ({ email, password, fullname, type, images }) => {
 		let formData = new FormData();
 		formData.append('email', email);
 		formData.append('password', password);
@@ -77,6 +81,7 @@ export const AuthProvider = ({ children }) => {
 		}
 
 		const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.SIGN_UP}`, {
+
 			method: 'POST',
 			headers: {
 				'Content-Type': 'multipart/form-data',
@@ -110,7 +115,9 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	const signOut = async () => {
+
 		const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.LOGOUT}`, {
+
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -136,7 +143,9 @@ export const AuthProvider = ({ children }) => {
 	const changePassword = async ({ oldPassword, newPassword }) => {
 		if (!userData) return;
 		const { accessToken, _id: user_id } = userData;
+
 		const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.CHANGE_PASSWORD}`, {
+
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -180,7 +189,9 @@ export const AuthProvider = ({ children }) => {
 	 * @description : Xu ly khi access token het han, su dung refresh token de lay access token moi
 	 */
 	const processAccessTokenExpired = async () => {
+
 		const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.REFRESH_TOKEN}`, {
+
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

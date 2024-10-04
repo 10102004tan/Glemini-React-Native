@@ -34,7 +34,7 @@ const EditQuizQuestion = () => {
 	const { isHiddenNavigationBar } = useAppProvider();
 	const [selectedPoint, setSelectedPoint] = useState(1); // số điểm được chọn
 	const [selectedTime, setSelectedTime] = useState(30); // thời gian được chọn
-	const [mutipleChoice, setMutipleChoice] = useState(false); // cho phép chọn nhiều đáp án
+	const [mutipleChoice, setMutipleChoice] = useState(true); // cho phép chọn nhiều đáp án
 	const [showQuestionBoard, setShowQuestionBoard] = useState(false); // hiển thị giải thích cho câu hỏi
 	const [editorType, setEditorType] = useState(''); // loại editor
 	const [editorContent, setEditorContent] = useState(''); // nội dung của editor
@@ -73,6 +73,10 @@ const EditQuizQuestion = () => {
 		setPointBotttomSheetVisible(false);
 		setTimeBotttomSheetVisible(false);
 	};
+
+	// useEffect(() => {
+	// 	console.log(JSON.parse(JSON.stringify(question)));
+	// }, [question]);
 
 	return (
 		<Wrapper>
@@ -241,9 +245,7 @@ const EditQuizQuestion = () => {
 										setAnswerEditSelected(answer._id);
 										setShowQuestionBoard(true);
 									}}
-									isCorrect={
-										answer.correct ? answer.correct : false
-									}
+									isCorrect={answer.correct}
 									key={index}
 									answer={answer.text}
 									color={Colors.answerColors[index]}
