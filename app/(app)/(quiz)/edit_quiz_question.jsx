@@ -57,22 +57,22 @@ const EditQuizQuestion = () => {
 	const [answerEditSelected, setAnswerEditSelected] = useState(0); // đáp án được chọn
 	const { width } = useWindowDimensions();
 
-	// Khi người dùng chuyển từ chế độ chọn nhiều câu hỏi sang một câu hỏi thì bỏ chọn tất cả
-	useEffect(() => {
-		if (!mutipleChoice) {
-			resetMarkCorrectAnswer();
-		}
-	}, [mutipleChoice]);
+  // Khi người dùng chuyển từ chế độ chọn nhiều câu hỏi sang một câu hỏi thì bỏ chọn tất cả
+  useEffect(() => {
+    if (!mutipleChoice) {
+      resetMarkCorrectAnswer();
+    }
+  }, [mutipleChoice]);
 
-	// Đóng edit board
-	const closeEditBoard = () => {
-		setShowQuestionBoard(false);
-		setAnswerEditSelected(0);
-		setEditorContent('');
-		setEditorType('');
-		setPointBotttomSheetVisible(false);
-		setTimeBotttomSheetVisible(false);
-	};
+  // Đóng edit board
+  const closeEditBoard = () => {
+    setShowQuestionBoard(false);
+    setAnswerEditSelected(0);
+    setEditorContent("");
+    setEditorType("");
+    setPointBotttomSheetVisible(false);
+    setTimeBotttomSheetVisible(false);
+  };
 
 	// useEffect(() => {
 	// 	console.log(JSON.parse(JSON.stringify(question)));
