@@ -10,10 +10,14 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as ImagePicker from 'expo-image-picker';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import { Status } from '@/constants';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 	const [editorValue, setEditorValue] = useState('');
 	const { question, setQuestion, editAnswerContent } = useQuestionProvider();
+	const { userData } = useAuthContext();
+	const { apiUrl } = useAppProvider();
 	const richText = React.useRef();
 
 	useEffect(() => {
@@ -71,21 +75,24 @@ const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 	// Hàm tải ảnh lên server
 	const uploadImage = async (imageUri) => {
 		const formData = new FormData();
-		formData.append('image', {
+		formData.append('question_image', {
 			uri: imageUri,
 			name: 'photo.jpg',
 			type: 'image/jpeg',
 		});
 
-		const response = await fetch('http://192.168.1.8:3000/upload', {
+		const response = await fetch(apiUrl + '/questions/upload', {
 			method: 'POST',
 			body: formData,
 			headers: {
 				'Content-Type': 'multipart/form-data',
+				'x-client-id': userData._id,
+				authorization: userData.accessToken,
 			},
 		});
 
 		const data = await response.json();
+		console.log(data);
 		return data.url; // URL của ảnh trên server
 	};
 	// Hàm chọn ảnh từ thư viện
@@ -114,7 +121,7 @@ const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 			<ScrollView className="">
 				<RichEditor
 					defaultParagraphSeparator=""
-					initialContentHTML={`${content}`}
+					initialContentHTML={`<div>${content}</div>`}
 					placeholder="Nhập giải thích cho câu hỏi ở đây ..."
 					style={{ width: '100%', height: 300 }}
 					ref={richText}

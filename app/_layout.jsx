@@ -9,8 +9,11 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import QuestionProvider from '@/contexts/QuestionProvider';
 import QuizProvider from '@/contexts/QuizProvider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { LogBox } from 'react-native';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+// Bỏ qua cảnh báo chứa chuỗi "defaultProps"
+LogBox.ignoreLogs(['defaultProps']);
 
 export default function RootLayout() {
   const [loaded] = useFonts({
