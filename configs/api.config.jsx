@@ -20,6 +20,8 @@ const dev = {
 		QUESTION_CREATE: '/questions/create',
 		QUIZ_DETAIL: '/quizzes/get-details',
 		QUIZ_CREATE: '/quizzes/create',
+    RESULT_SAVE_QUESTION: '/result/save-question',
+    RESULT_COMPLETED: '/result/complete-quiz'
 	},
 };
 
