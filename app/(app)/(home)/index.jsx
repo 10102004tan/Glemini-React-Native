@@ -44,7 +44,7 @@ export default function HomeScreen() {
       />
       <Button
         onPress={() => {
-          router.push("(app)/(quiz)/(detail)/66fe53f56cdf93ac41f85885");
+          router.push("(app)/(quiz)/(detail)/66ff90ec69a02759b89ef55c");
         }}
         text={"Quizz Detail"}
         otherStyles={"mt-4 p-4"}

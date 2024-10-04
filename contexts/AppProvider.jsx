@@ -7,7 +7,6 @@ const AppContext = createContext();
 
 // Example about a context provider in React Native
 const AppProvider = ({ children }) => {
-  const [apiUrl, setApiUrl] = useState("http://192.168.0.100:8000/api/v1");
   const [language, setLanguage] = useState("vi");
   const i18n = new I18n({
     en,
@@ -32,7 +31,6 @@ const AppProvider = ({ children }) => {
         setTheme,
         isHiddenNavigationBar,
         setIsHiddenNavigationBar,
-        apiUrl,
         language,
         i18n,
         setLanguage,

@@ -14,11 +14,20 @@ import { SelectList } from "react-native-dropdown-select-list";
 import { AuthContext, useAuthContext } from "@/contexts/AuthContext";
 import { useGlobalSearchParams } from "expo-router";
 import { useQuizProvider } from "@/contexts/QuizProvider";
+import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
+import QuestionOverview from "@/components/customs/QuestionOverview";
 
 const detailquizz = () => {
   const { detail_quiz } = useGlobalSearchParams();
   const { userData } = useAuthContext();
-  const { selectedQuiz, setSelectedQuiz } = useQuizProvider();
+  const {
+    selectedQuiz,
+    setSelectedQuiz,
+    currentQuizQuestion,
+    setCurrentQuizQuestion,
+    quizFetching,
+    questionFetching,
+  } = useQuizProvider();
 
   const [quizInfo, setQuizInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,12 +35,14 @@ const detailquizz = () => {
   const { isHiddenNavigationBar, setIsHiddenNavigationBar } = useAppProvider();
   const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
   const [visibleEditBottomSheet, setVisibleEditBottomSheet] = useState(false);
+
+  //selectlist
   const [selectedSchool, setSelectedSchool] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
 
   const fetchQuiz = async () => {
     const response = await fetch(
-      `http://192.168.0.100:8000/api/v1/quizzes/get-details`,
+      `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`,
       {
         method: "POST",
         headers: {
@@ -50,9 +61,10 @@ const detailquizz = () => {
       setSelectedQuiz(data.metadata);
     }
   };
+
   useEffect(() => {
     // Lấy dữ liệu của quiz hiện tại
-    if (userData) {
+    if (userData && detail_quiz) {
       fetchQuiz();
     }
   }, [detail_quiz, userData]);
@@ -197,50 +209,23 @@ const detailquizz = () => {
       </View>
 
       <View className="flex m-4 ">
-        <View className="w-full border rounded-xl mt-4">
-          <View className="flex-row m-2">
-            <View className="w-[35px] h-[35px] bg-black flex justify-center items-center rounded-md">
-              <Text className="text-white">1</Text>
-            </View>
-            <Text className="ml-3 mt-2">Loại câu hỏi</Text>
-            <Text className="ml-[130px] mt-2 text-gray ">30 giây - 1 điểm</Text>
+        {/* Quiz Questions */}
+        {questionFetching ? (
+          <Text>Loading</Text>
+        ) : (
+          <View className="mt-2 p-4">
+            {currentQuizQuestion.length > 0 &&
+              currentQuizQuestion.map((question, index) => {
+                return (
+                  <QuestionOverview
+                    key={index}
+                    question={question}
+                    index={index}
+                  />
+                );
+              })}
           </View>
-          <Text className="ml-2 font-bold">Đây là nội dung của câu hỏi</Text>
-
-          <View className="flex-col ml-2 mt-8">
-            <View className="flex-row">
-              <View className="w-[15px] h-[15px] bg-green-500  flex justify-center items-center">
-                <AntDesign name="check" size={12} color="white" />
-              </View>
-              <Text className="ml-2">Đáp án chính xác</Text>
-            </View>
-
-            <View className="flex-row mt-1">
-              <View className="w-[15px] h-[15px] bg-red-600  flex justify-center items-center rounded-[15px]">
-                <AntDesign name="close" size={12} color="white" />
-              </View>
-              <Text className="ml-2">Đáp án không chính xác</Text>
-            </View>
-
-            <View className="flex-row mt-1">
-              <View className="w-[15px] h-[15px] bg-red-600  flex justify-center items-center rounded-[15px]">
-                <AntDesign name="close" size={12} color="white" />
-              </View>
-              <Text className="ml-2">Đáp án không chính xác</Text>
-            </View>
-
-            <View className="flex-row mt-1">
-              <View className="w-[15px] h-[15px] bg-red-600  flex justify-center items-center rounded-[15px]">
-                <AntDesign name="close" size={12} color="white" />
-              </View>
-              <Text className="ml-2">Đáp án không chính xác</Text>
-            </View>
-          </View>
-
-          <Text className="text-gray flex p-1 text-right mr-1">
-            Xem giải thích
-          </Text>
-        </View>
+        )}
       </View>
       <View className="w-full h-[1px] bg-gray mt-[320px]"></View>
       <View className="p-2">

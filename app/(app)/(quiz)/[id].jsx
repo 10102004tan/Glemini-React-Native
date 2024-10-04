@@ -4,7 +4,6 @@ import Wrapper from '../../../components/customs/Wrapper';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Button from '../../../components/customs/Button';
-import { useAppProvider } from '../../../contexts/AppProvider';
 import Overlay from '../../../components/customs/Overlay';
 import BottomSheet from '../../../components/customs/BottomSheet';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -14,6 +13,8 @@ import QuestionOverview from '../../../components/customs/QuestionOverview';
 import { useQuestionProvider } from '../../../contexts/QuestionProvider';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
 import { useAuthContext } from '../../../contexts/AuthContext';
+import { API_URL, END_POINTS, API_VERSION } from '@/configs/api.config';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 const QuizzOverViewScreen = () => {
 	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
@@ -21,7 +22,6 @@ const QuizzOverViewScreen = () => {
 	// const { questions } = useQuestionProvider();
 	const { id } = useGlobalSearchParams();
 	const { userData } = useAuthContext();
-	const { apiUrl } = useAppProvider();
 	const {
 		selectedQuiz,
 		setSelectedQuiz,
@@ -37,15 +37,18 @@ const QuizzOverViewScreen = () => {
 	const { resetQuestion } = useQuestionProvider();
 
 	const fetchQuiz = async () => {
-		const response = await fetch(apiUrl + `/quizzes/get-details`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'x-client-id': userData._id,
-				authorization: userData.accessToken,
-			},
-			body: JSON.stringify({ quiz_id: id }),
-		});
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({ quiz_id: id }),
+			}
+		);
 
 		const data = await response.json();
 		// console.log(data);
