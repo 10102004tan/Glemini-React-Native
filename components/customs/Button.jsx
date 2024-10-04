@@ -13,20 +13,6 @@ const Button = ({
 	type = 'fill',
 	loading = false,
 }) => {
-<<<<<<< HEAD
-  const { theme } = useAppProvider();
-  return (
-    <TouchableOpacity
-      onPress={() => {
-        onPress();
-      }}
-      className={`p-2 rounded-xl bg-primary   ${otherStyles}`}
-    >
-      {icon}
-      <Text className={`text-white ml-2 ${textStyles}`}>{text}</Text>
-    </TouchableOpacity>
-  );
-=======
 	const { theme } = useAppProvider();
 	return (
 		<TouchableOpacity
@@ -39,7 +25,6 @@ const Button = ({
 			<Text className={`text-white ${textStyles}`}>{text}</Text>
 		</TouchableOpacity>
 	);
->>>>>>> 7a60115e676432779a7bf97e5394a78179fb4b55
 };
 
 export default Button;

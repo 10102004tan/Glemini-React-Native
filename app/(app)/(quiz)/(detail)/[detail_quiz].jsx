@@ -11,38 +11,51 @@ import BottomSheet from "@/components/customs/BottomSheet";
 import Overlay from "@/components/customs/Overlay";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { SelectList } from "react-native-dropdown-select-list";
-import UserProvider from "@/contexts/UserProvider";
+import { AuthContext, useAuthContext } from "@/contexts/AuthContext";
+import { useGlobalSearchParams } from "expo-router";
+import { useQuizProvider } from "@/contexts/QuizProvider";
 
 const detailquizz = () => {
+  const { detail_quiz } = useGlobalSearchParams();
+  const { userData } = useAuthContext();
+  const { selectedQuiz, setSelectedQuiz } = useQuizProvider();
+
   const [quizInfo, setQuizInfo] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch quiz data from API
-  useEffect(() => {
-    const fetchQuizData = async () => {
-      try {
-        const response = await fetch(
-          "http://192.168.1.221:8000/api/v1/quizzes"
-        );
-        const data = await response.json();
-        setQuizInfo(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch quiz data", error);
-        setLoading(false);
+  const { isHiddenNavigationBar, setIsHiddenNavigationBar } = useAppProvider();
+  const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
+  const [visibleEditBottomSheet, setVisibleEditBottomSheet] = useState(false);
+  const [selectedSchool, setSelectedSchool] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
+
+  const fetchQuiz = async () => {
+    const response = await fetch(
+      `http://192.168.1.221:8000/api/v1/quizzes/get-details`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-client-id": userData._id,
+          authorization: userData.accessToken,
+        },
+        body: JSON.stringify({ quiz_id: detail_quiz }),
       }
-    };
+    );
 
-    fetchQuizData();
-  }, []);
-
-  if (loading) {
-    return <Text>Loading...</Text>;
-  }
-
-  if (!quizInfo) {
-    return <Text>No quiz data available</Text>;
-  }
+    const data = await response.json();
+    console.log(data);
+    console.log(detail_quiz);
+    if (data.statusCode === 200) {
+      setSelectedQuiz(data.metadata);
+    }
+  };
+  useEffect(() => {
+    // Lấy dữ liệu của quiz hiện tại
+    if (userData) {
+      fetchQuiz();
+    }
+  }, [detail_quiz, userData]);
 
   //Dropdown
   const nameSchool = [
@@ -65,12 +78,6 @@ const detailquizz = () => {
     { title: "CD22TT11" },
   ];
 
-  const { isHiddenNavigationBar, setIsHiddenNavigationBar } = useAppProvider();
-  const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
-  const [visibleEditBottomSheet, setVisibleEditBottomSheet] = useState(false);
-  const [selectedSchool, setSelectedSchool] = useState("");
-  const [selectedClass, setSelectedClass] = useState("");
-
   // BottomSheet
   const OpenBottomSheet = () => {
     setIsHiddenNavigationBar(true);
@@ -86,6 +93,7 @@ const detailquizz = () => {
     setVisibleBottomSheet(false);
     setVisibleEditBottomSheet(false);
   };
+
   return (
     <Wrapper>
       {/* Overlay */}
@@ -161,18 +169,21 @@ const detailquizz = () => {
         </View>
         <View className="h-[100px] w-full border rounded-xl mt-4 flex-row">
           <View className="flex justify-center items-center ml-2">
-            <Image
+            {/* <Image
               source={
-                quizInfo && quizInfo.quiz_thumb
-                  ? { uri: `http://192.168.1.8:8000${quizInfo.quiz_thumb}` }
+                selectedQuiz && selectedQuiz.quiz_thumb
+                  ? {
+                      uri: `http://192.168.1.221:8000${selectedQuiz.quiz_thumb}`,
+                    }
                   : icon
               }
-            />
+            /> */}
           </View>
           <View className="flex-col">
-            <Text className="ml-4 mt-2">{quizInfo.quiz_name}</Text>{" "}
-            <Text className="ml-4 mt-2">{quizInfo.quiz_description}</Text>{" "}
-            <Text className="ml-4 mt-2">{quizInfo.quiz_status}</Text>{" "}
+            <Text className="ml-4 mt-2">{selectedQuiz.quiz_name}</Text>
+            
+            <Text className="ml-4 mt-2">{selectedQuiz.quiz_description}</Text>
+            <Text className="ml-4 mt-2">{selectedQuiz.quiz_status}</Text>
           </View>
         </View>
       </View>
