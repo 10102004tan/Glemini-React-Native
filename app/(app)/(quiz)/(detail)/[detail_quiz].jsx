@@ -31,7 +31,7 @@ const detailquizz = () => {
 
   const fetchQuiz = async () => {
     const response = await fetch(
-      `http://192.168.1.221:8000/api/v1/quizzes/get-details`,
+      `http://192.168.0.100:8000/api/v1/quizzes/get-details`,
       {
         method: "POST",
         headers: {
@@ -181,7 +181,7 @@ const detailquizz = () => {
           </View>
           <View className="flex-col">
             <Text className="ml-4 mt-2">{selectedQuiz.quiz_name}</Text>
-            
+
             <Text className="ml-4 mt-2">{selectedQuiz.quiz_description}</Text>
             <Text className="ml-4 mt-2">{selectedQuiz.quiz_status}</Text>
           </View>
