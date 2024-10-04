@@ -1,26 +1,22 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useAuthContext } from "./AuthContext";
-import { API_URL, API_VERSION, END_POINTS } from "../configs/api.config";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useAuthContext } from './AuthContext';
+import { API_URL, API_VERSION, END_POINTS } from '../configs/api.config';
 
 const QuizContext = createContext();
 
 const QuizProvider = ({ children }) => {
-  const [selectedQuiz, setSelectedQuiz] = useState({});
-  const [currentQuizQuestion, setCurrentQuizQuestion] = useState([]);
-  const [quizzes, setQuizzes] = useState([]);
-  const [actionQuizType, setActionQuizType] = useState("create");
-  // const [createQuestionType, setCreateQuestionType] = useState('multiple');
-  const { userData } = useAuthContext();
-  const [needUpdate, setNeedUpdate] = useState(false);
-  const [quizFetching, setQuizFetching] = useState(false);
-  const [questionFetching, setQuestionFetching] = useState(false);
-
+	const [selectedQuiz, setSelectedQuiz] = useState({});
+	const [currentQuizQuestion, setCurrentQuizQuestion] = useState([]);
+	const [quizzes, setQuizzes] = useState([]);
+	const [actionQuizType, setActionQuizType] = useState('create');
+	// const [createQuestionType, setCreateQuestionType] = useState('multiple');
+	const { userData } = useAuthContext();
+	const [needUpdate, setNeedUpdate] = useState(false);
+	const [quizFetching, setQuizFetching] = useState(false);
+	const [questionFetching, setQuestionFetching] = useState(false);
 
 	// Get all quizzes of the user
 	const fetchQuizzes = async () => {
-		console.log(
-			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`
-		);
 		setQuizFetching(true);
 		const response = await fetch(
 			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`,
@@ -35,7 +31,7 @@ const QuizProvider = ({ children }) => {
 			}
 		);
 		const data = await response.json();
-		console.log(data);
+		// console.log(data);
 
 		if (data.statusCode === 200) {
 			setQuizzes(data.metadata);
@@ -45,9 +41,6 @@ const QuizProvider = ({ children }) => {
 	};
 	// Get all questions of the selected quiz
 	const fetchQuestions = async () => {
-		console.log(
-			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`
-		);
 		setQuestionFetching(true);
 		const response = await fetch(
 			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`,
@@ -71,55 +64,44 @@ const QuizProvider = ({ children }) => {
 		setQuestionFetching(false);
 	};
 
+	// Get all quizzes of the user
+	useEffect(() => {
+		if (userData) {
+			fetchQuizzes();
+		}
+	}, [userData]);
 
-  // Get all quizzes of the user
-  useEffect(() => {
-    if (userData) {
-      fetchQuizzes();
-    }
-  }, [userData]);
+	// Get all questions of the selected quiz
+	useEffect(() => {
+		if (selectedQuiz._id) {
+			fetchQuestions();
+		}
+	}, [selectedQuiz]);
 
-  // If NeedUpdate is true, fetch quizzes again
-  // useEffect(() => {
-  // 	if (needUpdate) {
-  // 		fetchQuizzes();
-  // 		setNeedUpdate(false);
-  // 	}
-  // }, [needUpdate]);
-
-  // Get all questions of the selected quiz
-  useEffect(() => {
-    // console.log(selectedQuiz._id);
-    if (userData && selectedQuiz._id) {
-      fetchQuizzes();
-      fetchQuestions();
-    }
-  }, [selectedQuiz, userData]);
-
-  return (
-    <QuizContext.Provider
-      value={{
-        selectedQuiz,
-        setSelectedQuiz,
-        quizzes,
-        setQuizzes,
-        needUpdate,
-        setNeedUpdate,
-        currentQuizQuestion,
-        setCurrentQuizQuestion,
-        actionQuizType,
-        setActionQuizType,
-        quizFetching,
-        questionFetching,
-      }}
-    >
-      {children}
-    </QuizContext.Provider>
-  );
+	return (
+		<QuizContext.Provider
+			value={{
+				selectedQuiz,
+				setSelectedQuiz,
+				quizzes,
+				setQuizzes,
+				needUpdate,
+				setNeedUpdate,
+				currentQuizQuestion,
+				setCurrentQuizQuestion,
+				actionQuizType,
+				setActionQuizType,
+				quizFetching,
+				questionFetching,
+			}}
+		>
+			{children}
+		</QuizContext.Provider>
+	);
 };
 
 export const useQuizProvider = () => {
-  return useContext(QuizContext);
+	return useContext(QuizContext);
 };
 
 export default QuizProvider;

@@ -44,6 +44,7 @@ const QuizzOverViewScreen = () => {
 	const { resetQuestion } = useQuestionProvider();
 
 	const fetchQuiz = async () => {
+		console.log('Detail quizz Id: ' + id);
 		const response = await fetch(
 			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`,
 			{
@@ -66,10 +67,10 @@ const QuizzOverViewScreen = () => {
 
 	useEffect(() => {
 		// Lấy dữ liệu của quiz hiện tại
-		if (userData && id) {
+		if (id) {
 			fetchQuiz();
 		}
-	}, [id, userData]);
+	}, [id]);
 
 	// Lấy danh sách câu hỏi của bộ quiz hiện tại
 	const createQuestion = () => {
@@ -97,11 +98,56 @@ const QuizzOverViewScreen = () => {
 	return (
 		<Wrapper>
 			{/* Overlay */}
-			{visibleCreateQuestionBottomSheet && (
-				<Overlay onPress={handleCloseBottomSheet} />
-			)}
-			{/* Bottom Sheet */}
+			{visibleCreateQuestionBottomSheet ||
+				(visibleEditQuizBottomSheet && (
+					<Overlay onPress={handleCloseBottomSheet} />
+				))}
+			{/* Bottom Sheet Create */}
 			<BottomSheet visible={visibleCreateQuestionBottomSheet}>
+				<View className="flex flex-col items-start justify-start">
+					<Text className="text-lg">Chọn loại câu hỏi</Text>
+					<View className="mt-4">
+						<Text className="text-sm text-gray">Đánh giá</Text>
+						<View className="flex flex-col items-start justify-start mt-2">
+							<TouchableOpacity
+								className="flex flex-row items-center justify-start"
+								onPress={createQuestion}
+							>
+								<MaterialCommunityIcons
+									name="checkbox-outline"
+									size={20}
+									color="black"
+								/>
+								<Text className="ml-2">Nhiều lựa chọn</Text>
+							</TouchableOpacity>
+							<TouchableOpacity className="flex flex-row items-center justify-start mt-1">
+								<MaterialCommunityIcons
+									name="checkbox-blank-outline"
+									size={20}
+									color="black"
+								/>
+								<Text className="ml-2">Điền vào chỗ trống</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+					<View className="mt-4">
+						<Text className="text-sm text-gray">Tư duy</Text>
+						<View className="flex flex-col items-start justify-start mt-2">
+							<TouchableOpacity className="flex flex-row items-center justify-start">
+								<MaterialCommunityIcons
+									name="text"
+									size={20}
+									color="black"
+								/>
+								<Text className="ml-2">Tự luận</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</View>
+			</BottomSheet>
+
+			{/* Bottom Sheet Edit */}
+			<BottomSheet visible={visibleEditQuizBottomSheet}>
 				<View className="flex flex-col items-start justify-start">
 					<Text className="text-lg">Chọn loại câu hỏi</Text>
 					<View className="mt-4">
@@ -173,7 +219,11 @@ const QuizzOverViewScreen = () => {
 											'Thêm mô tả cho bộ quiz này'}
 									</Text>
 								</View>
-								<TouchableOpacity>
+								<TouchableOpacity
+									onPress={() => {
+										handleShowBottomSheetEditQuiz();
+									}}
+								>
 									<MaterialIcons
 										name="edit"
 										size={24}

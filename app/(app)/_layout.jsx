@@ -23,20 +23,20 @@ export default function AppRootLayout() {
 		return <Redirect href={'/(auths)/sign-in'} />;
 	}
 
-  return (
-    <Stack>
-      <Stack.Screen
-        name="(home)"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="profile"
-        options={{
-          headerTitle: "Thông tin cá nhân",
-        }}
-      />
+	return (
+		<Stack>
+			<Stack.Screen
+				name="(home)"
+				options={{
+					headerShown: false,
+				}}
+			/>
+			<Stack.Screen
+				name="profile"
+				options={{
+					headerTitle: 'Thông tin cá nhân',
+				}}
+			/>
 
 			<Stack.Screen
 				name="profile-edit"
@@ -71,7 +71,7 @@ export default function AppRootLayout() {
 			/>
 
 			<Stack.Screen
-				name="(quiz)/[id]"
+				name="(quiz)/overview"
 				options={{
 					headerTitle: 'Chi tiết',
 					headerRight: () => {
@@ -88,6 +88,20 @@ export default function AppRootLayout() {
 							</TouchableOpacity>
 						);
 					},
+				}}
+			/>
+
+			<Stack.Screen
+				name="(quiz)/detail_quiz"
+				options={{
+					headerTitle: 'Chi tiết Quiz Thu Vien',
+				}}
+			/>
+
+			<Stack.Screen
+				name="(quiz)/create_title"
+				options={{
+					headerTitle: 'Chi tiết Quiz Thu Vien',
 				}}
 			/>
 		</Stack>
