@@ -44,7 +44,7 @@ export default function AppRootLayout() {
 					headerTitle: title,
 					headerRight: () => (
 						<FontAwesome
-							onPress={() => {}}
+							onPress={() => { }}
 							name="save"
 							size={24}
 							color="black"
@@ -67,6 +67,20 @@ export default function AppRootLayout() {
 					// headerRight: () => {
 					// 	return <Text>Hello</Text>;
 					// },
+				}}
+			/>
+
+			<Stack.Screen
+				name="(play)/single"
+				options={{
+					headerShown: false
+				}}
+			/>
+
+			<Stack.Screen
+				name="(result)/single"
+				options={{
+					headerShown: false
 				}}
 			/>
 
