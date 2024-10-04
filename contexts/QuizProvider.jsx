@@ -64,6 +64,35 @@ const QuizProvider = ({ children }) => {
 		setQuestionFetching(false);
 	};
 
+	const deleteQuiz = async (quizId) => {
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DELETE}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({ quiz_id: quizId }),
+			}
+		);
+
+		const data = await response.json();
+		console.log(data);
+		if (data.statusCode === 200) {
+			setNeedUpdate(true);
+		}
+	};
+
+	// Update quiz if need
+	useEffect(() => {
+		if (needUpdate) {
+			fetchQuizzes();
+			setNeedUpdate(false);
+		}
+	}, [needUpdate]);
+
 	// Get all quizzes of the user
 	useEffect(() => {
 		if (userData) {
@@ -93,6 +122,7 @@ const QuizProvider = ({ children }) => {
 				setActionQuizType,
 				quizFetching,
 				questionFetching,
+				deleteQuiz,
 			}}
 		>
 			{children}

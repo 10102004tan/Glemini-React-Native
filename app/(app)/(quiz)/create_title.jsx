@@ -49,11 +49,6 @@ const CreateTitleQuizzScreen = () => {
 
 	return (
 		<Wrapper>
-			<View className="p-4">
-				<TouchableOpacity>
-					<Ionicons name="arrow-back" size={24} color="black" />
-				</TouchableOpacity>
-			</View>
 			<View className="flex-1 items-center justify-center p-4">
 				<Text className="text-2xl">
 					Hãy đặt tên cho bộ Quiz của bạn
@@ -71,7 +66,7 @@ const CreateTitleQuizzScreen = () => {
 					onPress={handleCreateQuizTitle}
 					handleCreateQuizTitle
 					text={'Bắt đầu tạo'}
-					otherStyles={'p-4'}
+					otherStyles={'p-4 justify-center'}
 					textStyles={'text-center'}
 				/>
 			</View>
