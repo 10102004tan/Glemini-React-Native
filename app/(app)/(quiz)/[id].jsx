@@ -14,21 +14,29 @@ import { useQuestionProvider } from '../../../contexts/QuestionProvider';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
 import { useAuthContext } from '../../../contexts/AuthContext';
 import { API_URL, END_POINTS, API_VERSION } from '@/configs/api.config';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 const QuizzOverViewScreen = () => {
-	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
+	const [
+		visibleCreateQuestionBottomSheet,
+		setVisibleCreateQuestionBottomSheet,
+	] = useState(false);
+	const [visibleEditQuizBottomSheet, setVisibleEditQuizBottomSheet] =
+		useState(false);
+
 	const { setIsHiddenNavigationBar } = useAppProvider();
-	// const { questions } = useQuestionProvider();
 	const { id } = useGlobalSearchParams();
 	const { userData } = useAuthContext();
+
+	const [quizName, setQuizName] = useState('');
+	const [quizDescription, setQuizDescription] = useState('');
+	const [quizStatus, setQuizStatus] = useState('');
+	const [quizSubject, setQuizSubject] = useState('');
+
 	const {
 		selectedQuiz,
 		setSelectedQuiz,
-		createQuestionType,
-		setCreateQuestionType,
 		currentQuizQuestion,
-		setCurrentQuizQuestion,
-		actionQuizType,
 		setActionQuizType,
 		quizFetching,
 		questionFetching,
@@ -57,39 +65,43 @@ const QuizzOverViewScreen = () => {
 	};
 
 	useEffect(() => {
-		// console.log(id);
-		// console.log(userData);
 		// Lấy dữ liệu của quiz hiện tại
 		if (userData && id) {
 			fetchQuiz();
 		}
 	}, [id, userData]);
 
-	// lấy danh sách câu hỏi của bộ quiz hiện tại
-
+	// Lấy danh sách câu hỏi của bộ quiz hiện tại
 	const createQuestion = () => {
 		handleCloseBottomSheet();
 		router.replace('(app)/(quiz)/edit_quiz_question');
 	};
 
-	const handleCreateQuizQuestion = () => {
+	const handleShowCreateQuizQuestionBottomSheet = () => {
 		setActionQuizType('create');
 		resetQuestion();
 		setIsHiddenNavigationBar(true);
-		setVisibleBottomSheet(true);
+		setVisibleCreateQuestionBottomSheet(true);
+	};
+
+	const handleShowBottomSheetEditQuiz = () => {
+		setVisibleEditQuizBottomSheet(true);
+		setIsHiddenNavigationBar(true);
 	};
 
 	const handleCloseBottomSheet = () => {
 		setIsHiddenNavigationBar(false);
-		setVisibleBottomSheet(false);
+		setVisibleCreateQuestionBottomSheet(false);
 	};
 
 	return (
 		<Wrapper>
 			{/* Overlay */}
-			{visibleBottomSheet && <Overlay onPress={handleCloseBottomSheet} />}
+			{visibleCreateQuestionBottomSheet && (
+				<Overlay onPress={handleCloseBottomSheet} />
+			)}
 			{/* Bottom Sheet */}
-			<BottomSheet visible={visibleBottomSheet}>
+			<BottomSheet visible={visibleCreateQuestionBottomSheet}>
 				<View className="flex flex-col items-start justify-start">
 					<Text className="text-lg">Chọn loại câu hỏi</Text>
 					<View className="mt-4">
@@ -132,17 +144,6 @@ const QuizzOverViewScreen = () => {
 				</View>
 			</BottomSheet>
 
-			<View className="flex flex-row items-center justify-between p-4">
-				{/* Back */}
-				<TouchableOpacity>
-					<Ionicons name="arrow-back" size={24} color="black" />
-				</TouchableOpacity>
-				{/* Save Quiz */}
-				<TouchableOpacity className="flex items-center justify-center flex-row px-4 py-2 bg-primary rounded-xl">
-					<Ionicons name="save-outline" size={24} color="white" />
-					<Text className="ml-2 text-white">Lưu bài quiz</Text>
-				</TouchableOpacity>
-			</View>
 			<ScrollView className="mb-[100px]">
 				{quizFetching ? (
 					<Text>Loading</Text>
@@ -204,7 +205,7 @@ const QuizzOverViewScreen = () => {
 			</ScrollView>
 			<View className="p-4 absolute bg-white bottom-0 w-full">
 				<Button
-					onPress={handleCreateQuizQuestion}
+					onPress={handleShowCreateQuizQuestionBottomSheet}
 					text={'Tạo câu hỏi'}
 					otherStyles={'p-4 justify-center'}
 					textStyles={'text-center'}

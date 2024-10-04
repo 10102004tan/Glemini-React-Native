@@ -13,6 +13,10 @@ export const AuthProvider = ({ children }) => {
 	const [teacherStatus, setTeacherStatus] = useState(null);
 
 	useEffect(() => {
+		console.log(`${API_URL}${API_VERSION.V1}${END_POINTS.LOGIN}`);
+	}, []);
+
+	useEffect(() => {
 		const fetchAccessToken = async () => {
 			const value = await AsyncStorage.getItem('userData');
 			setUserData(JSON.parse(value));
