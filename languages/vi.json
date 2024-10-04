@@ -68,5 +68,30 @@
         "message":"Bạn có chắc chắn muốn đăng xuất không?",
         "cancel":"Hủy",
         "logout":"Đăng xuất"
+    },
+    "play": {
+        "single": {
+            "buttonQuit": "Kết thúc",
+            "score": "Điểm",
+            "questionCouter": "Câu hỏi số:",
+            "buttonConfirm": "Xác nhận",
+            "incorrect": "Sai rồi!!!",
+            "errorTitle": "Cảnh báo",
+            "errorText": "Vui lòng chọn đáp án!"
+        }
+    },
+    "result": {
+        "single": {
+            "buttonQuit": "Kết thúc",
+            "buttonReplay": "Chơi lại",
+            "buttonPlayNewQuiz": "Tìm bộ mới",
+            "score": "Điểm số",
+            "totalQuestions": "Tổng số câu hỏi",
+            "correct": "Chính xác",
+            "incorrect": "Không chính xác",
+            "textResult": "Kết quả",
+            "textDesc": "Luyện tập",
+            "buttonReview": "Xem lại"
+        }
     }
 }

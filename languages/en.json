@@ -1,72 +1,96 @@
 {
-    "signIn":{
+    "signIn": {
         "title": "Sign In",
         "email": "Email",
         "password": "Password",
         "login": "Login",
         "forgot": "Forgot Password?",
         "signUp": "Sign Up Here",
-        "notHaveAccount":"Don't have an account?",
-        "startNow":"Start Now",
-        "welcome":"Welcome to Glemini App"
+        "notHaveAccount": "Don't have an account?",
+        "startNow": "Start Now",
+        "welcome": "Welcome to Glemini App"
     },
-    "signUp":{
+    "signUp": {
         "title": "Sign Up",
         "email": "Email",
         "password": "Password",
         "confirmPassword": "Confirm Password",
         "signUp": "Create Account",
-        "haveAccount":"Already have an account?",
-        "startNow":"Start Now",
-        "signIn":"Sign In Now",
-        "fullname":"Fullname",
-        "welcome":"Welcome to Glemini App",
-        "choice":{
-            "student":"Student",
-            "teacher":"Teacher",
-            "studentDescription":"Join fun classroom activities",
-            "teacherDescription":"Manage quizzes, classrooms and results",
-            "title":"Choose account type"
+        "haveAccount": "Already have an account?",
+        "startNow": "Start Now",
+        "signIn": "Sign In Now",
+        "fullname": "Fullname",
+        "welcome": "Welcome to Glemini App",
+        "choice": {
+            "student": "Student",
+            "teacher": "Teacher",
+            "studentDescription": "Join fun classroom activities",
+            "teacherDescription": "Manage quizzes, classrooms and results",
+            "title": "Choose account type"
         },
-        "card":"Card Image",
-        "cardID":"ID Card",
-        "documentConfirm":"Document Comfirm",
-        "cardDescription":"Card Image or ID Card",
-        "documentDescription":"Document Comfirm",
-        "cardIdDescription":"Card Image or ID Card"
-        
+        "card": "Card Image",
+        "cardID": "ID Card",
+        "documentConfirm": "Document Comfirm",
+        "cardDescription": "Card Image or ID Card",
+        "documentDescription": "Document Comfirm",
+        "cardIdDescription": "Card Image or ID Card"
     },
-    "error":{
-        "notification":"Notification",
-        "emailInvalid":"Invalid email",
-        "passwordInvalid":"Password must be at least 8 characters",
-        "confirmPassword":"Password confirmation does not match",
-        "fullnameInvalid":"Invalid fullname",
-        "emailRequired":"Email is required",
-        "emailExist":"Email already exists",
-        "passwordRequired":"Password is required",
-        "confirmPasswordRequired":"Confirm password is required",
-        "fullnameRequired":"Fullname is required",
-        "cardRequired":"Card image is required",
-        "cardIDRequired":"ID Card is required",
-        "documentConfirmRequired":"Document Comfirm is required",
-        "nameNotIncludeChar":"Fullname can't include special characters"
+    "error": {
+        "notification": "Notification",
+        "emailInvalid": "Invalid email",
+        "passwordInvalid": "Password must be at least 8 characters",
+        "confirmPassword": "Password confirmation does not match",
+        "fullnameInvalid": "Invalid fullname",
+        "emailRequired": "Email is required",
+        "emailExist": "Email already exists",
+        "passwordRequired": "Password is required",
+        "confirmPasswordRequired": "Confirm password is required",
+        "fullnameRequired": "Fullname is required",
+        "cardRequired": "Card image is required",
+        "cardIDRequired": "ID Card is required",
+        "documentConfirmRequired": "Document Comfirm is required",
+        "nameNotIncludeChar": "Fullname can't include special characters"
     },
-    "success":{
-        "signUp":"Sign up successfully"
+    "success": {
+        "signUp": "Sign up successfully"
     },
-    "language":{
-        "title":"Choose language",
-        "english":"English",
-        "vietnamese":"Vietnamese",
-        "japanese":"Japanese",
-        "changeLanguage":"Change language",
-        "edit":"Edit now"
+    "language": {
+        "title": "Choose language",
+        "english": "English",
+        "vietnamese": "Vietnamese",
+        "japanese": "Japanese",
+        "changeLanguage": "Change language",
+        "edit": "Edit now"
     },
-    "logout":{
-        "title":"Logout",
-        "logout":"Logout",
-        "notification":"Notification",
-        "logoutSuccess":"Logout successfully"
+    "logout": {
+        "title": "Logout",
+        "logout": "Logout",
+        "notification": "Notification",
+        "logoutSuccess": "Logout successfully"
+    },
+    "play": {
+        "single": {
+            "buttonQuit": "Quit",
+            "score": "Score",
+            "questionCouter": "Question number:",
+            "buttonConfirm": "Confirm",
+            "incorrect": "Incorrect!!!",
+            "errorTitle": "Error",
+            "errorText": "Please select an answer!"
+        }
+    },
+    "result": {
+        "single": {
+            "buttonQuit": "Quit",
+            "buttonReplay": "Replay",
+            "buttonPlayNewQuiz": "Find new quiz",
+            "score": "Score",
+            "totalQuestions": "Total questions",
+            "correct": "Correct",
+            "incorrect": "Incorrect",
+            "textResult": "Result",
+            "textDesc": "Practice",
+            "buttonReview": "Review"
+        }
     }
 }
