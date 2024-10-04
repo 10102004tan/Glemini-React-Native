@@ -1,6 +1,7 @@
-'use strict';
+"use strict";
 
 const dev = {
+
 	API_URL: 'http://192.168.2.240:8000/api',
 	API_VERSION: {
 		V1: '/v1',
@@ -23,19 +24,20 @@ const dev = {
     RESULT_SAVE_QUESTION: '/result/save-question',
     RESULT_COMPLETED: '/result/complete-quiz'
 	},
+
 };
 
 const prod = {
-	API_VERSION: {
-		V1: '/v1',
-	},
-	API_URL: 'http://localhost:3000/api',
-	END_POINTS: {
-		LOGIN: '/login',
-		REGISTER: '/register',
-		LOGOUT: '/logout',
-		PROFILE: '/profile',
-	},
+  API_VERSION: {
+    V1: "/v1",
+  },
+  API_URL: "http://localhost:8000/api",
+  END_POINTS: {
+    LOGIN: "/login",
+    REGISTER: "/register",
+    LOGOUT: "/logout",
+    PROFILE: "/profile",
+  },
 };
 
 module.exports = dev;

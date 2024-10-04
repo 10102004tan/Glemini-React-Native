@@ -23,20 +23,20 @@ export default function AppRootLayout() {
 		return <Redirect href={'/(auths)/sign-in'} />;
 	}
 
-	return (
-		<Stack>
-			<Stack.Screen
-				name="(home)"
-				options={{
-					headerShown: false,
-				}}
-			/>
-			<Stack.Screen
-				name="profile"
-				options={{
-					headerTitle: 'Thông tin cá nhân',
-				}}
-			/>
+  return (
+    <Stack>
+      <Stack.Screen
+        name="(home)"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="profile"
+        options={{
+          headerTitle: "Thông tin cá nhân",
+        }}
+      />
 
 			<Stack.Screen
 				name="profile-edit"
