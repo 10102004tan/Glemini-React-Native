@@ -12,7 +12,10 @@ const ListQuizz = () => {
 					<TouchableOpacity
 						key={quiz._id}
 						onPress={() => {
-							router.push('(app)/(quiz)/' + quiz._id);
+							router.push({
+								pathname: '/(app)/(quiz)/overview',
+								params: { id: quiz._id },
+							});
 						}}
 					>
 						<Text>{quiz.quiz_name}</Text>
