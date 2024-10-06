@@ -44,7 +44,7 @@ export default function AppRootLayout() {
 					headerTitle: title,
 					headerRight: () => (
 						<FontAwesome
-							onPress={() => { }}
+							onPress={() => {}}
 							name="save"
 							size={24}
 							color="black"
@@ -101,7 +101,7 @@ export default function AppRootLayout() {
 			<Stack.Screen
 				name="(quiz)/create_title"
 				options={{
-					headerTitle: 'Chi tiết Quiz Thu Vien',
+					headerTitle: '',
 				}}
 			/>
 		</Stack>

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const dev = {
 	API_URL: 'http://192.168.247.116:3000/api',
@@ -13,6 +13,7 @@ const dev = {
 		PROFILE: '/auth/profile',
 		CHANGE_PASSWORD: '/auth/change-password',
 		USER_STATUS: '/auth/status',
+		USER_STATUS: '/auth/status',
 		GET_QUIZ_BY_USER: '/quizzes/get-by-user',
 		GET_QUIZ_QUESTIONS: '/quizzes/get-questions',
 		GET_QUESTION_DETAIL: '/questions/get-details',
@@ -23,7 +24,6 @@ const dev = {
 		RESULT_SAVE_QUESTION: '/result/save-question',
 		RESULT_COMPLETED: '/result/complete-quiz'
 	},
-
 };
 
 const prod = {
