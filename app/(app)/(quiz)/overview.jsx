@@ -17,6 +17,8 @@ import { API_URL, END_POINTS, API_VERSION } from '@/configs/api.config';
 import { useAppProvider } from '@/contexts/AppProvider';
 import Field from '@/components/customs/Field';
 import { SelectList } from 'react-native-dropdown-select-list';
+import { useSubjectProvider } from '@/contexts/SubjectProvider';
+import { convertSubjectData } from '@/utils';
 
 const QuizzOverViewScreen = () => {
 	const router = useRouter();
@@ -35,6 +37,7 @@ const QuizzOverViewScreen = () => {
 	const [quizDescription, setQuizDescription] = useState('');
 	const [quizStatus, setQuizStatus] = useState('');
 	const [quizSubject, setQuizSubject] = useState('');
+
 	const {
 		selectedQuiz,
 		setSelectedQuiz,
@@ -43,11 +46,12 @@ const QuizzOverViewScreen = () => {
 		quizFetching,
 		deleteQuiz,
 		questionFetching,
+		updateQuiz,
 	} = useQuizProvider();
 	const { resetQuestion } = useQuestionProvider();
 
 	const fetchQuiz = async () => {
-		console.log('Detail quizz Id: ' + id);
+		// console.log('Detail quizz Id: ' + id);
 		const response = await fetch(
 			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`,
 			{
@@ -67,6 +71,32 @@ const QuizzOverViewScreen = () => {
 			setSelectedQuiz(data.metadata);
 		}
 	};
+
+	const handleUpdateQuiz = async () => {
+		const quiz = {
+			quiz_id: selectedQuiz._id,
+			quiz_name: quizName,
+			quiz_description: quizDescription,
+			quiz_status: quizStatus,
+			quiz_subject: quizSubject,
+		};
+
+		updateQuiz(quiz);
+		handleCloseBottomSheet();
+		setQuizName('');
+		setQuizDescription('');
+		setQuizStatus('');
+		setQuizSubject('');
+		fetchQuiz();
+	};
+
+	// Lưu dữ liệu của quiz hiện tại cho các biến dùng để chỉnh sửa
+	useEffect(() => {
+		if (selectedQuiz) {
+			setQuizName(selectedQuiz.quiz_name);
+			setQuizDescription(selectedQuiz.quiz_description);
+		}
+	}, [selectedQuiz]);
 
 	useEffect(() => {
 		// Lấy dữ liệu của quiz hiện tại
@@ -99,16 +129,8 @@ const QuizzOverViewScreen = () => {
 		setVisibleCreateQuestionBottomSheet(false);
 	};
 
-	const subjects = [
-		{ key: '1', value: 'Mobiles', disabled: true },
-		{ key: '2', value: 'Appliances' },
-		{ key: '3', value: 'Cameras' },
-		{ key: '4', value: 'Computers', disabled: true },
-		{ key: '5', value: 'Vegetables' },
-		{ key: '6', value: 'Diary Products' },
-		{ key: '7', value: 'Drinks' },
-	];
-
+	const { subjects } = useSubjectProvider();
+	const subjectsData = convertSubjectData(subjects);
 	const views = [
 		{ key: '1', value: 'Công khai' },
 		{ key: '2', value: 'Chỉ mình tôi' },
@@ -181,8 +203,8 @@ const QuizzOverViewScreen = () => {
 						<Field
 							wrapperStyles="w-full"
 							label={'Mô tả'}
-							value={quizName}
-							onChange={(text) => setQuizName(text)}
+							value={quizDescription}
+							onChange={(text) => setQuizDescription(text)}
 							placeholder={'Thêm mô tả cho bộ quiz này'}
 						/>
 					</View>
@@ -191,15 +213,15 @@ const QuizzOverViewScreen = () => {
 							Lĩnh vực, môn học
 						</Text>
 						<SelectList
-							setSelected={(val) => setQuizSubject(val)}
-							data={subjects}
+							setSelected={(key, val) => setQuizSubject(key)}
+							data={subjectsData}
 							searchPlaceholder="Tìm kiếm môn học, lĩnh vực"
 						/>
 					</View>
 					<View className="w-full mt-4">
 						<Text className="text-gray mb-1">Chế độ hiển thị</Text>
 						<SelectList
-							setSelected={(val) => setQuizSubject(val)}
+							setSelected={(val) => setQuizStatus(val)}
 							data={views}
 							searchPlaceholder="Chế độ hiển thị"
 						/>
@@ -207,7 +229,9 @@ const QuizzOverViewScreen = () => {
 					<View className="flex items-center justify-end mt-4 flex-row w-full">
 						<Button
 							text="Lưu"
-							onPress={() => {}}
+							onPress={() => {
+								handleUpdateQuiz();
+							}}
 							otherStyles="p-4 justify-center w-1/3 mr-2"
 							textStyles="text-white"
 						/>
@@ -245,10 +269,10 @@ const QuizzOverViewScreen = () => {
 							<View className="flex items-center justify-between flex-row">
 								<View>
 									<Text className="text-lg">
-										{selectedQuiz.quiz_name}
+										{quizName || 'Tên bộ quiz'}
 									</Text>
 									<Text className="text-gray">
-										{selectedQuiz.quiz_description ||
+										{quizDescription ||
 											'Thêm mô tả cho bộ quiz này'}
 									</Text>
 								</View>

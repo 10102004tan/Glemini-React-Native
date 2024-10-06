@@ -21,8 +21,10 @@ const dev = {
 		QUIZ_DETAIL: '/quizzes/get-details',
 		QUIZ_CREATE: '/quizzes/create',
 		QUIZ_DELETE: '/quizzes/delete',
+		QUIZ_UPDATE: '/quizzes/update',
 		RESULT_SAVE_QUESTION: '/result/save-question',
 		RESULT_COMPLETED: '/result/complete-quiz',
+		SUBJECTS: '/subjects',
 	},
 };
 
