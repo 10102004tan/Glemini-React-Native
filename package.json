@@ -52,7 +52,8 @@
     "react-native-toast-message": "^2.2.1",
     "react-native-web": "~0.19.10",
     "react-native-webview": "^13.8.6",
-    "expo-av": "~14.0.7"
+    "expo-av": "~14.0.7",
+    "reactotron-react-native": "^5.1.9"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

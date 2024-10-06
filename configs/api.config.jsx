@@ -23,7 +23,11 @@ const dev = {
 		QUIZ_CREATE: '/quizzes/create',
 		RESULT_SAVE_QUESTION: '/result/save-question',
 		RESULT_COMPLETED: '/result/complete-quiz',
-		RESULT_REVIEW: '/result/review'
+		RESULT_REVIEW: '/result/review',
+		QUIZ_UPDATE: '/quizzes/update',
+		RESULT_SAVE_QUESTION: '/result/save-question',
+		RESULT_COMPLETED: '/result/complete-quiz',
+		SUBJECTS: '/subjects',
 	},
 };
 

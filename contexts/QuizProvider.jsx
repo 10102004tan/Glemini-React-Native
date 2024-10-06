@@ -64,6 +64,7 @@ const QuizProvider = ({ children }) => {
 		setQuestionFetching(false);
 	};
 
+	// Delete quiz
 	const deleteQuiz = async (quizId) => {
 		const response = await fetch(
 			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DELETE}`,
@@ -80,6 +81,28 @@ const QuizProvider = ({ children }) => {
 
 		const data = await response.json();
 		console.log(data);
+		if (data.statusCode === 200) {
+			setNeedUpdate(true);
+		}
+	};
+
+	// Update quiz
+	const updateQuiz = async (quiz) => {
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPDATE}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify(quiz),
+			}
+		);
+
+		const data = await response.json();
+		console.log(JSON.stringify(data, null, 2));
 		if (data.statusCode === 200) {
 			setNeedUpdate(true);
 		}
@@ -123,6 +146,7 @@ const QuizProvider = ({ children }) => {
 				quizFetching,
 				questionFetching,
 				deleteQuiz,
+				updateQuiz,
 			}}
 		>
 			{children}
