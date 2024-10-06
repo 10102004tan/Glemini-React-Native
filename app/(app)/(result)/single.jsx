@@ -1,17 +1,72 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { View, Text, Image } from 'react-native';
 import Button from '../../../components/customs/Button'; // Sử dụng Button tùy chỉnh
 import Icon from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useAppProvider } from '@/contexts/AppProvider';
+import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
+import { Audio } from 'expo-av';
+
 const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleRestart }) => {
 
+	const navigation = useNavigation()
 	const { i18n } = useAppProvider()
 	const {userData} = useAuthContext()
 	const correctPercentage = (correctCount / totalQuestions) * 100;
     const wrongPercentage = (wrongCount / totalQuestions) * 100;
+	const [resultData, setResultData] = useState([])
+	const [sound, setSound] = useState(null)
 
+	useEffect(() => {
+		const fetchResultData = async () => {
+			try {
+				const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_REVIEW, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'x-client-id': userData._id,
+						authorization: userData.accessToken,
+					},
+					body: JSON.stringify({
+						quiz_id: '67029b912635f0e8ffc5eb2c',
+						user_id:  userData._id,
+						// Bổ sung ID_EXECIRCE sau
+					}),
+				});
+			
+				const data = await res.json();
+				setResultData(data.metadata);
+			} catch (error) {
+				console.error('Lỗi khi lấy câu hỏi:', error);
+			}
+		};
+		fetchResultData();
+	}, [userData]);
+	
+	const playCompletedSound = async () => {
+		try {
+			const { sound } = await Audio.Sound.createAsync(
+				require('@/assets/sounds/completed.mp3')
+			);
+			setSound(sound);
+			await sound.playAsync();
+		} catch (error) {
+			console.error('Lỗi khi phát âm thanh:', error);
+		}
+	};
+
+	useEffect(() => {
+		playCompletedSound();
+
+		return () => {
+			if (sound) {
+				sound.unloadAsync();
+			}
+		};
+	}, []);
+	
 
 	return (
 		<View className="flex-1 bg-[#1C2833] px-5 pb-4 pt-10">
@@ -19,7 +74,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 				<Button
 					text={i18n.t('result.single.buttonQuit')}
 					onPress={() => {
-						console.log('Thoát');
+						navigation.popToTop()
 					}}
 					type="fill"
 					otherStyles={'bg-[#435362] p-2'}
@@ -74,7 +129,6 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 
 				{/* Thanh Progress Bar */}
 				<View className="flex-row h-5 mt-2">
-					{/* Thanh đúng */}
 					<View
 						style={{
 							width: `${correctPercentage}%`,
@@ -87,7 +141,6 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 								correctPercentage === 100 ? 10 : 0,
 						}}
 					/>
-					{/* Thanh sai */}
 					<View
 						style={{
 							width: `${wrongPercentage}%`,
@@ -186,7 +239,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 				<Button
 					text={i18n.t('result.single.buttonReview')}
 					onPress={() => {
-						console.log('Hiển thị bài làm');
+						navigation.push('(result)/review', { resultData });
 					}}
 					type="fill"
 					otherStyles={'bg-[#435362] p-2'}

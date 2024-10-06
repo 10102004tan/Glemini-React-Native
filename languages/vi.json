@@ -89,9 +89,13 @@
             "totalQuestions": "Tổng số câu hỏi",
             "correct": "Chính xác",
             "incorrect": "Không chính xác",
-            "textResult": "Kết quả",
+            "textResult": "Tỉ lệ kết quả",
             "textDesc": "Luyện tập",
             "buttonReview": "Xem lại"
+        },
+        "review": {
+            "title": "Xem lại Câu trả lời",
+            "text_question": "Câu hỏi"
         }
     }
 }

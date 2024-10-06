@@ -22,7 +22,8 @@ const dev = {
 		QUIZ_DETAIL: '/quizzes/get-details',
 		QUIZ_CREATE: '/quizzes/create',
 		RESULT_SAVE_QUESTION: '/result/save-question',
-		RESULT_COMPLETED: '/result/complete-quiz'
+		RESULT_COMPLETED: '/result/complete-quiz',
+		RESULT_REVIEW: '/result/review'
 	},
 };
 

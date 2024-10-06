@@ -7,6 +7,7 @@ import { useAppProvider } from '@/contexts/AppProvider';
 import Toast from 'react-native-toast-message';
 import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
 import RenderHTML from 'react-native-render-html';
+import { Audio } from 'expo-av';
 
 const SinglePlay = () => {
 	const {i18n} = useAppProvider();
@@ -26,6 +27,7 @@ const SinglePlay = () => {
 	const { userData } = useAuthContext();
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [questions, setQuestions] = useState([]);
+	const [sound, setSound] = useState(null);
 
 	// Fetch questions from API
 	useEffect(() => {
@@ -39,7 +41,7 @@ const SinglePlay = () => {
 						authorization: userData.accessToken,
 					},
 					body: JSON.stringify({
-						quiz_id: '66ff96503d588cd7943a0032',
+						quiz_id: '67029b912635f0e8ffc5eb2c',
 					}),
 				});
 
@@ -93,6 +95,22 @@ const SinglePlay = () => {
 		}
 	};
 
+	// Tải và phát âm thanh
+	const playSound = async (isCorrectAnswer) => {
+		let soundPath = isCorrectAnswer ? require('@/assets/sounds/correct.mp3') : require('@/assets/sounds/incorrect.mp3');
+		const { sound } = await Audio.Sound.createAsync(soundPath);
+		setSound(sound);
+		await sound.playAsync();
+	};
+
+	useEffect(() => {
+		return sound
+			? () => {
+				sound.unloadAsync(); // Cleanup âm thanh
+			}
+			: undefined;
+	}, [sound]);
+
 	const handleAnswerPress = (answerId) => {
 		if (questions[currentQuestionIndex].question_type === 'single') {
 			setSelectedAnswers([answerId]);
@@ -108,7 +126,7 @@ const SinglePlay = () => {
 		}
 	};
 
-	const handleSubmit = () => {
+	const handleSubmit = async () => {
 		if (isProcessing) return;
 		setIsProcessing(true);
 
@@ -135,6 +153,8 @@ const SinglePlay = () => {
 				selectedAnswers.length === correctAnswerIds.length &&
 				selectedAnswers.every((answerId) => correctAnswerIds.includes(answerId));
 		}
+
+		await playSound(isAnswerCorrect);
 
 		if (isAnswerCorrect) {
 			setIsCorrect(true);
