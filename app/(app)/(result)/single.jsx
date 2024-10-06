@@ -2,14 +2,15 @@ import React from 'react';
 import { View, Text, Image } from 'react-native';
 import Button from '../../../components/customs/Button'; // Sử dụng Button tùy chỉnh
 import Icon from 'react-native-vector-icons/Ionicons';
+import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useAuthContext } from '@/contexts/AuthContext';
 
-const ResultSingle = ({ score, handleRestart, questions }) => {
-	const totalQuestions = questions.length;
-	const correctAnswers = score / 10; // Mỗi câu đúng cho 10 điểm
-	const wrongAnswers = totalQuestions - correctAnswers;
+const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleRestart }) => {
+	// console.log(correctCount, wrongCount);
+	const {userData} = useAuthContext()
+	const correctPercentage = (correctCount / totalQuestions) * 100;
+    const wrongPercentage = (wrongCount / totalQuestions) * 100;
 
-	const correctPercentage = (correctAnswers / totalQuestions) * 100;
-	const wrongPercentage = (wrongAnswers / totalQuestions) * 100;
 
 	return (
 		<View className="flex-1 bg-[#1C2833] px-5 pb-4 pt-10">
@@ -21,7 +22,7 @@ const ResultSingle = ({ score, handleRestart, questions }) => {
 					}}
 					type="fill"
 					otherStyles={'bg-[#435362] p-2'}
-					textStyles={'text-white text-center text-sm'}
+					textStyles={'text-sm'}
 				/>
 			</View>
 
@@ -33,18 +34,18 @@ const ResultSingle = ({ score, handleRestart, questions }) => {
 					otherStyles={
 						'bg-violet-500 py-4 px-6 border-b-4 border-b-violet-600'
 					}
-					textStyles={'text-white text-center text-lg'}
+					textStyles={'text-lg'}
 				/>
 				<Button
 					text="Tìm bộ mới"
 					onPress={() => {
-						console.log('Hello World!!');
+						console.log('Tìm bộ mới!!');
 					}}
 					type="fill"
 					otherStyles={
 						'bg-slate-100 p-4 border-b-4 border-b-slate-300'
 					}
-					textStyles={'text-black text-center text-lg'}
+					textStyles={'text-black text-lg'}
 				/>
 			</View>
 
@@ -58,7 +59,7 @@ const ResultSingle = ({ score, handleRestart, questions }) => {
 				/>
 				<View className="flex ml-5 justify-around">
 					<Text className="text-lg text-slate-200">
-						Tên người chơi
+						{userData.user_fullname}
 					</Text>
 					<Text className="bg-slate-500 rounded-full text-sm px-2 text-slate-200">
 						{' '}
@@ -115,7 +116,7 @@ const ResultSingle = ({ score, handleRestart, questions }) => {
 					<View className="flex-col">
 						<Text className="text-sm text-slate-200">Điểm số</Text>
 						<Text className="text-xl text-slate-100 font-semibold">
-							20
+							{score}
 						</Text>
 					</View>
 					<View className="ml-5 bg-orange-400 rounded-lg p-1">
@@ -132,7 +133,7 @@ const ResultSingle = ({ score, handleRestart, questions }) => {
 							Tổng số câu hỏi
 						</Text>
 						<Text className="text-xl text-slate-100 font-semibold">
-							3
+							{totalQuestions}
 						</Text>
 					</View>
 					<View className="ml-2 bg-violet-400 rounded-lg p-1">
@@ -140,6 +141,41 @@ const ResultSingle = ({ score, handleRestart, questions }) => {
 							name="help-circle-outline"
 							size={25}
 							className="text-white"
+						/>
+					</View>
+				</View>
+			</View>
+
+			<View className="flex-row justify-between mx-3">
+				<View className="flex-row p-3 mt-5 rounded-lg bg-[#435362] justify-between items-center">
+					<View className="flex-col">
+						<Text className="text-sm text-slate-200">Chính xác</Text>
+						<Text className="text-xl text-slate-100 font-semibold">
+							{correctCount}
+						</Text>
+					</View>
+					<View className="ml-2">
+						<Icon2
+							name="checkbox-marked-outline"
+							size={40}
+							className="text-green-500"
+						/>
+					</View>
+				</View>
+				<View className="flex-row p-3 mt-5 rounded-lg bg-[#435362] justify-between items-center">
+					<View className="flex-col">
+						<Text className="text-sm text-slate-200">
+							Không chính xác
+						</Text>
+						<Text className="text-xl text-slate-100 font-semibold">
+							{wrongCount}
+						</Text>
+					</View>
+					<View className="ml-2">
+						<Icon2
+							name="close-box-outline"
+							size={40}
+							className="text-red-500"
 						/>
 					</View>
 				</View>

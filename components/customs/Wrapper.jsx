@@ -7,7 +7,7 @@ const Wrapper = ({ children }) => {
 	return (
 		<SafeAreaView
 			style={{ backgroundColor: theme.background }}
-			className="mt-[40px] flex-1 relative"
+			className="flex-1 relative"
 		>
 			<View className="flex-1">{children}</View>
 			<StatusBar
