@@ -7,22 +7,22 @@ import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import ResultReview from './(result)/review';
 
 export default function AppRootLayout() {
-	const { userData, isLoading, fetchStatus } = useContext(AuthContext);
-	const { title } = useGlobalSearchParams();
+  const { userData, isLoading, fetchStatus } = useContext(AuthContext);
+  const { title } = useGlobalSearchParams();
 
-	useEffect(() => {
-		if (userData) {
-			fetchStatus();
-		}
-	}, [userData]);
+  useEffect(() => {
+    if (userData) {
+      fetchStatus();
+    }
+  }, [userData]);
 
-	if (isLoading) {
-		return <Text>Loading...</Text>;
-	}
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
 
-	if (!userData) {
-		return <Redirect href={'/(auths)/sign-in'} />;
-	}
+  if (!userData) {
+    return <Redirect href={"/(auths)/sign-in"} />;
+  }
 
 	return (
 		<Stack>
@@ -54,12 +54,12 @@ export default function AppRootLayout() {
 				}}
 			/>
 
-			<Stack.Screen
-				name="settings"
-				options={{
-					headerTitle: 'Cài đặt',
-				}}
-			/>
+      <Stack.Screen
+        name="settings"
+        options={{
+          headerTitle: "Cài đặt",
+        }}
+      />
 
 			<Stack.Screen
 				name="(quiz)/list"
