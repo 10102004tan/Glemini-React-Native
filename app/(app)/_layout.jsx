@@ -10,21 +10,21 @@ import { useAppProvider } from '@/contexts/AppProvider';
 export default function AppRootLayout() {
 	const { userData, isLoading, fetchStatus } = useContext(AuthContext);
 	const {i18n} = useAppProvider();
-	const { title } = useGlobalSearchParams();
+  const { title } = useGlobalSearchParams();
 
-	useEffect(() => {
-		if (userData) {
-			fetchStatus();
-		}
-	}, [userData]);
+  useEffect(() => {
+    if (userData) {
+      fetchStatus();
+    }
+  }, [userData]);
 
-	if (isLoading) {
-		return <Text>Loading...</Text>;
-	}
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
 
-	if (!userData) {
-		return <Redirect href={'/(auths)/sign-in'} />;
-	}
+  if (!userData) {
+    return <Redirect href={"/(auths)/sign-in"} />;
+  }
 
 	return (
 		<Stack>
