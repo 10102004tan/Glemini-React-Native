@@ -61,11 +61,11 @@ const QuestionProvider = ({ children }) => {
 			}
 		);
 		const data = await response.json();
-		// console.log(data.metadata.question_answer_ids);
+		//  console.log(data.metadata);
 		if (data.statusCode === 200) {
 			setQuestion(data.metadata);
 			setUpdateQuestionId(0);
-			router.push('/(app)/(quiz)/edit_quiz_question');
+			router.replace('/(app)/(quiz)/edit_quiz_question');
 		} else {
 			// Alert to user here
 			console.log('Error when get question details');
@@ -231,13 +231,17 @@ const QuestionProvider = ({ children }) => {
 				}
 			);
 			const data = await response.json();
+			console.log(data);
 			if (data.statusCode === 200) {
 				console.log('Lưu câu hỏi thành công');
 				// Alert to user here
 				// Lưu câu hỏi vào mảng các câu hỏi
 				setQuestions([...questions, question]);
 				resetQuestion();
-				router.replace('/(app)/(quiz)/' + quizId);
+				router.replace({
+					pathname: '/(app)/(quiz)/overview/',
+					params: { id: quizId },
+				});
 			}
 		} catch (error) {
 			console.log(error);
@@ -275,7 +279,10 @@ const QuestionProvider = ({ children }) => {
 				setQuestions(newQuestions);
 				resetQuestion();
 				setUpdateQuestionId(0);
-				router.replace('/(app)/(quiz)/' + quizId);
+				router.replace({
+					pathname: '/(app)/(quiz)/overview/',
+					params: { id: quizId },
+				});
 			}
 		} catch (error) {
 			console.log(error);

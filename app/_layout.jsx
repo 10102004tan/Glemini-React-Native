@@ -1,15 +1,13 @@
 import { useFonts } from 'expo-font';
-import { Slot, Stack } from 'expo-router';
+import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import AppProvider from '@/contexts/AppProvider';
-import { AuthProvider } from '@/contexts/AuthContext';
-
-import QuestionProvider from '@/contexts/QuestionProvider';
-import QuizProvider from '@/contexts/QuizProvider';
+import Toast from 'react-native-toast-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { LogBox } from 'react-native';
+import Providers from '@/contexts/Providers';
+import Reactotron from 'reactotron-react-native';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 // Bỏ qua cảnh báo chứa chuỗi "defaultProps"
@@ -39,16 +37,11 @@ export default function RootLayout() {
 	}
 
 	return (
-		<GestureHandlerRootView>
-			<AppProvider>
-				<AuthProvider>
-					<QuizProvider>
-						<QuestionProvider>
-							<Slot />
-						</QuestionProvider>
-					</QuizProvider>
-				</AuthProvider>
-			</AppProvider>
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<Providers>
+				<Slot />
+				<Toast />
+			</Providers>
 		</GestureHandlerRootView>
 	);
 }

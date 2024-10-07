@@ -1,20 +1,22 @@
 import { Redirect, Stack } from 'expo-router';
 import React, { useContext, useEffect } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
-import { Text } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import { useGlobalSearchParams } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import ResultReview from './(result)/review';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 export default function AppRootLayout() {
 	const { userData, isLoading, fetchStatus } = useContext(AuthContext);
-	const {title} = useGlobalSearchParams();
+	const {i18n} = useAppProvider();
+	const { title } = useGlobalSearchParams();
 
 	useEffect(() => {
 		if (userData) {
 			fetchStatus();
 		}
 	}, [userData]);
-
 
 	if (isLoading) {
 		return <Text>Loading...</Text>;
@@ -35,7 +37,7 @@ export default function AppRootLayout() {
 			<Stack.Screen
 				name="profile"
 				options={{
-					headerTitle: 'Thông tin cá nhân',
+					headerTitle: i18n.t('profile.title'),
 				}}
 			/>
 
@@ -44,7 +46,12 @@ export default function AppRootLayout() {
 				options={{
 					headerTitle: title,
 					headerRight: () => (
-						<FontAwesome onPress={()=>{}} name="save" size={24} color="black" />
+						<FontAwesome
+							onPress={() => { }}
+							name="save"
+							size={24}
+							color="black"
+						/>
 					),
 				}}
 			/>
@@ -52,10 +59,68 @@ export default function AppRootLayout() {
 			<Stack.Screen
 				name="settings"
 				options={{
-					headerTitle: 'Cài đặt',
+					headerTitle: i18n.t('settings.title'),
 				}}
 			/>
 
+			<Stack.Screen
+				name="(quiz)/list"
+				options={{
+					headerTitle: 'Danh sách các quiz',
+					// headerRight: () => {
+					// 	return <Text>Hello</Text>;
+					// },
+				}}
+			/>
+
+			<Stack.Screen
+				name="(quiz)/overview"
+				options={{
+					headerTitle: 'Chi tiết',
+					headerRight: () => {
+						return (
+							<TouchableOpacity className="flex items-center justify-center flex-row px-4 py-2 bg-primary rounded-xl">
+								<Ionicons
+									name="save-outline"
+									size={24}
+									color="white"
+								/>
+								<Text className="ml-2 text-white">
+									Lưu bài quiz
+								</Text>
+							</TouchableOpacity>
+						);
+					},
+				}}
+			/>
+
+			<Stack.Screen
+				name="(quiz)/detail_quiz"
+				options={{
+					headerTitle: 'Chi tiết Quiz Thu Vien',
+				}}
+			/>
+
+			<Stack.Screen
+				name="(quiz)/create_title"
+				options={{
+					headerTitle: '',
+				}}
+			/>
+
+			<Stack.Screen
+				name="(play)/single"
+				options={{
+					headerShown: false
+				}}
+			/>
+
+			<Stack.Screen
+				name="(result)/review"
+				options={{
+					headerShown: false
+				}}
+			/>
 		</Stack>
 	);
 }

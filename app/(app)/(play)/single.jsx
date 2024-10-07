@@ -1,118 +1,234 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
-import Button from '../../../components/customs/Button'; // Sử dụng Button tùy chỉnh
-import ResultSingle from '../(result)/single'; // Import component kết quả
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
+import Button from '../../../components/customs/Button';
+import ResultSingle from '../(result)/single';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { useAppProvider } from '@/contexts/AppProvider';
+import Toast from 'react-native-toast-message';
+import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
+import RenderHTML from 'react-native-render-html';
+import { Audio } from 'expo-av';
 
 const SinglePlay = () => {
+	const {i18n} = useAppProvider();
+	const { width } = useWindowDimensions();
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-	const [selectedAnswer, setSelectedAnswer] = useState(null);
+	const [selectedAnswers, setSelectedAnswers] = useState([]);
+	const [correctCount, setCorrectCount] = useState(0);
+	const [wrongCount, setWrongCount] = useState(0);
 	const [score, setScore] = useState(0);
 	const [isCompleted, setIsCompleted] = useState(false);
+	const [isCorrect, setIsCorrect] = useState(false);
 	const [isChosen, setIsChosen] = useState(false);
-	const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
 	const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
-	const [buttonText, setButtonText] = useState('Xác nhận'); 
-	const [buttonColor, setButtonColor] = useState('bg-white'); 
-	const [buttonTextColor, setButtonTextColor] = useState('text-black'); 
+	const [buttonText, setButtonText] = useState(i18n.t('play.single.buttonConfirm'));
+	const [buttonColor, setButtonColor] = useState('bg-white');
+	const [buttonTextColor, setButtonTextColor] = useState('text-black');
+	const { userData } = useAuthContext();
+	const [isProcessing, setIsProcessing] = useState(false);
+	const [questions, setQuestions] = useState([]);
+	const [sound, setSound] = useState(null);
 
-	// Danh sách câu hỏi
-	const questions = [
-		{
-			question: 'What is the capital of France?',
-			answers: ['Paris', 'London', 'Berlin', 'Rome'],
-			correctAnswer: 'Paris',
-		},
-		{
-			question: 'Who wrote "Hamlet"?',
-			answers: ['Shakespeare', 'Tolstoy', 'Hemingway', 'Austen'],
-			correctAnswer: 'Shakespeare',
-		},
-		{
-			question: 'What is the largest planet in our solar system?',
-			answers: ['Earth', 'Mars', 'Jupiter', 'Saturn'],
-			correctAnswer: 'Jupiter',
-		},
-	];
+	// Fetch questions from API
+	useEffect(() => {
+		const fetchQuestions = async () => {
+			try {
+				const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.GET_QUIZ_QUESTIONS, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'x-client-id': userData._id,
+						authorization: userData.accessToken,
+					},
+					body: JSON.stringify({
+						quiz_id: '67029b912635f0e8ffc5eb2c',
+					}),
+				});
 
-	const handleAnswerPress = (answer) => {
-		setSelectedAnswer(answer);
-		setIsChosen(true);
-		setButtonColor('bg-[#0D70D2]'); // Chuyển sang nền xanh dương khi chọn đáp án
-		setButtonTextColor('text-white'); // Chuyển chữ thành trắng khi chọn đáp án
+				const data = await res.json();
+				setQuestions(data.metadata);
+			} catch (error) {
+				console.error('Lỗi khi lấy câu hỏi:', error);
+			}
+		};
+		fetchQuestions();
+	}, [userData]);
+
+	const saveQuestionResult = async (questionId, answerId, correct, score) => {
+		await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_SAVE_QUESTION, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'x-client-id': userData._id,
+				authorization: userData.accessToken,
+			},
+			body: JSON.stringify({
+				exercise_id: null,
+				user_id: userData._id,
+				quiz_id: questions[currentQuestionIndex].quiz_id,
+				question_id: questionId,
+				answer: answerId,
+				correct,
+				score,
+			}),
+		});
 	};
 
-	const handleSubmit = () => {
-		if (selectedAnswer === null) {
-			Alert.alert('Vui lòng chọn đáp án!!');
+	const completed = async () => {
+		try {
+			await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({
+					exercise_id: null,
+					user_id: userData._id,
+					quiz_id: questions[0].quiz_id,
+					status: 'Đã hoàn thành',
+				}),
+			});
+		} catch (error) {
+			console.error('Lỗi khi cập nhật trạng thái hoàn thành:', error);
+		}
+	};
+
+	// Tải và phát âm thanh
+	const playSound = async (isCorrectAnswer) => {
+		let soundPath = isCorrectAnswer ? require('@/assets/sounds/correct.mp3') : require('@/assets/sounds/incorrect.mp3');
+		const { sound } = await Audio.Sound.createAsync(soundPath);
+		setSound(sound);
+		await sound.playAsync();
+	};
+
+	useEffect(() => {
+		return sound
+			? () => {
+				sound.unloadAsync(); // Cleanup âm thanh
+			}
+			: undefined;
+	}, [sound]);
+
+	const handleAnswerPress = (answerId) => {
+		if (questions[currentQuestionIndex].question_type === 'single') {
+			setSelectedAnswers([answerId]);
+			setIsChosen(true);
+			setButtonColor('bg-[#0D70D2]');
+			setButtonTextColor('text-white');
+		} else {
+			if (selectedAnswers.includes(answerId)) {
+				setSelectedAnswers(selectedAnswers.filter((id) => id !== answerId));
+			} else {
+				setSelectedAnswers([...selectedAnswers, answerId]);
+			}
+		}
+	};
+
+	const handleSubmit = async () => {
+		if (isProcessing) return;
+		setIsProcessing(true);
+
+		if (selectedAnswers.length === 0) {
+			Toast.show({
+				type: 'error',
+				text1: `${i18n.t('play.single.errorTitle')}`,
+				text2: `${i18n.t('play.single.errorText')}`,
+			});
+			setIsProcessing(false);
 			return;
 		}
 
-		const correctAnswer = questions[currentQuestionIndex].correctAnswer;
+		const currentQuestion = questions[currentQuestionIndex];
+		const correctAnswerIds = currentQuestion.correct_answer_ids.map(answer => answer._id);
+		// console.log(selectedAnswers, correctAnswerIds);
 
-		// Kiểm tra câu trả lời đúng sai và cập nhật trạng thái
-		if (selectedAnswer === correctAnswer) {
-			setScore(score + 10);
-			setIsAnswerCorrect(true);
-			setButtonColor('bg-[#4CAF50]');
-			setButtonText('+10 điểm!');
+		let isAnswerCorrect;
+
+		if (currentQuestion.question_type === 'single') {
+			isAnswerCorrect = selectedAnswers[0] === correctAnswerIds[0];
 		} else {
-			setIsAnswerCorrect(false);
-			setButtonColor('bg-[#F44336]');
-			setButtonText('Sai rồi!!');
+			isAnswerCorrect =
+				selectedAnswers.length === correctAnswerIds.length &&
+				selectedAnswers.every((answerId) => correctAnswerIds.includes(answerId));
 		}
+
+		await playSound(isAnswerCorrect);
+
+		if (isAnswerCorrect) {
+			setIsCorrect(true);
+			setCorrectCount(correctCount + 1);
+			setScore(score + currentQuestion.question_point);
+			setButtonColor('bg-[#4CAF50]');
+			setButtonText(`+${currentQuestion.question_point}`);
+		} else {
+			setIsCorrect(false);
+			setWrongCount(wrongCount + 1);
+			setButtonColor('bg-[#F44336]');
+			setButtonTextColor('text-white')
+			setButtonText(i18n.t('play.single.incorrect'));
+		}
+
+		saveQuestionResult(
+			currentQuestion._id,
+			selectedAnswers,
+			isAnswerCorrect,
+			currentQuestion.question_point
+		);
 
 		setShowCorrectAnswer(true);
 
-		// Sau một khoảng thời gian ngắn, chuyển sang câu tiếp theo
 		setTimeout(() => {
+			setIsProcessing(false);
 			if (currentQuestionIndex < questions.length - 1) {
 				setCurrentQuestionIndex(currentQuestionIndex + 1);
-				setSelectedAnswer(null);
+				setSelectedAnswers([]);
 				setIsChosen(false);
 				setShowCorrectAnswer(false);
-				setIsAnswerCorrect(null);
-				setButtonText('Xác nhận');
+				setButtonText(i18n.t('play.single.buttonConfirm'));
 				setButtonColor('bg-white');
 				setButtonTextColor('text-black');
 			} else {
 				setIsCompleted(true);
+				completed();
 			}
 		}, 1500);
 	};
 
 	const handleRestart = () => {
+		setIsCorrect(false);
 		setCurrentQuestionIndex(0);
+		setCorrectCount(0);
+		setWrongCount(0);
 		setScore(0);
 		setIsCompleted(false);
-		setSelectedAnswer(null);
+		setSelectedAnswers([]);
 		setIsChosen(false);
-		setIsAnswerCorrect(null);
 		setShowCorrectAnswer(false);
-		setButtonText('Xác nhận');
+		setButtonText(i18n.t('play.single.buttonConfirm'));
 		setButtonColor('bg-white');
 		setButtonTextColor('text-black');
 	};
 
 	if (isCompleted) {
-		// Hiển thị kết quả khi hoàn thành
 		return (
 			<ResultSingle
+				correctCount={correctCount}
+				wrongCount={wrongCount}
 				score={score}
+				totalQuestions={questions.length}
 				handleRestart={handleRestart}
-				questions={questions}
 			/>
 		);
 	}
 
 	return (
 		<View className="flex-1">
-			{/* Hiển thị thông tin cơ bản */}
 			<View className="flex-row justify-between items-center px-5 pt-10 pb-3 bg-black">
-				<Text className="font-bold text-lg text-white">
-					Tiêu đề bộ câu đố
-				</Text>
+				<Text className="font-bold text-lg text-white">{}</Text>
 				<Button
-					text="Kết thúc"
+					text={i18n.t('play.single.buttonQuit')}
 					onPress={() => console.log('Button pressed!!')}
 					loading={false}
 					type="fill"
@@ -121,64 +237,80 @@ const SinglePlay = () => {
 				/>
 			</View>
 
-			{/* Tương tác người dùng */}
 			<View className="flex-1 bg-[#1C2833] px-5 py-4 justify-between">
 				<Text className="text-lg bg-[#484E54] rounded text-white px-[10px] py-1 font-pregular self-start">
-					{`Điểm: ${score}`}
+					{`${i18n.t('play.single.score')}: ${score}`}
 				</Text>
 				<View className="bg-[#484E54] rounded-lg px-3 py-10">
-					<Text className="text-2xl font-pregular text-white">
-						{questions[currentQuestionIndex].question}
+					<Text className="text-sm font-pregular text-slate-200 absolute top-2 left-2">
+						{`${i18n.t('play.single.questionCouter')} ` + (currentQuestionIndex + 1) + " / " + questions.length}
 					</Text>
+
+					<RenderHTML
+						defaultTextProps={{
+							style: {
+								color: 'white',
+								fontSize: 25,
+								fontWeight: '700',
+							},
+						}}
+						contentWidth={width}
+						source={{
+							html: questions[currentQuestionIndex]?.question_excerpt,
+						}}
+					/>
 				</View>
 
 				<View>
-					{questions[currentQuestionIndex].answers.map(
-						(answer, index) => {
-							// Tạo điều kiện để hiển thị màu nền dựa trên kết quả đúng/sai
-							let backgroundColor = '#484E54'; // Mặc định
-							if (showCorrectAnswer) {
-								if (
-									answer ===
-									questions[currentQuestionIndex]
-										.correctAnswer
-								) {
-									backgroundColor = '#4CAF50'; // Xanh lá nếu là đáp án đúng
-								} else if (answer === selectedAnswer) {
-									backgroundColor = '#F44336'; // Đỏ nếu là đáp án sai
-								}
-							} else if (selectedAnswer === answer) {
-								backgroundColor = '#0D70D2'; // Màu khi người dùng chọn
-							}
+					{questions[currentQuestionIndex]?.question_answer_ids.map((answer, index) => {
+						let backgroundColor = '#484E54'; // Màu mặc định
 
-							return (
-								<TouchableOpacity
-									key={index}
-									onPress={() => handleAnswerPress(answer)}
-									style={{
-										backgroundColor,
-										padding: 10,
-										marginVertical: 5,
-										borderRadius: 5,
-									}}
-									disabled={showCorrectAnswer} // Vô hiệu hóa nút khi đang hiển thị đáp án đúng
-								>
-									<Text className="text-white font-pregular text-lg m-4">
-										{answer}
-									</Text>
-								</TouchableOpacity>
-							);
+						if (showCorrectAnswer) {
+							if (questions[currentQuestionIndex].question_type === 'single') {
+								if (answer._id === questions[currentQuestionIndex].correct_answer_ids[0]._id) {
+									backgroundColor = '#4CAF50'; // Green - Đúng
+								} else if (answer._id === selectedAnswers[0]) {
+									backgroundColor = '#F44336'; // Red - Sai
+								}
+							} else {								
+								if (questions[currentQuestionIndex].correct_answer_ids.map(answer => answer._id).includes(answer._id)) {
+									backgroundColor = '#4CAF50'; // Green - Đúng
+								} else if (selectedAnswers.includes(answer._id)) {
+									backgroundColor = '#F44336'; // Red - Sai
+								}
+							}
+						} else if (selectedAnswers.includes(answer._id)) {
+							backgroundColor = '#0D70D2'; // Màu xanh khi người dùng chọn
 						}
-					)}
+
+						return (
+							<TouchableOpacity
+								key={index}
+								onPress={() => handleAnswerPress(answer._id)}
+								style={{
+									backgroundColor,
+									padding: 10,
+									marginVertical: 5,
+									borderRadius: 5,
+								}}
+								disabled={showCorrectAnswer} // Vô hiệu hóa khi đã hiển thị kết quả
+							>
+								<Text className="text-white font-pregular text-lg m-4">
+									{answer.text}
+								</Text>
+							</TouchableOpacity>
+						);
+					})}
 				</View>
 
+
 				<Button
-					text={buttonText} // Text của button thay đổi dựa vào kết quả
+					text={buttonText}
 					onPress={handleSubmit}
 					type="fill"
-					otherStyles={`${buttonColor} p-4`} // Màu nền của button
-					textStyles={`${buttonTextColor} text-center text-lg`} // Màu chữ của button
-					disabled={!isChosen || showCorrectAnswer} // Vô hiệu hóa nút nếu chưa chọn câu hoặc đang hiển thị đáp án
+					otherStyles={`${buttonColor} p-4`}
+					textStyles={`text-white ${buttonTextColor} mx-auto text-lg`}
+					disabled={!isChosen || showCorrectAnswer}
 				/>
 			</View>
 		</View>

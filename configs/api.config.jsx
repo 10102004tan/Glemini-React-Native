@@ -1,7 +1,7 @@
 'use strict';
 
 const dev = {
-	API_URL: 'http://192.168.2.21:3000/api',
+	API_URL: 'http://10.0.148.179:3000/api',
 	API_VERSION: {
 		V1: '/v1',
 	},
@@ -13,6 +13,7 @@ const dev = {
 		PROFILE: '/auth/profile',
 		CHANGE_PASSWORD: '/auth/change-password',
 		USER_STATUS: '/auth/status',
+		USER_STATUS: '/auth/status',
 		GET_QUIZ_BY_USER: '/quizzes/get-by-user',
 		GET_QUIZ_QUESTIONS: '/quizzes/get-questions',
 		GET_QUESTION_DETAIL: '/questions/get-details',
@@ -20,19 +21,26 @@ const dev = {
 		QUESTION_CREATE: '/questions/create',
 		QUIZ_DETAIL: '/quizzes/get-details',
 		QUIZ_CREATE: '/quizzes/create',
+		RESULT_SAVE_QUESTION: '/result/save-question',
+		RESULT_COMPLETED: '/result/complete-quiz',
+		RESULT_REVIEW: '/result/review',
+		QUIZ_UPDATE: '/quizzes/update',
+		RESULT_SAVE_QUESTION: '/result/save-question',
+		RESULT_COMPLETED: '/result/complete-quiz',
+		SUBJECTS: '/subjects',
 	},
 };
 
 const prod = {
 	API_VERSION: {
-		V1: '/v1',
+		V1: "/v1",
 	},
-	API_URL: 'http://localhost:3000/api',
+	API_URL: "http://localhost:8000/api",
 	END_POINTS: {
-		LOGIN: '/login',
-		REGISTER: '/register',
-		LOGOUT: '/logout',
-		PROFILE: '/profile',
+		LOGIN: "/login",
+		REGISTER: "/register",
+		LOGOUT: "/logout",
+		PROFILE: "/profile",
 	},
 };
 

@@ -31,6 +31,7 @@ const QuizProvider = ({ children }) => {
 			}
 		);
 		const data = await response.json();
+		// console.log(data);
 
 		if (data.statusCode === 200) {
 			setQuizzes(data.metadata);
@@ -63,6 +64,58 @@ const QuizProvider = ({ children }) => {
 		setQuestionFetching(false);
 	};
 
+	// Delete quiz
+	const deleteQuiz = async (quizId) => {
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DELETE}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({ quiz_id: quizId }),
+			}
+		);
+
+		const data = await response.json();
+		console.log(data);
+		if (data.statusCode === 200) {
+			setNeedUpdate(true);
+		}
+	};
+
+	// Update quiz
+	const updateQuiz = async (quiz) => {
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPDATE}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify(quiz),
+			}
+		);
+
+		const data = await response.json();
+		console.log(JSON.stringify(data, null, 2));
+		if (data.statusCode === 200) {
+			setNeedUpdate(true);
+		}
+	};
+
+	// Update quiz if need
+	useEffect(() => {
+		if (needUpdate) {
+			fetchQuizzes();
+			setNeedUpdate(false);
+		}
+	}, [needUpdate]);
+
 	// Get all quizzes of the user
 	useEffect(() => {
 		if (userData) {
@@ -70,22 +123,12 @@ const QuizProvider = ({ children }) => {
 		}
 	}, [userData]);
 
-	// If NeedUpdate is true, fetch quizzes again
-	// useEffect(() => {
-	// 	if (needUpdate) {
-	// 		fetchQuizzes();
-	// 		setNeedUpdate(false);
-	// 	}
-	// }, [needUpdate]);
-
 	// Get all questions of the selected quiz
 	useEffect(() => {
-		// console.log(selectedQuiz._id);
-		if (userData && selectedQuiz._id) {
-			fetchQuizzes();
+		if (selectedQuiz._id) {
 			fetchQuestions();
 		}
-	}, [selectedQuiz, userData]);
+	}, [selectedQuiz]);
 
 	return (
 		<QuizContext.Provider
@@ -102,6 +145,8 @@ const QuizProvider = ({ children }) => {
 				setActionQuizType,
 				quizFetching,
 				questionFetching,
+				deleteQuiz,
+				updateQuiz,
 			}}
 		>
 			{children}
