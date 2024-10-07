@@ -23,7 +23,6 @@ const SubjectProvider = ({ children }) => {
 		);
 
 		const data = await response.json();
-		console.log(JSON.stringify(data.metadata, null, 2));
 
 		if (data.statusCode === 200) {
 			setSubjects(data.metadata);

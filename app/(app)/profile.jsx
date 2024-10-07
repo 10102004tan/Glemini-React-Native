@@ -16,6 +16,7 @@ export default function ProfileScreen() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [info, setInfo] = useState(null);
 	const [avatar, setAvatar] = useState(null);
+	const { i18n } = useAppProvider();
 
 	useEffect(() => {
 		fetchDataProfile();
@@ -79,7 +80,7 @@ export default function ProfileScreen() {
 					/>
 					<View className="w-[50px] h-[50px] absolute text-center flex justify-center  bg-[#00000045] rounded-full items-center">
 						<Text className="text-white absolute bottom-0">
-							Sửa
+							{i18n.t('profile.edit')}
 						</Text>
 					</View>
 				</Pressable>
@@ -92,8 +93,8 @@ export default function ProfileScreen() {
 							params: { title: 'Họ và tên' },
 						});
 					}}
-					title="Họ và tên"
-					description="Chỉnh sửa ngay"
+					title={i18n.t('profile.fullname')}
+					description={i18n.t('profile.editNow')}
 					isActice={true}
 				/>
 				<CardSetting
@@ -103,8 +104,8 @@ export default function ProfileScreen() {
 							params: { title: 'Trường' },
 						});
 					}}
-					title="Trường"
-					description="Chỉnh sửa ngay"
+					title={i18n.t('profile.school')}
+					description={i18n.t('profile.editNow')}
 				/>
 				<CardSetting
 					onPress={() => {
@@ -113,8 +114,8 @@ export default function ProfileScreen() {
 							params: { title: 'Email' },
 						});
 					}}
-					title="Email"
-					description="Chỉnh sửa ngay"
+					title={i18n.t('profile.email')}
+					description={i18n.t('profile.editNow')}
 				/>
 				<CardSetting
 					onPress={() => {
@@ -123,12 +124,12 @@ export default function ProfileScreen() {
 							params: { title: 'Mật khẩu' },
 						});
 					}}
-					title="Mật khẩu"
-					description="Chỉnh sửa ngay"
+					title={i18n.t('profile.password')}
+					description={i18n.t('profile.editNow')}
 				/>
 				<Pressable>
 					<View className="py-3 border mt-5">
-						<Text className="text-center">Lưu</Text>
+						<Text className="text-center">{i18n.t('profile.save')}</Text>
 					</View>
 				</Pressable>
 			</View>

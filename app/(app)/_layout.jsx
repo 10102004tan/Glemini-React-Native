@@ -5,9 +5,11 @@ import { Text, TouchableOpacity } from 'react-native';
 import { useGlobalSearchParams } from 'expo-router';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import ResultReview from './(result)/review';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 export default function AppRootLayout() {
-  const { userData, isLoading, fetchStatus } = useContext(AuthContext);
+	const { userData, isLoading, fetchStatus } = useContext(AuthContext);
+	const {i18n} = useAppProvider();
   const { title } = useGlobalSearchParams();
 
   useEffect(() => {
@@ -35,7 +37,7 @@ export default function AppRootLayout() {
 			<Stack.Screen
 				name="profile"
 				options={{
-					headerTitle: 'Thông tin cá nhân',
+					headerTitle: i18n.t('profile.title'),
 				}}
 			/>
 
@@ -54,12 +56,12 @@ export default function AppRootLayout() {
 				}}
 			/>
 
-      <Stack.Screen
-        name="settings"
-        options={{
-          headerTitle: "Cài đặt",
-        }}
-      />
+			<Stack.Screen
+				name="settings"
+				options={{
+					headerTitle: i18n.t('settings.title'),
+				}}
+			/>
 
 			<Stack.Screen
 				name="(quiz)/list"

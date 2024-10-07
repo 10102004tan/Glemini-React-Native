@@ -9,10 +9,11 @@ import { AuthContext } from '@/contexts/AuthContext';
 export default function TabLayout() {
 	const { isHiddenNavigationBar } = useAppProvider();
 	const { userData: { user_type } } = useContext(AuthContext);
+	const {i18n} = useAppProvider();
+
 	return (
 		<Tabs
 			screenOptions={{
-				headerShown: false,
 				tabBarStyle: {
 					height: 60,
 					position: 'absolute',
@@ -33,7 +34,7 @@ export default function TabLayout() {
 			<Tabs.Screen
 				name="index"
 				options={{
-					title: 'Home',
+					title: i18n.t('home.title'),
 					tabBarIcon: ({ color, focused }) => (
 						<TabBarIcon
 							name={focused ? 'home' : 'home-outline'}
@@ -46,7 +47,7 @@ export default function TabLayout() {
 			<Tabs.Screen
 				name="search"
 				options={{
-					title: 'Tìm kiếm',
+					title: i18n.t('search.title'),
 					tabBarIcon: ({ color, focused }) => (
 						<TabBarIcon
 							name={focused ? 'search-circle-sharp' : 'search-outline'}
@@ -59,7 +60,7 @@ export default function TabLayout() {
 			<Tabs.Screen
 				name="report"
 				options={{
-					title: 'Báo cáo',
+					title: i18n.t('report.title'),
 					tabBarIcon: ({ color, focused }) => (
 						<TabBarIcon
 							name={focused ? 'document-sharp' : 'document-outline'}
@@ -72,7 +73,7 @@ export default function TabLayout() {
 			<Tabs.Screen
 				name="teacher_home_screen"
 				options={{
-					title: 'Lớp học',
+					title: i18n.t('classes.title'),
 					tabBarIcon: ({ color, focused }) => (
 						<TabBarIcon
 							name={focused ? 'people' : 'people-outline'}
@@ -92,7 +93,7 @@ export default function TabLayout() {
 			<Tabs.Screen
 				name="student_home_screen"
 				options={{
-					title: 'Classes',
+					title: i18n.t('classes.title'),
 					tabBarIcon: ({ color, focused }) => (
 						<TabBarIcon
 							name={focused ? 'school' : 'school-outline'}
@@ -113,7 +114,7 @@ export default function TabLayout() {
 			<Tabs.Screen
 				name="account"
 				options={{
-					title: 'Tài khoản',
+					title: i18n.t('account.title'),
 					tabBarIcon: ({ color, focused }) => (
 						<TabBarIcon
 							name={focused ? 'moon' : 'moon-outline'}
