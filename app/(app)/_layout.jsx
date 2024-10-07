@@ -1,9 +1,10 @@
-import { Redirect, Stack } from "expo-router";
-import React, { useContext, useEffect } from "react";
-import { AuthContext } from "../../contexts/AuthContext";
-import { Text } from "react-native";
-import { useGlobalSearchParams } from "expo-router";
-import { AntDesign, Entypo, FontAwesome } from "@expo/vector-icons";
+import { Redirect, Stack } from 'expo-router';
+import React, { useContext, useEffect } from 'react';
+import { AuthContext } from '../../contexts/AuthContext';
+import { Text, TouchableOpacity } from 'react-native';
+import { useGlobalSearchParams } from 'expo-router';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import ResultReview from './(result)/review';
 
 export default function AppRootLayout() {
   const { userData, isLoading, fetchStatus } = useContext(AuthContext);
@@ -44,7 +45,7 @@ export default function AppRootLayout() {
 					headerTitle: title,
 					headerRight: () => (
 						<FontAwesome
-							onPress={() => {}}
+							onPress={() => { }}
 							name="save"
 							size={24}
 							color="black"
@@ -102,6 +103,20 @@ export default function AppRootLayout() {
 				name="(quiz)/create_title"
 				options={{
 					headerTitle: '',
+				}}
+			/>
+
+			<Stack.Screen
+				name="(play)/single"
+				options={{
+					headerShown: false
+				}}
+			/>
+
+			<Stack.Screen
+				name="(result)/review"
+				options={{
+					headerShown: false
 				}}
 			/>
 		</Stack>
