@@ -11,8 +11,8 @@ const AppProvider = ({ children }) => {
 	const i18n = new I18n({
 		en,
 		ja,
-		vi
-	  });
+		vi,
+	});
 	i18n.locale = language;
 	const [theme, setTheme] = useState({
 		// text: useColorScheme() === 'dark' ? '#fff' : '#000',

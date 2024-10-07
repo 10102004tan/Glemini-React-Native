@@ -7,6 +7,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { API_URL, END_POINTS, API_VERSION } from '@/configs/api.config';
 const CreateTitleQuizzScreen = () => {
 	const { userData } = useAuthContext();
 	const [quizName, setQuizName] = useState('');
@@ -15,7 +16,7 @@ const CreateTitleQuizzScreen = () => {
 		// Xử lý tạo quiz rỗng
 		if (userData) {
 			const response = await fetch(
-				'http://192.168.1.8:8000/api/v1/quizzes/create',
+				`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_CREATE}`,
 				{
 					method: 'POST',
 					headers: {
@@ -30,7 +31,7 @@ const CreateTitleQuizzScreen = () => {
 				}
 			);
 			const data = await response.json();
-			// console.log(data);
+			console.log(data);
 			if (data.statusCode === 200) {
 				setNeedUpdate(true);
 				router.replace('(app)/(quiz)/' + data.metadata._id);
