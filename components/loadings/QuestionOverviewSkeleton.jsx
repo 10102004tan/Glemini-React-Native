@@ -1,31 +1,45 @@
-import { View, Text } from 'react-native';
+import { Text, View } from 'react-native';
 import React from 'react';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import SkeletonLoading from './SkeletonLoading';
 const QuestionOverviewSkeleton = () => {
 	return (
-		<SkeletonPlaceholder>
-			<View className="p-2 rounded-2xl border border-gray mb-2">
-				<View className="flex w-full items-center justify-between flex-row">
-					<View className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center" />
-					<View className="ml-2 w-1/2 h-6" />
-					<View className="w-1/4 h-6" />
-				</View>
-				<View className="mt-2 h-20" />
-				<View className="mt-6">
-					{[...Array(4)].map((_, index) => (
-						<View
-							key={index}
-							className="flex flex-row items-center justify-start mb-2"
-						>
-							<View className="w-4 h-4 rounded-full mr-2" />
-							<View className="w-3/4 h-6" />
-						</View>
-					))}
-				</View>
-				<View className="h-6 mt-4" />
-				<View className="h-6 mt-2" />
+		<View className="p-2 rounded-2xl border border-overlay mb-2">
+			<View className="flex w-full items-center justify-between flex-row">
+				<SkeletonLoading styles="w-8 h-8 rounded-lg">
+					<Text className="text-white"></Text>
+				</SkeletonLoading>
+				<SkeletonLoading styles="flex-1 ml-2 w-8 h-8 rounded-lg"></SkeletonLoading>
+				<Text className="text-gray"></Text>
 			</View>
-		</SkeletonPlaceholder>
+			<View className="mt-2 overflow-hidden"></View>
+			<SkeletonLoading styles="w-full h-6 mr-2 mb-1 mt-4 rounded-lg">
+				<Text className="text-white"></Text>
+			</SkeletonLoading>
+			<View className="mt-4">
+				{[1, 2, 3, 4].map((index) => (
+					<View
+						key={index}
+						className="flex flex-col items-center justify-start"
+					>
+						<SkeletonLoading styles="w-full h-5 mb-2 rounded-lg">
+							<Text className="text-white"></Text>
+						</SkeletonLoading>
+					</View>
+				))}
+			</View>
+			<View className="mt-4">
+				<View className="flex items-center justify-end flex-row">
+					<SkeletonLoading styles="w-12 h-3 mb-2 rounded-lg">
+						<Text className="text-white"></Text>
+					</SkeletonLoading>
+				</View>
+				<View className="flex items-center justify-end flex-row">
+					<SkeletonLoading styles="w-12 h-3 mb-2 rounded-lg">
+						<Text className="text-white"></Text>
+					</SkeletonLoading>
+				</View>
+			</View>
+		</View>
 	);
 };
 

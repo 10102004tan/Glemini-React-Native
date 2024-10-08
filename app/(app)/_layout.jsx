@@ -4,8 +4,10 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { Text, TouchableOpacity } from 'react-native';
 import { useGlobalSearchParams } from 'expo-router';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { View } from 'react-native';
 import ResultReview from './(result)/review';
 import { useAppProvider } from '@/contexts/AppProvider';
+
 
 export default function AppRootLayout() {
 	const { userData, isLoading, fetchStatus } = useContext(AuthContext);
@@ -47,7 +49,7 @@ export default function AppRootLayout() {
 					headerTitle: title,
 					headerRight: () => (
 						<FontAwesome
-							onPress={() => { }}
+							onPress={() => {}}
 							name="save"
 							size={24}
 							color="black"
@@ -67,9 +69,6 @@ export default function AppRootLayout() {
 				name="(quiz)/list"
 				options={{
 					headerTitle: 'Danh sách các quiz',
-					// headerRight: () => {
-					// 	return <Text>Hello</Text>;
-					// },
 				}}
 			/>
 
@@ -109,16 +108,32 @@ export default function AppRootLayout() {
 			/>
 
 			<Stack.Screen
+				name="(quiz)/edit_quiz_question"
+				options={{
+					headerTitle: '',
+					headerRight: () => {
+						return (
+							<View className="flex flex-row items-center justify-between">
+								<Text className="ml-4 px-4 py-2 rounded-xl bg-overlay">
+									Loại câu hỏi
+								</Text>
+							</View>
+						);
+					},
+				}}
+			/>
+
+			<Stack.Screen
 				name="(play)/single"
 				options={{
-					headerShown: false
+					headerShown: false,
 				}}
 			/>
 
 			<Stack.Screen
 				name="(result)/review"
 				options={{
-					headerShown: false
+					headerShown: false,
 				}}
 			/>
 		</Stack>
