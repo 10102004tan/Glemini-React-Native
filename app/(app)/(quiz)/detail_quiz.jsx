@@ -14,6 +14,7 @@ import { useGlobalSearchParams } from "expo-router";
 import { useQuizProvider } from "@/contexts/QuizProvider";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 import QuestionOverview from "@/components/customs/QuestionOverview";
+import { ScrollView } from "react-native-gesture-handler";
 
 const detailquizz = () => {
   const { detail_quiz } = useGlobalSearchParams();
@@ -142,7 +143,8 @@ const detailquizz = () => {
           <Text className="text-lg font-semibold m-2">Chọn trường</Text>
           <SelectList
             setSelected={(val) => setSelectedSchool(val)}
-            data={nameSchool.map((item) => item.title)}
+            data={nameSchool}
+            save="value"
           />
         </View>
 
@@ -151,7 +153,8 @@ const detailquizz = () => {
           <Text className="text-lg font-semibold m-2">Chọn lớp</Text>
           <SelectList
             setSelected={(val) => setSelectedClass(val)}
-            data={nameClass.map((item) => item.title)}
+            data={nameClass}
+            save="value"
           />
         </View>
 
@@ -207,26 +210,28 @@ const detailquizz = () => {
         </Text>
       </View>
 
-      <View className="flex m-4 ">
-        {/* Quiz Questions */}
-        {questionFetching ? (
-          <Text>Loading</Text>
-        ) : (
-          <View className="mt-2 p-4">
-            {currentQuizQuestion.length > 0 &&
-              currentQuizQuestion.map((question, index) => {
-                return (
-                  <QuestionOverview
-                    key={index}
-                    question={question}
-                    index={index}
-                  />
-                );
-              })}
-          </View>
-        )}
+      <View className="flex-1 m-4 ">
+        <ScrollView>
+          {/* Quiz Questions */}
+          {questionFetching ? (
+            <Text>Loading</Text>
+          ) : (
+            <View className="p-4">
+              {currentQuizQuestion.length > 0 &&
+                currentQuizQuestion.map((question, index) => {
+                  return (
+                    <QuestionOverview
+                      key={index}
+                      question={question}
+                      index={index}
+                    />
+                  );
+                })}
+            </View>
+          )}
+        </ScrollView>
       </View>
-      <View className="w-full h-[1px] bg-gray mt-[320px]"></View>
+      <View className="w-full h-[1px] bg-gray"></View>
       <View className="p-2">
         <Button
           text={"Bắt đầu Quiz"}
