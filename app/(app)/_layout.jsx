@@ -5,24 +5,28 @@ import { Text, TouchableOpacity } from 'react-native';
 import { useGlobalSearchParams } from 'expo-router';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
+import ResultReview from './(result)/review';
+import { useAppProvider } from '@/contexts/AppProvider';
+
 
 export default function AppRootLayout() {
 	const { userData, isLoading, fetchStatus } = useContext(AuthContext);
-	const { title } = useGlobalSearchParams();
+	const {i18n} = useAppProvider();
+  const { title } = useGlobalSearchParams();
 
-	useEffect(() => {
-		if (userData) {
-			fetchStatus();
-		}
-	}, [userData]);
+  useEffect(() => {
+    if (userData) {
+      fetchStatus();
+    }
+  }, [userData]);
 
-	if (isLoading) {
-		return <Text>Loading...</Text>;
-	}
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
 
-	if (!userData) {
-		return <Redirect href={'/(auths)/sign-in'} />;
-	}
+  if (!userData) {
+    return <Redirect href={"/(auths)/sign-in"} />;
+  }
 
 	return (
 		<Stack>
@@ -35,7 +39,7 @@ export default function AppRootLayout() {
 			<Stack.Screen
 				name="profile"
 				options={{
-					headerTitle: 'Thông tin cá nhân',
+					headerTitle: i18n.t('profile.title'),
 				}}
 			/>
 
@@ -57,7 +61,7 @@ export default function AppRootLayout() {
 			<Stack.Screen
 				name="settings"
 				options={{
-					headerTitle: 'Cài đặt',
+					headerTitle: i18n.t('settings.title'),
 				}}
 			/>
 

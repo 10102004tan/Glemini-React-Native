@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const dev = {
 	API_URL: 'http://192.168.1.8:8000/api',
@@ -45,6 +45,7 @@ const prod = {
 		LOGOUT: '/logout',
 		PROFILE: '/profile',
 	},
+
 };
 
 module.exports = dev;
