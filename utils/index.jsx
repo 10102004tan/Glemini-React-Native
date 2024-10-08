@@ -19,6 +19,7 @@ const convertSubjectData = (data) => {
 	return data.map((item, index) => ({
 		key: item._id.toString(),
 		value: item.name,
+		selected: true,
 	}));
 };
 

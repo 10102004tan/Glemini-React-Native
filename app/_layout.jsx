@@ -7,7 +7,7 @@ import Toast from 'react-native-toast-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { LogBox } from 'react-native';
 import Providers from '@/contexts/Providers';
-import Reactotron from 'reactotron-react-native';
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 // Bỏ qua cảnh báo chứa chuỗi "defaultProps"
@@ -37,7 +37,7 @@ export default function RootLayout() {
 	}
 
 	return (
-		<GestureHandlerRootView style={{ flex: 1 }}>
+		<GestureHandlerRootView>
 			<Providers>
 				<Slot />
 				<Toast />

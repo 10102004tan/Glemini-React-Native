@@ -1,7 +1,7 @@
 'use strict';
 
 const dev = {
-	API_URL: 'http://192.168.247.116:3000/api',
+	API_URL: 'http://192.168.1.8:8000/api',
 	API_VERSION: {
 		V1: '/v1',
 	},
@@ -19,8 +19,11 @@ const dev = {
 		GET_QUESTION_DETAIL: '/questions/get-details',
 		QUESTION_UPDATE: '/questions/update',
 		QUESTION_CREATE: '/questions/create',
+		QUESTION_UPLOAD_IMAGE: '/questions/upload',
+		QUIZ_UPLOAD_IMAGE: '/quizzes/upload',
 		QUIZ_DETAIL: '/quizzes/get-details',
 		QUIZ_CREATE: '/quizzes/create',
+		QUIZ_DELETE: '/quizzes/delete',
 		RESULT_SAVE_QUESTION: '/result/save-question',
 		RESULT_COMPLETED: '/result/complete-quiz',
 		RESULT_REVIEW: '/result/review',
@@ -33,14 +36,14 @@ const dev = {
 
 const prod = {
 	API_VERSION: {
-		V1: "/v1",
+		V1: '/v1',
 	},
-	API_URL: "http://localhost:8000/api",
+	API_URL: 'http://localhost:8000/api',
 	END_POINTS: {
-		LOGIN: "/login",
-		REGISTER: "/register",
-		LOGOUT: "/logout",
-		PROFILE: "/profile",
+		LOGIN: '/login',
+		REGISTER: '/register',
+		LOGOUT: '/logout',
+		PROFILE: '/profile',
 	},
 };
 

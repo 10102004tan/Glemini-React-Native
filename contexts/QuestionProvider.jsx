@@ -43,40 +43,7 @@ const QuestionProvider = ({ children }) => {
 		],
 	});
 	const [questions, setQuestions] = useState([]);
-	const [updateQuestionId, setUpdateQuestionId] = useState(0);
 	const { userData } = useAuthContext();
-
-	// Get the current question to update
-	const getCurrentUpdateQuestion = async () => {
-		const response = await fetch(
-			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUESTION_DETAIL}`,
-			{
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'x-client-id': userData._id,
-					authorization: userData.accessToken,
-				},
-				body: JSON.stringify({ question_id: updateQuestionId }),
-			}
-		);
-		const data = await response.json();
-		//  console.log(data.metadata);
-		if (data.statusCode === 200) {
-			setQuestion(data.metadata);
-			setUpdateQuestionId(0);
-			router.replace('/(app)/(quiz)/edit_quiz_question');
-		} else {
-			// Alert to user here
-			console.log('Error when get question details');
-		}
-	};
-
-	useEffect(() => {
-		if (updateQuestionId !== 0) {
-			getCurrentUpdateQuestion();
-		}
-	}, [updateQuestionId]);
 
 	// Reset lại mảng câu hỏi
 	const resetQuestion = () => {
@@ -278,9 +245,9 @@ const QuestionProvider = ({ children }) => {
 
 				setQuestions(newQuestions);
 				resetQuestion();
-				setUpdateQuestionId(0);
+				console.log('Quiz ID: ', quizId);
 				router.replace({
-					pathname: '/(app)/(quiz)/overview/',
+					pathname: '/(app)/(quiz)/overview',
 					params: { id: quizId },
 				});
 			}
@@ -307,9 +274,7 @@ const QuestionProvider = ({ children }) => {
 				updateQuestionTime,
 				updateQuestionPoint,
 				editQuestion,
-				updateQuestionId,
 				checkCorrectAnswer,
-				setUpdateQuestionId,
 			}}
 		>
 			{children}

@@ -1,5 +1,5 @@
-import { Link, Redirect, Tabs } from 'expo-router';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Link, Tabs } from 'expo-router';
+import React, { useContext } from 'react';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { TouchableOpacity } from 'react-native';
@@ -8,11 +8,12 @@ import { AuthContext } from '@/contexts/AuthContext';
 
 export default function TabLayout() {
 	const { isHiddenNavigationBar } = useAppProvider();
-	const { userData: { user_type } } = useContext(AuthContext);
+	const {
+		userData: { user_type },
+	} = useContext(AuthContext);
 	return (
 		<Tabs
 			screenOptions={{
-				headerShown: false,
 				tabBarStyle: {
 					height: 60,
 					position: 'absolute',
@@ -49,7 +50,11 @@ export default function TabLayout() {
 					title: 'Tìm kiếm',
 					tabBarIcon: ({ color, focused }) => (
 						<TabBarIcon
-							name={focused ? 'search-circle-sharp' : 'search-outline'}
+							name={
+								focused
+									? 'search-circle-sharp'
+									: 'search-outline'
+							}
 							color={color}
 						/>
 					),
@@ -62,7 +67,9 @@ export default function TabLayout() {
 					title: 'Báo cáo',
 					tabBarIcon: ({ color, focused }) => (
 						<TabBarIcon
-							name={focused ? 'document-sharp' : 'document-outline'}
+							name={
+								focused ? 'document-sharp' : 'document-outline'
+							}
 							color={color}
 						/>
 					),
@@ -122,22 +129,20 @@ export default function TabLayout() {
 					),
 					headerRight: () => {
 						return (
-							<Link style={{
-								marginRight: 20
-							}} href={{
-								pathname: '(app)/settings',
-
-							}}>
+							<Link
+								style={{
+									marginRight: 20,
+								}}
+								href={{
+									pathname: '(app)/settings',
+								}}
+							>
 								<TabBarIcon name="settings" color="#1C2833" />
 							</Link>
-						)
+						);
 					},
 				}}
 			/>
-
-
-
-
 		</Tabs>
 	);
 }
