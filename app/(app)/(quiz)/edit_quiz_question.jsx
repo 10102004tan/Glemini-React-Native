@@ -218,8 +218,10 @@ const EditQuizQuestion = () => {
 								contentWidth={width}
 								source={{
 									html:
-										question.question_excerpt ||
-										'<div>Chỉnh sửa câu hỏi của bạn</div>',
+										question.question_excerpt ===
+										'<div></div>'
+											? '<div>Chỉnh sửa câu hỏi của bạn</div>'
+											: question.question_excerpt,
 								}}
 							/>
 						</TouchableOpacity>

@@ -5,7 +5,7 @@ import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 const QuestionContext = createContext();
 const QuestionProvider = ({ children }) => {
 	const [question, setQuestion] = useState({
-		question_excerpt: '',
+		question_excerpt: '<div></div>',
 		question_description: '',
 		question_image: '',
 		question_audio: '',
@@ -48,7 +48,7 @@ const QuestionProvider = ({ children }) => {
 	// Reset lại mảng câu hỏi
 	const resetQuestion = () => {
 		setQuestion({
-			question_excerpt: '',
+			question_excerpt: '<div></div>',
 			question_description: '',
 			question_image: '',
 			question_audio: '',
