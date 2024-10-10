@@ -7,26 +7,28 @@ import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 import ResultReview from './(result)/review';
 import { useAppProvider } from '@/contexts/AppProvider';
-
-
+import { useQuizProvider } from '@/contexts/QuizProvider';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import SpinningIcon from '@/components/loadings/SpinningIcon';
 export default function AppRootLayout() {
 	const { userData, isLoading, fetchStatus } = useContext(AuthContext);
-	const {i18n} = useAppProvider();
-  const { title } = useGlobalSearchParams();
+	const { isSave, setIsSave } = useQuizProvider();
+	const { i18n } = useAppProvider();
+	const { title } = useGlobalSearchParams();
 
-  useEffect(() => {
-    if (userData) {
-      fetchStatus();
-    }
-  }, [userData]);
+	useEffect(() => {
+		if (userData) {
+			fetchStatus();
+		}
+	}, [userData]);
 
-  if (isLoading) {
-    return <Text>Loading...</Text>;
-  }
+	if (isLoading) {
+		return <Text>Loading...</Text>;
+	}
 
-  if (!userData) {
-    return <Redirect href={"/(auths)/sign-in"} />;
-  }
+	if (!userData) {
+		return <Redirect href={'/(auths)/sign-in'} />;
+	}
 
 	return (
 		<Stack>
@@ -78,15 +80,24 @@ export default function AppRootLayout() {
 					headerTitle: 'Chi tiết',
 					headerRight: () => {
 						return (
-							<TouchableOpacity className="flex items-center justify-center flex-row px-4 py-2 bg-primary rounded-xl">
-								<Ionicons
-									name="save-outline"
-									size={24}
-									color="white"
-								/>
-								<Text className="ml-2 text-white">
-									Lưu bài quiz
-								</Text>
+							<TouchableOpacity
+								className="flex items-center justify-center flex-row px-4 py-2 bg-primary rounded-xl"
+								onPress={() => {
+									if (!isSave) {
+										setIsSave(true);
+									}
+								}}
+							>
+								{isSave ? (
+									<SpinningIcon />
+								) : (
+									<Ionicons
+										name="save"
+										size={20}
+										color="white"
+									/>
+								)}
+								<Text className="ml-2 text-white">Lưu</Text>
 							</TouchableOpacity>
 						);
 					},

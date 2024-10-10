@@ -37,6 +37,14 @@ const QuestionEditBoard = ({
 	const { deleteAnswer, markCorrectAnswer, checkCorrectAnswer } =
 		useQuestionProvider();
 
+	useEffect(() => {
+		if (content === '') {
+			console.log('true');
+		} else {
+			console.log('false');
+		}
+	}, [content]);
+
 	return (
 		<Animated.View
 			style={[animatedStyle]}

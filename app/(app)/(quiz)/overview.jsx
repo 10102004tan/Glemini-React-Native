@@ -16,6 +16,7 @@ import { useAuthContext } from '../../../contexts/AuthContext';
 import { API_URL, END_POINTS, API_VERSION } from '@/configs/api.config';
 import { useAppProvider } from '@/contexts/AppProvider';
 import Field from '@/components/customs/Field';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as ImagePicker from 'expo-image-picker';
 
 import {
@@ -26,6 +27,8 @@ import { useSubjectProvider } from '@/contexts/SubjectProvider';
 import { convertSubjectData } from '@/utils';
 import QuestionOverviewSkeleton from '@/components/loadings/QuestionOverviewSkeleton';
 import QuizInforSkeleton from '@/components/loadings/QuizInforSkeleton';
+import { Feather } from '@expo/vector-icons';
+import ConfirmDialog from '@/components/dialogs/ConfirmDialog';
 
 const QuizzOverViewScreen = () => {
 	const router = useRouter();
@@ -45,17 +48,25 @@ const QuizzOverViewScreen = () => {
 	const [quizSubjects, setQuizSubjects] = useState([]);
 	const [quizThumbnail, setQuizThumbnail] = useState('');
 	const [currentQuizQuestion, setCurrentQuizQuestion] = useState([]);
+	const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
 	const {
 		setActionQuizType,
 		quizFetching,
-		setQuizFetching,
 		deleteQuiz,
 		questionFetching,
 		updateQuiz,
 		setQuestionFetching,
+		isSave,
 	} = useQuizProvider();
 	const { resetQuestion } = useQuestionProvider();
+
+	// Lưu thông tin của quiz khi người dùng ấn nút lưu trên thanh header
+	useEffect(() => {
+		if (isSave) {
+			handleUpdateQuiz(id);
+		}
+	}, [isSave]);
 
 	// Lấy thông tin của quiz hiện tại
 	const fetchQuiz = async () => {
@@ -116,15 +127,16 @@ const QuizzOverViewScreen = () => {
 			quiz_description: quizDescription,
 			quiz_status: quizStatus,
 			quiz_subjects: quizSubjects,
+			quiz_thumb: quizThumbnail,
 		};
 
 		updateQuiz(quiz);
-		handleCloseBottomSheet();
+		// handleCloseBottomSheet();
 	};
 
 	useEffect(() => {
 		// Lấy dữ liệu của quiz hiện tại
-		console.log(id);
+		// console.log(id);
 		if (id) {
 			fetchQuiz();
 			fetchQuestions();
@@ -134,7 +146,7 @@ const QuizzOverViewScreen = () => {
 	// Lấy danh sách câu hỏi của bộ quiz hiện tại
 	const createQuestion = () => {
 		handleCloseBottomSheet();
-		router.replace({
+		router.push({
 			pathname: '(app)/(quiz)/edit_quiz_question',
 			params: { quizId: id },
 		});
@@ -194,7 +206,6 @@ const QuizzOverViewScreen = () => {
 		);
 
 		const data = await response.json();
-		console.log(data);
 		return data.url; // URL của ảnh trên server
 	};
 
@@ -317,7 +328,7 @@ const QuizzOverViewScreen = () => {
 							searchPlaceholder="Chế độ hiển thị"
 						/>
 					</View>
-					<View className="flex items-center justify-end mt-4 flex-row w-full">
+					{/* <View className="flex items-center justify-end mt-4 flex-row w-full">
 						<Button
 							text="Lưu"
 							onPress={() => {
@@ -335,9 +346,22 @@ const QuizzOverViewScreen = () => {
 							otherStyles="p-4 justify-center w-1/3 bg-red-500"
 							textStyles="text-white"
 						/>
-					</View>
+					</View> */}
 				</View>
 			</BottomSheet>
+
+			{/* Confirm dialog */}
+			<ConfirmDialog
+				title={'Chờ đã'}
+				visible={showConfirmDialog}
+				onCancel={() => setShowConfirmDialog(false)}
+				onConfirm={() => {
+					deleteQuiz(id);
+					setShowConfirmDialog(false);
+					router.back('(app)/(quiz)/list');
+				}}
+				message={'Bạn chắc chắn muốn xóa bộ quiz này?'}
+			/>
 
 			<ScrollView className="mb-[100px]">
 				{quizFetching ? (
@@ -348,6 +372,7 @@ const QuizzOverViewScreen = () => {
 							{quizThumbnail ? (
 								<>
 									<Image
+										className="w-full max-h-[300px] h-[260px] rounded-2xl"
 										source={{ uri: quizThumbnail }}
 									></Image>
 								</>
@@ -383,27 +408,28 @@ const QuizzOverViewScreen = () => {
 								</View>
 								<View className="flex items-center flex-row justify-center">
 									<TouchableOpacity
+										className="p-2 rounded-full bg-primary w-10 flex items-center justify-center h-10"
 										onPress={() => {
 											handleShowBottomSheetEditQuiz();
 										}}
 									>
-										<MaterialIcons
-											name="edit"
-											size={24}
-											color="black"
+										<Feather
+											name="edit-3"
+											size={20}
+											color="white"
 										/>
 									</TouchableOpacity>
 
 									<TouchableOpacity
+										className="ml-2 p-2 rounded-full bg-primary w-10 flex items-center justify-center h-10"
 										onPress={() => {
-											deleteQuiz(id);
-											router.back('(app)/(quiz)/list');
+											setShowConfirmDialog(true);
 										}}
 									>
-										<MaterialIcons
-											name="delete"
-											size={24}
-											color="black"
+										<FontAwesome
+											name="trash-o"
+											size={20}
+											color="white"
 										/>
 									</TouchableOpacity>
 								</View>
