@@ -15,6 +15,7 @@
       "preset": "jest-expo"
    },
    "dependencies": {
+      "@10102004tan/react-native-select-dropdown-v2": "^1.0.8",
       "@expo/vector-icons": "^14.0.4",
       "@gorhom/bottom-sheet": "^4.6.4",
       "@react-native-async-storage/async-storage": "^1.23.1",
