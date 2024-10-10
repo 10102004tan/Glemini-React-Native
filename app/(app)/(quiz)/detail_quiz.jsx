@@ -182,20 +182,11 @@ const detailquizz = () => {
           </TouchableOpacity>
         </View>
         <View className="h-[100px] w-full border rounded-xl mt-4 flex-row">
-          <View className="flex justify-center items-center ml-2">
-            {/* <Image
-              source={
-                selectedQuiz && selectedQuiz.quiz_thumb
-                  ? {
-                      uri: `http://192.168.1.221:8000${selectedQuiz.quiz_thumb}`,
-                    }
-                  : icon
-              }
-            /> */}
-          </View>
+          {/* <View className="flex justify-center items-center ml-2">
+            <Image></Image>
+          </View> */}
           <View className="flex-col">
             <Text className="ml-4 mt-2">{selectedQuiz.quiz_name}</Text>
-
             <Text className="ml-4 mt-2">{selectedQuiz.quiz_description}</Text>
             <Text className="ml-4 mt-2">{selectedQuiz.quiz_status}</Text>
           </View>

@@ -92,5 +92,36 @@
             "textDesc": "Practice",
             "buttonReview": "Review"
         }
+    },
+    "profile":{
+        "title":"Profile",
+        "fullname":"Fullname",
+        "email":"Email",
+        "phone":"Phone",
+        "address":"Address",
+        "password":"Password",
+        "edit":"Edit",
+        "save":"Save",
+        "school":"School",
+        "editNow":"Edit Now"
+    },
+    "settings":{
+        "title":"Settings"
+    },
+    "home":{
+        "title":"Home"
+    },
+    "search":{
+        "title":"Search"
+    },
+    "classes":{
+        "title":"Classes"
+    },
+    "account":{
+        "title":"Account"
+    },
+    "report":{
+        "title":"Report"
     }
+
 }

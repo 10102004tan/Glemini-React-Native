@@ -46,7 +46,7 @@ export default function HomeScreen() {
         onPress={() => {
           router.push({
             pathname: "(app)/(quiz)/detail_quiz",
-            params: { detail_quiz: "66ff90ec69a02759b89ef55c" },
+            params: { detail_quiz: "67063f3991c48d80d64c33e8" },
           });
         }}
         text={"Quizz Detail"}

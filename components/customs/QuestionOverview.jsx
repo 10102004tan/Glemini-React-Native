@@ -4,12 +4,13 @@ import RenderHTML from 'react-native-render-html';
 import { useWindowDimensions } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useQuizProvider } from '@/contexts/QuizProvider';
-import { useQuestionProvider } from '@/contexts/QuestionProvider';
-const QuestionOverview = ({ question, index }) => {
+import { useRouter } from 'expo-router';
+const QuestionOverview = ({ quizId, question, index }) => {
 	const [showExpain, setShowExpain] = useState(false);
 	const { width } = useWindowDimensions();
-	const { actionQuizType, setActionQuizType } = useQuizProvider();
-	const { setUpdateQuestionId } = useQuestionProvider();
+	const { setActionQuizType } = useQuizProvider();
+	const router = useRouter();
+
 	return (
 		<View className="p-2 rounded-2xl border border-gray mb-2">
 			<View className="flex w-full items-center justify-between flex-row">
@@ -89,7 +90,13 @@ const QuestionOverview = ({ question, index }) => {
 					className="flex items-center justify-end flex-row"
 					onPress={() => {
 						setActionQuizType('edit');
-						setUpdateQuestionId(question._id);
+						router.push({
+							pathname: '/(quiz)/edit_quiz_question',
+							params: {
+								quizId: quizId,
+								questionId: question._id,
+							},
+						});
 					}}
 				>
 					<Text className="text-gray">Chỉnh sửa</Text>

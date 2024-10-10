@@ -11,13 +11,12 @@ import * as ImagePicker from 'expo-image-picker';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import { Status } from '@/constants';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { useAppProvider } from '@/contexts/AppProvider';
+import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 
 const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 	const [editorValue, setEditorValue] = useState('');
 	const { question, setQuestion, editAnswerContent } = useQuestionProvider();
 	const { userData } = useAuthContext();
-	const { apiUrl } = useAppProvider();
 	const richText = React.useRef();
 
 	useEffect(() => {
@@ -81,20 +80,24 @@ const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 			type: 'image/jpeg',
 		});
 
-		const response = await fetch(apiUrl + '/questions/upload', {
-			method: 'POST',
-			body: formData,
-			headers: {
-				'Content-Type': 'multipart/form-data',
-				'x-client-id': userData._id,
-				authorization: userData.accessToken,
-			},
-		});
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.QUESTION_UPLOAD_IMAGE}`,
+			{
+				method: 'POST',
+				body: formData,
+				headers: {
+					'Content-Type': 'multipart/form-data',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+			}
+		);
 
 		const data = await response.json();
 		console.log(data);
 		return data.url; // URL của ảnh trên server
 	};
+
 	// Hàm chọn ảnh từ thư viện
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
