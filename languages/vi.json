@@ -97,5 +97,8 @@
             "title": "Xem lại Câu trả lời",
             "text_question": "Câu hỏi"
         }
+    },
+    "student_homepage": {
+        "exprole": "Khám phá"
     }
 }
