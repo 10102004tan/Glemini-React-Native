@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 const dev = {
-	API_URL: 'http://192.168.1.8:8000/api',
+	API_URL: 'http://10.20.1.99:8000/api',
 	API_VERSION: {
 		V1: '/v1',
 	},
@@ -24,6 +24,7 @@ const dev = {
 		QUIZ_DETAIL: '/quizzes/get-details',
 		QUIZ_CREATE: '/quizzes/create',
 		QUIZ_DELETE: '/quizzes/delete',
+		QUIZ_UPLOAD_DOC: '/quizzes/docs/upload',
 		RESULT_SAVE_QUESTION: '/result/save-question',
 		RESULT_COMPLETED: '/result/complete-quiz',
 		RESULT_REVIEW: '/result/review',
@@ -45,7 +46,6 @@ const prod = {
 		LOGOUT: '/logout',
 		PROFILE: '/profile',
 	},
-
 };
 
 module.exports = dev;

@@ -5,7 +5,7 @@ import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 const QuestionContext = createContext();
 const QuestionProvider = ({ children }) => {
 	const [question, setQuestion] = useState({
-		question_excerpt: '<div>Nội dung câu hỏi</div>',
+		question_excerpt: '',
 		question_description: '',
 		question_image: '',
 		question_audio: '',
@@ -48,7 +48,7 @@ const QuestionProvider = ({ children }) => {
 	// Reset lại mảng câu hỏi
 	const resetQuestion = () => {
 		setQuestion({
-			question_excerpt: '<div>Nội dung câu hỏi</div>',
+			question_excerpt: '',
 			question_description: '',
 			question_image: '',
 			question_audio: '',
@@ -205,7 +205,7 @@ const QuestionProvider = ({ children }) => {
 				// Lưu câu hỏi vào mảng các câu hỏi
 				setQuestions([...questions, question]);
 				resetQuestion();
-				router.replace({
+				router.back({
 					pathname: '/(app)/(quiz)/overview/',
 					params: { id: quizId },
 				});
