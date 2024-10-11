@@ -4,44 +4,63 @@ import {
   TouchableOpacity,
   TextInput,
   Animated,
+  Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Wrapper from "@/components/customs/Wrapper";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import Button from "@/components/customs/Button";
 import { useAppProvider } from "@/contexts/AppProvider";
 import BottomSheet from "@/components/customs/BottomSheet";
 import Overlay from "@/components/customs/Overlay";
 import { useQuizProvider } from "@/contexts/QuizProvider";
-import { useGlobalSearchParams } from "expo-router";
+import { router, useGlobalSearchParams } from "expo-router";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 
 const Library = () => {
+  //biến của bottomsheet
   const { isHiddenNavigationBar, setIsHiddenNavigationBar } = useAppProvider();
   const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
-  const [newCollectionName, setNewCollectionName] = useState(""); // Tên bộ sưu tập
-  const [newCollectionDescription, setNewCollectionDescription] = useState(""); // Mô tả bộ sưu tập
-  const [activeTab, setActiveTab] = useState("library"); // Quản lý tab hiện tại: 'library' hoặc 'collection'
-  const [translateValue] = useState(new Animated.Value(0)); // Quản lý giá trị di chuyển dòng bôi đen
+  const [visibleCreateNewBottomSheet, setVisibleCreateNewBottomSheet] =
+    useState(false);
 
-  // Lấy dữ liệu name, description, thumb đưa vào ô thông tin
-  const { lib } = useGlobalSearchParams();
-  const { userData } = useAuthContext();
-  const { selectedQuiz, setSelectedQuiz } = useQuizProvider();
+  const [visibleFilterBottomSheet, setVisibleFilterBottomSheet] =
+    useState(false);
 
-  // lấy list thông tin của quiz
+  // Tên bộ sưu tập
+  const [newCollectionName, setNewCollectionName] = useState("");
+  // tab hiện tại: 'library' hoặc 'collection'
+  const [activeTab, setActiveTab] = useState("library");
+  // di chuyển dòng bôi đen
+  const [translateValue] = useState(new Animated.Value(0));
+  const [listNameCollection, setListNameCollection] = useState([]);
+
+  // lấy list thông tin của quiz, thông tin name, description, status,...
   const { quizzes } = useQuizProvider();
 
   // BottomSheet
+  // Bộ sưu tập
   const OpenBottomSheet = () => {
     setIsHiddenNavigationBar(true);
     setVisibleBottomSheet(true);
+  };
+  //Thư viện của tôi
+  const CreateNewBottomSheet = () => {
+    setIsHiddenNavigationBar(true);
+    setVisibleCreateNewBottomSheet(true);
+  };
+  //filter
+  const FilterBottomSheet = () => {
+    setIsHiddenNavigationBar(true);
+    setVisibleFilterBottomSheet(true);
   };
 
   const handleCloseBottomSheet = () => {
     setIsHiddenNavigationBar(false);
     setVisibleBottomSheet(false);
+    setVisibleCreateNewBottomSheet(false);
+    setVisibleFilterBottomSheet(false);
   };
 
   const handleTabChange = (tab) => {
@@ -55,45 +74,38 @@ const Library = () => {
     }).start();
   };
 
-  // fetch api
-  const fetchQuiz = async () => {
-    // console.log("library id: " + library);
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({ quiz_id: lib }),
-      }
-    );
-
-    const data = await response.json();
-    // console.log(data);
-    // console.log(lib);
-    if (data.statusCode === 200) {
-      setSelectedQuiz(data.metadata);
-    } else {
-      console.error("Lỗi khi fetch dữ liệu quiz:", data.message);
-    }
-  };
-
-  useEffect(() => {
-    // Lấy dữ liệu của quiz hiện tại
-    if (userData && lib) {
-      fetchQuiz();
-    }
-  }, [lib, userData]);
-
   return (
     <Wrapper>
       {/* Overlay */}
-      {visibleBottomSheet && <Overlay onPress={handleCloseBottomSheet} />}
+      {(visibleBottomSheet ||
+        visibleCreateNewBottomSheet ||
+        visibleFilterBottomSheet) && (
+        <Overlay onPress={handleCloseBottomSheet} />
+      )}
 
-      {/* Bottom Sheet */}
+      {/* Bottom Sheet của Thư viện của tôi */}
+      <BottomSheet visible={visibleCreateNewBottomSheet}>
+        <View className="flex-col">
+          <View className="m-1 w-full flex flex-row items-center justify-start">
+            <Button
+              text="+"
+              otherStyles="w-1/6 flex item-center justify-center "
+              onPress={() => {
+                router.push("/(app)/(quiz)/create_title");
+              }}
+            />
+            <Text className="flex justify-center items-center ml-2 font-bold text-[17px]">
+              Tạo từ đầu
+            </Text>
+          </View>
+          <Text className="text-gray">
+            Sử dụng các loại câu hỏi tương tác hoặc chọn câu hỏi hiện có từ Thư
+            viện Quizizz{" "}
+          </Text>
+        </View>
+      </BottomSheet>
+
+      {/* Bottom Sheet của Bộ sưu tập */}
       <BottomSheet visible={visibleBottomSheet}>
         <View className="m-3">
           <Text className="text-gray mb-2">Tên bộ sưu tập</Text>
@@ -104,17 +116,6 @@ const Library = () => {
             className="border border-gray w-[350px] h-[50px] rounded-xl px-4"
           />
         </View>
-        <View className="m-3">
-          <Text className="text-gray mb-2">Mô tả</Text>
-          <TextInput
-            value={newCollectionDescription}
-            onChangeText={setNewCollectionDescription}
-            placeholder="Nhập mô tả"
-            className="border border-gray w-[350px] h-[50px] rounded-xl px-4"
-          />
-        </View>
-
-        {/* Button Hủy và Chọn */}
         <View className="flex flex-row justify-between m-3">
           <Button
             text="Hủy"
@@ -126,24 +127,64 @@ const Library = () => {
             otherStyles="w-[50%] bg-blue-500 p-2 rounded-xl flex justify-center"
             textStyles="text-white text-center"
             onPress={() => {
-              console.log("Tên bộ sưu tập:", newCollectionName);
-              console.log("Mô tả:", newCollectionDescription);
-              // Thêm logic để lưu bộ sưu tập mới
-              handleCloseBottomSheet(); // Đóng BottomSheet sau khi lưu
+              // console.log("Tên bộ sưu tập:", newCollectionName);
+              setListNameCollection(newCollectionName);
+              // Đóng BottomSheet sau khi lưu
+              handleCloseBottomSheet();
             }}
           />
         </View>
       </BottomSheet>
 
-      <View className="flex-1 mt-[40px]">
+      {/* Bottom Sheet của Bộ lọc */}
+      <BottomSheet visible={visibleFilterBottomSheet}>
+        <View className="flex flex-col">
+          <View className="flex flex-row justify-around">
+            <View className="flex flex-row border border-gray rounded-lg w-[100px] h-[30px] justify-between items-center">
+              <Text className="ml-2 text-gray">Công khai</Text>
+              <View className="mr-1">
+                <AntDesign name="caretdown" size={12} color="black" />
+              </View>
+            </View>
+            <View className="flex flex-row border border-gray rounded-lg w-[100px] h-[30px] justify-between items-center">
+              <Text className="ml-2 text-gray">Lớp</Text>
+              <View className="mr-1">
+                <AntDesign name="caretdown" size={12} color="black" />
+              </View>
+            </View>
+            <View className="flex flex-row border border-gray rounded-lg w-[100px] h-[30px] justify-between items-center">
+              <Text className="ml-2 text-gray">Môn</Text>
+              <View className="mr-1">
+                <AntDesign name="caretdown" size={12} color="black" />
+              </View>
+            </View>
+          </View>
+
+          <View className="flex flex-row justify-around mt-2">
+            <View className="flex flex-row border border-gray rounded-lg w-[150px] h-[30px] justify-between items-center">
+              <Text className="ml-2 text-gray">Thời gian bắt đầu</Text>
+            </View>
+            <View className="flex flex-row border border-gray rounded-lg w-[150px] h-[30px] justify-between items-center">
+              <Text className="ml-2 text-gray">Thời gian kết thúc</Text>
+            </View>
+          </View>
+        </View>
+
+        <Button
+          text="Lọc"
+          otherStyles="w-full bg-gray-200 p-2 rounded-xl flex justify-center mt-4"
+          // onPress={handleCloseBottomSheet}
+        />
+      </BottomSheet>
+
+      <View className="flex-1">
         {/* Header */}
-        <View className="flex-row justify-between p-4">
-          <Text className="font-bold text-[25px]">Thư viện của tôi</Text>
+        {/* <View className="flex-row justify-between p-4">
           <View className="border border-gray-300 rounded-xl px-4 w-[120px] flex-row items-center justify-between">
             <AntDesign name="search1" size={18} color="black" />
             <TextInput placeholder="Tìm kiếm" className="ml-2" />
           </View>
-        </View>
+        </View> */}
 
         {/* Tabs */}
         <View className="flex flex-row justify-around mb-2">
@@ -191,33 +232,61 @@ const Library = () => {
         {activeTab === "library" ? (
           <View className="p-3">
             {/* Nội dung của Thư viện của tôi */}
-            <Button
-              onPress={OpenBottomSheet}
-              text={"Tạo mới"}
-              otherStyles={"w-1/4 justify-center mb-12"}
-              textStyles={"text-center text-white"}
-            />
 
-            <View className="h-[100px] w-[350px] border rounded-xl flex-row mb-3">
-              <View className="flex-col p-4">
-                {selectedQuiz ? (
-                  <>
-                    {/* <Image
-                      source={{ uri: selectedQuiz.thumb }}
-                      style={{ width: 100, height: 100 }}
-                    /> */}
-                    <Text className="text-lg font-bold">
-                      {selectedQuiz.quiz_name}
-                    </Text>
-                    <Text className="text-gray-500">
-                      {selectedQuiz.description}
-                    </Text>
-                  </>
-                ) : (
-                  <Text>Không có dữ liệu</Text>
-                )}
-              </View>
+            <View className="flex flex-row justify-between">
+              <Button
+                onPress={CreateNewBottomSheet}
+                text={"Tạo mới"}
+                otherStyles={"w-1/4 justify-center mb-12"}
+                textStyles={"text-center text-white"}
+              />
+
+              {/* bộ lọc */}
+              <TouchableOpacity
+                className="border border-gray w-[75px] h-[30px] justify-between items-center rounded-lg flex-row mr-2"
+                onPress={FilterBottomSheet}
+              >
+                <Text className="ml-2 font-bold">Bộ lọc</Text>
+                <View className="mt-[2px] mr-1">
+                  <Ionicons name="options-outline" size={16} color="black" />
+                </View>
+              </TouchableOpacity>
             </View>
+
+            {quizzes.length > 0 &&
+              quizzes.map((quiz) => (
+                <View className="h-[100px] w-full border rounded-xl flex-row mb-3">
+                  <TouchableOpacity
+                    key={quiz._id}
+                    onPress={() => {
+                      router.push({
+                        pathname: "/(app)/(quiz)/overview",
+                        params: { id: quiz._id },
+                      });
+                    }}
+                  >
+                    <View className="flex flex-row m-2">
+                      <View className="flex justify-center items-center">
+                        <Image
+                          source={{ uri: quiz.quiz_thumb }}
+                          className="w-[80px] h-[80px] rounded-xl"
+                        ></Image>
+                      </View>
+                      <View className="flex flex-col ml-4 justify-around">
+                        <Text className="text-lg font-bold">
+                          {quiz.quiz_name}
+                        </Text>
+                        <Text className="text-gray-500">
+                          {quiz.quiz_description}
+                        </Text>
+                        <Text className="text-gray-500">
+                          {quiz.quiz_status}
+                        </Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              ))}
           </View>
         ) : (
           <View className="p-3">
@@ -235,13 +304,14 @@ const Library = () => {
                   key={quiz._id}
                   onPress={() => {
                     router.push({
-                      pathname: "",
+                      pathname: "/(app)/(collection)/detail_collection",
                       params: { id: quiz._id },
                     });
                   }}
                 >
                   <View className="flex flex-row items-center justify-between m-4">
                     <Text>{quiz.quiz_name}</Text>
+                    <Text>{listNameCollection}</Text>
                     <TouchableOpacity>
                       <AntDesign name="right" size={18} color="black" />
                     </TouchableOpacity>
