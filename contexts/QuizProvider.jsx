@@ -30,13 +30,35 @@ const QuizProvider = ({ children }) => {
 			}
 		);
 		const data = await response.json();
-		// console.log(data);
 
 		if (data.statusCode === 200) {
 			setQuizzes(data.metadata);
 			setQuizFetching(false);
 		}
-		// Handle error when fetch quizzes
+	};
+
+	// Get Quiz Published
+	const getQuizzesPublished = async (subject_id) => {
+		subject_id = subject_id === 'all'  ? null : subject_id;
+
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+
+				},
+				body: JSON.stringify({ subject_id: subject_id }),
+			}
+		);
+
+		const data = await response.json();
+		if (data.statusCode === 200) {
+			setQuizzes(data.metadata)
+		}
 	};
 
 	// Delete quiz
@@ -115,6 +137,7 @@ const QuizProvider = ({ children }) => {
 				setQuizFetching,
 				isSave,
 				setIsSave,
+				getQuizzesPublished
 			}}
 		>
 			{children}

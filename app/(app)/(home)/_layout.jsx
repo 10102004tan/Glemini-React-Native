@@ -7,7 +7,7 @@ import { useAppProvider } from "@/contexts/AppProvider";
 import { AuthContext } from "@/contexts/AuthContext";
 
 export default function TabLayout() {
-  const { isHiddenNavigationBar } = useAppProvider();
+  const { isHiddenNavigationBar, i18n } = useAppProvider();
   const {
     userData: { user_type },
   } = useContext(AuthContext);
@@ -112,7 +112,8 @@ export default function TabLayout() {
               name={focused ? "school" : "school-outline"}
               color={color}
             />
-          ),
+          )
+        }}/>
 			<Tabs.Screen
 				name="classroom"
 				options={{
@@ -162,46 +163,4 @@ export default function TabLayout() {
       />
     </Tabs>
   );
-			<Tabs.Screen
-				name="account"
-				options={{
-					title: i18n.t('account.title'),
-					tabBarIcon: ({ color, focused }) => (
-						<TabBarIcon
-							name={focused ? 'moon' : 'moon-outline'}
-							color={color}
-						/>
-					),
-					headerRight: () => {
-						return (
-							<Link
-								style={{
-									marginRight: 20,
-								}}
-								href={{
-									pathname: '(app)/settings',
-								}}
-							>
-								<TabBarIcon name="settings" color="#1C2833" />
-							</Link>
-						);
-					},
-				}}
-			/>
-
-			<Tabs.Screen
-				name="student_home_screen"
-				options={{
-					headerShown: false,
-					tabBarIcon: ({ color, focused }) => (
-						<TabBarIcon
-							name={focused ? 'home' : 'home-outline'}
-							color={color}
-						/>
-					),
-
-				}}
-			/>
-		</Tabs>
-	);
 }
