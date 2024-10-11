@@ -11,6 +11,7 @@ const QuizProvider = ({ children }) => {
 	const [quizFetching, setQuizFetching] = useState(false);
 	const [questionFetching, setQuestionFetching] = useState(false);
 	const [actionQuizType, setActionQuizType] = useState('create');
+	const [isSave, setIsSave] = useState(false);
 	const { userData } = useAuthContext();
 
 	// Get all quizzes of the user
@@ -78,6 +79,7 @@ const QuizProvider = ({ children }) => {
 		// console.log(JSON.stringify(data, null, 2));
 		if (data.statusCode === 200) {
 			setNeedUpdate(true);
+			setIsSave(false);
 		}
 	};
 
@@ -111,6 +113,8 @@ const QuizProvider = ({ children }) => {
 				updateQuiz,
 				setQuestionFetching,
 				setQuizFetching,
+				isSave,
+				setIsSave,
 			}}
 		>
 			{children}

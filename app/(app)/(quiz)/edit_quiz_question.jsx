@@ -200,8 +200,9 @@ const EditQuizQuestion = () => {
 			{/* Edit View */}
 			<View className="flex-1 bg-primary p-4">
 				<ScrollView>
-					<View className="border border-gray overflow-hidden rounded-2xl min-h-[140px] max-h-[400px] flex items-center justify-center">
+					<View className="border border-gray overflow-hidden rounded-2xl min-h-[140px] max-h-[400px] flex items-center justify-center p-4">
 						<TouchableOpacity
+							className={'overflow-hidden'}
 							onPress={() => {
 								setEditorType(Status.quiz.QUESTION);
 								setEditorContent(question.question_excerpt);
@@ -209,16 +210,24 @@ const EditQuizQuestion = () => {
 							}}
 						>
 							<RenderHTML
+								defaultViewProps={{}}
+								defaultWebViewProps={{}}
 								defaultTextProps={{
 									style: { color: 'white' },
 								}}
 								contentWidth={width}
-								source={{ html: question.question_excerpt }}
+								source={{
+									html:
+										question.question_excerpt ===
+										'<div></div>'
+											? '<div>Chỉnh sửa câu hỏi của bạn</div>'
+											: question.question_excerpt,
+								}}
 							/>
 						</TouchableOpacity>
-						<TouchableOpacity className="absolute top-4 right-4">
+						{/* <TouchableOpacity className="absolute top-4 right-4">
 							<FontAwesome name="image" size={20} color="white" />
-						</TouchableOpacity>
+						</TouchableOpacity> */}
 					</View>
 					<View className="flex items-center justify-between mt-4 flex-row">
 						<TouchableOpacity

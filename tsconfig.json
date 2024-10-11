@@ -1,18 +1,24 @@
 {
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "strict": true,
-    "paths": {
-      "@/*": [
-        "./*"
-      ]
-    }
-  },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.jsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-, "app/(tabs)/student.jsx", "app/(app)/(home)/index.jsx", "app/(auths)/sign-in.jsx", "app/(auths)/(sign-up)/sign-up.jsx", "app/(app)/(home)/_layout.jsx", "app/_layout.jsx"  ]
+	"extends": "expo/tsconfig.base",
+	"compilerOptions": {
+		"strict": true,
+		"paths": {
+			"@/*": ["./*"]
+		}
+	},
+	"include": [
+		"**/*.ts",
+		"**/*.tsx",
+		"**/*.jsx",
+		".expo/types/**/*.ts",
+		"expo-env.d.ts",
+		"app/(tabs)/student.jsx",
+		"app/(app)/(home)/index.jsx",
+		"app/(auths)/sign-in.jsx",
+		"app/(auths)/(sign-up)/sign-up.jsx",
+		"app/(app)/(home)/_layout.jsx",
+		"app/_layout.jsx",
+		"utils/index.js",
+		"configs/api.config.js"
+	]
 }
