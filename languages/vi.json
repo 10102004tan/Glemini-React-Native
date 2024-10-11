@@ -100,5 +100,36 @@
     },
     "student_homepage": {
         "exprole": "Khám phá"
+    },
+    "profile":{
+        "title":"Thông tin tài khoản",
+        "fullname":"Họ và tên",
+        "email":"Email",
+        "phone":"Số điện thoại",
+        "address":"Địa chỉ",
+        "password":"Mật khẩu",
+        "school":"Trường học",
+        "editNow":"Chinh sửa ngay",
+        "save":"Lưu",
+        "edit":"Sửa"
+    },
+    "settings":{
+        "title":"Cài đặt",
+        "language":"Ngôn ngữ"
+    },
+    "home":{
+        "title":"Trang chủ"
+    },
+    "search":{
+        "title":"Tìm kiếm"
+    },
+    "classes":{
+        "title":"Lớp học"
+    },
+    "account":{
+        "title":"Tài khoản"
+    },
+    "report":{
+        "title":"Báo cáo"
     }
 }

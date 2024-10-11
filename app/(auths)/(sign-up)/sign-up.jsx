@@ -89,11 +89,11 @@ const SignUpScreen = () => {
                 Alert.alert('Thông báo', 'Đăng ký thành công');
             }
             else{
-                Alert.alert('Thông báo', 'Đăng ký thất bại');
+                Alert.alert('Thông báo', 'Đăng ký thất bại 1');
             }
         })
         .catch((err) => {
-            Alert.alert('Thông báo', 'Đăng ký thất bại');
+            Alert.alert('Thông báo', 'Đăng ký thất bại 2',err);
         });
 
         setIsLoading(false);

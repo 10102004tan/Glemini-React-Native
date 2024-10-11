@@ -1,18 +1,21 @@
 import { View, Text, Dimensions, Image } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import Wrapper from '@/components/customs/Wrapper';
 import Carousel from 'react-native-reanimated-carousel';
 import { Images } from '@/constants';
 import { useAppProvider } from '@/contexts/AppProvider';
+import { useQuizProvider } from '@/contexts/QuizProvider';
 
 const StudentHomeScreen = () => {
-	const {i18n} = useAppProvider()
-	const dataSet = [
-		Images.banner1,
-		Images.banner2,
-		Images.banner3
-	]
-	const width = Dimensions.get('window').width
+	const { i18n } = useAppProvider();
+
+	const [loading, setLoading] = useState(true); 
+	const dataSet = [Images.banner1, Images.banner2, Images.banner3];
+	const width = Dimensions.get('window').width;
+
+	const onImageLoad = () => {
+		setLoading(false);
+	};
 
 	return (
 		<Wrapper>
@@ -30,6 +33,7 @@ const StudentHomeScreen = () => {
 							source={item}
 							className="w-full h-full rounded-2xl"
 							style={{ resizeMode: 'cover' }}
+							onLoad={onImageLoad}
 						/>
 					)}
 				/>
@@ -37,10 +41,8 @@ const StudentHomeScreen = () => {
 
 			<View className='px-4'>
 				<Text className='text-2xl font-bold'>{i18n.t('student_homepage.exprole')}</Text>
-				
 			</View>
 		</Wrapper>
-
 	);
 };
 

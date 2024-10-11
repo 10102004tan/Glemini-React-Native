@@ -1,11 +1,4 @@
-import {
-	View,
-	Text,
-	TouchableOpacity,
-	ScrollView,
-	Keyboard,
-	TouchableWithoutFeedback,
-} from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -24,6 +17,9 @@ import { Points, Times, Status } from '../../../constants';
 import RenderHTML from 'react-native-render-html';
 import { useWindowDimensions } from 'react-native';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
+import { useGlobalSearchParams } from 'expo-router';
+import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
+import { useAuthContext } from '@/contexts/AuthContext';
 const MAX_ANSWER = 8;
 
 const EditQuizQuestion = () => {
@@ -31,19 +27,13 @@ const EditQuizQuestion = () => {
 		useState(false); // bottom sheet để chọn số điểm
 	const [timeBotttomSheetVisible, setTimeBotttomSheetVisible] =
 		useState(false); // bottom sheet để chọn số điểm
-	const { isHiddenNavigationBar } = useAppProvider();
 	const [selectedPoint, setSelectedPoint] = useState(1); // số điểm được chọn
 	const [selectedTime, setSelectedTime] = useState(30); // thời gian được chọn
 	const [mutipleChoice, setMutipleChoice] = useState(true); // cho phép chọn nhiều đáp án
 	const [showQuestionBoard, setShowQuestionBoard] = useState(false); // hiển thị giải thích cho câu hỏi
 	const [editorType, setEditorType] = useState(''); // loại editor
 	const [editorContent, setEditorContent] = useState(''); // nội dung của editor
-	const {
-		selectedQuiz,
-		createQuestionType,
-		setSelectedQuiz,
-		actionQuizType,
-	} = useQuizProvider();
+	const { actionQuizType } = useQuizProvider();
 	const {
 		question,
 		addAnswer,
@@ -52,31 +42,58 @@ const EditQuizQuestion = () => {
 		updateQuestionTime,
 		updateQuestionPoint,
 		editQuestion,
-		checkCorrectAnswer,
+		setQuestion,
 	} = useQuestionProvider();
 	const [answerEditSelected, setAnswerEditSelected] = useState(0); // đáp án được chọn
 	const { width } = useWindowDimensions();
+	const { quizId, questionId } = useGlobalSearchParams();
+	const { userData } = useAuthContext();
 
-  // Khi người dùng chuyển từ chế độ chọn nhiều câu hỏi sang một câu hỏi thì bỏ chọn tất cả
-  useEffect(() => {
-    if (!mutipleChoice) {
-      resetMarkCorrectAnswer();
-    }
-  }, [mutipleChoice]);
+	// Khi người dùng chuyển từ chế độ chọn nhiều câu hỏi sang một câu hỏi thì bỏ chọn tất cả
+	useEffect(() => {
+		if (!mutipleChoice) {
+			resetMarkCorrectAnswer();
+		}
+	}, [mutipleChoice]);
 
-  // Đóng edit board
-  const closeEditBoard = () => {
-    setShowQuestionBoard(false);
-    setAnswerEditSelected(0);
-    setEditorContent("");
-    setEditorType("");
-    setPointBotttomSheetVisible(false);
-    setTimeBotttomSheetVisible(false);
-  };
+	// Lấy thông tin của câu hỏi hiện tại
+	const getCurrentUpdateQuestion = async () => {
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUESTION_DETAIL}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({ question_id: questionId }),
+			}
+		);
+		const data = await response.json();
+		if (data.statusCode === 200) {
+			setQuestion(data.metadata);
+		} else {
+			// Alert to user here
+			console.log('Error when get question details');
+		}
+	};
 
-	// useEffect(() => {
-	// 	console.log(JSON.parse(JSON.stringify(question)));
-	// }, [question]);
+	useEffect(() => {
+		if (actionQuizType === 'edit') {
+			getCurrentUpdateQuestion();
+		}
+	}, [quizId, questionId, actionQuizType]);
+
+	// Đóng edit board
+	const closeEditBoard = () => {
+		setShowQuestionBoard(false);
+		setAnswerEditSelected(0);
+		setEditorContent('');
+		setEditorType('');
+		setPointBotttomSheetVisible(false);
+		setTimeBotttomSheetVisible(false);
+	};
 
 	return (
 		<Wrapper>
@@ -160,14 +177,6 @@ const EditQuizQuestion = () => {
 				type={editorType}
 				content={editorContent}
 			/>
-			<View className="flex flex-row items-center justify-between p-4">
-				<TouchableOpacity>
-					<Ionicons name="arrow-back" size={24} color="black" />
-				</TouchableOpacity>
-				<Text className="ml-4 px-4 py-2 rounded-xl bg-overlay">
-					Nhiều lựa chọn
-				</Text>
-			</View>
 			<View className="flex flex-row items-center justify-start p-4">
 				<TouchableOpacity
 					className="px-4 py-2 rounded-xl bg-overlay flex items-center justify-center flex-row"
@@ -277,9 +286,9 @@ const EditQuizQuestion = () => {
 				<Button
 					onPress={() => {
 						if (actionQuizType === 'create') {
-							saveQuestion(selectedQuiz._id);
+							saveQuestion(quizId);
 						} else if (actionQuizType === 'edit') {
-							editQuestion(selectedQuiz._id, question._id);
+							editQuestion(quizId, question._id);
 						}
 					}}
 					text={
