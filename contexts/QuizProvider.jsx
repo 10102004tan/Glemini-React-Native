@@ -1,11 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useAuthContext } from './AuthContext';
-import { API_URL, API_VERSION, END_POINTS } from '../configs/api.config';
-import { router } from 'expo-router';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useAuthContext } from "./AuthContext";
+import { API_URL, API_VERSION, END_POINTS } from "../configs/api.config";
+import { router } from "expo-router";
 
 const QuizContext = createContext();
 
 const QuizProvider = ({ children }) => {
+
 	const [quizzes, setQuizzes] = useState([]);
 	const [needUpdate, setNeedUpdate] = useState(false);
 	const [quizFetching, setQuizFetching] = useState(false);
@@ -14,116 +15,117 @@ const QuizProvider = ({ children }) => {
 	const [isSave, setIsSave] = useState(false);
 	const { userData } = useAuthContext();
 
-	// Get all quizzes of the user
-	const fetchQuizzes = async () => {
-		setQuizFetching(true);
-		const response = await fetch(
-			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`,
-			{
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'x-client-id': userData._id,
-					authorization: userData.accessToken,
-				},
-				body: JSON.stringify({ user_id: userData._id }),
-			}
-		);
-		const data = await response.json();
-		// console.log(data);
 
-		if (data.statusCode === 200) {
-			setQuizzes(data.metadata);
-			setQuizFetching(false);
-		}
-		// Handle error when fetch quizzes
-	};
+  // Get all quizzes of the user
+  const fetchQuizzes = async () => {
+    setQuizFetching(true);
+    const response = await fetch(
+      `${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-client-id": userData._id,
+          authorization: userData.accessToken,
+        },
+        body: JSON.stringify({ user_id: userData._id }),
+      }
+    );
+    const data = await response.json();
+    // console.log(data);
 
-	// Delete quiz
-	const deleteQuiz = async (quizId) => {
-		const response = await fetch(
-			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DELETE}`,
-			{
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'x-client-id': userData._id,
-					authorization: userData.accessToken,
-				},
-				body: JSON.stringify({ quiz_id: quizId }),
-			}
-		);
+    if (data.statusCode === 200) {
+      setQuizzes(data.metadata);
+      setQuizFetching(false);
+    }
+    // Handle error when fetch quizzes
+  };
 
-		const data = await response.json();
-		if (data.statusCode === 200) {
-			setNeedUpdate(true);
-		}
-	};
+  // Delete quiz
+  const deleteQuiz = async (quizId) => {
+    const response = await fetch(
+      `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DELETE}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-client-id": userData._id,
+          authorization: userData.accessToken,
+        },
+        body: JSON.stringify({ quiz_id: quizId }),
+      }
+    );
 
-	// Update quiz
-	const updateQuiz = async (quiz) => {
-		const response = await fetch(
-			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPDATE}`,
-			{
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'x-client-id': userData._id,
-					authorization: userData.accessToken,
-				},
-				body: JSON.stringify(quiz),
-			}
-		);
+    const data = await response.json();
+    if (data.statusCode === 200) {
+      setNeedUpdate(true);
+    }
+  };
 
-		const data = await response.json();
-		// console.log(JSON.stringify(data, null, 2));
-		if (data.statusCode === 200) {
-			setNeedUpdate(true);
-			setIsSave(false);
-		}
-	};
+  // Update quiz
+  const updateQuiz = async (quiz) => {
+    const response = await fetch(
+      `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPDATE}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-client-id": userData._id,
+          authorization: userData.accessToken,
+        },
+        body: JSON.stringify(quiz),
+      }
+    );
 
-	// Update quiz if need
-	useEffect(() => {
-		if (needUpdate) {
-			fetchQuizzes();
-			setNeedUpdate(false);
-		}
-	}, [needUpdate]);
+    const data = await response.json();
+    // console.log(JSON.stringify(data, null, 2));
+    if (data.statusCode === 200) {
+      setNeedUpdate(true);
+      setIsSave(false);
+    }
+  };
 
-	// Get all quizzes of the user
-	useEffect(() => {
-		if (userData) {
-			fetchQuizzes();
-		}
-	}, [userData]);
+  // Update quiz if need
+  useEffect(() => {
+    if (needUpdate) {
+      fetchQuizzes();
+      setNeedUpdate(false);
+    }
+  }, [needUpdate]);
 
-	return (
-		<QuizContext.Provider
-			value={{
-				actionQuizType,
-				setActionQuizType,
-				quizzes,
-				setQuizzes,
-				needUpdate,
-				setNeedUpdate,
-				quizFetching,
-				questionFetching,
-				deleteQuiz,
-				updateQuiz,
-				setQuestionFetching,
-				setQuizFetching,
-				isSave,
-				setIsSave,
-			}}
-		>
-			{children}
-		</QuizContext.Provider>
-	);
+  // Get all quizzes of the user
+  useEffect(() => {
+    if (userData) {
+      fetchQuizzes();
+    }
+  }, [userData]);
+
+  return (
+    <QuizContext.Provider
+      value={{
+        actionQuizType,
+        setActionQuizType,
+        quizzes,
+        setQuizzes,
+        needUpdate,
+        setNeedUpdate,
+        quizFetching,
+        questionFetching,
+        deleteQuiz,
+        updateQuiz,
+        setQuestionFetching,
+        setQuizFetching,
+        isSave,
+        setIsSave,
+      }}
+    >
+      {children}
+    </QuizContext.Provider>
+  );
 };
 
 export const useQuizProvider = () => {
-	return useContext(QuizContext);
+  return useContext(QuizContext);
 };
 
 export default QuizProvider;
