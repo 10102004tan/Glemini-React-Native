@@ -12,9 +12,9 @@ export default function HomeScreen() {
 			<View className="p-4">
 				<Button
 					onPress={() => {
-						router.replace('/(app)/(quiz)/edit_quiz_question');
+						router.replace('/(app)/(home)/teacher_home_screen');
 					}}
-					text={'Create Quizz'}
+					text={'Teacher Home'}
 					otherStyles={'mt-4 p-4'}
 					textStyles={'text-center text-white'}
 				/>

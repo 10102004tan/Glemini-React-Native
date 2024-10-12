@@ -51,6 +51,7 @@ const QuizzOverViewScreen = () => {
 	const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
 	const {
+		actionQuizType,
 		setActionQuizType,
 		quizFetching,
 		deleteQuiz,
@@ -59,7 +60,7 @@ const QuizzOverViewScreen = () => {
 		setQuestionFetching,
 		isSave,
 	} = useQuizProvider();
-	const { resetQuestion } = useQuestionProvider();
+	const { resetQuestion, questions } = useQuestionProvider();
 
 	// Lưu thông tin của quiz khi người dùng ấn nút lưu trên thanh header
 	useEffect(() => {
@@ -84,6 +85,7 @@ const QuizzOverViewScreen = () => {
 		);
 
 		const data = await response.json();
+		console.log(data.metadata);
 		if (data.statusCode === 200) {
 			setQuizId(data.metadata._id);
 			setQuizThumbnail(data.metadata.quiz_thumb);
@@ -130,8 +132,10 @@ const QuizzOverViewScreen = () => {
 			quiz_thumb: quizThumbnail,
 		};
 
+		console.log(JSON.stringify(quiz, null, 2));
+
 		updateQuiz(quiz);
-		// handleCloseBottomSheet();
+		handleCloseBottomSheet();
 	};
 
 	useEffect(() => {
@@ -140,6 +144,15 @@ const QuizzOverViewScreen = () => {
 		if (id) {
 			fetchQuiz();
 			fetchQuestions();
+			// if (actionQuizType !== 'template') {
+			// Nếu trạng thái hiện tại đang là tạo quiz mới hoặc chỉnh sửa quiz
+			// } else {
+			// Nếu trạng thái hiện tại đang là tạo quiz từ template
+			// Thì lấy thông tin question từ template truyền vào currentQuestion
+			// console.log(JSON.stringify(questions, null, 2));
+			// setCurrentQuizQuestion(questions);
+			// console.log(JSON.stringify(currentQuizQuestion, null, 2));
+			// }
 		}
 	}, [id]);
 
@@ -179,8 +192,11 @@ const QuizzOverViewScreen = () => {
 
 	// Chế độ hiển thị của quiz
 	const views = [
-		{ key: '1', value: 'Công khai', data_value: 'published' },
-		{ key: '2', value: 'Chỉ mình tôi', data_value: 'unpublished' },
+		{ key: 0, value: 'Công khai' },
+		{
+			key: 1,
+			value: 'Chỉ mình tôi',
+		},
 	];
 
 	// Hàm tải ảnh lên server
@@ -206,7 +222,8 @@ const QuizzOverViewScreen = () => {
 		);
 
 		const data = await response.json();
-		return data.url; // URL của ảnh trên server
+		console.log(data.metadata);
+		return data.metadata; // URL của ảnh trên server
 	};
 
 	// Hàm chọn ảnh từ thư viện
@@ -304,29 +321,25 @@ const QuizzOverViewScreen = () => {
 						<Text className="text-gray mb-1">
 							Lĩnh vực, môn học
 						</Text>
-						<MultipleSelectList
-							defaultOption={{
-								key: '670241a2b71c3303d716e00e',
-								value: 'Khác',
-							}}
-							setSelected={(key, val) => setQuizSubjects(key)}
+						{/* <MultipleSelectList
+							defaultOption={{}}
+							setSelected={(key) => setQuizSubjects(key)}
 							data={subjectsData}
-							// onSelect={() => console.log('runn')}
 							searchPlaceholder="Tìm kiếm môn học, lĩnh vực"
-						/>
+						/> */}
 					</View>
 					<View className="w-full mt-4">
 						<Text className="text-gray mb-1">Chế độ hiển thị</Text>
-						<SelectList
+						{/* <SelectList
 							defaultOption={
-								quizStatus === 'unpublished'
-									? views[1]
-									: views[0]
+								quizStatus === 'published' || quizStatus === '0'
+									? { key: 0, value: 'Công khai' }
+									: { key: 1, value: 'Chỉ mình tôi' }
 							}
-							setSelected={(key, val) => setQuizStatus(key)}
+							setSelected={(key) => setQuizStatus(key)}
 							data={views}
 							searchPlaceholder="Chế độ hiển thị"
-						/>
+						/> */}
 					</View>
 					{/* <View className="flex items-center justify-end mt-4 flex-row w-full">
 						<Button

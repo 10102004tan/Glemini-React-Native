@@ -10,7 +10,7 @@ const QuizProvider = ({ children }) => {
 	const [needUpdate, setNeedUpdate] = useState(false);
 	const [quizFetching, setQuizFetching] = useState(false);
 	const [questionFetching, setQuestionFetching] = useState(false);
-	const [actionQuizType, setActionQuizType] = useState('create');
+	const [actionQuizType, setActionQuizType] = useState('create'); // edit, template
 	const [isSave, setIsSave] = useState(false);
 	const { userData } = useAuthContext();
 
