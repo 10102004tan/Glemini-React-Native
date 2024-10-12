@@ -6,13 +6,15 @@ import { router } from "expo-router";
 const QuizContext = createContext();
 
 const QuizProvider = ({ children }) => {
-  const [quizzes, setQuizzes] = useState([]);
-  const [needUpdate, setNeedUpdate] = useState(false);
-  const [quizFetching, setQuizFetching] = useState(false);
-  const [questionFetching, setQuestionFetching] = useState(false);
-  const [actionQuizType, setActionQuizType] = useState("create");
-  const [isSave, setIsSave] = useState(false);
-  const { userData } = useAuthContext();
+
+	const [quizzes, setQuizzes] = useState([]);
+	const [needUpdate, setNeedUpdate] = useState(false);
+	const [quizFetching, setQuizFetching] = useState(false);
+	const [questionFetching, setQuestionFetching] = useState(false);
+	const [actionQuizType, setActionQuizType] = useState('create'); // edit, template
+	const [isSave, setIsSave] = useState(false);
+	const { userData } = useAuthContext();
+
 
   // Get all quizzes of the user
   const fetchQuizzes = async () => {

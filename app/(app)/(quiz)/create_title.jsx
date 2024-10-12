@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import Wrapper from '../../../components/customs/Wrapper';
 import Field from '../../../components/customs/Field';
 import Button from '../../../components/customs/Button';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
 import { useAuthContext } from '@/contexts/AuthContext';
@@ -11,7 +10,8 @@ import { API_URL, END_POINTS, API_VERSION } from '@/configs/api.config';
 const CreateTitleQuizzScreen = () => {
 	const { userData } = useAuthContext();
 	const [quizName, setQuizName] = useState('');
-	const { setNeedUpdate, setSelectedQuiz } = useQuizProvider();
+	const { setNeedUpdate } = useQuizProvider();
+	const { actionQuizType } = useQuizProvider();
 	const handleCreateQuizTitle = async () => {
 		// Xử lý tạo quiz rỗng
 		if (userData) {
@@ -31,13 +31,20 @@ const CreateTitleQuizzScreen = () => {
 				}
 			);
 			const data = await response.json();
-			console.log(data);
+
 			if (data.statusCode === 200) {
 				setNeedUpdate(true);
-				router.replace({
-					pathname: '/(app)/(quiz)/overview/',
-					params: { id: data.metadata._id },
-				});
+				if (actionQuizType === 'create') {
+					router.replace({
+						pathname: '/(app)/(quiz)/overview/',
+						params: { id: data.metadata._id },
+					});
+				} else {
+					router.replace({
+						pathname: '/(app)/(quiz)/demo_create_quiz_by_template',
+						params: { id: data.metadata._id },
+					});
+				}
 			} else {
 				// Alert to user here
 				console.log('Error when create quiz');

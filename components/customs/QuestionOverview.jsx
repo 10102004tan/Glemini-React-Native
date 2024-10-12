@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import RenderHTML from 'react-native-render-html';
 import { useWindowDimensions } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -8,8 +8,16 @@ import { useRouter } from 'expo-router';
 const QuestionOverview = ({ quizId, question, index }) => {
 	const [showExpain, setShowExpain] = useState(false);
 	const { width } = useWindowDimensions();
-	const { setActionQuizType } = useQuizProvider();
+	const { setActionQuizType, actionQuizType } = useQuizProvider();
 	const router = useRouter();
+
+	const renderAnswerIcon = (correct) => (
+		<AntDesign
+			name={correct ? 'checkcircle' : 'closecircle'}
+			size={18}
+			color={correct ? '#4cd137' : '#F22626'}
+		/>
+	);
 
 	return (
 		<View className="p-2 rounded-2xl border border-gray mb-2">
@@ -50,27 +58,15 @@ const QuestionOverview = ({ quizId, question, index }) => {
 							key={index}
 							className="flex flex-row items-center justify-start"
 						>
-							{question.correct_answer_ids.length > 0 &&
-							question.correct_answer_ids.some(
-								(answer_correct) =>
-									answer_correct._id === answer._id
-							) ? (
-								<View className="mr-2">
-									<AntDesign
-										name="checkcircle"
-										size={18}
-										color="#4cd137"
-									/>
-								</View>
-							) : (
-								<View className="mr-2">
-									<AntDesign
-										name="closecircle"
-										size={18}
-										color="#F22626"
-									/>
-								</View>
-							)}
+							{question.correct_answer_ids.length > 0
+								? renderAnswerIcon(
+										question.correct_answer_ids.some(
+											(answer_correct) =>
+												answer_correct._id ===
+												answer._id
+										)
+									)
+								: renderAnswerIcon(answer.correct)}
 							<RenderHTML
 								defaultTextProps={{
 									style: {
