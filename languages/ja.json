@@ -9,16 +9,18 @@
         "notHaveAccount": "アカウントをお持ちでない場合",
         "error": "無効なメールアドレスまたはパスワード",
         "startNow": "今すぐ始める",
-        "welcome": "当社のアプリへようこそ"
+        "welcome": "当社のアプリへようこそ",
+        "forgetPassword":"パスワードを忘れた場合",
+        "success": "サインインに成功しました"
     },
     "signUp": {
         "title": "サインアップ",
         "email": "メール",
         "password": "パスワード",
         "confirmPassword": "パスワードを確認",
+        "signInNow": "今すぐサインイン",
         "signUp": "アカウントを作成",
         "haveAccount": "すでにアカウントをお持ちですか？",
-        "signInNow": "今すぐサインイン",
         "fullname": "フルネーム",
         "startNow": "今すぐ始める",
         "welcome": "当社のアプリへようこそ",
@@ -47,14 +49,18 @@
         "emailExist": "メールアドレスは既に存在します",
         "passwordRequired": "パスワードが必要です",
         "confirmPasswordRequired": "パスワードの確認が必要です",
+        "passwordNotMatch": "パスワードが一致しません",
         "fullnameRequired": "フルネームが必要です",
         "cardRequired": "カード画像が必要です",
         "cardIDRequired": "IDカードが必要です",
         "documentConfirmRequired": "文書確認が必要です",
-        "nameNotIncludeChar": "フルネームに特殊文字を含めることはできません"
+        "nameNotIncludeChar": "フルネームに特殊文字を含めることはできません",
+        "title": "エラー",
+        "imageRequired": "画像が必要です"
     },
     "success": {
-        "signUp": "サインアップに成功しました"
+        "signUp": "サインアップに成功しました",
+        "title": "成功"
     },
     "language": {
         "title": "言語を選択",
@@ -69,6 +75,11 @@
         "logout": "ログアウト",
         "notification": "通知",
         "logoutSuccess": "ログアウトしました"
+    },
+    "forgetPassword":{
+        "title":"パスワードを忘れた場合",
+        "email":"メール",
+        "send":"送信"
     },
     "play": {
         "single": {

@@ -45,18 +45,17 @@ export default function AppRootLayout() {
 				}}
 			/>
 
+		<Stack.Screen
+				name="change-password"
+				options={{
+					headerTitle: i18n.t('profile.title'),
+				}}
+			/>
+
 			<Stack.Screen
 				name="profile-edit"
 				options={{
 					headerTitle: title,
-					headerRight: () => (
-						<FontAwesome
-							onPress={() => {}}
-							name="save"
-							size={24}
-							color="black"
-						/>
-					),
 				}}
 			/>
 

@@ -45,6 +45,7 @@
     "react-native-element-dropdown": "^2.12.1",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-loading-spinner-overlay": "^3.0.1",
+    "react-native-otp-textinput": "^1.1.6",
     "react-native-pell-rich-editor": "^1.9.0",
     "react-native-reanimated": "~3.10.1",
     "react-native-render-html": "^6.3.4",
