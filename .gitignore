@@ -19,5 +19,5 @@ web-build/
 expo-env.d.ts
 # @end expo-cli
 git config core.ignorecase false
-.idea/
+.idea
 .vscode/
