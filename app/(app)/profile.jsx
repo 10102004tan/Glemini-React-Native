@@ -6,6 +6,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import CardSetting from '@/components/customs/CardSetting';
 import { useAppProvider } from '@/contexts/AppProvider';
+import PROFCODE from "../../utils/ProfCode";
+import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 
 export default function ProfileScreen() {
 	const {
@@ -14,13 +16,16 @@ export default function ProfileScreen() {
 		processAccessTokenExpired,
 	} = useContext(AuthContext);
 	const [isLoading, setIsLoading] = useState(false);
-	const [info, setInfo] = useState(null);
-	const [avatar, setAvatar] = useState(null);
+	const [avatar, setAvatar] = useState({
+		uri: 'https://cdn-icons-png.flaticon.com/512/25/25231.png',
+		tyle: 'image/png',
+		name: 'avatar.png',
+	});
+	const [isEditAvatar, setIsEditAvatar] = useState(false);
 	const { i18n } = useAppProvider();
+	// formData
 
-	useEffect(() => {
-		fetchDataProfile();
-	}, [accessToken]);
+
 
 	const pickImageAsync = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -30,30 +35,42 @@ export default function ProfileScreen() {
 		});
 
 		if (!result.canceled) {
-			setAvatar(result.assets[0].uri);
+			setAvatar((prevAvatar) => ({
+				...prevAvatar,
+				uri: result.assets[0].uri,
+				type: result.assets[0].type,
+				name: result.assets[0].fileName
+			}));
+			setIsEditAvatar(true);
 		}
 	};
 
-	const fetchDataProfile = async () => {
-		fetch('http://10.0.106.188:3000/api/v1/me', {
-			method: 'POST',
+	updateAvatarHandler = async () => {
+		let formData = new FormData();
+		formData.append('user_avatar', {
+			uri: avatar.uri,
+			type: avatar.type,
+			name: avatar.fileName,
+		});
+
+		fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.PROFILE_EDIT}`, {
+			method: 'PUT',
 			headers: {
-				'Content-Type': 'application/json',
+				'Content-Type': 'multipart/form-data',
 				authorization: `${accessToken}`,
 				'x-client-id': _id,
 			},
+			body: formData
 		})
 			.then((response) => response.json())
-			.then(async (data) => {
-				if (data.message === 'expired') {
-					setIsLoading(true);
-					await processAccessTokenExpired();
+			.then((data) => {
+				if (data.statusCode === 200) {
+					Alert.alert('Notification', 'Update successfully');
 				}
-				setInfo(data);
-				setIsLoading(false);
+				console.log(data);
 			})
 			.catch((error) => {
-				console.log(error);
+				console.log(error.message);
 			});
 	};
 
@@ -73,7 +90,7 @@ export default function ProfileScreen() {
 						className="w-[50px] h-[50px] rounded-full bg-white"
 						source={{
 							uri: avatar
-								? avatar
+								? avatar.uri
 								: 'https://cdn-icons-png.flaticon.com/512/25/25231.png',
 						}}
 						alt="avatar"
@@ -90,48 +107,29 @@ export default function ProfileScreen() {
 					onPress={() => {
 						router.push({
 							pathname: '/profile-edit',
-							params: { title: 'Họ và tên' },
+							params: { title: 'Thong tin ca nhan' },
 						});
 					}}
-					title={i18n.t('profile.fullname')}
+					title={"Thông tin cá nhân"}
 					description={i18n.t('profile.editNow')}
 					isActice={true}
 				/>
 				<CardSetting
 					onPress={() => {
 						router.push({
-							pathname: '/profile-edit',
-							params: { title: 'Trường' },
-						});
-					}}
-					title={i18n.t('profile.school')}
-					description={i18n.t('profile.editNow')}
-				/>
-				<CardSetting
-					onPress={() => {
-						router.push({
-							pathname: '/profile-edit',
-							params: { title: 'Email' },
-						});
-					}}
-					title={i18n.t('profile.email')}
-					description={i18n.t('profile.editNow')}
-				/>
-				<CardSetting
-					onPress={() => {
-						router.push({
-							pathname: '/profile-edit',
+							pathname: '/change-password',
 							params: { title: 'Mật khẩu' },
 						});
 					}}
 					title={i18n.t('profile.password')}
 					description={i18n.t('profile.editNow')}
 				/>
-				<Pressable>
+				{isEditAvatar && (<Pressable onPress={updateAvatarHandler}>
 					<View className="py-3 border mt-5">
 						<Text className="text-center">{i18n.t('profile.save')}</Text>
 					</View>
-				</Pressable>
+				</Pressable>)}
+
 			</View>
 		</View>
 	);

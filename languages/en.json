@@ -8,12 +8,15 @@
         "signUp": "Sign Up Here",
         "notHaveAccount": "Don't have an account?",
         "startNow": "Start Now",
-        "welcome": "Welcome to Glemini App"
+        "welcome": "Welcome to Glemini App",
+        "forgetPassword":"Forget Password",
+        "success": "Login successfully"
     },
     "signUp": {
         "title": "Sign Up",
         "email": "Email",
         "password": "Password",
+        "signInNow": "Sign In Now",
         "confirmPassword": "Confirm Password",
         "signUp": "Create Account",
         "haveAccount": "Already have an account?",
@@ -49,10 +52,14 @@
         "cardRequired": "Card image is required",
         "cardIDRequired": "ID Card is required",
         "documentConfirmRequired": "Document Comfirm is required",
-        "nameNotIncludeChar": "Fullname can't include special characters"
+        "nameNotIncludeChar": "Fullname can't include special characters",
+        "title": "Error",
+        "passwordNotMatch": "Password does not match",
+        "imageRequired": "Image is required"
     },
     "success": {
-        "signUp": "Sign up successfully"
+        "signUp": "Sign up successfully",
+        "title": "Success"
     },
     "language": {
         "title": "Choose language",
@@ -67,6 +74,11 @@
         "logout": "Logout",
         "notification": "Notification",
         "logoutSuccess": "Logout successfully"
+    },
+    "forgetPassword":{
+        "title":"Forget Password",
+        "email":"Email",
+        "send":"Send"
     },
     "play": {
         "single": {

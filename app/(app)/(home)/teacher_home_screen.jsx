@@ -8,20 +8,19 @@ import PressAction from '../../../components/customs/PressAction';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import BottomSheet from '../../../components/customs/BottomSheet';
 import { useAppProvider } from '../../../contexts/AppProvider';
-import QuizCreateAction from '../../../components/customs/QuizCreateAction';
 import { useRouter } from 'expo-router';
 import Overlay from '../../../components/customs/Overlay';
 import LockFeature from '@/components/customs/LockFeature';
 import { AuthContext } from '@/contexts/AuthContext';
+import QuizzCreateAction from '../../../components/customs/QuizCreateAction';
+import { useQuizProvider } from '@/contexts/QuizProvider';
 
 const CreateQuizzScreen = () => {
-
-	const {teacherStatus} = useContext(AuthContext);
-	const { isHiddenNavigationBar, setIsHiddenNavigationBar } =
-		useAppProvider();
+	const { teacherStatus } = useContext(AuthContext);
+	const { setIsHiddenNavigationBar } = useAppProvider();
 	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
+	const { setActionQuizType } = useQuizProvider();
 	const router = useRouter();
-
 	const handleCreateQuiz = () => {
 		setIsHiddenNavigationBar(true);
 		setVisibleBottomSheet(true);
@@ -33,9 +32,7 @@ const CreateQuizzScreen = () => {
 	};
 
 	if (teacherStatus === 'inactive') {
-		return (
-			<LockFeature/>
-		)
+		return <LockFeature />;
 	}
 
 	return (
@@ -48,7 +45,7 @@ const CreateQuizzScreen = () => {
 				<View className="flex flex-col items-start justify-start">
 					<Text className="text-lg">Tạo bài kiểm tra với AI</Text>
 					<View className="flex items-center justify-start flex-row mt-4">
-						<QuizCreateAction
+						<QuizzCreateAction
 							title={'Tạo bài kiểm tra'}
 							icon={
 								<Ionicons
@@ -58,7 +55,7 @@ const CreateQuizzScreen = () => {
 								/>
 							}
 						/>
-						<QuizCreateAction
+						<QuizzCreateAction
 							otherStyles="ml-2"
 							title={'Tạo từ văn bản'}
 							icon={
@@ -73,6 +70,11 @@ const CreateQuizzScreen = () => {
 					<Text className="text-lg mt-8">Tạo thủ công</Text>
 					<View className="flex items-center justify-start flex-row mt-4">
 						<QuizzCreateAction
+							handlePress={() => {
+								setActionQuizType('template');
+								handleCloseBottomSheet();
+								router.push('/(app)/(quiz)/create_title');
+							}}
 							title={'Tải lên mẫu'}
 							icon={
 								<Ionicons
@@ -83,9 +85,11 @@ const CreateQuizzScreen = () => {
 							}
 						/>
 						<QuizzCreateAction
-							onPress={() =>
-								router.push('(app)/(quiz)/create_title')
-							}
+							handlePress={() => {
+								setActionQuizType('create');
+								handleCloseBottomSheet();
+								router.push('(app)/(quiz)/create_title');
+							}}
 							otherStyles="ml-2"
 							title={'Tạo bằng tay'}
 							icon={
