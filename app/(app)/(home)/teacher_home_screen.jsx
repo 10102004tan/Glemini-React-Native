@@ -72,6 +72,7 @@ const CreateQuizzScreen = () => {
 						<QuizzCreateAction
 							handlePress={() => {
 								setActionQuizType('template');
+								handleCloseBottomSheet();
 								router.push('/(app)/(quiz)/create_title');
 							}}
 							title={'Tải lên mẫu'}
@@ -86,6 +87,7 @@ const CreateQuizzScreen = () => {
 						<QuizzCreateAction
 							handlePress={() => {
 								setActionQuizType('create');
+								handleCloseBottomSheet();
 								router.push('(app)/(quiz)/create_title');
 							}}
 							otherStyles="ml-2"

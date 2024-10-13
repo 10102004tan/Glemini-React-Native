@@ -16,10 +16,9 @@ const validateFullname = (fullname) => {
 };
 
 const convertSubjectData = (data) => {
-	return data.map((item, index) => ({
-		key: item._id.toString(),
+	return data.map((item) => ({
+		key: item._id,
 		value: item.name,
-		selected: true,
 	}));
 };
 

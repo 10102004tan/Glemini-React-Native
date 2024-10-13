@@ -17,7 +17,7 @@ const Field = ({
 		<View
 			className={`flex flex-col items-start justify-center ${wrapperStyles}`}
 		>
-			<Text className={`mb-1 text-sm text-gray`}>{label}</Text>
+			{label && <Text className={`mb-1 text-sm text-gray`}>{label}</Text>}
 			<View
 				className={`px-4 flex flex-row items-center justify-start py-2 rounded-xl border-gray border w-full ${inputStyles}`}
 			>
