@@ -7,6 +7,7 @@ const QuizContext = createContext();
 
 const QuizProvider = ({ children }) => {
 	const [quizzes, setQuizzes] = useState([]);
+	const [filterQuizzes, setFilterQuizzes] = useState([]);
 	const [needUpdate, setNeedUpdate] = useState(false);
 	const [quizFetching, setQuizFetching] = useState(false);
 	const [questionFetching, setQuestionFetching] = useState(false);
@@ -39,7 +40,7 @@ const QuizProvider = ({ children }) => {
 
 	// Get Quiz Published
 	const getQuizzesPublished = async (subject_id) => {
-		subject_id = subject_id === 'all'  ? null : subject_id;
+		subject_id = subject_id === 'all'  ? '' : subject_id;
 
 		const response = await fetch(
 			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`,
@@ -51,13 +52,16 @@ const QuizProvider = ({ children }) => {
 					authorization: userData.accessToken,
 
 				},
-				body: JSON.stringify({ subject_id: subject_id }),
+				body: JSON.stringify({ subjectId: subject_id }),
 			}
 		);
 
 		const data = await response.json();
 		if (data.statusCode === 200) {
-			setQuizzes(data.metadata)
+			setFilterQuizzes(data.metadata)
+		}
+		else {
+			setFilterQuizzes([])
 		}
 	};
 
@@ -137,7 +141,9 @@ const QuizProvider = ({ children }) => {
 				setQuizFetching,
 				isSave,
 				setIsSave,
-				getQuizzesPublished
+				getQuizzesPublished,
+				filterQuizzes
+
 			}}
 		>
 			{children}
