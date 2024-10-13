@@ -8,15 +8,17 @@ import { useRouter } from 'expo-router';
 const QuestionOverview = ({ quizId, question, index }) => {
 	const [showExpain, setShowExpain] = useState(false);
 	const { width } = useWindowDimensions();
-	const { setActionQuizType, actionQuizType } = useQuizProvider();
+	const { setActionQuizType } = useQuizProvider();
 	const router = useRouter();
 
 	const renderAnswerIcon = (correct) => (
-		<AntDesign
-			name={correct ? 'checkcircle' : 'closecircle'}
-			size={18}
-			color={correct ? '#4cd137' : '#F22626'}
-		/>
+		<View className="mr-2">
+			<AntDesign
+				name={correct ? 'checkcircle' : 'closecircle'}
+				size={18}
+				color={correct ? '#4cd137' : '#F22626'}
+			/>
+		</View>
 	);
 
 	return (

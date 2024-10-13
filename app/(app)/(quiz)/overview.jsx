@@ -29,6 +29,8 @@ import QuestionOverviewSkeleton from '@/components/loadings/QuestionOverviewSkel
 import QuizInforSkeleton from '@/components/loadings/QuizInforSkeleton';
 import { Feather } from '@expo/vector-icons';
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog';
+import { Status } from '@/constants';
+import DropDownMultipleSelect from '@/components/customs/DropDownMultipleSelect';
 
 const QuizzOverViewScreen = () => {
 	const router = useRouter();
@@ -51,7 +53,6 @@ const QuizzOverViewScreen = () => {
 	const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
 	const {
-		actionQuizType,
 		setActionQuizType,
 		quizFetching,
 		deleteQuiz,
@@ -60,7 +61,15 @@ const QuizzOverViewScreen = () => {
 		setQuestionFetching,
 		isSave,
 	} = useQuizProvider();
-	const { resetQuestion, questions } = useQuestionProvider();
+	const { resetQuestion } = useQuestionProvider();
+
+	useEffect(() => {
+		console.log(quizSubjects);
+	}, [quizSubjects]);
+
+	// Lấy dữ liệu môn học
+	const { subjects } = useSubjectProvider();
+	const subjectsData = convertSubjectData(subjects);
 
 	// Lưu thông tin của quiz khi người dùng ấn nút lưu trên thanh header
 	useEffect(() => {
@@ -85,7 +94,7 @@ const QuizzOverViewScreen = () => {
 		);
 
 		const data = await response.json();
-		console.log(data.metadata);
+		// console.log(data.metadata);
 		if (data.statusCode === 200) {
 			setQuizId(data.metadata._id);
 			setQuizThumbnail(data.metadata.quiz_thumb);
@@ -132,7 +141,7 @@ const QuizzOverViewScreen = () => {
 			quiz_thumb: quizThumbnail,
 		};
 
-		console.log(JSON.stringify(quiz, null, 2));
+		// console.log(JSON.stringify(quiz, null, 2));
 
 		updateQuiz(quiz);
 		handleCloseBottomSheet();
@@ -186,19 +195,6 @@ const QuizzOverViewScreen = () => {
 		setVisibleCreateQuestionBottomSheet(false);
 	};
 
-	// Lấy dữ liệu môn học
-	const { subjects } = useSubjectProvider();
-	const subjectsData = convertSubjectData(subjects);
-
-	// Chế độ hiển thị của quiz
-	const views = [
-		{ key: 0, value: 'Công khai' },
-		{
-			key: 1,
-			value: 'Chỉ mình tôi',
-		},
-	];
-
 	// Hàm tải ảnh lên server
 	const uploadImage = async (imageUri) => {
 		const formData = new FormData();
@@ -242,6 +238,17 @@ const QuizzOverViewScreen = () => {
 			// Tải ảnh lên server và lấy URL của ảnh
 			const imageUrl = await uploadImage(imageUri);
 			setQuizThumbnail(imageUrl);
+		}
+	};
+
+	// Hàm cập nhật state khi chọn/bỏ chọn môn học
+	const handleSelectSubjects = (key) => {
+		if (quizSubjects.includes(key)) {
+			// Nếu môn học đã được chọn, bỏ nó khỏi danh sách
+			setQuizSubjects(quizSubjects.filter((item) => item !== key));
+		} else {
+			// Nếu chưa chọn, thêm vào danh sách
+			setQuizSubjects([...quizSubjects, key]);
 		}
 	};
 
@@ -321,45 +328,29 @@ const QuizzOverViewScreen = () => {
 						<Text className="text-gray mb-1">
 							Lĩnh vực, môn học
 						</Text>
-						{/* <MultipleSelectList
-							defaultOption={{}}
-							setSelected={(key) => setQuizSubjects(key)}
+						{/* Mutiple Select List */}
+						<DropDownMultipleSelect
+							label={'Chọn môn học'}
 							data={subjectsData}
-							searchPlaceholder="Tìm kiếm môn học, lĩnh vực"
-						/> */}
+							selectedIds={quizSubjects}
+							onSelected={(key) => handleSelectSubjects(key)}
+						/>
 					</View>
 					<View className="w-full mt-4">
 						<Text className="text-gray mb-1">Chế độ hiển thị</Text>
-						{/* <SelectList
-							defaultOption={
-								quizStatus === 'published' || quizStatus === '0'
-									? { key: 0, value: 'Công khai' }
-									: { key: 1, value: 'Chỉ mình tôi' }
+
+						{/* Single Select */}
+						<DropDownMultipleSelect
+							label={'Chọn chế độ hiển thị'}
+							data={Status.view}
+							selectedIds={
+								quizStatus === 'published'
+									? ['published']
+									: ['unpublished']
 							}
-							setSelected={(key) => setQuizStatus(key)}
-							data={views}
-							searchPlaceholder="Chế độ hiển thị"
-						/> */}
+							onSelected={(key) => setQuizStatus(key)}
+						/>
 					</View>
-					{/* <View className="flex items-center justify-end mt-4 flex-row w-full">
-						<Button
-							text="Lưu"
-							onPress={() => {
-								setQuizFetching(true);
-								handleUpdateQuiz(id);
-							}}
-							otherStyles="p-4 justify-center w-1/3 mr-2"
-							textStyles="text-white"
-						/>
-						<Button
-							text="Hủy bỏ"
-							onPress={() => {
-								handleCloseBottomSheet();
-							}}
-							otherStyles="p-4 justify-center w-1/3 bg-red-500"
-							textStyles="text-white"
-						/>
-					</View> */}
 				</View>
 			</BottomSheet>
 
@@ -414,7 +405,7 @@ const QuizzOverViewScreen = () => {
 									<Text className="text-lg">
 										{quizName || 'Tên bộ quiz'}
 									</Text>
-									<Text className="text-gray">
+									<Text className="text-gray max-w-[300px]">
 										{quizDescription ||
 											'Thêm mô tả cho bộ quiz này'}
 									</Text>
