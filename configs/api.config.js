@@ -1,7 +1,7 @@
 "use strict";
 
 const dev = {
-	API_URL: 'http://192.168.1.8:8000/api',
+	API_URL: 'http://192.168.247.116:3000/api',
 	API_VERSION: {
 		V1: '/v1',
 	},
@@ -25,13 +25,14 @@ const dev = {
 		QUIZ_DETAIL: '/quizzes/get-details',
 		QUIZ_CREATE: '/quizzes/create',
 		QUIZ_DELETE: '/quizzes/delete',
+		QUIZ_PUBLISHED: '/quizzes/get-quizpublished',
 		QUIZ_UPLOAD_DOC: '/quizzes/docs/upload',
 		RESULT_SAVE_QUESTION: '/result/save-question',
 		RESULT_COMPLETED: '/result/complete-quiz',
 		RESULT_REVIEW: '/result/review',
 		QUIZ_UPDATE: '/quizzes/update',
 		SUBJECTS: '/subjects',
-		SCHOOL_LIST: '/schools',
+
 	},
 };
 

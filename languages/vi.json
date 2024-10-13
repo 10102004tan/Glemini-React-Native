@@ -109,6 +109,9 @@
             "text_question": "Câu hỏi"
         }
     },
+    "student_homepage": {
+        "explore": "Khám phá"
+    },
     "profile":{
         "title":"Thông tin tài khoản",
         "fullname":"Họ và tên",

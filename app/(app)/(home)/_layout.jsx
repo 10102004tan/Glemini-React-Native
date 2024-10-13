@@ -7,7 +7,7 @@ import { useAppProvider } from "@/contexts/AppProvider";
 import { AuthContext } from "@/contexts/AuthContext";
 
 export default function TabLayout() {
-  const { isHiddenNavigationBar } = useAppProvider();
+  const { isHiddenNavigationBar, i18n } = useAppProvider();
   const {
     userData: { user_type },
   } = useContext(AuthContext);
@@ -111,7 +111,18 @@ export default function TabLayout() {
               name={focused ? "school" : "school-outline"}
               color={color}
             />
-          ),
+          )
+        }}/>
+			<Tabs.Screen
+				name="classroom"
+				options={{
+					title: i18n.t('classes.title'),
+					tabBarIcon: ({ color, focused }) => (
+						<TabBarIcon
+							name={focused ? 'school' : 'school-outline'}
+							color={color}
+						/>
+					),
 
           tabBarButton: (props) => {
             if (user_type === "teacher") {

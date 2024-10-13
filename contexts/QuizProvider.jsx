@@ -8,6 +8,7 @@ const QuizContext = createContext();
 const QuizProvider = ({ children }) => {
 
 	const [quizzes, setQuizzes] = useState([]);
+	const [filterQuizzes, setFilterQuizzes] = useState([]);
 	const [needUpdate, setNeedUpdate] = useState(false);
 	const [quizFetching, setQuizFetching] = useState(false);
 	const [questionFetching, setQuestionFetching] = useState(false);
@@ -15,46 +16,70 @@ const QuizProvider = ({ children }) => {
 	const [isSave, setIsSave] = useState(false);
 	const { userData } = useAuthContext();
 
+	// Get all quizzes of the user
+	const fetchQuizzes = async () => {
+		setQuizFetching(true);
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({ user_id: userData._id }),
+			}
+		);
+		const data = await response.json();
 
-  // Get all quizzes of the user
-  const fetchQuizzes = async () => {
-    setQuizFetching(true);
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({ user_id: userData._id }),
-      }
-    );
-    const data = await response.json();
-    // console.log(data);
+		if (data.statusCode === 200) {
+			setQuizzes(data.metadata);
+			setQuizFetching(false);
+		}
+	};
 
-    if (data.statusCode === 200) {
-      setQuizzes(data.metadata);
-      setQuizFetching(false);
-    }
-    // Handle error when fetch quizzes
-  };
+	// Get Quiz Published
+	const getQuizzesPublished = async (subject_id) => {
+		subject_id = subject_id === 'all'  ? '' : subject_id;
 
-  // Delete quiz
-  const deleteQuiz = async (quizId) => {
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DELETE}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({ quiz_id: quizId }),
-      }
-    );
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+
+				},
+				body: JSON.stringify({ subjectId: subject_id }),
+			}
+		);
+
+		const data = await response.json();
+		if (data.statusCode === 200) {
+			setFilterQuizzes(data.metadata)
+		}
+		else {
+			setFilterQuizzes([])
+		}
+	};
+
+	// Delete quiz
+	const deleteQuiz = async (quizId) => {
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DELETE}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({ quiz_id: quizId }),
+			}
+		);
 
     const data = await response.json();
     if (data.statusCode === 200) {
@@ -93,35 +118,38 @@ const QuizProvider = ({ children }) => {
     }
   }, [needUpdate]);
 
-  // Get all quizzes of the user
-  useEffect(() => {
-    if (userData) {
-      fetchQuizzes();
-    }
-  }, [userData]);
+	// Get all quizzes of the user
+	useEffect(() => {
+		if (userData) {
+			fetchQuizzes();
+		}
+	}, [userData]);
 
-  return (
-    <QuizContext.Provider
-      value={{
-        actionQuizType,
-        setActionQuizType,
-        quizzes,
-        setQuizzes,
-        needUpdate,
-        setNeedUpdate,
-        quizFetching,
-        questionFetching,
-        deleteQuiz,
-        updateQuiz,
-        setQuestionFetching,
-        setQuizFetching,
-        isSave,
-        setIsSave,
-      }}
-    >
-      {children}
-    </QuizContext.Provider>
-  );
+	return (
+		<QuizContext.Provider
+			value={{
+				actionQuizType,
+				setActionQuizType,
+				quizzes,
+				setQuizzes,
+				needUpdate,
+				setNeedUpdate,
+				quizFetching,
+				questionFetching,
+				deleteQuiz,
+				updateQuiz,
+				setQuestionFetching,
+				setQuizFetching,
+				isSave,
+				setIsSave,
+				getQuizzesPublished,
+				filterQuizzes
+
+			}}
+		>
+			{children}
+		</QuizContext.Provider>
+	);
 };
 
 export const useQuizProvider = () => {

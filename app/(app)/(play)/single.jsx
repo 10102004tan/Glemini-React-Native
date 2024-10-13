@@ -8,8 +8,11 @@ import Toast from 'react-native-toast-message';
 import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
 import RenderHTML from 'react-native-render-html';
 import { Audio } from 'expo-av';
+import { useRoute } from '@react-navigation/native';
 
 const SinglePlay = () => {
+	const route = useRoute();
+	const { quizId } = route.params;
 	const {i18n} = useAppProvider();
 	const { width } = useWindowDimensions();
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -29,7 +32,6 @@ const SinglePlay = () => {
 	const [questions, setQuestions] = useState([]);
 	const [sound, setSound] = useState(null);
 
-	// Fetch questions from API
 	useEffect(() => {
 		const fetchQuestions = async () => {
 			try {
@@ -41,7 +43,7 @@ const SinglePlay = () => {
 						authorization: userData.accessToken,
 					},
 					body: JSON.stringify({
-						quiz_id: '67029b912635f0e8ffc5eb2c',
+						quiz_id: quizId,
 					}),
 				});
 
@@ -95,7 +97,6 @@ const SinglePlay = () => {
 		}
 	};
 
-	// Tải và phát âm thanh
 	const playSound = async (isCorrectAnswer) => {
 		let soundPath = isCorrectAnswer ? require('@/assets/sounds/correct.mp3') : require('@/assets/sounds/incorrect.mp3');
 		const { sound } = await Audio.Sound.createAsync(soundPath);
@@ -106,7 +107,7 @@ const SinglePlay = () => {
 	useEffect(() => {
 		return sound
 			? () => {
-				sound.unloadAsync(); // Cleanup âm thanh
+				sound.unloadAsync(); 
 			}
 			: undefined;
 	}, [sound]);
@@ -214,6 +215,7 @@ const SinglePlay = () => {
 	if (isCompleted) {
 		return (
 			<ResultSingle
+				quizId={quizId}
 				correctCount={correctCount}
 				wrongCount={wrongCount}
 				score={score}
