@@ -6,27 +6,86 @@ import { Link } from 'expo-router';
 import { AuthContext } from '@/contexts/AuthContext';
 import { validateEmail, validatePassword } from '@/utils';
 import { useAppProvider } from '@/contexts/AppProvider';
+import Toast from 'react-native-toast-message';
+import CustomButton from "@/components/customs/CustomButton";
 
+const TIME_SHOW_TOAST = 1000;
 const SignInScreen = () => {
 
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const {signIn} = useContext(AuthContext);
 	const {i18n} = useAppProvider();
-	
-	const handlerSignIn = async() => {
+
+	const handlerValidate = () => {
 		if (!email || !password) {
-			Alert.alert('Thông báo','Vui lòng nhập đầy đủ thông tin');
+			Toast.show({
+				type: 'error',
+				text1: 'Thông báo',
+				text2: 'Vui lòng nhập đầy đủ thông tin',
+				visibilityTime: TIME_SHOW_TOAST,
+			});
+			return false;
+		}
+		if (!email) {
+			Toast.show({
+				type: 'error',
+				text1: i18n.t('error.title'),
+				text2: i18n.t('error.emailRequired'),
+				visibilityTime: TIME_SHOW_TOAST,
+				autoHide: true,
+			});
 			return;
 		}
-
 		if(!validateEmail(email)){
-            Alert.alert('Thông báo', 'Email không hợp lệ');
-            return;
-        };
+			Toast.show({
+				type: 'error',
+				text2: i18n.t('error.emailInvalid'),
+				visibilityTime: TIME_SHOW_TOAST,
+				autoHide: true,
+			});
+			return false;
+		}
+		if (!password) {
+			Toast.show({
+				type: 'error',
+				text2: i18n.t('error.passwordRequired'),
+				visibilityTime: TIME_SHOW_TOAST,
+				autoHide: true,
+			});
+			return false;
+		}
+		if (!validatePassword(password)) {
+			Toast.show({
+				type: 'error',
+				text1: i18n.t('error.title'),
+				text2: i18n.t('error.passwordInvalid'),
+				visibilityTime: TIME_SHOW_TOAST,
+				autoHide: true,
+			});
+			return false;
+		}
 
-		signIn({email,password}).then((res)=>{
-			Alert.alert('Thông báo',res);
+		return true;
+	};
+
+	const handlerSignIn = async() => {
+		await signIn({email,password}).then((res)=>{
+			Toast.show({
+				type: 'success',
+				text1: i18n.t('success.title'),
+				text2: i18n.t('signIn.success'),
+				visibilityTime: TIME_SHOW_TOAST,
+				autoHide: true,
+			});
+		}).catch((err)=>{
+			Toast.show({
+				type: 'error',
+				text1: i18n.t('error.title'),
+				text2: err.message,
+				visibilityTime: TIME_SHOW_TOAST,
+				autoHide: true,
+			});
 		});
 	};
 
@@ -43,11 +102,16 @@ const SignInScreen = () => {
 						<Text className="text-blue-500">{i18n.t('signIn.signUp')}</Text>
 					</Link>
 				</View>
-				<Pressable onPress={handlerSignIn}>
-					<View className=' bg-black py-3 rounded'>
-						<Text className="text-white text-center text-[16px]">{i18n.t('signIn.login')}</Text>
-					</View>
-				</Pressable>
+
+				<CustomButton onPress={()=>{
+					handlerValidate() && handlerSignIn(); // call
+				}} title={i18n.t('signIn.login')} />
+
+				<View className="mt-3">
+					<Link href={"/forgot-password"}>
+						<Text>{i18n.t('signIn.forgetPassword')}</Text>
+					</Link>
+				</View>
 			</View>
 		</View>
 	);

@@ -13,15 +13,20 @@ export const AuthProvider = ({ children }) => {
 	const [teacherStatus, setTeacherStatus] = useState(null);
 
 	useEffect(() => {
-		const fetchAccessToken = async () => {
-			const value = await AsyncStorage.getItem('userData');
-			setUserData(JSON.parse(value));
-			setIsLoading(false);
-		};
-
 		fetchAccessToken();
 	}, []);
+
+	// fetch access token from local storage
+	const fetchAccessToken = async () => {
+		const value = await AsyncStorage.getItem('userData');
+		setUserData(JSON.parse(value));
+		setIsLoading(false);
+	};
+
+
 	const signIn = async ({ email, password }) => {
+		email = email.trim();
+		password = password.trim();
 		const response = await fetch(
 			`${API_URL}${API_VERSION.V1}${END_POINTS.LOGIN}`,
 			{
@@ -34,7 +39,6 @@ export const AuthProvider = ({ children }) => {
 		);
 
 		const data = await response.json();
-
 		if (data.statusCode === 200) {
 			const {
 				tokens: { accessToken, refreshToken },
@@ -62,11 +66,14 @@ export const AuthProvider = ({ children }) => {
 			teacher_status && setTeacherStatus(teacher_status);
 			return data.message;
 		}
-
-		return data.message;
+		throw new Error(data.message);
 	};
-
 	const signUp = async ({ email, password, fullname, type, images }) => {
+		// trim data
+		email = email.trim();
+		password = password.trim();
+		fullname = fullname.trim();
+
 		let formData = new FormData();
 		formData.append('email', email);
 		formData.append('password', password);
@@ -93,13 +100,12 @@ export const AuthProvider = ({ children }) => {
 				body: formData,
 			}
 		);
-
 		const data = await response.json();
-		const {
-			tokens: { accessToken, refreshToken },
-			user: { user_type, user_fullname, _id, user_avatar, user_email},
-		} = data.metadata;
 		if (data.statusCode === 200) {
+			const {
+				tokens: { accessToken, refreshToken },
+				user: { user_type, user_fullname, _id, user_avatar, user_email},
+			} = data.metadata;
 			const dataStore = {
 				user_type,
 				user_fullname,
@@ -111,11 +117,9 @@ export const AuthProvider = ({ children }) => {
 			};
 			await AsyncStorage.setItem('userData', JSON.stringify(dataStore));
 			setUserData(dataStore);
-			// set teacher status
-			return 1;
+			return data.message;
 		}
-
-		return 0;
+		throw new Error(data.message);
 	};
 
 	const signOut = async () => {
@@ -266,6 +270,26 @@ export const AuthProvider = ({ children }) => {
 		teacher_status && setTeacherStatus(teacher_status);
 	};
 
+	//fetch detail user
+	const fetchDetailUser = async () => {
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.PROFILE}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					authorization: `${userData.accessToken}`,
+					'x-client-id': userData._id,
+				},
+			}
+		);
+		const data = await response.json();
+		const {statusCode,metadata} = data;
+		if (statusCode !== 200) return;
+		return metadata;
+	};
+
+
 	return (
 		<AuthContext.Provider
 			value={{
@@ -279,6 +303,7 @@ export const AuthProvider = ({ children }) => {
 				processAccessTokenExpired,
 				fetchStatus,
 				teacherStatus,
+				fetchDetailUser,
 			}}
 		>
 			{children}

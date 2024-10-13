@@ -9,7 +9,9 @@
         "notHaveAccount":"Chưa có tài khoản?",
         "error": "Email hoặc mật khẩu không hợp lệ",
         "startNow":"Bắt đầu thôi",
-        "welcome":"Chào mừng đến với ứng dụng Glemini"
+        "welcome":"Chào mừng đến với ứng dụng Glemini",
+        "forgetPassword":"Quên mật khẩu",
+        "success":"Đăng nhập thành công"
     },
     "signUp":{
         "title": "Tạo tài khoản mới",
@@ -40,6 +42,7 @@
         "emailInvalid":"Email không hợp lệ",
         "passwordInvalid":"Mật khẩu phải có ít nhất 8 ký tự",
         "confirmPassword":"Mật khẩu xác nhận không khớp",
+        "passwordNotMatch": "Mật khẩu không khớp",
         "fullnameInvalid":"Họ và tên không hợp lệ",
         "emailRequired":"Email là bắt buộc",
         "notification":"Thông báo",
@@ -50,10 +53,13 @@
         "cardRequired":"Ảnh thẻ là bắt buộc",
         "cardIDRequired":"CCCD là bắt buộc",
         "documentConfirmRequired":"Giấy tờ xác nhận là bắt buộc",
-        "nameNotIncludeChar":"Họ và tên không được chứa ký tự đặc biệt"
+        "nameNotIncludeChar":"Họ và tên không được chứa ký tự đặc biệt",
+        "title": "Lỗi",
+        "imageRequired":"Ảnh là bắt buộc"
     },
     "success":{
-        "signUp":"Đăng ký thành công"
+        "signUp":"Đăng ký thành công",
+        "title":"Thành công"
     },
     "language":{
         "title":"Chọn ngôn ngữ",
@@ -68,6 +74,11 @@
         "message":"Bạn có chắc chắn muốn đăng xuất không?",
         "cancel":"Hủy",
         "logout":"Đăng xuất"
+    },
+    "forgetPassword":{
+        "title":"Quên mật khẩu",
+        "email":"Email",
+        "send":"Gửi"
     },
     "play": {
         "single": {

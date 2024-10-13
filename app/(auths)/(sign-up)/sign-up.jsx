@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Button, Pressable, Alert, Image, Modal } from 'react-native';
+import {View, Text, TextInput, Button, Pressable, Alert, Image, Modal, TouchableOpacity} from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { Link, router } from 'expo-router';
@@ -7,11 +7,13 @@ import CustomInput from '@/components/customs/CustomInput';
 import InputImage from '@/components/customs/InputImage';
 import * as ImagePicker from 'expo-image-picker';
 import { AuthContext } from '@/contexts/AuthContext';
-import { validateEmail, validateFullname, validatePassword } from '@/utils';
+import {debounce, validateEmail, validateFullname, validatePassword} from '@/utils';
 import { useAppProvider } from '@/contexts/AppProvider';
-import Spinner from 'react-native-loading-spinner-overlay';
+import Toast from 'react-native-toast-message';
+import CustomButton from "@/components/customs/CustomButton";
 
 
+const TIME_SHOW_TOAST = 1500;
 const TYPEIMAGE = {
     IDCard: 'IDCard',
     Card: 'Card',
@@ -33,70 +35,31 @@ const SignUpScreen = () => {
     const [imageConfirm, setImageConfirm] = useState('');
     const [imageCurrent, setImageCurrent] = useState('');
     const [isOpenedModal, setIsOpenedModal] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isDisabled, setIsDisabled] = useState(false);
 
     const handlerSignUp = async () => {
-        
-        if (!fullname) {
-            Alert.alert(i18n.t('error.notification'), i18n.t('error.fullnameRequired'));
-            return;
-        }
-
-        if (!validateFullname(fullname)) {
-            Alert.alert('Thông báo', 'Họ tên không hợp lệ');
-            return;
-        };
-        
-        // check validate
-        if (!email) {
-            Alert.alert(i18n.t('error.notification'), i18n.t('error.emailRequired'));
-            return;
-        }
-        if(!validateEmail(email)){
-            Alert.alert(i18n.t('error.notification'), i18n.t('error.emailInvalid'));
-            return;
-        };
-        if (!password) {
-            Alert.alert(i18n.t('error.notification'), i18n.t('error.passwordRequired'));
-            return;
-        }
-       
-        if (password !== passwordVerify) {
-            Alert.alert('Thông báo', 'Mật khẩu không khớp');
-            return;
-        }
-
-        if (!validatePassword(password)) {
-            Alert.alert('Thông báo', 'Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất một số');
-            return;
-        };
-
-      
-
-        // if type = teacher => check image
-        if (type === "teacher") {
-            if (!imageIDCard || !imageCard || !imageConfirm) {
-                Alert.alert('Thông báo', 'Vui lòng cung cấp đủ ảnh');
-                return;
-            }
-        }
-
-        setIsLoading(true);
-        // call api
+        setIsDisabled(true);
         await signUp({email, password, fullname, type,images:[imageIDCard,imageCard,imageConfirm]})
-        .then((res) => {
-            if (res === 1){
-                Alert.alert('Thông báo', 'Đăng ký thành công');
-            }
-            else{
-                Alert.alert('Thông báo', 'Đăng ký thất bại 1');
-            }
-        })
-        .catch((err) => {
-            Alert.alert('Thông báo', 'Đăng ký thất bại 2',err);
-        });
-
-        setIsLoading(false);
+            .then((message) => {
+                Toast.show({
+                    type: 'success',
+                    text1: i18n.t('success.signUp'),
+                    text2: message,
+                    visibilityTime: TIME_SHOW_TOAST,
+                    autoHide: true,
+                });
+                setIsDisabled(false);
+            })
+            .catch((error) => {
+                Toast.show({
+                    type: 'error',
+                    text1: i18n.t('error.title'),
+                    text2: error.message,
+                    visibilityTime: TIME_SHOW_TOAST,
+                    autoHide: true,
+                });
+                setIsDisabled(false);
+            });
     };
 
     const handlerPickImage = async (type) => {
@@ -116,6 +79,11 @@ const SignUpScreen = () => {
             }
         }
         else if (type === TYPEIMAGE.Card) {
+            const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+            if (permissionResult.granted === false) {
+                alert("Permission to access camera is required!");
+                return;
+            }
             let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.All,
                 allowsEditing: true,
@@ -160,11 +128,98 @@ const SignUpScreen = () => {
         setIsOpenedModal(true);
     };
 
-    
-    //loading
-    if (isLoading) {
-        return (<View><Text>Loading ...</Text></View>)
-    }
+    const handlerValidate = () => {
+        if (!fullname) {
+            Toast.show({
+                type: 'error',
+                text1: i18n.t('error.title'),
+                text2: i18n.t('error.fullnameRequired'),
+                visibilityTime: TIME_SHOW_TOAST,
+                autoHide: true,
+            });
+            return false;
+        }
+
+        if (!validateFullname(fullname)) {
+            Toast.show({
+                type: 'error',
+                text1: i18n.t('error.title'),
+                text2: i18n.t('error.fullnameRequired'),
+                visibilityTime: TIME_SHOW_TOAST,
+                autoHide: true,
+            });
+            return false;
+        }
+
+        // check validate
+        if (!email) {
+            Toast.show({
+                type: 'error',
+                text1: i18n.t('error.title'),
+                text2: i18n.t('error.emailRequired'),
+                visibilityTime: TIME_SHOW_TOAST,
+                autoHide: true,
+            });
+            return;
+        }
+        if(!validateEmail(email)){
+            Toast.show({
+                type: 'error',
+                text2: i18n.t('error.emailInvalid'),
+                visibilityTime: TIME_SHOW_TOAST,
+                autoHide: true,
+            });
+            return false;
+        }
+        if (!password) {
+            Toast.show({
+                type: 'error',
+
+                text2: i18n.t('error.passwordRequired'),
+                visibilityTime: TIME_SHOW_TOAST,
+                autoHide: true,
+            });
+            return false;
+        }
+
+        if (!validatePassword(password)) {
+            Toast.show({
+                type: 'error',
+                text1: i18n.t('error.title'),
+                text2: i18n.t('error.passwordInvalid'),
+                visibilityTime: TIME_SHOW_TOAST,
+                autoHide: true,
+            });
+            return false;
+        }
+
+        if (password !== passwordVerify) {
+            Toast.show({
+                type: 'error',
+                text1: i18n.t('error.title'),
+                text2: i18n.t('error.passwordNotMatch'),
+                visibilityTime: TIME_SHOW_TOAST,
+                autoHide: true,
+            });
+            return false;
+        }
+
+        // if type = teacher => check image
+        if (type === "teacher") {
+            if (!imageIDCard || !imageCard || !imageConfirm) {
+                Toast.show({
+                    type: 'error',
+                    text1: i18n.t('error.title'),
+                    text2: i18n.t('error.imageRequired'),
+                    visibilityTime: TIME_SHOW_TOAST,
+                    autoHide: true,
+                });
+                return false;
+            }
+        }
+
+        return true;
+    };
 
     return (
         <View>
@@ -188,12 +243,7 @@ const SignUpScreen = () => {
                         <InputImage onLongPress={()=>handlerLongPress(TYPEIMAGE.Confirm)} onPress={()=>{handlerPickImage(TYPEIMAGE.Confirm)}} desc={'Các giấy tờ chứng minh việc bạn có giảng dạy'} title={i18n.t('signUp.documentConfirm')} logo={(imageConfirm?imageConfirm.uri:'https://cdn-icons-png.freepik.com/256/888/888034.png?semt=ais_hybrid')} />
                     </View>
                 )}
-                <Pressable onPress={handlerSignUp}>
-                    <View className=' bg-black py-3 rounded mb-5 mt-4'>
-                        <Text className="text-white text-center text-[16px]">{i18n.t('signUp.signUp')}</Text>
-                    </View>
-                </Pressable>
-               
+                <CustomButton className={"mb-4"} disabled={isDisabled} onPress={()=>handlerValidate() && handlerSignUp()} title={i18n.t('signUp.signUp')} />
             </View>
                 
             <Modal animationType='slide' transparent={true} visible={isOpenedModal}>
