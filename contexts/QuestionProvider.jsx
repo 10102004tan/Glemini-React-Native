@@ -45,6 +45,34 @@ const QuestionProvider = ({ children }) => {
 	const [questions, setQuestions] = useState([]);
 	const { userData } = useAuthContext();
 
+	// Lấy nội dung câu hỏi từ file template docx
+	const getQuestionFromDocx = async (questionData, quizId) => {
+		setQuestions([]); // Reset mảng câu hỏi
+
+		questionData.forEach((question) => {
+			const q = {
+				question_excerpt: question.question,
+				question_answer_ids: question.answers.map((answer, index) => ({
+					_id: index + 1,
+					text: answer,
+					image: '',
+					correct: answer[0] === question.correctAnswer,
+				})),
+			};
+
+			saveQuestions(q, quizId);
+
+			// console.log(q);
+			// setQuestions((prev) => {
+			// 	return [...prev, q];
+			// }); // Thêm câu hỏi vào mảng câu hỏi
+		});
+
+		// Save to server
+
+		// Chuyển tới quiz overview page
+	};
+
 	// Reset lại mảng câu hỏi
 	const resetQuestion = () => {
 		setQuestion({
@@ -215,6 +243,37 @@ const QuestionProvider = ({ children }) => {
 		}
 	};
 
+	// Lưu một danh sách câu hỏi
+	const saveQuestions = async (question, quizId) => {
+		try {
+			// Gọi API lưu câu hỏi
+			const response = await fetch(
+				`${API_URL}${API_VERSION.V1}${END_POINTS.QUESTION_CREATE}`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'x-client-id': userData._id,
+						authorization: userData.accessToken,
+					},
+					body: JSON.stringify({ ...question, quiz_id: quizId }),
+				}
+			);
+			const data = await response.json();
+			console.log(data);
+			if (data.statusCode === 200) {
+				console.log('Lưu câu hỏi thành công');
+				// Alert to user here
+				// Lưu câu hỏi vào mảng các câu hỏi
+				setQuestions([...questions, question]);
+				resetQuestion();
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	// Cập nhật câu hỏi
 	const editQuestion = async (quizId, questionId) => {
 		try {
 			// Gọi API cập nhật câu hỏi
@@ -275,6 +334,7 @@ const QuestionProvider = ({ children }) => {
 				updateQuestionPoint,
 				editQuestion,
 				checkCorrectAnswer,
+				getQuestionFromDocx,
 			}}
 		>
 			{children}

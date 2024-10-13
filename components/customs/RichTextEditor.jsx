@@ -95,7 +95,7 @@ const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 
 		const data = await response.json();
 		console.log(data);
-		return data.url; // URL của ảnh trên server
+		return data.metadata; // URL của ảnh trên server
 	};
 
 	// Hàm chọn ảnh từ thư viện
