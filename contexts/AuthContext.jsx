@@ -147,6 +147,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
   const changePassword = async ({ oldPassword, newPassword }) => {
     if (!userData) return;
     const { accessToken, _id: user_id } = userData;
@@ -284,6 +285,7 @@ export const AuthProvider = ({ children }) => {
     if (statusCode !== 200) return;
     return metadata;
   };
+
 
   return (
     <AuthContext.Provider
