@@ -17,8 +17,42 @@ import { useQuizProvider } from "@/contexts/QuizProvider";
 import { router, useGlobalSearchParams } from "expo-router";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const Library = () => {
+  // biến để set thời gian
+  const [isStartDatePickerVisible, setStartDatePickerVisible] = useState(false);
+  const [isEndDatePickerVisible, setEndDatePickerVisible] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  // Hiển thị và ẩn DatePicker
+  const showStartDatePicker = () => setStartDatePickerVisible(true);
+  const hideStartDatePicker = () => setStartDatePickerVisible(false);
+
+  const showEndDatePicker = () => setEndDatePickerVisible(true);
+  const hideEndDatePicker = () => setEndDatePickerVisible(false);
+
+  // Xử lý chọn ngày
+  const handleConfirmStartDate = (date) => {
+    setStartDate(date);
+    console.log("Ngày bắt đầu:", date);
+    hideStartDatePicker();
+  };
+
+  const handleConfirmEndDate = (date) => {
+    setEndDate(date);
+    console.log("Ngày kết thúc:", date);
+    hideEndDatePicker();
+  };
+
+
+  // khai báo biến để lọc
+  // const [filterStatus, setFilterStatus] = useState("");
+  // const [filterSubject, setFilterSubject] = useState("");
+  // const [filterStartTime, setFilterStartTime] = useState("");
+  // const [filterEndTime, setFilterEndTime] = useState("");
+
   //biến của bottomsheet
   const { isHiddenNavigationBar, setIsHiddenNavigationBar } = useAppProvider();
   const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
@@ -139,20 +173,26 @@ const Library = () => {
       {/* Bottom Sheet của Bộ lọc */}
       <BottomSheet visible={visibleFilterBottomSheet}>
         <View className="flex flex-col">
+          {/* search */}
+          <View className="flex-row p-4">
+            <View className="border border-gray-300 rounded-xl px-4 w-full flex-row items-center">
+              <AntDesign name="search1" size={18} color="black" />
+              <TextInput placeholder="Tìm kiếm" className="ml-2" />
+            </View>
+          </View>
+
           <View className="flex flex-row justify-around">
-            <View className="flex flex-row border border-gray rounded-lg w-[100px] h-[30px] justify-between items-center">
-              <Text className="ml-2 text-gray">Công khai</Text>
+            <View className="flex flex-row border border-gray rounded-lg w-[150px] h-[30px] justify-between items-center">
+              <TouchableOpacity>
+                <Text className="ml-2 text-gray">Công khai</Text>
+              </TouchableOpacity>
+
               <View className="mr-1">
                 <AntDesign name="caretdown" size={12} color="black" />
               </View>
             </View>
-            <View className="flex flex-row border border-gray rounded-lg w-[100px] h-[30px] justify-between items-center">
-              <Text className="ml-2 text-gray">Lớp</Text>
-              <View className="mr-1">
-                <AntDesign name="caretdown" size={12} color="black" />
-              </View>
-            </View>
-            <View className="flex flex-row border border-gray rounded-lg w-[100px] h-[30px] justify-between items-center">
+
+            <View className="flex flex-row border border-gray rounded-lg w-[150px] h-[30px] justify-between items-center">
               <Text className="ml-2 text-gray">Môn</Text>
               <View className="mr-1">
                 <AntDesign name="caretdown" size={12} color="black" />
@@ -161,19 +201,51 @@ const Library = () => {
           </View>
 
           <View className="flex flex-row justify-around mt-2">
-            <View className="flex flex-row border border-gray rounded-lg w-[150px] h-[30px] justify-between items-center">
-              <Text className="ml-2 text-gray">Thời gian bắt đầu</Text>
-            </View>
-            <View className="flex flex-row border border-gray rounded-lg w-[150px] h-[30px] justify-between items-center">
-              <Text className="ml-2 text-gray">Thời gian kết thúc</Text>
-            </View>
+            <TouchableOpacity onPress={showStartDatePicker}>
+              <View className="flex flex-row border border-gray rounded-lg w-[150px] h-[30px] justify-between items-center">
+                <DateTimePickerModal
+                  isVisible={isStartDatePickerVisible}
+                  mode="date"
+                  onConfirm={handleConfirmStartDate}
+                  onCancel={hideStartDatePicker}
+                />
+                <Text className="ml-2 text-gray">
+                  {startDate
+                    ? startDate.toLocaleDateString()
+                    : "Thời gian bắt đầu"}
+                </Text>
+                <View className="mr-1">
+                  <AntDesign name="caretdown" size={12} color="black" />
+                </View>
+              </View>
+            </TouchableOpacity>
+
+            {/* Chọn Thời gian kết thúc */}
+            <TouchableOpacity onPress={showEndDatePicker}>
+              <View className="flex flex-row border border-gray rounded-lg w-[150px] h-[30px] justify-between items-center">
+                <DateTimePickerModal
+                  isVisible={isEndDatePickerVisible}
+                  mode="date"
+                  onConfirm={handleConfirmEndDate}
+                  onCancel={hideEndDatePicker}
+                />
+                <Text className="ml-2 text-gray">
+                  {endDate
+                    ? endDate.toLocaleDateString()
+                    : "Thời gian kết thúc"}
+                </Text>
+                <View className="mr-1">
+                  <AntDesign name="caretdown" size={12} color="black" />
+                </View>
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
 
         <Button
           text="Lọc"
           otherStyles="w-full bg-gray-200 p-2 rounded-xl flex justify-center mt-4"
-          // onPress={handleCloseBottomSheet}
+          // onPress={handleFilterQuizzes}
         />
       </BottomSheet>
 
@@ -280,7 +352,9 @@ const Library = () => {
                           {quiz.quiz_description}
                         </Text>
                         <Text className="text-gray-500">
-                          {quiz.quiz_status}
+                          {quiz.quiz_status === "unpublished"
+                            ? "Riêng tư"
+                            : "Công khai"}
                         </Text>
                       </View>
                     </View>
