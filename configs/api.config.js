@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const dev = {
 	API_URL: 'http://10.0.190.249:3000/api',
@@ -28,26 +28,26 @@ const dev = {
 		QUIZ_DELETE: '/quizzes/delete',
 		QUIZ_PUBLISHED: '/quizzes/get-quizpublished',
 		QUIZ_UPLOAD_DOC: '/quizzes/docs/upload',
+		QUIZ_FILTER: '/quizzes/filter',
 		RESULT_SAVE_QUESTION: '/result/save-question',
 		RESULT_COMPLETED: '/result/complete-quiz',
 		RESULT_REVIEW: '/result/review',
 		QUIZ_UPDATE: '/quizzes/update',
 		SUBJECTS: '/subjects',
-
 	},
 };
 
 const prod = {
-  API_VERSION: {
-    V1: "/v1",
-  },
-  API_URL: "http://localhost:8000/api",
-  END_POINTS: {
-    LOGIN: "/login",
-    REGISTER: "/register",
-    LOGOUT: "/logout",
-    PROFILE: "/profile",
-  },
+	API_VERSION: {
+		V1: '/v1',
+	},
+	API_URL: 'http://localhost:8000/api',
+	END_POINTS: {
+		LOGIN: '/login',
+		REGISTER: '/register',
+		LOGOUT: '/logout',
+		PROFILE: '/profile',
+	},
 };
 
 module.exports = dev;

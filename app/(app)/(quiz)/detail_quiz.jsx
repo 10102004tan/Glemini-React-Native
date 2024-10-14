@@ -14,6 +14,7 @@ import { useGlobalSearchParams } from "expo-router";
 import { useQuizProvider } from "@/contexts/QuizProvider";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config.js";
 import QuestionOverview from "@/components/customs/QuestionOverview";
+import { ScrollView } from "react-native";
 
 const detailquizz = () => {
   // Lấy dữ liệu name, description, thumb đưa vào ô thông tin
@@ -232,26 +233,29 @@ const detailquizz = () => {
         </Text>
       </View>
 
-      <View className="flex m-4 ">
-        {/* Quiz Questions */}
-        {questionFetching ? (
-          <Text>Loading</Text>
-        ) : (
-          <View className="mt-2 p-4">
-            {currentQuizQuestion.length > 0 &&
-              currentQuizQuestion.map((question, index) => {
-                return (
-                  <QuestionOverview
-                    key={index}
-                    question={question}
-                    index={index}
-                  />
-                );
-              })}
-          </View>
-        )}
-      </View>
-      <View className="w-full h-[1px] bg-gray mt-[320px]"></View>
+      <ScrollView>
+        <View className="flex m-4 ">
+          {/* Quiz Questions */}
+          {questionFetching ? (
+            <Text>Loading</Text>
+          ) : (
+            <View className="mt-2 p-4">
+              {currentQuizQuestion.length > 0 &&
+                currentQuizQuestion.map((question, index) => {
+                  return (
+                    <QuestionOverview
+                      key={index}
+                      question={question}
+                      index={index}
+                    />
+                  );
+                })}
+            </View>
+          )}
+        </View>
+      </ScrollView>
+
+      <View className="w-full h-[1px] bg-gray"></View>
       <View className="p-2">
         <Button
           text={"Bắt đầu Quiz"}
