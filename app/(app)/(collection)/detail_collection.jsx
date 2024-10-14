@@ -2,6 +2,7 @@ import { View, Text } from "react-native";
 import React from "react";
 import Wrapper from "@/components/customs/Wrapper";
 import Button from "@/components/customs/Button";
+import { FontAwesome } from "@expo/vector-icons";
 
 const detail_collection = () => {
   return (
@@ -15,7 +16,7 @@ const detail_collection = () => {
             <Button
               // onPress={CreateNewBottomSheet}
               text={"Chỉnh sửa tên"}
-              otherStyles={"w-1/6 justify-center"}
+              otherStyles={" justify-center"}
               textStyles={"text-center text-white"}
             />
           </View>
@@ -24,7 +25,7 @@ const detail_collection = () => {
             <Button
               // onPress={CreateNewBottomSheet}
               text={"Chia sẻ"}
-              otherStyles={"w-1/4 justify-center ml-4"}
+              otherStyles={" justify-center ml-4"}
               textStyles={"text-center text-white"}
             />
           </View>
