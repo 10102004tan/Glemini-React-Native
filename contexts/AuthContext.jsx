@@ -23,7 +23,6 @@ export const AuthProvider = ({ children }) => {
 		setIsLoading(false);
 	};
 
-
 	const signIn = async ({ email, password }) => {
 		email = email.trim();
 		password = password.trim();
@@ -48,9 +47,8 @@ export const AuthProvider = ({ children }) => {
 					_id,
 					user_avatar,
 					user_email,
-					teacher_status
+					teacher_status,
 				},
-
 			} = data.metadata;
 			const dataStore = {
 				user_type,
@@ -104,7 +102,13 @@ export const AuthProvider = ({ children }) => {
 		if (data.statusCode === 200) {
 			const {
 				tokens: { accessToken, refreshToken },
-				user: { user_type, user_fullname, _id, user_avatar, user_email},
+				user: {
+					user_type,
+					user_fullname,
+					_id,
+					user_avatar,
+					user_email,
+				},
 			} = data.metadata;
 			const dataStore = {
 				user_type,
@@ -135,6 +139,7 @@ export const AuthProvider = ({ children }) => {
 			}
 		);
 		const data = await response.json();
+
 		if (data.statusCode === 200) {
 			await AsyncStorage.removeItem('userData');
 			setUserData(null);
@@ -284,11 +289,10 @@ export const AuthProvider = ({ children }) => {
 			}
 		);
 		const data = await response.json();
-		const {statusCode,metadata} = data;
+		const { statusCode, metadata } = data;
 		if (statusCode !== 200) return;
 		return metadata;
 	};
-
 
 	return (
 		<AuthContext.Provider
