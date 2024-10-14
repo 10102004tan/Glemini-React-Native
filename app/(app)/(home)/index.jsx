@@ -6,27 +6,26 @@ import { useContext, useRef, useState } from "react";
 import { useRouter } from "expo-router";
 
 export default function HomeScreen() {
-
-	const router = useRouter();
-	return (
-		<Wrapper>
-			<View className="p-4">
-				<Button
-					onPress={() => {
-						router.replace('/(app)/(home)/teacher_home_screen');
-					}}
-					text={'Teacher Home'}
-					otherStyles={'mt-4 p-4'}
-					textStyles={'text-center text-white'}
-				/>
-				<Button
-					onPress={() => {
-						router.push('/(app)/(quiz)/create_title');
-					}}
-					text={'Quizz'}
-					otherStyles={'mt-4 p-4'}
-					textStyles={'text-center text-white'}
-				/>
+  const router = useRouter();
+  return (
+    <Wrapper>
+      <View className="p-4">
+        <Button
+          onPress={() => {
+            router.replace("/(app)/(home)/teacher_home_screen");
+          }}
+          text={"Teacher Home"}
+          otherStyles={"mt-4 p-4"}
+          textStyles={"text-center text-white"}
+        />
+        <Button
+          onPress={() => {
+            router.push("/(app)/(quiz)/create_title");
+          }}
+          text={"Quizz"}
+          otherStyles={"mt-4 p-4"}
+          textStyles={"text-center text-white"}
+        />
 
         <Button
           onPress={() => {
@@ -48,7 +47,7 @@ export default function HomeScreen() {
           onPress={() => {
             router.push({
               pathname: "(app)/(quiz)/detail_quiz",
-              params: { detail_quiz: "67063f3991c48d80d64c33e8" },
+              params: { detail_quiz: "66ff90ec69a02759b89ef55c" },
             });
           }}
           text={"Quizz Detail"}
