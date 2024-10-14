@@ -5,20 +5,25 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { useAppProvider } from "@/contexts/AppProvider";
 import { FontAwesome } from "@expo/vector-icons";
 import { SelectList } from "@10102004tan/react-native-select-dropdown-v2";
-import {flex} from "nativewind/dist/postcss/to-react-native/properties/flex";
+
 
 export default function AuthLayout() {
-    const { userData } = useContext(AuthContext);
-    const { handlerLanguage,language,i18n } = useAppProvider();
-    const dataLanguage = [{
-        key: 'vi', value: i18n.t('language.vietnamese')
-    },
-    {
-        key: 'en', value: i18n.t('language.english')
-    },
-    {
-        key: 'ja', value: i18n.t('language.japanese')
-    }];
+	const { userData } = useContext(AuthContext);
+	const { handlerLanguage, language, i18n } = useAppProvider();
+	const dataLanguage = [
+		{
+			key: 'vi',
+			value: i18n.t('language.vietnamese'),
+		},
+		{
+			key: 'en',
+			value: i18n.t('language.english'),
+		},
+		{
+			key: 'ja',
+			value: i18n.t('language.japanese'),
+		},
+	];
 
 
     if (userData) {

@@ -1,13 +1,13 @@
-import {Image, Modal, Pressable, Text, TouchableOpacity, View} from "react-native";
-import {FontAwesome} from "@expo/vector-icons";
-import Icon from "react-native-vector-icons/AntDesign";
+import {Image, View} from "react-native";
 import {useContext, useEffect, useState} from "react";
 import AccoutntStatusItem from "@/components/customs/AccountStatusItem";
 import {API_VERSION,API_URL,END_POINTS} from "@/configs/api.config";
 import {AuthContext} from "@/contexts/AuthContext";
 
+
+
 export default function ProfileAuth(){
-    const {userData:{accessToken,_id}} = useContext(AuthContext);
+    const {userData:{accessToken,_id},teacherStatus} = useContext(AuthContext);
     const [urls,setUrls] = useState([]);
     useEffect(()=>{
         fetchUrls();
@@ -34,10 +34,12 @@ export default function ProfileAuth(){
         }
     }
 
+
+
     return (
         <View className={"mt-3 mx-3"}>
             <View className={"w-[100%] p-3 rounded"}>
-                <AccoutntStatusItem status={"active"}/>
+                <AccoutntStatusItem status={teacherStatus}/>
             </View>
             {
                 urls.map((url,index)=>(

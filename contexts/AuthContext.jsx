@@ -304,6 +304,7 @@ export const AuthProvider = ({ children }) => {
 				fetchStatus,
 				teacherStatus,
 				fetchDetailUser,
+				setTeacherStatus
 			}}
 		>
 			{children}

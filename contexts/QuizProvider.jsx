@@ -1,16 +1,18 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useAuthContext } from './AuthContext';
-import { API_URL, API_VERSION, END_POINTS } from '../configs/api.config';
-import { router } from 'expo-router';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useAuthContext } from "./AuthContext";
+import { API_URL, API_VERSION, END_POINTS } from "../configs/api.config";
+import { router } from "expo-router";
 
 const QuizContext = createContext();
 
 const QuizProvider = ({ children }) => {
+
 	const [quizzes, setQuizzes] = useState([]);
+	const [filterQuizzes, setFilterQuizzes] = useState([]);
 	const [needUpdate, setNeedUpdate] = useState(false);
 	const [quizFetching, setQuizFetching] = useState(false);
 	const [questionFetching, setQuestionFetching] = useState(false);
-	const [actionQuizType, setActionQuizType] = useState('create');
+	const [actionQuizType, setActionQuizType] = useState('create'); // edit, template
 	const [isSave, setIsSave] = useState(false);
 	const { userData } = useAuthContext();
 
@@ -30,13 +32,38 @@ const QuizProvider = ({ children }) => {
 			}
 		);
 		const data = await response.json();
-		// console.log(data);
 
 		if (data.statusCode === 200) {
 			setQuizzes(data.metadata);
 			setQuizFetching(false);
 		}
-		// Handle error when fetch quizzes
+	};
+
+	// Get Quiz Published
+	const getQuizzesPublished = async (subject_id) => {
+		subject_id = subject_id === 'all'  ? '' : subject_id;
+
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+
+				},
+				body: JSON.stringify({ subjectId: subject_id }),
+			}
+		);
+
+		const data = await response.json();
+		if (data.statusCode === 200) {
+			setFilterQuizzes(data.metadata)
+		}
+		else {
+			setFilterQuizzes([])
+		}
 	};
 
 	// Delete quiz
@@ -54,42 +81,42 @@ const QuizProvider = ({ children }) => {
 			}
 		);
 
-		const data = await response.json();
-		if (data.statusCode === 200) {
-			setNeedUpdate(true);
-		}
-	};
+    const data = await response.json();
+    if (data.statusCode === 200) {
+      setNeedUpdate(true);
+    }
+  };
 
-	// Update quiz
-	const updateQuiz = async (quiz) => {
-		const response = await fetch(
-			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPDATE}`,
-			{
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'x-client-id': userData._id,
-					authorization: userData.accessToken,
-				},
-				body: JSON.stringify(quiz),
-			}
-		);
+  // Update quiz
+  const updateQuiz = async (quiz) => {
+    const response = await fetch(
+      `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPDATE}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-client-id": userData._id,
+          authorization: userData.accessToken,
+        },
+        body: JSON.stringify(quiz),
+      }
+    );
 
-		const data = await response.json();
-		// console.log(JSON.stringify(data, null, 2));
-		if (data.statusCode === 200) {
-			setNeedUpdate(true);
-			setIsSave(false);
-		}
-	};
+    const data = await response.json();
+    // console.log(JSON.stringify(data, null, 2));
+    if (data.statusCode === 200) {
+      setNeedUpdate(true);
+      setIsSave(false);
+    }
+  };
 
-	// Update quiz if need
-	useEffect(() => {
-		if (needUpdate) {
-			fetchQuizzes();
-			setNeedUpdate(false);
-		}
-	}, [needUpdate]);
+  // Update quiz if need
+  useEffect(() => {
+    if (needUpdate) {
+      fetchQuizzes();
+      setNeedUpdate(false);
+    }
+  }, [needUpdate]);
 
 	// Get all quizzes of the user
 	useEffect(() => {
@@ -115,6 +142,9 @@ const QuizProvider = ({ children }) => {
 				setQuizFetching,
 				isSave,
 				setIsSave,
+				getQuizzesPublished,
+				filterQuizzes
+
 			}}
 		>
 			{children}
@@ -123,7 +153,7 @@ const QuizProvider = ({ children }) => {
 };
 
 export const useQuizProvider = () => {
-	return useContext(QuizContext);
+  return useContext(QuizContext);
 };
 
 export default QuizProvider;

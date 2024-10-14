@@ -105,6 +105,9 @@
             "buttonReview": "Review"
         }
     },
+    "student_homepage": {
+        "explore": "Explore"
+    },
     "profile":{
         "title":"Profile",
         "fullname":"Fullname",

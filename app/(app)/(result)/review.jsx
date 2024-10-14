@@ -4,7 +4,6 @@ import { useRoute } from '@react-navigation/native';
 import Button from '@/components/customs/Button';
 import { useAppProvider } from '@/contexts/AppProvider';
 import Icon from 'react-native-vector-icons/AntDesign';
-import Icon2 from 'react-native-vector-icons/Entypo'
 import { useNavigation } from '@react-navigation/native';
 import QuestionResultItem from '@/components/customs/QuestionResultItem';
 

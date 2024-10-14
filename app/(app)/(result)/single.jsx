@@ -9,7 +9,7 @@ import { useAppProvider } from '@/contexts/AppProvider';
 import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
 import { Audio } from 'expo-av';
 
-const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleRestart }) => {
+const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleRestart, quizId }) => {
 
 	const navigation = useNavigation()
 	const { i18n } = useAppProvider()
@@ -30,7 +30,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 						authorization: userData.accessToken,
 					},
 					body: JSON.stringify({
-						quiz_id: '67029b912635f0e8ffc5eb2c',
+						quiz_id: quizId,
 						user_id:  userData._id,
 						// Bổ sung ID_EXECIRCE sau
 					}),

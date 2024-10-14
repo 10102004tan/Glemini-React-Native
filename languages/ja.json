@@ -106,6 +106,9 @@
             "buttonReview": "見直す"
         }
     },
+    "student_homepage": {
+        "explore": "発見する"
+    },
     "profile":{
         "title":"プロフィール",
         "fullname":"フルネーム",
