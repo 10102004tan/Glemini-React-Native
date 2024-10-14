@@ -287,25 +287,27 @@ export const AuthProvider = ({ children }) => {
   };
 
 
-  return (
-    <AuthContext.Provider
-      value={{
-        signIn,
-        signUp,
-        signOut,
-        isLoading,
-        setUserData,
-        userData,
-        changePassword,
-        processAccessTokenExpired,
-        fetchStatus,
-        teacherStatus,
-        fetchDetailUser,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+	return (
+		<AuthContext.Provider
+			value={{
+				signIn,
+				signUp,
+				signOut,
+				isLoading,
+				setUserData,
+				userData,
+				changePassword,
+				processAccessTokenExpired,
+				fetchStatus,
+				teacherStatus,
+				fetchDetailUser,
+				setTeacherStatus
+			}}
+		>
+			{children}
+		</AuthContext.Provider>
+	);
+
 };
 
 export const useAuthContext = () => {

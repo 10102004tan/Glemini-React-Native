@@ -1,7 +1,7 @@
 import { Redirect, Stack } from "expo-router";
 import React, { useContext, useEffect } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
-import { Text, TouchableOpacity } from "react-native";
+import {Alert, Text, TouchableOpacity} from "react-native";
 import { useGlobalSearchParams } from "expo-router";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { View } from "react-native";
@@ -10,17 +10,28 @@ import { useAppProvider } from "@/contexts/AppProvider";
 import { useQuizProvider } from "@/contexts/QuizProvider";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import SpinningIcon from "@/components/loadings/SpinningIcon";
+import Toast from "react-native-toast-message";
+
+
 export default function AppRootLayout() {
-  const { userData, isLoading, fetchStatus } = useContext(AuthContext);
+
+  const { userData, isLoading, fetchStatus,setTeacherStatus} = useContext(AuthContext);
   const { isSave, setIsSave } = useQuizProvider();
-  const { i18n } = useAppProvider();
+  const { i18n,socket } = useAppProvider();
   const { title } = useGlobalSearchParams();
 
   useEffect(() => {
     if (userData) {
       fetchStatus();
     }
+
   }, [userData]);
+
+    socket.on("update-status", ({user_id, teacher_status}) => {
+        if (userData._id === user_id){
+            setTeacherStatus(teacher_status);
+        }
+    });
 
   if (isLoading) {
     return <Text>Loading...</Text>;
@@ -59,6 +70,13 @@ export default function AppRootLayout() {
 				}}
 			/>
 
+
+			<Stack.Screen
+				name="profile-auth"
+				options={{
+					headerTitle: i18n.t('profile.infoAuth'),
+				}}
+			/>
 
       <Stack.Screen
         name="settings"

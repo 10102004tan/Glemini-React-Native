@@ -31,14 +31,13 @@ export default function AuthLayout() {
     }
     return (
         <View className="bg-white flex-1 h-[100%]">
-
             <View className="bg-white rounded-tl-[14px] rounded-[14px] px-4">
                 <View className="mt-[50px] pb-3">
                     <SelectList isFixV2={true} arrowicon={<FontAwesome name="chevron-down" size={12} color={'black'} />}  defaultOption={{ key:language, value:i18n.t('language.changeLanguage') }} search={false} setSelected={(key) => {
                         handlerLanguage(key);
                     }} data={dataLanguage}/>
                 </View>
-                <KeyboardAvoidingView  behavior="padding" enabled>
+                <KeyboardAvoidingView behavior="padding" enabled>
                     <ScrollView >
                         <Slot />
                     </ScrollView>

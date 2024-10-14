@@ -5,6 +5,8 @@ import ja from '../languages/ja.json';
 import vi from '../languages/vi.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const AppContext = createContext();
+import socket from "../utils/socket";
+
 
 // Example about a context provider in React Native
 const AppProvider = ({ children }) => {
@@ -57,7 +59,8 @@ const AppProvider = ({ children }) => {
 				setLanguage,
 				titleCurrent,
 				setTitleCurrent,
-				handlerLanguage
+				handlerLanguage,
+				socket
 			}}
 		>
 			{children}

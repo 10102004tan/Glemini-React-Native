@@ -122,7 +122,8 @@
         "school":"Trường học",
         "editNow":"Chinh sửa ngay",
         "save":"Lưu",
-        "edit":"Sửa"
+        "edit":"Sửa",
+        "infoAuth": "Thông tin Xác thực"
     },
     "settings":{
         "title":"Cài đặt",
@@ -142,5 +143,5 @@
     },
     "report":{
         "title":"Báo cáo"
-    }
+    },
 }

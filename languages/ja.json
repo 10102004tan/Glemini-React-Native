@@ -119,7 +119,8 @@
         "school":"学校",
         "editNow":"今すぐ編集",
         "save":"セーブ",
-        "edit":"編集"
+        "edit":"編集",
+        "infoAuth": "認証情報"
     },
     "settings":{
         "title":"設定"

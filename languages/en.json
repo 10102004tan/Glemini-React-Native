@@ -118,7 +118,8 @@
         "edit":"Edit",
         "save":"Save",
         "school":"School",
-        "editNow":"Edit Now"
+        "editNow":"Edit Now",
+        "infoAuth":"Authentication Information"
     },
     "settings":{
         "title":"Settings"
