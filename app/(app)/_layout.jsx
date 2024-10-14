@@ -67,6 +67,13 @@ export default function AppRootLayout() {
 			/>
 
 			<Stack.Screen
+				name="profile-auth"
+				options={{
+					headerTitle: i18n.t('profile.infoAuth'),
+				}}
+			/>
+
+			<Stack.Screen
 				name="(quiz)/list"
 				options={{
 					headerTitle: 'Danh sách các quiz',

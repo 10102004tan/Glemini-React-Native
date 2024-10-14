@@ -118,12 +118,12 @@ export default function ProfileScreen() {
 					onPress={() => {
 						router.push({
 							pathname: '/change-password',
-							params: { title: 'Mật khẩu' },
 						});
 					}}
 					title={i18n.t('profile.password')}
 					description={i18n.t('profile.editNow')}
 				/>
+				<CardSetting onPress={()=>{router.push({pathname:'/profile-auth'})}} title={i18n.t('profile.infoAuth')} description={i18n.t('profile.editNow')} />
 				{isEditAvatar && (<Pressable onPress={updateAvatarHandler}>
 					<View className="py-3 border mt-5">
 						<Text className="text-center">{i18n.t('profile.save')}</Text>
