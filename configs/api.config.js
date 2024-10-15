@@ -1,7 +1,7 @@
 'use strict';
 
 const dev = {
-	API_URL: 'http://10.0.190.249:3000/api',
+	API_URL: 'http://192.168.1.8:8000/api',
 	API_VERSION: {
 		V1: '/v1',
 	},
@@ -13,7 +13,7 @@ const dev = {
 		REFRESH_TOKEN: '/refresh-token',
 		PROFILE: '/user/profile',
 		PROFILE_EDIT: '/user/profile',
-		PROFILE_TEACHER_IMAGES:'/user/profile/verification/images',
+		PROFILE_TEACHER_IMAGES: '/user/profile/verification/images',
 		CHANGE_PASSWORD: '/auth/change-password',
 		USER_STATUS: '/auth/status',
 		GET_QUIZ_BY_USER: '/quizzes/get-by-user',
@@ -28,6 +28,9 @@ const dev = {
 		QUIZ_DELETE: '/quizzes/delete',
 		QUIZ_PUBLISHED: '/quizzes/get-quizpublished',
 		QUIZ_UPLOAD_DOC: '/quizzes/docs/upload',
+		QUIZ_UPLOAD_MD: '/quizzes/md/upload',
+		QUIZ_GET_DOCX_TEMPLATE: '/quizzes/get-templates/template_docx',
+		QUIZ_GET_MD_TEMPLATE: '/quizzes/get-templates/template_md',
 		QUIZ_FILTER: '/quizzes/filter',
 		RESULT_SAVE_QUESTION: '/result/save-question',
 		RESULT_COMPLETED: '/result/complete-quiz',
