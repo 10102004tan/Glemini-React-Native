@@ -13,6 +13,7 @@ import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import * as IntentLauncher from 'expo-intent-launcher';
 import { Platform, Linking } from 'react-native';
+import { shareAsync } from 'expo-sharing';
 
 const DemoCreateQuizByTemplate = () => {
 	const { id } = useGlobalSearchParams();
@@ -78,26 +79,30 @@ const DemoCreateQuizByTemplate = () => {
 	};
 
 	const uploadFile = async (fileUri, mimeType) => {
+		let nameFile = 'template_doc.docx';
+		let path = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_DOC}`;
+
+		if (mimeType === 'text/markdown') {
+			nameFile = 'template_md.md';
+			path = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_MD}`;
+		}
 		const formData = new FormData();
 		formData.append('file', {
 			uri: fileUri,
-			name: 'template_doc.docx',
+			name: nameFile,
 			type: mimeType,
 		});
 
 		try {
-			const response = await fetch(
-				`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_DOC}`,
-				{
-					method: 'POST',
-					body: formData, // Directly pass the formData object
-					headers: {
-						'x-client-id': userData._id,
-						Authorization: userData.accessToken,
-						'Content-Type': 'multipart/form-data',
-					},
-				}
-			);
+			const response = await fetch(path, {
+				method: 'POST',
+				body: formData, // Directly pass the formData object
+				headers: {
+					'x-client-id': userData._id,
+					Authorization: userData.accessToken,
+					'Content-Type': 'multipart/form-data',
+				},
+			});
 
 			const data = await response.json();
 			setUploadStatus(data.message);
@@ -164,13 +169,18 @@ const DemoCreateQuizByTemplate = () => {
 				fileUrl,
 				fileUri
 			);
+
 			if (!downloadResult || !downloadResult.uri) {
 				throw new Error('Failed to download file');
 			}
 			console.log('File downloaded to:', downloadResult.uri);
+			const save = await shareAsync(downloadResult.uri);
 
-			// Mở file sau khi tải xong
-			openFile(downloadResult.uri);
+			if (save) {
+				// Mở file sau khi tải xong
+				openFile(downloadResult.uri);
+			}
+
 			Alert.alert('Success', 'File downloaded and opened successfully');
 		} catch (error) {
 			console.error('Error:', error);
@@ -183,6 +193,7 @@ const DemoCreateQuizByTemplate = () => {
 
 	return (
 		<ScrollView className="px-4">
+			{uploadStatus && <Text>{uploadStatus}</Text>}
 			<View className="flex items-center justify-center flex-1">
 				<View
 					className="w-full p-4 flex items-center justify-center rounded-2xl"
