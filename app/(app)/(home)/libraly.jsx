@@ -1,329 +1,446 @@
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  Animated,
-  Image,
-} from "react-native";
-import React, { useEffect, useState } from "react";
-import Wrapper from "@/components/customs/Wrapper";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
-import Button from "@/components/customs/Button";
-import { useAppProvider } from "@/contexts/AppProvider";
-import BottomSheet from "@/components/customs/BottomSheet";
-import Overlay from "@/components/customs/Overlay";
-import { useQuizProvider } from "@/contexts/QuizProvider";
-import { router, useGlobalSearchParams } from "expo-router";
-import { useAuthContext } from "@/contexts/AuthContext";
-import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
+	View,
+	Text,
+	TouchableOpacity,
+	TextInput,
+	Animated,
+	Image,
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import Wrapper from '@/components/customs/Wrapper';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
+import Button from '@/components/customs/Button';
+import { useAppProvider } from '@/contexts/AppProvider';
+import BottomSheet from '@/components/customs/BottomSheet';
+import Overlay from '@/components/customs/Overlay';
+import { useQuizProvider } from '@/contexts/QuizProvider';
+import { router, useGlobalSearchParams } from 'expo-router';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 const Library = () => {
-  //biến của bottomsheet
-  const { isHiddenNavigationBar, setIsHiddenNavigationBar } = useAppProvider();
-  const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
-  const [visibleCreateNewBottomSheet, setVisibleCreateNewBottomSheet] =
-    useState(false);
+	// biến để set thời gian
+	const [isStartDatePickerVisible, setStartDatePickerVisible] =
+		useState(false);
+	const [isEndDatePickerVisible, setEndDatePickerVisible] = useState(false);
+	const [startDate, setStartDate] = useState(null);
+	const [endDate, setEndDate] = useState(null);
 
-  const [visibleFilterBottomSheet, setVisibleFilterBottomSheet] =
-    useState(false);
+	// Hiển thị và ẩn DatePicker
+	const showStartDatePicker = () => setStartDatePickerVisible(true);
+	const hideStartDatePicker = () => setStartDatePickerVisible(false);
 
-  // Tên bộ sưu tập
-  const [newCollectionName, setNewCollectionName] = useState("");
-  // tab hiện tại: 'library' hoặc 'collection'
-  const [activeTab, setActiveTab] = useState("library");
-  // di chuyển dòng bôi đen
-  const [translateValue] = useState(new Animated.Value(0));
-  const [listNameCollection, setListNameCollection] = useState([]);
+	const showEndDatePicker = () => setEndDatePickerVisible(true);
+	const hideEndDatePicker = () => setEndDatePickerVisible(false);
 
-  // lấy list thông tin của quiz, thông tin name, description, status,...
-  const { quizzes } = useQuizProvider();
+	// Xử lý chọn ngày
+	const handleConfirmStartDate = (date) => {
+		setStartDate(date);
+		console.log('Ngày bắt đầu:', date);
+		hideStartDatePicker();
+	};
 
-  // BottomSheet
-  // Bộ sưu tập
-  const OpenBottomSheet = () => {
-    setIsHiddenNavigationBar(true);
-    setVisibleBottomSheet(true);
-  };
-  //Thư viện của tôi
-  const CreateNewBottomSheet = () => {
-    setIsHiddenNavigationBar(true);
-    setVisibleCreateNewBottomSheet(true);
-  };
-  //filter
-  const FilterBottomSheet = () => {
-    setIsHiddenNavigationBar(true);
-    setVisibleFilterBottomSheet(true);
-  };
+	const handleConfirmEndDate = (date) => {
+		setEndDate(date);
+		console.log('Ngày kết thúc:', date);
+		hideEndDatePicker();
+	};
 
-  const handleCloseBottomSheet = () => {
-    setIsHiddenNavigationBar(false);
-    setVisibleBottomSheet(false);
-    setVisibleCreateNewBottomSheet(false);
-    setVisibleFilterBottomSheet(false);
-  };
+	// khai báo biến để lọc
+	// const [filterStatus, setFilterStatus] = useState("");
+	// const [filterSubject, setFilterSubject] = useState("");
+	// const [filterStartTime, setFilterStartTime] = useState("");
+	// const [filterEndTime, setFilterEndTime] = useState("");
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
+	//biến của bottomsheet
+	const { isHiddenNavigationBar, setIsHiddenNavigationBar } =
+		useAppProvider();
+	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
+	const [visibleCreateNewBottomSheet, setVisibleCreateNewBottomSheet] =
+		useState(false);
 
-    // Di chuyển dòng bôi đen dựa trên tab
-    Animated.timing(translateValue, {
-      toValue: tab === "library" ? 0 : 200, // Giá trị tương ứng với vị trí của từng tab
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  };
+	const [visibleFilterBottomSheet, setVisibleFilterBottomSheet] =
+		useState(false);
 
-  return (
-    <Wrapper>
-      {/* Overlay */}
-      {(visibleBottomSheet ||
-        visibleCreateNewBottomSheet ||
-        visibleFilterBottomSheet) && (
-        <Overlay onPress={handleCloseBottomSheet} />
-      )}
+	// Tên bộ sưu tập
+	const [newCollectionName, setNewCollectionName] = useState('');
+	// tab hiện tại: 'library' hoặc 'collection'
+	const [activeTab, setActiveTab] = useState('library');
+	// di chuyển dòng bôi đen
+	const [translateValue] = useState(new Animated.Value(0));
+	const [listNameCollection, setListNameCollection] = useState([]);
 
-      {/* Bottom Sheet của Thư viện của tôi */}
-      <BottomSheet visible={visibleCreateNewBottomSheet}>
-        <View className="flex-col">
-          <View className="m-1 w-full flex flex-row items-center justify-start">
-            <Button
-              text="+"
-              otherStyles="w-1/6 flex item-center justify-center "
-              onPress={() => {
-                router.push("/(app)/(quiz)/create_title");
-              }}
-            />
-            <Text className="flex justify-center items-center ml-2 font-bold text-[17px]">
-              Tạo từ đầu
-            </Text>
-          </View>
-          <Text className="text-gray">
-            Sử dụng các loại câu hỏi tương tác hoặc chọn câu hỏi hiện có từ Thư
-            viện Quizizz{" "}
-          </Text>
-        </View>
-      </BottomSheet>
+	// lấy list thông tin của quiz, thông tin name, description, status,...
+	const { quizzes } = useQuizProvider();
 
-      {/* Bottom Sheet của Bộ sưu tập */}
-      <BottomSheet visible={visibleBottomSheet}>
-        <View className="m-3">
-          <Text className="text-gray mb-2">Tên bộ sưu tập</Text>
-          <TextInput
-            value={newCollectionName}
-            onChangeText={setNewCollectionName}
-            placeholder="Nhập tên bộ sưu tập"
-            className="border border-gray w-[350px] h-[50px] rounded-xl px-4"
-          />
-        </View>
-        <View className="flex flex-row justify-between m-3">
-          <Button
-            text="Hủy"
-            otherStyles="w-[45%] bg-gray-200 p-2 rounded-xl flex justify-center"
-            onPress={handleCloseBottomSheet}
-          />
-          <Button
-            text="Chọn"
-            otherStyles="w-[50%] bg-blue-500 p-2 rounded-xl flex justify-center"
-            textStyles="text-white text-center"
-            onPress={() => {
-              // console.log("Tên bộ sưu tập:", newCollectionName);
-              setListNameCollection(newCollectionName);
-              // Đóng BottomSheet sau khi lưu
-              handleCloseBottomSheet();
-            }}
-          />
-        </View>
-      </BottomSheet>
+	useEffect(() => {
+		console.log(startDate, endDate);
+	}, [startDate, endDate]);
 
-      {/* Bottom Sheet của Bộ lọc */}
-      <BottomSheet visible={visibleFilterBottomSheet}>
-        <View className="flex flex-col">
-          <View className="flex flex-row justify-around">
-            <View className="flex flex-row border border-gray rounded-lg w-[100px] h-[30px] justify-between items-center">
-              <Text className="ml-2 text-gray">Công khai</Text>
-              <View className="mr-1">
-                <AntDesign name="caretdown" size={12} color="black" />
-              </View>
-            </View>
-            <View className="flex flex-row border border-gray rounded-lg w-[100px] h-[30px] justify-between items-center">
-              <Text className="ml-2 text-gray">Lớp</Text>
-              <View className="mr-1">
-                <AntDesign name="caretdown" size={12} color="black" />
-              </View>
-            </View>
-            <View className="flex flex-row border border-gray rounded-lg w-[100px] h-[30px] justify-between items-center">
-              <Text className="ml-2 text-gray">Môn</Text>
-              <View className="mr-1">
-                <AntDesign name="caretdown" size={12} color="black" />
-              </View>
-            </View>
-          </View>
+	// BottomSheet
+	// Bộ sưu tập
+	const OpenBottomSheet = () => {
+		setIsHiddenNavigationBar(true);
+		setVisibleBottomSheet(true);
+	};
+	//Thư viện của tôi
+	const CreateNewBottomSheet = () => {
+		setIsHiddenNavigationBar(true);
+		setVisibleCreateNewBottomSheet(true);
+	};
+	//filter
+	const FilterBottomSheet = () => {
+		setIsHiddenNavigationBar(true);
+		setVisibleFilterBottomSheet(true);
+	};
 
-          <View className="flex flex-row justify-around mt-2">
-            <View className="flex flex-row border border-gray rounded-lg w-[150px] h-[30px] justify-between items-center">
-              <Text className="ml-2 text-gray">Thời gian bắt đầu</Text>
-            </View>
-            <View className="flex flex-row border border-gray rounded-lg w-[150px] h-[30px] justify-between items-center">
-              <Text className="ml-2 text-gray">Thời gian kết thúc</Text>
-            </View>
-          </View>
-        </View>
+	const handleCloseBottomSheet = () => {
+		setIsHiddenNavigationBar(false);
+		setVisibleBottomSheet(false);
+		setVisibleCreateNewBottomSheet(false);
+		setVisibleFilterBottomSheet(false);
+	};
 
-        <Button
-          text="Lọc"
-          otherStyles="w-full bg-gray-200 p-2 rounded-xl flex justify-center mt-4"
-          // onPress={handleCloseBottomSheet}
-        />
-      </BottomSheet>
+	const handleTabChange = (tab) => {
+		setActiveTab(tab);
 
-      <View className="flex-1">
-        {/* Header */}
-        {/* <View className="flex-row justify-between p-4">
+		// Di chuyển dòng bôi đen dựa trên tab
+		Animated.timing(translateValue, {
+			toValue: tab === 'library' ? 0 : 200, // Giá trị tương ứng với vị trí của từng tab
+			duration: 300,
+			useNativeDriver: true,
+		}).start();
+	};
+
+	return (
+		<Wrapper>
+			{/* Overlay */}
+			{(visibleBottomSheet ||
+				visibleCreateNewBottomSheet ||
+				visibleFilterBottomSheet) && (
+				<Overlay onPress={handleCloseBottomSheet} />
+			)}
+
+			{/* Bottom Sheet của Thư viện của tôi */}
+			<BottomSheet visible={visibleCreateNewBottomSheet}>
+				<View className="flex-col">
+					<View className="m-1 w-full flex flex-row items-center justify-start">
+						<Button
+							text="+"
+							otherStyles="w-1/6 flex item-center justify-center "
+							onPress={() => {
+								router.push('/(app)/(quiz)/create_title');
+							}}
+						/>
+						<Text className="flex justify-center items-center ml-2 font-bold text-[17px]">
+							Tạo từ đầu
+						</Text>
+					</View>
+					<Text className="text-gray">
+						Sử dụng các loại câu hỏi tương tác hoặc chọn câu hỏi
+						hiện có từ Thư viện Quizizz{' '}
+					</Text>
+				</View>
+			</BottomSheet>
+
+			{/* Bottom Sheet của Bộ sưu tập */}
+			<BottomSheet visible={visibleBottomSheet}>
+				<View className="m-3">
+					<Text className="text-gray mb-2">Tên bộ sưu tập</Text>
+					<TextInput
+						value={newCollectionName}
+						onChangeText={setNewCollectionName}
+						placeholder="Nhập tên bộ sưu tập"
+						className="border border-gray w-[350px] h-[50px] rounded-xl px-4"
+					/>
+				</View>
+				<View className="flex flex-row justify-between m-3">
+					<Button
+						text="Hủy"
+						otherStyles="w-[45%] bg-gray-200 p-2 rounded-xl flex justify-center"
+						onPress={handleCloseBottomSheet}
+					/>
+					<Button
+						text="Chọn"
+						otherStyles="w-[50%] bg-blue-500 p-2 rounded-xl flex justify-center"
+						textStyles="text-white text-center"
+						onPress={() => {
+							// console.log("Tên bộ sưu tập:", newCollectionName);
+							setListNameCollection(newCollectionName);
+							// Đóng BottomSheet sau khi lưu
+							handleCloseBottomSheet();
+						}}
+					/>
+				</View>
+			</BottomSheet>
+
+			{/* Bottom Sheet của Bộ lọc */}
+			<BottomSheet visible={visibleFilterBottomSheet}>
+				<View className="flex flex-col">
+					{/* search */}
+					<View className="flex-row p-4">
+						<View className="border border-gray-300 rounded-xl px-4 w-full flex-row items-center">
+							<AntDesign name="search1" size={18} color="black" />
+							<TextInput
+								placeholder="Tìm kiếm"
+								className="ml-2"
+							/>
+						</View>
+					</View>
+
+					<View className="flex flex-row justify-around">
+						<View className="flex flex-row border border-gray rounded-lg w-[150px] h-[30px] justify-between items-center">
+							<TouchableOpacity>
+								<Text className="ml-2 text-gray">
+									Công khai
+								</Text>
+							</TouchableOpacity>
+
+							<View className="mr-1">
+								<AntDesign
+									name="caretdown"
+									size={12}
+									color="black"
+								/>
+							</View>
+						</View>
+
+						<View className="flex flex-row border border-gray rounded-lg w-[150px] h-[30px] justify-between items-center">
+							<Text className="ml-2 text-gray">Môn</Text>
+							<View className="mr-1">
+								<AntDesign
+									name="caretdown"
+									size={12}
+									color="black"
+								/>
+							</View>
+						</View>
+					</View>
+
+					<View className="flex flex-row justify-around mt-2">
+						<TouchableOpacity onPress={showStartDatePicker}>
+							<View className="flex flex-row border border-gray rounded-lg w-[150px] h-[30px] justify-between items-center">
+								<DateTimePickerModal
+									isVisible={isStartDatePickerVisible}
+									mode="date"
+									onConfirm={handleConfirmStartDate}
+									onCancel={hideStartDatePicker}
+								/>
+								<Text className="ml-2 text-gray">
+									{startDate
+										? startDate.toLocaleDateString()
+										: 'Thời gian bắt đầu'}
+								</Text>
+								<View className="mr-1">
+									<AntDesign
+										name="caretdown"
+										size={12}
+										color="black"
+									/>
+								</View>
+							</View>
+						</TouchableOpacity>
+
+						{/* Chọn Thời gian kết thúc */}
+						<TouchableOpacity onPress={showEndDatePicker}>
+							<View className="flex flex-row border border-gray rounded-lg w-[150px] h-[30px] justify-between items-center">
+								<DateTimePickerModal
+									isVisible={isEndDatePickerVisible}
+									mode="date"
+									onConfirm={handleConfirmEndDate}
+									onCancel={hideEndDatePicker}
+								/>
+								<Text className="ml-2 text-gray">
+									{endDate
+										? endDate.toLocaleDateString()
+										: 'Thời gian kết thúc'}
+								</Text>
+								<View className="mr-1">
+									<AntDesign
+										name="caretdown"
+										size={12}
+										color="black"
+									/>
+								</View>
+							</View>
+						</TouchableOpacity>
+					</View>
+				</View>
+
+				<Button
+					text="Lọc"
+					otherStyles="w-full bg-gray-200 p-2 rounded-xl flex justify-center mt-4"
+					// onPress={handleFilterQuizzes}
+				/>
+			</BottomSheet>
+
+			<View className="flex-1">
+				{/* Header */}
+				{/* <View className="flex-row justify-between p-4">
           <View className="border border-gray-300 rounded-xl px-4 w-[120px] flex-row items-center justify-between">
             <AntDesign name="search1" size={18} color="black" />
             <TextInput placeholder="Tìm kiếm" className="ml-2" />
           </View>
         </View> */}
 
-        {/* Tabs */}
-        <View className="flex flex-row justify-around mb-2">
-          {/* Tab Thư viện của tôi */}
-          <TouchableOpacity onPress={() => handleTabChange("library")}>
-            <Text
-              className={`font-normal text-[18px] ${
-                activeTab === "library"
-                  ? "text-black font-bold"
-                  : "text-gray-500"
-              }`}
-            >
-              Thư viện của tôi
-            </Text>
-          </TouchableOpacity>
+				{/* Tabs */}
+				<View className="flex flex-row justify-around mb-2">
+					{/* Tab Thư viện của tôi */}
+					<TouchableOpacity
+						onPress={() => handleTabChange('library')}
+					>
+						<Text
+							className={`font-normal text-[18px] ${
+								activeTab === 'library'
+									? 'text-black font-bold'
+									: 'text-gray-500'
+							}`}
+						>
+							Thư viện của tôi
+						</Text>
+					</TouchableOpacity>
 
-          {/* Tab Bộ sưu tập */}
-          <TouchableOpacity onPress={() => handleTabChange("collection")}>
-            <Text
-              className={`font-normal text-[18px] ${
-                activeTab === "collection"
-                  ? "text-black font-bold"
-                  : "text-gray-500"
-              }`}
-            >
-              Bộ sưu tập
-            </Text>
-          </TouchableOpacity>
-        </View>
+					{/* Tab Bộ sưu tập */}
+					<TouchableOpacity
+						onPress={() => handleTabChange('collection')}
+					>
+						<Text
+							className={`font-normal text-[18px] ${
+								activeTab === 'collection'
+									? 'text-black font-bold'
+									: 'text-gray-500'
+							}`}
+						>
+							Bộ sưu tập
+						</Text>
+					</TouchableOpacity>
+				</View>
 
-        {/* Đường phân cách dưới tab */}
-        <View>
-          <Animated.View
-            style={{
-              transform: [{ translateX: translateValue }],
-              width: "50%",
-              height: 2,
-              backgroundColor: "black",
-            }}
-          />
-          <View className="bg-gray h-[1px]"></View>
-        </View>
+				{/* Đường phân cách dưới tab */}
+				<View>
+					<Animated.View
+						style={{
+							transform: [{ translateX: translateValue }],
+							width: '50%',
+							height: 2,
+							backgroundColor: 'black',
+						}}
+					/>
+					<View className="bg-gray h-[1px]"></View>
+				</View>
 
-        {/* Nội dung dựa trên tab được chọn */}
-        {activeTab === "library" ? (
-          <View className="p-3">
-            {/* Nội dung của Thư viện của tôi */}
+				{/* Nội dung dựa trên tab được chọn */}
+				{activeTab === 'library' ? (
+					<View className="p-3">
+						{/* Nội dung của Thư viện của tôi */}
 
-            <View className="flex flex-row justify-between">
-              <Button
-                onPress={CreateNewBottomSheet}
-                text={"Tạo mới"}
-                otherStyles={"w-1/4 justify-center mb-12"}
-                textStyles={"text-center text-white"}
-              />
+						<View className="flex flex-row justify-between">
+							<Button
+								onPress={CreateNewBottomSheet}
+								text={'Tạo mới'}
+								otherStyles={'w-1/4 justify-center mb-12'}
+								textStyles={'text-center text-white'}
+							/>
 
-              {/* bộ lọc */}
-              <TouchableOpacity
-                className="border border-gray w-[75px] h-[30px] justify-between items-center rounded-lg flex-row mr-2"
-                onPress={FilterBottomSheet}
-              >
-                <Text className="ml-2 font-bold">Bộ lọc</Text>
-                <View className="mt-[2px] mr-1">
-                  <Ionicons name="options-outline" size={16} color="black" />
-                </View>
-              </TouchableOpacity>
-            </View>
+							{/* bộ lọc */}
+							<TouchableOpacity
+								className="border border-gray w-[75px] h-[30px] justify-between items-center rounded-lg flex-row mr-2"
+								onPress={FilterBottomSheet}
+							>
+								<Text className="ml-2 font-bold">Bộ lọc</Text>
+								<View className="mt-[2px] mr-1">
+									<Ionicons
+										name="options-outline"
+										size={16}
+										color="black"
+									/>
+								</View>
+							</TouchableOpacity>
+						</View>
 
-            {quizzes.length > 0 &&
-              quizzes.map((quiz) => (
-                <View className="h-[100px] w-full border rounded-xl flex-row mb-3">
-                  <TouchableOpacity
-                    key={quiz._id}
-                    onPress={() => {
-                      router.push({
-                        pathname: "/(app)/(quiz)/overview",
-                        params: { id: quiz._id },
-                      });
-                    }}
-                  >
-                    <View className="flex flex-row m-2">
-                      <View className="flex justify-center items-center">
-                        <Image
-                          source={{ uri: quiz.quiz_thumb }}
-                          className="w-[80px] h-[80px] rounded-xl"
-                        ></Image>
-                      </View>
-                      <View className="flex flex-col ml-4 justify-around">
-                        <Text className="text-lg font-bold">
-                          {quiz.quiz_name}
-                        </Text>
-                        <Text className="text-gray-500">
-                          {quiz.quiz_description}
-                        </Text>
-                        <Text className="text-gray-500">
-                          {quiz.quiz_status}
-                        </Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              ))}
-          </View>
-        ) : (
-          <View className="p-3">
-            {/* Danh sách các bộ sưu tập */}
-            <Button
-              onPress={OpenBottomSheet}
-              text={"Tạo bộ sưu tập mới"}
-              otherStyles={"w-1/2 justify-center mb-4"}
-              textStyles={"text-center text-white"}
-            />
+						{quizzes.length > 0 &&
+							quizzes.map((quiz) => (
+								<View className="h-[100px] w-full border rounded-xl flex-row mb-3">
+									<TouchableOpacity
+										key={quiz._id}
+										onPress={() => {
+											router.push({
+												pathname:
+													'/(app)/(quiz)/overview',
+												params: { id: quiz._id },
+											});
+										}}
+									>
+										<View className="flex flex-row m-2">
+											<View className="flex justify-center items-center">
+												<Image
+													source={{
+														uri: quiz.quiz_thumb,
+													}}
+													className="w-[80px] h-[80px] rounded-xl"
+												></Image>
+											</View>
+											<View className="flex flex-col ml-4 justify-around">
+												<Text className="text-lg font-bold">
+													{quiz.quiz_name}
+												</Text>
+												<Text className="text-gray-500">
+													{quiz.quiz_description}
+												</Text>
+												<Text className="text-gray-500">
+													{quiz.quiz_status ===
+													'unpublished'
+														? 'Riêng tư'
+														: 'Công khai'}
+												</Text>
+											</View>
+										</View>
+									</TouchableOpacity>
+								</View>
+							))}
+					</View>
+				) : (
+					<View className="p-3">
+						{/* Danh sách các bộ sưu tập */}
+						<Button
+							onPress={OpenBottomSheet}
+							text={'Tạo bộ sưu tập mới'}
+							otherStyles={'w-1/2 justify-center mb-4'}
+							textStyles={'text-center text-white'}
+						/>
 
-            {quizzes.length > 0 &&
-              quizzes.map((quiz) => (
-                <TouchableOpacity
-                  key={quiz._id}
-                  onPress={() => {
-                    router.push({
-                      pathname: "/(app)/(collection)/detail_collection",
-                      params: { id: quiz._id },
-                    });
-                  }}
-                >
-                  <View className="flex flex-row items-center justify-between m-4">
-                    <Text>{quiz.quiz_name}</Text>
-                    <Text>{listNameCollection}</Text>
-                    <TouchableOpacity>
-                      <AntDesign name="right" size={18} color="black" />
-                    </TouchableOpacity>
-                  </View>
-                  <View className="h-[1px] w-full bg-gray"></View>
-                </TouchableOpacity>
-              ))}
-          </View>
-        )}
-      </View>
-    </Wrapper>
-  );
+						{quizzes.length > 0 &&
+							quizzes.map((quiz) => (
+								<TouchableOpacity
+									key={quiz._id}
+									onPress={() => {
+										router.push({
+											pathname:
+												'/(app)/(collection)/detail_collection',
+											params: { id: quiz._id },
+										});
+									}}
+								>
+									<View className="flex flex-row items-center justify-between m-4">
+										<Text>{quiz.quiz_name}</Text>
+										<Text>{listNameCollection}</Text>
+										<TouchableOpacity>
+											<AntDesign
+												name="right"
+												size={18}
+												color="black"
+											/>
+										</TouchableOpacity>
+									</View>
+									<View className="h-[1px] w-full bg-gray"></View>
+								</TouchableOpacity>
+							))}
+					</View>
+				)}
+			</View>
+		</Wrapper>
+	);
 };
 
 export default Library;

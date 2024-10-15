@@ -125,17 +125,18 @@
         "desc": "Description:",
         "textDesc": "No description here!"
     },
-    "profile": {
-        "title": "Profile",
-        "fullname": "Fullname",
-        "email": "Email",
-        "phone": "Phone",
-        "address": "Address",
-        "password": "Password",
-        "edit": "Edit",
-        "save": "Save",
-        "school": "School",
-        "editNow": "Edit Now"
+    "profile":{
+        "title":"Profile",
+        "fullname":"Fullname",
+        "email":"Email",
+        "phone":"Phone",
+        "address":"Address",
+        "password":"Password",
+        "edit":"Edit",
+        "save":"Save",
+        "school":"School",
+        "editNow":"Edit Now",
+        "infoAuth":"Authentication Information"
     },
     "settings": {
         "title": "Settings"

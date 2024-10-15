@@ -126,17 +126,18 @@
         "desc": "説明:",
         "textDesc": "ここに説明はありません!"
     },
-    "profile": {
-        "title": "プロフィール",
-        "fullname": "フルネーム",
-        "email": "メール",
-        "phone": "電話",
-        "address": "住所",
-        "password": "パスワード",
-        "school": "学校",
-        "editNow": "今すぐ編集",
-        "save": "セーブ",
-        "edit": "編集"
+    "profile":{
+        "title":"プロフィール",
+        "fullname":"フルネーム",
+        "email":"メール",
+        "phone":"電話",
+        "address":"住所",
+        "password":"パスワード",
+        "school":"学校",
+        "editNow":"今すぐ編集",
+        "save":"セーブ",
+        "edit":"編集",
+        "infoAuth": "認証情報"
     },
     "settings": {
         "title": "設定"

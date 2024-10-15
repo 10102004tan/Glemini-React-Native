@@ -58,6 +58,7 @@ const SignUpScreen = () => {
                     visibilityTime: TIME_SHOW_TOAST,
                     autoHide: true,
                 });
+                console.log(error.message)
                 setIsDisabled(false);
             });
     };
@@ -243,7 +244,7 @@ const SignUpScreen = () => {
                         <InputImage onLongPress={()=>handlerLongPress(TYPEIMAGE.Confirm)} onPress={()=>{handlerPickImage(TYPEIMAGE.Confirm)}} desc={'Các giấy tờ chứng minh việc bạn có giảng dạy'} title={i18n.t('signUp.documentConfirm')} logo={(imageConfirm?imageConfirm.uri:'https://cdn-icons-png.freepik.com/256/888/888034.png?semt=ais_hybrid')} />
                     </View>
                 )}
-                <CustomButton className={"mb-4"} disabled={isDisabled} onPress={()=>handlerValidate() && handlerSignUp()} title={i18n.t('signUp.signUp')} />
+                <CustomButton className={"mb-4"}  onPress={()=>handlerValidate() && handlerSignUp()} title={i18n.t('signUp.signUp')} />
             </View>
                 
             <Modal animationType='slide' transparent={true} visible={isOpenedModal}>
