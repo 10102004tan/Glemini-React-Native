@@ -10,7 +10,7 @@
         "error": "無効なメールアドレスまたはパスワード",
         "startNow": "今すぐ始める",
         "welcome": "当社のアプリへようこそ",
-        "forgetPassword":"パスワードを忘れた場合",
+        "forgetPassword": "パスワードを忘れた場合",
         "success": "サインインに成功しました"
     },
     "signUp": {
@@ -76,10 +76,10 @@
         "notification": "通知",
         "logoutSuccess": "ログアウトしました"
     },
-    "forgetPassword":{
-        "title":"パスワードを忘れた場合",
-        "email":"メール",
-        "send":"送信"
+    "forgetPassword": {
+        "title": "パスワードを忘れた場合",
+        "email": "メール",
+        "send": "送信"
     },
     "play": {
         "single": {
@@ -97,46 +97,63 @@
             "buttonQuit": "離れる",
             "buttonReplay": "もういちど",
             "buttonPlayNewQuiz": "あたらしいクイズ",
-            "score": "スコア",
+            "score": "得点",
             "totalQuestions": "しつもんすう",
             "correct": "せいかい",
             "incorrect": "まちがい",
             "textResult": "けっか",
             "textDesc": "れんしゅう",
             "buttonReview": "見直す"
+        },
+        "review": {
+            "title": "回答を確認",
+            "text_question": "質問",
+            "indexQuestion": "質問番号",
+            "explanation": "説明: ",
+            "textExplanation": "ここに説明はありません!",
+            "btnNext": "次へ",
+            "btnPrev": "前へ",
+            "point": "得点"
         }
     },
     "student_homepage": {
-        "explore": "発見する"
+        "explore": "探検する",
+        "categoryAll": "全て",
+        "author": "著者:",
+        "turnPlay": "プレイターン",
+        "btnThuThach": "自分に挑戦",
+        "btnLuyenTap": "練習",
+        "desc": "説明:",
+        "textDesc": "ここに説明はありません!"
     },
-    "profile":{
-        "title":"プロフィール",
-        "fullname":"フルネーム",
-        "email":"メール",
-        "phone":"電話",
-        "address":"住所",
-        "password":"パスワード",
-        "school":"学校",
-        "editNow":"今すぐ編集",
-        "save":"セーブ",
-        "edit":"編集"
+    "profile": {
+        "title": "プロフィール",
+        "fullname": "フルネーム",
+        "email": "メール",
+        "phone": "電話",
+        "address": "住所",
+        "password": "パスワード",
+        "school": "学校",
+        "editNow": "今すぐ編集",
+        "save": "セーブ",
+        "edit": "編集"
     },
-    "settings":{
-        "title":"設定"
+    "settings": {
+        "title": "設定"
     },
-    "home":{
-        "title":"ホーム"
+    "home": {
+        "title": "ホーム"
     },
-    "search":{
-        "title":"検索"
+    "search": {
+        "title": "検索"
     },
-    "classes":{
-        "title":"クラス"
+    "classes": {
+        "title": "クラス"
     },
-    "account":{
-        "title":"アカウント"
+    "account": {
+        "title": "アカウント"
     },
-    "report":{
-        "title":"レポート"
+    "report": {
+        "title": "レポート"
     }
 }

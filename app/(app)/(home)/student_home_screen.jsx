@@ -15,11 +15,11 @@ const StudentHomeScreen = () => {
 	const navigation = useNavigation();
 	const { i18n } = useAppProvider();
 	const { subjects } = useSubjectProvider();
-	const { filterQuizzes, getQuizzesPublished } = useQuizProvider();
+	const { filterQuizzes, getQuizzesPublished, bannerQuizzes, getQuizzesBanner } = useQuizProvider();
 	const [selectedSubject, setSelectedSubject] = useState('all');
 	const [modalVisible, setModalVisible] = useState(false);
 	const [selectedQuizId, setSelectedQuizId] = useState(null);
-	const [selectedQuiz, setSelectedQuiz] = useState(null); 
+	const [selectedQuiz, setSelectedQuiz] = useState(null);
 	const width = Dimensions.get('window').width;
 	const carouselHeight = width * 2 / 3;
 	const dataSet = [Images.banner1, Images.banner2, Images.banner3];
@@ -28,6 +28,10 @@ const StudentHomeScreen = () => {
 		getQuizzesPublished(selectedSubject);
 	}, [selectedSubject]);
 
+	useEffect(() => {
+		getQuizzesBanner()
+	}, [])
+
 	const handlePressQuizItem = (quiz) => {
 		setSelectedQuizId(quiz._id);
 		setSelectedQuiz(quiz);
@@ -35,14 +39,16 @@ const StudentHomeScreen = () => {
 	};
 
 	const handleNavigateToQuiz = () => {
-		setModalVisible(false); 
+		setModalVisible(false);
 		navigation.push('(play)/single', { quizId: selectedQuizId });
 	};
 
 	return (
 		<Wrapper>
-			<ScrollView showsHorizontalScrollIndicator={false}>
-				<View className={`mt-6`} style={{ height: carouselHeight }}>
+			<ScrollView
+				showsVerticalScrollIndicator={false}
+				className='mt-10 mb-20'>
+				<View style={{ height: carouselHeight }}>
 					<Carousel
 						loop
 						width={width}
@@ -76,7 +82,7 @@ const StudentHomeScreen = () => {
 								elevation: selectedSubject === 'all' ? 3 : 0,
 							}}
 						>
-							<Text className='p-2' style={{ color: selectedSubject === 'all' ? '#fff' : '#000' }}>Tất cả</Text>
+							<Text className='p-2' style={{ color: selectedSubject === 'all' ? '#fff' : '#000' }}>{i18n.t('student_homepage.categoryAll')}</Text>
 						</TouchableOpacity>
 						{subjects?.map((subject) => (
 							<TouchableOpacity
@@ -105,13 +111,13 @@ const StudentHomeScreen = () => {
 							</TouchableOpacity>
 						))
 					) : (
-						<View className='w-full h-96 flex items-center justify-center'>
+						<View className='w-11/12 h-96 flex items-center justify-center'>
 							<LottieView
 								source={require('@/assets/jsons/not-found.json')}
 								autoPlay
 								loop
 								style={{
-									width: width,
+									width: width*2/3,
 									height: carouselHeight,
 								}}
 							/>
@@ -120,10 +126,10 @@ const StudentHomeScreen = () => {
 				</View>
 			</ScrollView>
 
-			<QuizModal 
-				visible={modalVisible} 
-				onClose={() => setModalVisible(false)} 
-				onStartQuiz={handleNavigateToQuiz} 
+			<QuizModal
+				visible={modalVisible}
+				onClose={() => setModalVisible(false)}
+				onStartQuiz={handleNavigateToQuiz}
 				quiz={selectedQuiz}
 			/>
 		</Wrapper>

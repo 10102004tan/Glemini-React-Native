@@ -38,6 +38,7 @@
     "expo-web-browser": "~13.0.3",
     "glemini-react-native": "file:",
     "i18n-js": "^4.4.3",
+    "lottie-react-native": "6.7.0",
     "nativewind": "^2.0.11",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -58,8 +59,7 @@
     "react-native-toast-message": "^2.2.1",
     "react-native-web": "~0.19.10",
     "react-native-webview": "^13.8.6",
-    "reactotron-react-native": "^5.1.9",
-    "lottie-react-native": "6.7.0"
+    "reactotron-react-native": "^5.1.9"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

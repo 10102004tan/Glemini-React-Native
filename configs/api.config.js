@@ -26,6 +26,7 @@ const dev = {
 		QUIZ_CREATE: '/quizzes/create',
 		QUIZ_DELETE: '/quizzes/delete',
 		QUIZ_PUBLISHED: '/quizzes/get-quizpublished',
+		QUIZ_BANNER: '/quizzes/get-quizbanner',
 		QUIZ_UPLOAD_DOC: '/quizzes/docs/upload',
 		RESULT_SAVE_QUESTION: '/result/save-question',
 		RESULT_COMPLETED: '/result/complete-quiz',
@@ -37,16 +38,16 @@ const dev = {
 };
 
 const prod = {
-  API_VERSION: {
-    V1: "/v1",
-  },
-  API_URL: "http://localhost:8000/api",
-  END_POINTS: {
-    LOGIN: "/login",
-    REGISTER: "/register",
-    LOGOUT: "/logout",
-    PROFILE: "/profile",
-  },
+	API_VERSION: {
+		V1: "/v1",
+	},
+	API_URL: "http://localhost:8000/api",
+	END_POINTS: {
+		LOGIN: "/login",
+		REGISTER: "/register",
+		LOGOUT: "/logout",
+		PROFILE: "/profile",
+	},
 };
 
 module.exports = dev;

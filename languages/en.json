@@ -9,7 +9,7 @@
         "notHaveAccount": "Don't have an account?",
         "startNow": "Start Now",
         "welcome": "Welcome to Glemini App",
-        "forgetPassword":"Forget Password",
+        "forgetPassword": "Forget Password",
         "success": "Login successfully"
     },
     "signUp": {
@@ -75,10 +75,10 @@
         "notification": "Notification",
         "logoutSuccess": "Logout successfully"
     },
-    "forgetPassword":{
-        "title":"Forget Password",
-        "email":"Email",
-        "send":"Send"
+    "forgetPassword": {
+        "title": "Forget Password",
+        "email": "Email",
+        "send": "Send"
     },
     "play": {
         "single": {
@@ -103,40 +103,56 @@
             "textResult": "Result",
             "textDesc": "Practice",
             "buttonReview": "Review"
+        },
+        "review": {
+            "title": "Review Answers",
+            "text_question": "Question",
+            "indexQuestion": "Question No.",
+            "explanation": "Explanation: ",
+            "textExplanation": "No explanation here!",
+            "btnNext": "Next",
+            "btnPrev": "Previous",
+            "point": "pts"
         }
     },
     "student_homepage": {
-        "explore": "Explore"
+        "explore": "Explore",
+        "categoryAll": "All Categories",
+        "author": "Author:",
+        "turnPlay": "Play Turns",
+        "btnThuThach": "Challenge Yourself",
+        "btnLuyenTap": "Practice",
+        "desc": "Description:",
+        "textDesc": "No description here!"
     },
-    "profile":{
-        "title":"Profile",
-        "fullname":"Fullname",
-        "email":"Email",
-        "phone":"Phone",
-        "address":"Address",
-        "password":"Password",
-        "edit":"Edit",
-        "save":"Save",
-        "school":"School",
-        "editNow":"Edit Now"
+    "profile": {
+        "title": "Profile",
+        "fullname": "Fullname",
+        "email": "Email",
+        "phone": "Phone",
+        "address": "Address",
+        "password": "Password",
+        "edit": "Edit",
+        "save": "Save",
+        "school": "School",
+        "editNow": "Edit Now"
     },
-    "settings":{
-        "title":"Settings"
+    "settings": {
+        "title": "Settings"
     },
-    "home":{
-        "title":"Home"
+    "home": {
+        "title": "Home"
     },
-    "search":{
-        "title":"Search"
+    "search": {
+        "title": "Search"
     },
-    "classes":{
-        "title":"Classes"
+    "classes": {
+        "title": "Classes"
     },
-    "account":{
-        "title":"Account"
+    "account": {
+        "title": "Account"
     },
-    "report":{
-        "title":"Report"
+    "report": {
+        "title": "Report"
     }
-
 }
