@@ -1,5 +1,5 @@
 import { Redirect, Stack } from "expo-router";
-import React, { useContext, useEffect } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import {Alert, Text, TouchableOpacity} from "react-native";
 import { useGlobalSearchParams } from "expo-router";
@@ -18,20 +18,27 @@ export default function AppRootLayout() {
   const { userData, isLoading, fetchStatus,setTeacherStatus} = useContext(AuthContext);
   const { isSave, setIsSave } = useQuizProvider();
   const { i18n,socket } = useAppProvider();
+  const [userId,setUserId] = useState(null);
   const { title } = useGlobalSearchParams();
 
   useEffect(() => {
     if (userData) {
       fetchStatus();
+        socket.on("update-status", ({user_id, teacher_status,message,status}) => {
+            if (userData._id === user_id){
+                setTeacherStatus(teacher_status);
+                Toast.show({
+                    type: status,
+                    text1: "Thông báo",
+                    text2: message,
+                    visibilityTime:2000
+                })
+            }
+        });
     }
-
   }, [userData]);
 
-    socket.on("update-status", ({user_id, teacher_status}) => {
-        if (userData._id === user_id){
-            setTeacherStatus(teacher_status);
-        }
-    });
+
 
   if (isLoading) {
     return <Text>Loading...</Text>;

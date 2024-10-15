@@ -11,7 +11,8 @@ import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 
 export default function ProfileScreen() {
 	const {
-		userData: { accessToken, _id },
+		userData: { accessToken, _id, user_type },
+		teacherStatus,
 		signOut,
 		processAccessTokenExpired,
 	} = useContext(AuthContext);
@@ -45,7 +46,7 @@ export default function ProfileScreen() {
 		}
 	};
 
-	updateAvatarHandler = async () => {
+	const updateAvatarHandler = async () => {
 		let formData = new FormData();
 		formData.append('user_avatar', {
 			uri: avatar.uri,
@@ -123,7 +124,7 @@ export default function ProfileScreen() {
 					title={i18n.t('profile.password')}
 					description={i18n.t('profile.editNow')}
 				/>
-				<CardSetting onPress={()=>{router.push({pathname:'/profile-auth'})}} title={i18n.t('profile.infoAuth')} description={i18n.t('profile.editNow')} />
+				{user_type === "teacher" && (<CardSetting onPress={()=>{router.push({pathname:'/profile-auth'})}} title={i18n.t('profile.infoAuth')} description={i18n.t('profile.editNow')} />)}
 				{isEditAvatar && (<Pressable onPress={updateAvatarHandler}>
 					<View className="py-3 border mt-5">
 						<Text className="text-center">{i18n.t('profile.save')}</Text>

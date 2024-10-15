@@ -94,8 +94,8 @@ const SignInScreen = () => {
 			<Text className="mt-[30px] text-[16px]">{i18n.t('signIn.welcome')}</Text>
 			<Text className="mt-3 text-[25px]">{i18n.t('signIn.startNow')}</Text>
 			<View className="mt-[30px]">
-				<CustomInput label={i18n.t('signIn.email')} value={email} onChangeText={setEmail} />
-				<CustomInput secure={true} onChangeText={setPassword} label={i18n.t('signIn.password')} value={password} />
+				<CustomInput label={i18n.t('signIn.email')} value={email.trim()} onChangeText={setEmail} />
+				<CustomInput secure={true} onChangeText={setPassword} label={i18n.t('signIn.password')} value={password.trim()} />
 				<View className="flex flex-row mb-3">
 					<Text className='mr-2'>{i18n.t('signIn.notHaveAccount')}</Text>
 					<Link href={"/(sign-up)"}>

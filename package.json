@@ -46,6 +46,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.5",
+    "react-native-awesome-alerts": "^2.0.0",
     "react-native-dropdown-select-list": "^2.0.5",
     "react-native-element-dropdown": "^2.12.1",
     "react-native-gesture-handler": "~2.16.1",
@@ -63,7 +64,8 @@
     "react-native-toast-message": "^2.2.1",
     "react-native-web": "~0.19.10",
     "react-native-webview": "^13.8.6",
-    "reactotron-react-native": "^5.1.9"
+    "reactotron-react-native": "^5.1.9",
+    "socket.io-client": "^4.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
