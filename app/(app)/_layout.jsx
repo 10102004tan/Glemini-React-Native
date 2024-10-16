@@ -1,16 +1,18 @@
-import { Redirect, Stack } from 'expo-router';
-import React, { useContext, useEffect } from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
-import { Alert, Text, TouchableOpacity } from 'react-native';
-import { useGlobalSearchParams } from 'expo-router';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
-import ResultReview from './(result)/review';
-import { useAppProvider } from '@/contexts/AppProvider';
-import { useQuizProvider } from '@/contexts/QuizProvider';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import SpinningIcon from '@/components/loadings/SpinningIcon';
-import Toast from 'react-native-toast-message';
+import { Redirect, Stack } from "expo-router";
+import React, {useContext, useEffect, useState} from "react";
+import { AuthContext } from "../../contexts/AuthContext";
+import {Alert, Text, TouchableOpacity} from "react-native";
+import { useGlobalSearchParams } from "expo-router";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { View } from "react-native";
+import ResultReview from "./(result)/review";
+import { useAppProvider } from "@/contexts/AppProvider";
+import { useQuizProvider } from "@/contexts/QuizProvider";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import SpinningIcon from "@/components/loadings/SpinningIcon";
+import Toast from "react-native-toast-message";
+
+
 
 export default function AppRootLayout() {
 	const { userData, isLoading, fetchStatus, setTeacherStatus } =
@@ -54,7 +56,55 @@ export default function AppRootLayout() {
 				}}
 			/>
 
-			<Stack.Screen
+  const { userData, isLoading, fetchStatus,setTeacherStatus} = useContext(AuthContext);
+  const { isSave, setIsSave } = useQuizProvider();
+  const { i18n,socket } = useAppProvider();
+  const [userId,setUserId] = useState(null);
+  const { title } = useGlobalSearchParams();
+
+  useEffect(() => {
+    if (userData) {
+      fetchStatus();
+        socket.on("update-status", ({user_id, teacher_status,message,status}) => {
+            if (userData._id === user_id){
+                setTeacherStatus(teacher_status);
+                Toast.show({
+                    type: status,
+                    text1: "Thông báo",
+                    text2: message,
+                    visibilityTime:2000
+                })
+            }
+        });
+    }
+  }, [userData]);
+
+
+
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
+
+  if (!userData) {
+    return <Redirect href={"/(auths)/sign-in"} />;
+  }
+
+  return (
+    <Stack>
+      <Stack.Screen
+        name="(home)"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="profile"
+        options={{
+          headerTitle: i18n.t("profile.title"),
+        }}
+      />
+
+		<Stack.Screen
 				name="change-password"
 				options={{
 					headerTitle: i18n.t('profile.title'),
