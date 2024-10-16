@@ -141,7 +141,6 @@ const QuizProvider = ({ children }) => {
 	useEffect(() => {
 		if (userData) {
 			fetchQuizzes();
-			getQuizzesPublished();
 		}
 	}, [userData]);
 

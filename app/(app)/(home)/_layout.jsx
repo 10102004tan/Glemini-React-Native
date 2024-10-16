@@ -31,6 +31,45 @@ export default function TabLayout() {
         tabBarShowLabel: false,
       }}
     >
+
+      <Tabs.Screen
+        name="teacher_home_screen"
+        options={{
+          title: "Lớp học",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "home" : "home-outline"}
+              color={color}
+            />
+          ),
+          tabBarButton: (props) => {
+            if (user_type === "student") {
+              return null;
+            } else {
+              return <TouchableOpacity {...props} />;
+            }
+          },
+        }} />
+
+      <Tabs.Screen
+        name="student_home_screen"
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "home" : "home-outline"}
+              color={color}
+            />
+          ),
+          tabBarButton: (props) => {
+            if (user_type === "teacher") {
+              return null;
+            } else {
+              return <TouchableOpacity {...props} />;
+            }
+          },
+        }} />
+
       <Tabs.Screen
         name="index"
         options={{
@@ -43,6 +82,7 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="libraly"
         options={{
@@ -79,19 +119,6 @@ export default function TabLayout() {
               color={color}
             />
           ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="teacher_home_screen"
-        options={{
-          title: "Lớp học",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "people" : "people-outline"}
-              color={color}
-            />
-          ),
           tabBarButton: (props) => {
             if (user_type === "student") {
               return null;
@@ -103,33 +130,15 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="student_home_screen"
+        name="classroom"
         options={{
-          headerShown: false,
+          title: i18n.t('classes.title'),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "school" : "school-outline"}
+              name={focused ? 'school' : 'school-outline'}
               color={color}
             />
           ),
-          tabBarButton: (props) => {
-            if (user_type === "teacher") {
-              return null;
-            } else {
-              return <TouchableOpacity {...props} />;
-            }
-          },
-        }}/>
-			<Tabs.Screen
-				name="classroom"
-				options={{
-					title: i18n.t('classes.title'),
-					tabBarIcon: ({ color, focused }) => (
-						<TabBarIcon
-							name={focused ? 'school' : 'school-outline'}
-							color={color}
-						/>
-					),
 
           tabBarButton: (props) => {
             if (user_type === "teacher") {

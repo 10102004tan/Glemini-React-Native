@@ -5,6 +5,8 @@ import {
   TextInput,
   Animated,
   Image,
+  ScrollView,
+  FlatList,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Wrapper from "@/components/customs/Wrapper";
@@ -411,46 +413,51 @@ const Library = () => {
               </View>
             </View>
 
-            {quizzes.length > 0 &&
-              quizzes.map((quiz) => (
-                <View className="h-[100px] w-full border rounded-xl flex-row mb-3">
-                  <TouchableOpacity
-                    key={quiz._id}
-                    onPress={() => {
-                      router.push({
-                        pathname: "/(app)/(quiz)/overview",
-                        params: { id: quiz._id },
-                      });
-                    }}
-                  >
-                    <View className="flex flex-row m-2">
-                      <View className="flex justify-center items-center">
-                        <Image
-                          source={{
-                            uri:
-                              quiz.quiz_thumb ||
-                              "https://blogphanmem.vn/wp-content/uploads/2022/09/hinh-anh-anime-boy-chibi-1.jpg",
-                          }}
-                          className="w-[80px] h-[80px] rounded-xl"
-                        ></Image>
+            <FlatList
+              style={{ marginBottom: 200 }}
+              data={quizzes}
+              keyExtractor={(quiz) => quiz._id}
+              renderItem={({ item: quiz }) => {
+                return (
+                  <View className="h-[100px] w-full border rounded-xl flex-row mb-3">
+                    <TouchableOpacity
+                      onPress={() => {
+                        router.push({
+                          pathname: "/(app)/(quiz)/detail_quiz",
+                          params: { id: quiz._id },
+                        });
+                      }}
+                    >
+                      <View className="flex flex-row m-2">
+                        <View className="flex justify-center items-center">
+                          <Image
+                            source={{
+                              uri:
+                                quiz.quiz_thumb ||
+                                "https://www.shutterstock.com/image-vector/quiz-time-3d-editable-text-260nw-2482374583.jpg",
+                            }}
+                            className="w-[80px] h-[80px] rounded-xl"
+                          ></Image>
+                        </View>
+                        <View className="flex flex-col ml-4 justify-around">
+                          <Text className="text-lg font-bold">
+                            {quiz.quiz_name}
+                          </Text>
+                          <Text className="text-gray-500">
+                            {quiz.quiz_description}
+                          </Text>
+                          <Text className="text-gray-500">
+                            {quiz.quiz_status === "unpublished"
+                              ? "Riêng tư"
+                              : "Công khai"}
+                          </Text>
+                        </View>
                       </View>
-                      <View className="flex flex-col ml-4 justify-around">
-                        <Text className="text-lg font-bold">
-                          {quiz.quiz_name}
-                        </Text>
-                        <Text className="text-gray-500">
-                          {quiz.quiz_description}
-                        </Text>
-                        <Text className="text-gray-500">
-                          {quiz.quiz_status === "unpublished"
-                            ? "Riêng tư"
-                            : "Công khai"}
-                        </Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              ))}
+                    </TouchableOpacity>
+                  </View>
+                );
+              }}
+            ></FlatList>
           </View>
         ) : (
           <View className="p-3">
