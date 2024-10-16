@@ -45,7 +45,8 @@ const StudentHomeScreen = () => {
 			<ScrollView
 				showsVerticalScrollIndicator={false}
 				className='mt-10 mb-20'>
-				<View style={{ height: carouselHeight }}>
+				<View className={bannerQuizzes.length > 0 ?  `flex h-[${carouselHeight}px]` : `hidden`}>
+
 					<Carousel
 						loop
 						width={width}

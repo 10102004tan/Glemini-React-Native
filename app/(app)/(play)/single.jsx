@@ -91,7 +91,7 @@ const SinglePlay = () => {
 					exercise_id: null,
 					user_id: userData._id,
 					quiz_id: questions[0].quiz_id,
-					status: 'Đã hoàn thành',
+					status: 'completed',
 				}),
 			});
 		} catch (error) {
