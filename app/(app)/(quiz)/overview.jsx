@@ -74,11 +74,9 @@ const QuizzOverViewScreen = () => {
 		setQuestionFetching,
 		isSave,
 	} = useQuizProvider();
-	const { resetQuestion } = useQuestionProvider();
 
-	useEffect(() => {
-		console.log(quizSubjects);
-	}, [quizSubjects]);
+	const { resetQuestion, selectQuestionType } = useQuestionProvider();
+
 
 	// Lấy dữ liệu môn học
 	const { subjects } = useSubjectProvider();
@@ -152,7 +150,7 @@ const QuizzOverViewScreen = () => {
 
 	// Cập nhật thông tin của quiz
 	const handleUpdateQuiz = async (id) => {
-		console.log('UPDATE::QUIZ');
+		// console.log('UPDATE::QUIZ');
 		const quiz = {
 			quiz_id: id,
 			quiz_name: quizName,
@@ -192,6 +190,9 @@ const QuizzOverViewScreen = () => {
 		if (isChange()) {
 			handleUpdateQuiz(id);
 		}
+
+		// Trạng thái câu hỏi ở đây sẽ là multiple choice hoặc single
+		selectQuestionType('multiple');
 
 		router.push({
 			pathname: '(app)/(quiz)/edit_quiz_question',

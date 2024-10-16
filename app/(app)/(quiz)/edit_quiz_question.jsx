@@ -43,16 +43,31 @@ const EditQuizQuestion = () => {
 		updateQuestionPoint,
 		editQuestion,
 		setQuestion,
+		selectQuestionType,
 	} = useQuestionProvider();
 	const [answerEditSelected, setAnswerEditSelected] = useState(0); // đáp án được chọn
 	const { width } = useWindowDimensions();
 	const { quizId, questionId } = useGlobalSearchParams();
 	const { userData } = useAuthContext();
 
+	// Lấy type của câu hỏi hiện tại để xác định loại câu hỏi
+	useEffect(() => {
+		if (question) {
+			if (question.question_type === 'multiple') {
+				setMutipleChoice(true);
+			} else if (question.question_type === 'single') {
+				setMutipleChoice(false);
+			}
+		}
+	}, [question]);
+
 	// Khi người dùng chuyển từ chế độ chọn nhiều câu hỏi sang một câu hỏi thì bỏ chọn tất cả
 	useEffect(() => {
 		if (!mutipleChoice) {
 			resetMarkCorrectAnswer();
+			selectQuestionType('single');
+		} else {
+			selectQuestionType('multiple');
 		}
 	}, [mutipleChoice]);
 
