@@ -22,17 +22,17 @@ export default function ForgotPasswordScreen() {
     const [countResend, setCountResend] = useState(0);
 
     useEffect(()=>{
-        console.log(countResend)
         if (isSendEmail) return;
         let interval = setInterval(() => {
-            setCountResend(lastTimerCount => {
-                if (countResend === 0) {
-                    clearInterval(interval)
-                    setDisableResend(false);
-                    return;
-                }
-                return lastTimerCount - 1
-            })
+              setCountResend(countResend => {
+                    if (countResend === 1){
+                        setDisableResend(false);
+                        clearInterval(interval);
+                        return 1;
+                    }
+                    return countResend - 1;
+
+              });
         }, 1000) //each count lasts for a second
         //cleanup the interval on complete
         return () => clearInterval(interval);

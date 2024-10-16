@@ -157,7 +157,7 @@ export const AuthProvider = ({ children }) => {
 
     // if old password is incorrect
     if (data.statusCode === 400) {
-      Alert.alert("Change password", data.message);
+        throw new Error(data.message);
     }
 
     // if access token expired
@@ -175,7 +175,7 @@ export const AuthProvider = ({ children }) => {
         const dataStore = { ...userData, accessToken, refreshToken };
         await AsyncStorage.setItem("userData", JSON.stringify(dataStore));
         setUserData(dataStore);
-        Alert.alert("Change password", "Change password successfully");
+        return data.message;
       }
     }
   };
