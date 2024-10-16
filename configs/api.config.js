@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 const dev = {
-	API_URL: 'http://192.168.247.116:3000/api',
+	API_URL: 'http://172.16.28.100:8000/api',
 	API_VERSION: {
 		V1: '/v1',
 	},
@@ -11,7 +11,7 @@ const dev = {
 		SIGN_UP: '/auth/signup',
 		LOGOUT: '/auth/logout',
 		VERIFY_OTP: '/auth/verify-otp',
-		RESET_PASSWORD:'/auth/reset-password',
+		RESET_PASSWORD: '/auth/reset-password',
 		REFRESH_TOKEN: '/auth/refresh-token',
 		PROFILE: '/user/profile',
 		PROFILE_EDIT: '/user/profile',
@@ -45,16 +45,16 @@ const dev = {
 };
 
 const prod = {
-  API_VERSION: {
-    V1: "/v1",
-  },
-  API_URL: "http://localhost:8000/api",
-  END_POINTS: {
-    LOGIN: "/login",
-    REGISTER: "/register",
-    LOGOUT: "/logout",
-    PROFILE: "/profile",
-  },
+	API_VERSION: {
+		V1: '/v1',
+	},
+	API_URL: 'http://localhost:8000/api',
+	END_POINTS: {
+		LOGIN: '/login',
+		REGISTER: '/register',
+		LOGOUT: '/logout',
+		PROFILE: '/profile',
+	},
 };
 
 module.exports = dev;

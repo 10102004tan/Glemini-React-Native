@@ -77,7 +77,6 @@ const QuizzOverViewScreen = () => {
 
 	const { resetQuestion, selectQuestionType } = useQuestionProvider();
 
-
 	// Lấy dữ liệu môn học
 	const { subjects } = useSubjectProvider();
 	const subjectsData = convertSubjectData(subjects);
@@ -244,8 +243,13 @@ const QuizzOverViewScreen = () => {
 		);
 
 		const data = await response.json();
-		console.log(data.metadata);
-		return data.metadata; // URL của ảnh trên server
+		// console.log(data);
+		const newImageRation = data.metadata.thumbnail.replace(
+			'h_100,w_100',
+			'h_260,w_300'
+		);
+		// console.log(newImageRation);
+		return newImageRation;
 	};
 
 	// Hàm chọn ảnh từ thư viện
@@ -259,8 +263,6 @@ const QuizzOverViewScreen = () => {
 
 		if (!result.canceled && result.assets.length > 0) {
 			const imageUri = result.assets[0].uri;
-			console.log(imageUri);
-
 			// Tải ảnh lên server và lấy URL của ảnh
 			const imageUrl = await uploadImage(imageUri);
 			setQuizThumbnail(imageUrl);

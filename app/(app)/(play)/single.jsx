@@ -109,7 +109,7 @@ const SinglePlay = () => {
 	useEffect(() => {
 		return sound
 			? () => {
-				sound.unloadAsync(); 
+				sound.unloadAsync();
 			}
 			: undefined;
 	}, [sound]);
@@ -256,6 +256,7 @@ const SinglePlay = () => {
 								color: 'white',
 								fontSize: 25,
 								fontWeight: '700',
+                        height: 30
 							},
 						}}
 						contentWidth={width}
@@ -276,7 +277,7 @@ const SinglePlay = () => {
 								} else if (answer._id === selectedAnswers[0]) {
 									backgroundColor = '#F44336'; // Red - Sai
 								}
-							} else {								
+							} else {
 								if (questions[currentQuestionIndex].correct_answer_ids.map(answer => answer._id).includes(answer._id)) {
 									backgroundColor = '#4CAF50'; // Green - Đúng
 								} else if (selectedAnswers.includes(answer._id)) {
