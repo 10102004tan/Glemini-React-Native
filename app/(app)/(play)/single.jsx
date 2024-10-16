@@ -8,11 +8,13 @@ import Toast from 'react-native-toast-message';
 import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
 import RenderHTML from 'react-native-render-html';
 import { Audio } from 'expo-av';
-import { useRoute } from '@react-navigation/native';
+import { truncateDescription } from '@/utils'
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const SinglePlay = () => {
 	const route = useRoute();
-	const { quizId } = route.params;
+	const navigation = useNavigation()
+	const { quiz } = route.params;
 	const {i18n} = useAppProvider();
 	const { width } = useWindowDimensions();
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -43,7 +45,7 @@ const SinglePlay = () => {
 						authorization: userData.accessToken,
 					},
 					body: JSON.stringify({
-						quiz_id: quizId,
+						quiz_id: quiz,
 					}),
 				});
 
@@ -228,10 +230,10 @@ const SinglePlay = () => {
 	return (
 		<View className="flex-1">
 			<View className="flex-row justify-between items-center px-5 pt-10 pb-3 bg-black">
-				<Text className="font-bold text-lg text-white">{}</Text>
+				<Text className="font-bold text-lg text-white">{truncateDescription(quiz.quiz_name, 20)}</Text>
 				<Button
 					text={i18n.t('play.single.buttonQuit')}
-					onPress={() => console.log('Button pressed!!')}
+					onPress={() => {navigation.popToTop()}}
 					loading={false}
 					type="fill"
 					otherStyles={'bg-[#F41D1D]'}

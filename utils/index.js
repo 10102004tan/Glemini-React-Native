@@ -40,10 +40,23 @@ const debounce = (fn, delay) => {
 	}
 }
 
+// cut text
+const truncateDescription = (description, maxLength) => {
+    if (description.length <= maxLength) return description;
+    const words = description.split(' ');
+    let truncated = words[0];
+    for (let i = 1; i < words.length; i++) {
+        if ((truncated + ' ' + words[i]).length > maxLength) break;
+        truncated += ' ' + words[i];
+    }
+    return truncated + '...';
+};
+
 export {
 	validateEmail,
 	validatePassword,
 	validateFullname,
 	convertSubjectData,
-	debounce
+	debounce,
+	truncateDescription
 };

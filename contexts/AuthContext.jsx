@@ -97,9 +97,13 @@ export const AuthProvider = ({ children }) => {
     );
     const data = await response.json();
     if (data.statusCode === 200) {
+      console.log(data);
+      
       await AsyncStorage.removeItem("userData");
       setUserData(null);
     } else {
+      console.log(data +"111");
+
       if (data.message === "expired") {
         await processAccessTokenExpired();
       } else {

@@ -105,13 +105,20 @@ export default function TabLayout() {
       <Tabs.Screen
         name="student_home_screen"
         options={{
-          title: "Classes",
+          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "school" : "school-outline"}
               color={color}
             />
-          )
+          ),
+          tabBarButton: (props) => {
+            if (user_type === "teacher") {
+              return null;
+            } else {
+              return <TouchableOpacity {...props} />;
+            }
+          },
         }}/>
 			<Tabs.Screen
 				name="classroom"

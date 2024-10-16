@@ -7,12 +7,13 @@ const QuizContext = createContext();
 
 const QuizProvider = ({ children }) => {
 
-	const [quizzes, setQuizzes] = useState([]);
-	const [filterQuizzes, setFilterQuizzes] = useState([]);
+	const [quizzes, setQuizzes] = useState([]); // By User
+	const [filterQuizzes, setFilterQuizzes] = useState([]); // Get Publish
+	const [bannerQuizzes, setBannerQuizzes] = useState([]); // Banner
 	const [needUpdate, setNeedUpdate] = useState(false);
 	const [quizFetching, setQuizFetching] = useState(false);
 	const [questionFetching, setQuestionFetching] = useState(false);
-	const [actionQuizType, setActionQuizType] = useState('create'); // edit, template
+	const [actionQuizType, setActionQuizType] = useState('create'); 
 	const [isSave, setIsSave] = useState(false);
 	const { userData } = useAuthContext();
 
@@ -42,7 +43,6 @@ const QuizProvider = ({ children }) => {
 	// Get Quiz Published
 	const getQuizzesPublished = async (subject_id) => {
 		subject_id = subject_id === 'all'  ? '' : subject_id;
-
 		const response = await fetch(
 			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`,
 			{
@@ -63,6 +63,29 @@ const QuizProvider = ({ children }) => {
 		}
 		else {
 			setFilterQuizzes([])
+		}
+	};
+
+	// Get 3 item load to banner
+	const getQuizzesBanner = async () => {
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_BANNER}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+			}
+		);
+
+		const data = await response.json();
+		if (data.statusCode === 200) {
+			setBannerQuizzes(data.metadata)
+		}
+		else {
+			setBannerQuizzes([])
 		}
 	};
 
@@ -122,6 +145,7 @@ const QuizProvider = ({ children }) => {
 	useEffect(() => {
 		if (userData) {
 			fetchQuizzes();
+			getQuizzesPublished()
 		}
 	}, [userData]);
 
@@ -143,7 +167,10 @@ const QuizProvider = ({ children }) => {
 				isSave,
 				setIsSave,
 				getQuizzesPublished,
-				filterQuizzes
+				filterQuizzes,
+				bannerQuizzes,
+				getQuizzesBanner,
+
 
 			}}
 		>
