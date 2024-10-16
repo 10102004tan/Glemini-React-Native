@@ -38,6 +38,18 @@
         "documentDescription":"Ảnh giấy tờ xác nhận",
         "cardIdDescription":"Ảnh thẻ hoặc CCCD"
     },
+    "resetPassword":{
+        "title":"Đặt lại mật khẩu",
+        "email":"Email",
+        "send":"Gửi",
+        "back":"Quay lại",
+        "success":"Đặt lại mật khẩu thành công",
+        "error":"Email không tồn tại",
+        "notification":"Thông báo",
+        "password": "Mật khẩu mới",
+        "confirmPassword": "Xác nhận mật khẩu mới",
+        "submit": "Xác nhận"
+    },
     "error":{
         "emailInvalid":"Email không hợp lệ",
         "passwordInvalid":"Mật khẩu phải có ít nhất 8 ký tự",

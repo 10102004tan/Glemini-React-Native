@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const dev = {
 	API_URL: 'http://172.16.28.100:8000/api',
@@ -10,11 +10,14 @@ const dev = {
 		LOGIN: '/auth/login',
 		SIGN_UP: '/auth/signup',
 		LOGOUT: '/auth/logout',
-		REFRESH_TOKEN: '/refresh-token',
+		VERIFY_OTP: '/auth/verify-otp',
+		RESET_PASSWORD:'/auth/reset-password',
+		REFRESH_TOKEN: '/auth/refresh-token',
 		PROFILE: '/user/profile',
 		PROFILE_EDIT: '/user/profile',
 		PROFILE_TEACHER_IMAGES: '/user/profile/verification/images',
 		CHANGE_PASSWORD: '/auth/change-password',
+		FORGOT_PASSWORD: '/auth/forgot-password',
 		USER_STATUS: '/auth/status',
 		GET_QUIZ_BY_USER: '/quizzes/get-by-user',
 		GET_QUIZ_QUESTIONS: '/quizzes/get-questions',
@@ -41,16 +44,16 @@ const dev = {
 };
 
 const prod = {
-	API_VERSION: {
-		V1: '/v1',
-	},
-	API_URL: 'http://localhost:8000/api',
-	END_POINTS: {
-		LOGIN: '/login',
-		REGISTER: '/register',
-		LOGOUT: '/logout',
-		PROFILE: '/profile',
-	},
+  API_VERSION: {
+    V1: "/v1",
+  },
+  API_URL: "http://localhost:8000/api",
+  END_POINTS: {
+    LOGIN: "/login",
+    REGISTER: "/register",
+    LOGOUT: "/logout",
+    PROFILE: "/profile",
+  },
 };
 
 module.exports = dev;

@@ -9,7 +9,7 @@ export default function AccoutntStatusItem({status}){
         text = "Da xac thuc"
         color = "bg-green-500"
     }
-    else if (status === "inactive"){
+    else if (status === "pedding"){
         text = "Cho duyet ho so"
         color = "bg-yellow-500"
     }

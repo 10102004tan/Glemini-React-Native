@@ -1,4 +1,4 @@
-import { Redirect, Slot } from "expo-router";
+import {Redirect, Slot, Stack} from "expo-router";
 import { useContext} from "react";
 import {KeyboardAvoidingView, ScrollView, View} from "react-native";
 import { AuthContext } from "../../contexts/AuthContext";
@@ -39,7 +39,7 @@ export default function AuthLayout() {
                 </View>
                 <KeyboardAvoidingView behavior="padding" enabled>
                     <ScrollView >
-                        <Slot />
+                        <Slot/>
                     </ScrollView>
                 </KeyboardAvoidingView>
             </View>

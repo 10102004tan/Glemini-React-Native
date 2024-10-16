@@ -36,7 +36,6 @@ const SignUpScreen = () => {
     const [imageCurrent, setImageCurrent] = useState('');
     const [isOpenedModal, setIsOpenedModal] = useState(false);
     const [isDisabled, setIsDisabled] = useState(false);
-
     const handlerSignUp = async () => {
         setIsDisabled(true);
         await signUp({email, password, fullname, type,images:[imageIDCard,imageCard,imageConfirm]})
