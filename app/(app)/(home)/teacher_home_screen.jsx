@@ -31,7 +31,7 @@ const CreateQuizzScreen = () => {
 		setVisibleBottomSheet(false);
 	};
 
-	if (teacherStatus === 'inactive') {
+	if (teacherStatus === 'pedding') {
 		return <LockFeature />;
 	}
 

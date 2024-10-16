@@ -92,6 +92,7 @@ const detailquizz = () => {
   useEffect(() => {
     // Lấy dữ liệu của quiz hiện tại
     // console.log(id);
+    console.log("test::detail_quiz");
     if (detail_quiz) {
       fetchQuiz();
       fetchQuestions();

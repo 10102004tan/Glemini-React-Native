@@ -52,6 +52,7 @@ const EditQuizQuestion = () => {
 
 	// Lấy type của câu hỏi hiện tại để xác định loại câu hỏi
 	useEffect(() => {
+		console.log("test::edit-quiz-question");
 		if (question) {
 			if (question.question_type === 'multiple') {
 				setMutipleChoice(true);

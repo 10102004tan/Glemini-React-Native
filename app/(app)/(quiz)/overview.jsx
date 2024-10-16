@@ -83,6 +83,7 @@ const QuizzOverViewScreen = () => {
 
 	// Lưu thông tin của quiz khi người dùng ấn nút lưu trên thanh header
 	useEffect(() => {
+		console.log("test::overview");
 		if (isSave) {
 			handleUpdateQuiz(id);
 		}
@@ -226,7 +227,7 @@ const QuizzOverViewScreen = () => {
 		formData.append('quiz_image', {
 			uri: imageUri,
 			name: 'photo.jpg',
-			type: 'image/jpeg',
+			type: 'image/jpg',
 		});
 
 		const response = await fetch(
@@ -243,7 +244,7 @@ const QuizzOverViewScreen = () => {
 		);
 
 		const data = await response.json();
-		// console.log(data);
+		console.log(data);
 		const newImageRation = data.metadata.thumbnail.replace(
 			'h_100,w_100',
 			'h_260,w_300'
