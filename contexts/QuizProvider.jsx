@@ -76,7 +76,6 @@ const QuizProvider = ({ children }) => {
 					'Content-Type': 'application/json',
 					'x-client-id': userData._id,
 					authorization: userData.accessToken,
-
 				},
 			}
 		);
@@ -146,6 +145,7 @@ const QuizProvider = ({ children }) => {
 	useEffect(() => {
 		if (userData) {
 			fetchQuizzes();
+			getQuizzesPublished()
 		}
 	}, [userData]);
 

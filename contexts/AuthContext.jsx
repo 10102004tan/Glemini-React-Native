@@ -40,30 +40,7 @@ export const AuthProvider = ({ children }) => {
 
     const data = await response.json();
     if (data.statusCode === 200) {
-      const {
-        tokens: { accessToken, refreshToken },
-        user: {
-          user_type,
-          user_fullname,
-          _id,
-          user_avatar,
-          user_email,
-          teacher_status,
-        },
-      } = data.metadata;
-      const dataStore = {
-        user_type,
-        user_fullname,
-        _id,
-        user_avatar,
-        accessToken,
-        refreshToken,
-        user_email,
-      };
-      await AsyncStorage.setItem("userData", JSON.stringify(dataStore));
-      setUserData(dataStore);
-      teacher_status && setTeacherStatus(teacher_status);
-      return data.message;
+       return await storeUserData(data);
     }
     throw new Error(data.message);
   };
@@ -101,22 +78,7 @@ export const AuthProvider = ({ children }) => {
     );
     const data = await response.json();
     if (data.statusCode === 200) {
-      const {
-        tokens: { accessToken, refreshToken },
-        user: { user_type, user_fullname, _id, user_avatar, user_email },
-      } = data.metadata;
-      const dataStore = {
-        user_type,
-        user_fullname,
-        _id,
-        user_avatar,
-        accessToken,
-        refreshToken,
-        user_email,
-      };
-      await AsyncStorage.setItem("userData", JSON.stringify(dataStore));
-      setUserData(dataStore);
-      return data.message;
+      return await storeUserData(data);
     }
     throw new Error(data.message);
   };
@@ -151,6 +113,32 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const storeUserData = async (data) =>{
+    const {
+      tokens: { accessToken, refreshToken },
+      user: {
+        user_type,
+        user_fullname,
+        _id,
+        user_avatar,
+        user_email,
+        teacher_status,
+      },
+    } = data.metadata;
+    const dataStore = {
+      user_type,
+      user_fullname,
+      _id,
+      user_avatar,
+      accessToken,
+      refreshToken,
+      user_email,
+    };
+    await AsyncStorage.setItem("userData", JSON.stringify(dataStore));
+    setUserData(dataStore);
+    teacher_status && setTeacherStatus(teacher_status);
+    return data.message;
+  }
 
   const changePassword = async ({ oldPassword, newPassword }) => {
     if (!userData) return;
@@ -290,7 +278,62 @@ export const AuthProvider = ({ children }) => {
     return metadata;
   };
 
+  // fetch forgot password
+  const forgotPassword = async ({ email }) => {
+        email = email.trim();
+        const response = await fetch(
+        `${API_URL}${API_VERSION.V1}${END_POINTS.FORGOT_PASSWORD}`,
+        {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email }),
+        }
+        );
+        const data = await response.json();
+        if (data.statusCode === 200) {
+          return data.message;
+        }
+        throw new Error(data.message);
+    };
 
+  // fetch verify otp
+  const verifyOTP = async ({email,otp})=>{
+    email = email.trim();
+    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.VERIFY_OTP}`,{
+      method:'POST',
+        headers:{
+            'Content-Type':'application/json'
+        },
+        body:JSON.stringify({email,otp})
+    });
+
+    const data = await response.json();
+
+    if (data.statusCode === 200){
+      return data.message;
+    }
+    throw new Error(data.message);
+  }
+
+  // fetch reset password
+  const resetPassword = async ({email,otp,password})=>{
+    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.RESET_PASSWORD}`,{
+      method:'POST',
+        headers:{
+            'Content-Type':'application/json'
+        },
+        body:JSON.stringify({email,otp,password})
+    });
+
+    const data = await response.json();
+
+    if (data.statusCode === 200){
+      return data.message;
+    }
+    throw new Error(data.message);
+  }
 	return (
 		<AuthContext.Provider
 			value={{
@@ -305,7 +348,10 @@ export const AuthProvider = ({ children }) => {
 				fetchStatus,
 				teacherStatus,
 				fetchDetailUser,
-				setTeacherStatus
+				setTeacherStatus,
+                forgotPassword,
+                verifyOTP,
+                resetPassword
 			}}
 		>
 			{children}

@@ -115,12 +115,24 @@
             "point": "pts"
         }
     },
+    "resetPassword":{
+        "title":"Reset Password",
+        "email":"Email",
+        "send":"Send",
+        "back":"Back",
+        "success":"Reset password successfully",
+        "error":"Invalid email",
+        "notification":"Notification",
+        "password": "New Password",
+        "confirmPassword": "Confirm Password",
+        "submit": "Submit"
+    },
     "student_homepage": {
         "explore": "Explore",
         "categoryAll": "All Categories",
         "author": "Author:",
-        "turnPlay": "Play Turns",
-        "btnThuThach": "Challenge Yourself",
+        "turnPlay": "Turns:",
+        "btnThuThach": "Challenge",
         "btnLuyenTap": "Practice",
         "desc": "Description:",
         "textDesc": "No description here!"

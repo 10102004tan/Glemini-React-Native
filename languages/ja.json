@@ -84,7 +84,7 @@
     "play": {
         "single": {
             "buttonQuit": "離れる",
-            "score": "スコア",
+            "score": "得点",
             "questionCouter": "もんだいばんごう:",
             "buttonConfirm": "見定める",
             "incorrect": "不可!!!",
@@ -115,6 +115,18 @@
             "btnPrev": "前へ",
             "point": "得点"
         }
+    },
+    "resetPassword":{
+        "title":"パスワードをリセット",
+        "email":"メール",
+        "send":"送信",
+        "back":"戻る",
+        "success":"パスワードをリセットしました",
+        "error":"メールアドレスが無効です",
+        "notification":"通知",
+        "password": "新しいパスワード",
+        "confirmPassword": "パスワードを確認",
+        "submit": "提出"
     },
     "student_homepage": {
         "explore": "探検する",

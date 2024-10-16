@@ -22,7 +22,6 @@ const StudentHomeScreen = () => {
 	const [selectedQuiz, setSelectedQuiz] = useState(null);
 	const width = Dimensions.get('window').width;
 	const carouselHeight = width * 2 / 3;
-	const dataSet = [Images.banner1, Images.banner2, Images.banner3];
 
 	useEffect(() => {
 		getQuizzesPublished(selectedSubject);
@@ -40,7 +39,7 @@ const StudentHomeScreen = () => {
 
 	const handleNavigateToQuiz = () => {
 		setModalVisible(false);
-		navigation.push('(play)/single', { quizId: selectedQuizId });
+		navigation.push('(play)/single', { quiz: selectedQuiz });
 	};
 
 	return (
@@ -54,15 +53,19 @@ const StudentHomeScreen = () => {
 						width={width}
 						height={carouselHeight}
 						autoPlay={true}
-						data={dataSet}
+						data={bannerQuizzes}
 						mode='parallax'
 						scrollAnimationDuration={2500}
 						renderItem={({ item }) => (
-							<Image
-								source={item}
+							<TouchableOpacity onPress={()=> {
+								handlePressQuizItem(item)
+							}}>
+								<Image
+								source={item.quiz_thumb ? { uri: item.quiz_thumb } : Images.banner1}
 								className="w-full h-full rounded-2xl"
 								style={{ resizeMode: 'cover' }}
 							/>
+							</TouchableOpacity>
 						)}
 					/>
 				</View>
@@ -117,7 +120,7 @@ const StudentHomeScreen = () => {
 								autoPlay
 								loop
 								style={{
-									width: width*2/3,
+									width: width * 2 / 3,
 									height: carouselHeight,
 								}}
 							/>

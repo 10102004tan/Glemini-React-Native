@@ -18,11 +18,6 @@ import { useAppProvider } from '@/contexts/AppProvider';
 import Field from '@/components/customs/Field';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as ImagePicker from 'expo-image-picker';
-
-import {
-	MultipleSelectList,
-	SelectList,
-} from 'react-native-dropdown-select-list';
 import { useSubjectProvider } from '@/contexts/SubjectProvider';
 import { convertSubjectData } from '@/utils';
 import QuestionOverviewSkeleton from '@/components/loadings/QuestionOverviewSkeleton';
@@ -44,13 +39,31 @@ const QuizzOverViewScreen = () => {
 	const { id } = useGlobalSearchParams();
 	const { userData } = useAuthContext();
 	const [quizId, setQuizId] = useState('');
+	// Save init state
 	const [quizName, setQuizName] = useState('');
 	const [quizDescription, setQuizDescription] = useState('');
 	const [quizStatus, setQuizStatus] = useState('');
 	const [quizSubjects, setQuizSubjects] = useState([]);
 	const [quizThumbnail, setQuizThumbnail] = useState('');
+	// Save change state
+	const [quizNameChange, setQuizNameChange] = useState('');
+	const [quizDescriptionChange, setQuizDescriptionChange] = useState('');
+	const [quizStatusChange, setQuizStatusChange] = useState('');
+	const [quizSubjectsChange, setQuizSubjectsChange] = useState([]);
+	const [quizThumbnailChange, setQuizThumbnailChange] = useState('');
 	const [currentQuizQuestion, setCurrentQuizQuestion] = useState([]);
 	const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
+	// Hàm kiểm tra xem có thay đổi thông tin quiz không
+	const isChange = () => {
+		return (
+			quizName !== quizNameChange ||
+			quizDescription !== quizDescriptionChange ||
+			quizStatus !== quizStatusChange ||
+			quizSubjects !== quizSubjectsChange ||
+			quizThumbnail !== quizThumbnailChange
+		);
+	};
 
 	const {
 		setActionQuizType,
@@ -96,12 +109,19 @@ const QuizzOverViewScreen = () => {
 		const data = await response.json();
 		// console.log(data.metadata);
 		if (data.statusCode === 200) {
+			// Save init state
 			setQuizId(data.metadata._id);
 			setQuizThumbnail(data.metadata.quiz_thumb);
 			setQuizName(data.metadata.quiz_name);
 			setQuizDescription(data.metadata.quiz_description);
 			setQuizStatus(data.metadata.quiz_status);
 			setQuizSubjects(data.metadata.subject_ids);
+			// Save change state
+			setQuizNameChange(data.metadata.quiz_name);
+			setQuizDescriptionChange(data.metadata.quiz_description);
+			setQuizStatusChange(data.metadata.quiz_status);
+			setQuizSubjectsChange(data.metadata.subject_ids);
+			setQuizThumbnailChange(data.metadata.quiz_thumb);
 		}
 	};
 
@@ -132,6 +152,7 @@ const QuizzOverViewScreen = () => {
 
 	// Cập nhật thông tin của quiz
 	const handleUpdateQuiz = async (id) => {
+		console.log('UPDATE::QUIZ');
 		const quiz = {
 			quiz_id: id,
 			quiz_name: quizName,
@@ -168,6 +189,10 @@ const QuizzOverViewScreen = () => {
 	// Lấy danh sách câu hỏi của bộ quiz hiện tại
 	const createQuestion = () => {
 		handleCloseBottomSheet();
+		if (isChange()) {
+			handleUpdateQuiz(id);
+		}
+
 		router.push({
 			pathname: '(app)/(quiz)/edit_quiz_question',
 			params: { quizId: id },
@@ -364,7 +389,7 @@ const QuizzOverViewScreen = () => {
 					setShowConfirmDialog(false);
 					router.back('(app)/(quiz)/list');
 				}}
-				message={'Bạn chắc chắn muốn xóa bộ quiz này?'}
+				message={'Bạn chắc chắn muốn xóa bộ câu hỏi này?'}
 			/>
 
 			<ScrollView className="mb-[100px]">
@@ -375,10 +400,17 @@ const QuizzOverViewScreen = () => {
 						<View className="p-4 flex items-center justify-center flex-col">
 							{quizThumbnail ? (
 								<>
-									<Image
-										className="w-full max-h-[300px] h-[260px] rounded-2xl"
-										source={{ uri: quizThumbnail }}
-									></Image>
+									<TouchableOpacity
+										className="w-full max-h-[300px] h-[260px] rounded-2xl overflow-hidden"
+										onPress={() => {
+											pickImage();
+										}}
+									>
+										<Image
+											className="flex-1"
+											source={{ uri: quizThumbnail }}
+										></Image>
+									</TouchableOpacity>
 								</>
 							) : (
 								<TouchableOpacity
