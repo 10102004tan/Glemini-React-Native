@@ -217,7 +217,7 @@ const SinglePlay = () => {
 	if (isCompleted) {
 		return (
 			<ResultSingle
-				quizId={quizId}
+				quizId={quiz._id}
 				correctCount={correctCount}
 				wrongCount={wrongCount}
 				score={score}

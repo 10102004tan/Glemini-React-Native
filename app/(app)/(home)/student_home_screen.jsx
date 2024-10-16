@@ -18,7 +18,6 @@ const StudentHomeScreen = () => {
 	const { filterQuizzes, getQuizzesPublished, bannerQuizzes, getQuizzesBanner } = useQuizProvider();
 	const [selectedSubject, setSelectedSubject] = useState('all');
 	const [modalVisible, setModalVisible] = useState(false);
-	const [selectedQuizId, setSelectedQuizId] = useState(null);
 	const [selectedQuiz, setSelectedQuiz] = useState(null);
 	const width = Dimensions.get('window').width;
 	const carouselHeight = width * 2 / 3;
@@ -32,7 +31,6 @@ const StudentHomeScreen = () => {
 	}, [])
 
 	const handlePressQuizItem = (quiz) => {
-		setSelectedQuizId(quiz._id);
 		setSelectedQuiz(quiz);
 		setModalVisible(true);
 	};
