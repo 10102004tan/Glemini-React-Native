@@ -131,7 +131,7 @@
         "explore": "Khám phá",
         "categoryAll": "Tất cả",
         "author": "Tác giả:",
-        "turnPlay": "Lượt chơi",
+        "turnPlay": "Lượt chơi:",
         "btnThuThach": "Thử thách bạn",
         "btnLuyenTap": "Luyện tập",
         "desc": "Mô tả:",
@@ -168,5 +168,5 @@
     },
     "report":{
         "title":"Báo cáo"
-    },
+    }
 }

@@ -8,6 +8,7 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
 import { Audio } from 'expo-av';
+import { router } from 'expo-router';
 
 const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleRestart, quizId }) => {
 
@@ -44,6 +45,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 		};
 		fetchResultData();
 	}, [userData]);
+	
 	
 	const playCompletedSound = async () => {
 		try {
@@ -95,7 +97,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 				<Button
 					text={i18n.t('result.single.buttonPlayNewQuiz')}
 					onPress={() => {
-						console.log('Tìm bộ mới!!');
+						router.push('search')
 					}}
 					type="fill"
 					otherStyles={
