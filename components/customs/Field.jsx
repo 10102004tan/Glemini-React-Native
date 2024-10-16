@@ -24,6 +24,7 @@ const Field = ({
 				{icon && <View className="mr-2">{icon}</View>}
 
 				<TextInput
+					className="w-full"
 					value={value}
 					placeholderTextColor={'#757575'}
 					style={{ color: theme.text }}
