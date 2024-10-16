@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { Alert, Text, View, Image, Pressable } from 'react-native';
+import {Alert, Text, View, Image, Pressable, TouchableOpacity} from 'react-native';
 import { AuthContext } from '../../contexts/AuthContext';
 import { Link, router } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
@@ -8,18 +8,20 @@ import CardSetting from '@/components/customs/CardSetting';
 import { useAppProvider } from '@/contexts/AppProvider';
 import PROFCODE from "../../utils/ProfCode";
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
+import Toast from "react-native-toast-message";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LottieView from "lottie-react-native";
+import CustomButton from "@/components/customs/CustomButton";
 
 export default function ProfileScreen() {
 	const {
-		userData: { accessToken, _id, user_type },
-		teacherStatus,
-		signOut,
-		processAccessTokenExpired,
+		userData: { accessToken, _id, user_type,user_avatar },setUserData,userData
 	} = useContext(AuthContext);
 	const [isLoading, setIsLoading] = useState(false);
+	const [disable, setDisable] = useState(false);
 	const [avatar, setAvatar] = useState({
-		uri: 'https://cdn-icons-png.flaticon.com/512/25/25231.png',
-		tyle: 'image/png',
+		uri: user_avatar,
+		type: 'image/png',
 		name: 'avatar.png',
 	});
 	const [isEditAvatar, setIsEditAvatar] = useState(false);
@@ -47,38 +49,53 @@ export default function ProfileScreen() {
 	};
 
 	const updateAvatarHandler = async () => {
-		let formData = new FormData();
-		formData.append('user_avatar', {
+		setDisable(true)
+		const body = new FormData();
+		body.append('avatar', {
 			uri: avatar.uri,
-			type: avatar.type,
-			name: avatar.fileName,
+			type: `${avatar.type}/${avatar.name.split(".")[1]}`,
+			name: avatar.name,
 		});
 
-		fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.PROFILE_EDIT}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'multipart/form-data',
-				authorization: `${accessToken}`,
-				'x-client-id': _id,
-			},
-			body: formData
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				if (data.statusCode === 200) {
-					Alert.alert('Notification', 'Update successfully');
-				}
-				console.log(data);
-			})
-			.catch((error) => {
-				console.log(error.message);
+		try {
+			const res = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.PROFILE_EDIT}`, {
+				method: 'PUT',
+				headers: {
+					'authorization': `${accessToken}`,
+					'Content-Type': 'multipart/form-data',
+					'x-client-id': `${_id}`,
+				},
+				body: body,
 			});
+
+			const data = await res.json();
+			if (data.statusCode === 200) {
+				setIsEditAvatar(false);
+				const dataStore = { ...userData,user_avatar:data.metadata.user_avatar};
+				await AsyncStorage.setItem("userData", JSON.stringify(dataStore));
+				setUserData(dataStore);
+				Toast.show({
+					type: 'success',
+					text1: 'Success',
+					text2: 'Update avatar successfully'
+				})
+			}
+			setDisable(false)
+		}catch (error) {
+			Toast.show({
+				type: 'error',
+				text1: 'Error',
+				text2: 'Update avatar failed'
+			});
+			setDisable(false)
+		}
+
 	};
 
 	if (isLoading) {
 		return (
 			<View className="h-[100%] bg-white">
-				<Text>Loading...</Text>
+
 			</View>
 		);
 	}
@@ -125,11 +142,7 @@ export default function ProfileScreen() {
 					description={i18n.t('profile.editNow')}
 				/>
 				{user_type === "teacher" && (<CardSetting onPress={()=>{router.push({pathname:'/profile-auth'})}} title={i18n.t('profile.infoAuth')} description={i18n.t('profile.editNow')} />)}
-				{isEditAvatar && (<Pressable onPress={updateAvatarHandler}>
-					<View className="py-3 border mt-5">
-						<Text className="text-center">{i18n.t('profile.save')}</Text>
-					</View>
-				</Pressable>)}
+				{isEditAvatar && (<CustomButton disabled={disable} bg={"bg-white"} color={"text-black"} onPress={updateAvatarHandler} title={i18n.t('profile.save')} />)}
 
 			</View>
 		</View>

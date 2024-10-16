@@ -94,8 +94,15 @@ const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 		);
 
 		const data = await response.json();
-		// console.log(data);
-		return data.metadata; // URL của ảnh trên server
+		console.log(data);
+		const newImageRation = data.metadata.thumbnail.replace(
+			'h_100,w_100',
+			'h_260,w_300'
+		);
+
+		console.log(newImageRation);
+
+		return newImageRation; // URL của ảnh trên server
 	};
 
 	// Hàm chọn ảnh từ thư viện

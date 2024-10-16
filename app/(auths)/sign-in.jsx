@@ -16,6 +16,7 @@ const SignInScreen = () => {
 	const [password, setPassword] = useState('');
 	const {signIn} = useContext(AuthContext);
 	const {i18n} = useAppProvider();
+	const [disable, setDisable] = useState(false);
 
 	const handlerValidate = () => {
 		if (!email || !password) {
@@ -70,6 +71,7 @@ const SignInScreen = () => {
 	};
 
 	const handlerSignIn = async() => {
+		setDisable(true);
 		await signIn({email,password}).then((res)=>{
 			Toast.show({
 				type: 'success',
@@ -78,6 +80,7 @@ const SignInScreen = () => {
 				visibilityTime: TIME_SHOW_TOAST,
 				autoHide: true,
 			});
+			setDisable(false);
 		}).catch((err)=>{
 			Toast.show({
 				type: 'error',
@@ -86,6 +89,7 @@ const SignInScreen = () => {
 				visibilityTime: TIME_SHOW_TOAST,
 				autoHide: true,
 			});
+			setDisable(false);
 		});
 	};
 
@@ -103,7 +107,7 @@ const SignInScreen = () => {
 					</Link>
 				</View>
 
-				<CustomButton onPress={()=>{
+				<CustomButton disabled={disable} onPress={()=>{
 					handlerValidate() && handlerSignIn(); // call
 				}} title={i18n.t('signIn.login')} />
 
