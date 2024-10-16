@@ -88,8 +88,8 @@ const ResultReview = () => {
 							</View>
 
 							<View className='flex-row justify-start mb-4 items-center gap-4'>
-								<Text className='text-xl font-pregular'>Câu hỏi số {selectedIndex + 1}</Text>
-								<Text className='bg-slate-200 rounded-md px-3 py-1 font-pregular text-slate-500'>{currentQuestion.question_id.question_point} pts</Text>
+								<Text className='text-xl font-pregular'>{i18n.t('result.review.indexQuestion')} {selectedIndex + 1}</Text>
+								<Text className='bg-slate-200 rounded-md px-3 py-1 font-pregular text-slate-500'>{currentQuestion.question_id.question_point} {i18n.t('result.review.point')}</Text>
 							</View>
 
 							<View className='flex'>
@@ -114,16 +114,16 @@ const ResultReview = () => {
 
 							<View>
 								<Text className='text-base text-slate-600 font-pregular mt-4 underline'>
-									Giải thích:
+								{i18n.t('result.review.explanation')}
 								</Text>
 								<Text className='text-sm text-slate-600/90 font-pextralight'>
-									{currentQuestion.question_id.question_explanation || 'Không có giải thích!'}
+									{currentQuestion.question_id.question_explanation || i18n.t('result.review.textExplanation')}
 								</Text>
 							</View>
 
 							<View className='flex-row justify-around pt-5'>
 								<Button
-									text={'Trước'}
+									text={i18n.t('result.review.btnNext')}
 									onPress={goToPreviousQuestion}
 									loading={false}
 									type="fill"
@@ -133,7 +133,7 @@ const ResultReview = () => {
 								/>
 
 								<Button
-									text={'Sau'}
+									text={i18n.t('result.review.btnPrev')}
 									onPress={goToNextQuestion}
 									loading={false}
 									type="fill"

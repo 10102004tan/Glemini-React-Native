@@ -44,7 +44,7 @@ const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 	}, [content, richText]);
 
 	useEffect(() => {
-		console.log(editorValue);
+		// console.log(editorValue);
 		// Xử lý các trường hợp khác nhau của RichTextEditor
 		switch (typingType) {
 			// Trương hợp dùng rich text editor tạo giải thích cho câu hỏi
@@ -95,7 +95,14 @@ const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 
 		const data = await response.json();
 		console.log(data);
-		return data.metadata; // URL của ảnh trên server
+		const newImageRation = data.metadata.thumbnail.replace(
+			'h_100,w_100',
+			'h_260,w_300'
+		);
+
+		console.log(newImageRation);
+
+		return newImageRation; // URL của ảnh trên server
 	};
 
 	// Hàm chọn ảnh từ thư viện
@@ -120,8 +127,8 @@ const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 	};
 
 	return (
-		<View className="w-full flex-1 p-4">
-			<ScrollView className="">
+		<View className="flex-1 p-4">
+			<ScrollView className="flex-1 h-full">
 				<RichEditor
 					defaultParagraphSeparator=""
 					initialContentHTML={`<div>${content}</div>`}

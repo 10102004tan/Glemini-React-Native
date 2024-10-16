@@ -6,12 +6,12 @@ import { AuthContext } from "@/contexts/AuthContext";
 import AccoutntStatusItem from "@/components/customs/AccountStatusItem";
 
 export default function AccountScreen() {
-    const {userData:{user_fullname,user_email,user_type},userData,teacherStatus} = useContext(AuthContext);
+    const {userData:{user_fullname,user_email,user_type,user_avatar},userData,teacherStatus} = useContext(AuthContext);
     return (
         <View className="bg-white h-[100%] px-[20px]">
             <View>
                 <View className="flex flex-row gap-2 p-3 border-[1px] mt-3 border-[#eee] rounded">
-                    <Image src={'https://cdn-icons-png.flaticon.com/512/25/25231.png'} className="w-[60px] h-[60px] object-cover rounded-full" />
+                    <Image src={user_avatar} className="w-[60px] h-[60px] object-cover rounded-full" />
                     <View className="flex-1">
                         <Text className="font-semibold text-[14px]">{user_fullname}</Text>
                         <Text className="text-gray text-[12px]">{user_email}</Text>

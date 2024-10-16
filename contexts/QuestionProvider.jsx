@@ -115,6 +115,11 @@ const QuestionProvider = ({ children }) => {
 		});
 	};
 
+	// Chọn loại câu hỏi
+	const selectQuestionType = (type) => {
+		return setQuestion({ ...question, question_type: type });
+	};
+
 	// Xóa một đáp án đã tạo
 	const deleteAnswer = (id) => {
 		if (question.question_answer_ids.length > 1) {
@@ -233,10 +238,7 @@ const QuestionProvider = ({ children }) => {
 				// Lưu câu hỏi vào mảng các câu hỏi
 				setQuestions([...questions, question]);
 				resetQuestion();
-				router.back({
-					pathname: '/(app)/(quiz)/overview/',
-					params: { id: quizId },
-				});
+				router.back();
 			}
 		} catch (error) {
 			console.log(error);
@@ -275,6 +277,8 @@ const QuestionProvider = ({ children }) => {
 
 	// Cập nhật câu hỏi
 	const editQuestion = async (quizId, questionId) => {
+		console.log(JSON.stringify({ ...question, quiz_id: quizId }, null, 2));
+
 		try {
 			// Gọi API cập nhật câu hỏi
 			const response = await fetch(
@@ -304,11 +308,8 @@ const QuestionProvider = ({ children }) => {
 
 				setQuestions(newQuestions);
 				resetQuestion();
-				console.log('Quiz ID: ', quizId);
-				router.replace({
-					pathname: '/(app)/(quiz)/overview',
-					params: { id: quizId },
-				});
+				// console.log('Quiz ID: ', quizId);
+				router.back();
 			}
 		} catch (error) {
 			console.log(error);
@@ -335,6 +336,7 @@ const QuestionProvider = ({ children }) => {
 				editQuestion,
 				checkCorrectAnswer,
 				getQuestionFromDocx,
+				selectQuestionType,
 			}}
 		>
 			{children}

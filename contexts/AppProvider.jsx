@@ -1,17 +1,17 @@
 import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { I18n } from "i18n-js";
-import en from "../languages/en.json";
-import ja from "../languages/ja.json";
-import vi from "../languages/vi.json";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+	createContext,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from 'react';
+import { I18n } from 'i18n-js';
+import en from '../languages/en.json';
+import ja from '../languages/ja.json';
+import vi from '../languages/vi.json';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const AppContext = createContext();
-import socket from "../utils/socket";
+import socket from '../utils/socket';
 
 // Example about a context provider in React Native
 const AppProvider = ({ children }) => {
@@ -40,7 +40,6 @@ const AppProvider = ({ children }) => {
         setLanguage(key);
       }
     });
-
     console.log("AppProvider");
   }, []);
 

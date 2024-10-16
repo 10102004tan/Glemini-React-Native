@@ -37,14 +37,6 @@ export default function HomeScreen() {
         />
         <Button
           onPress={() => {
-            router.push("/(app)/(play)/single");
-          }}
-          text={"Single"}
-          otherStyles={"mt-4 p-4"}
-          textStyles={"text-center text-white"}
-        />
-        <Button
-          onPress={() => {
             router.push({
               pathname: "(app)/(quiz)/detail_quiz",
               // params: { detail_quiz: "66ff90ec69a02759b89ef55c" },

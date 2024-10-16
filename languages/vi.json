@@ -118,11 +118,24 @@
         },
         "review": {
             "title": "Xem lại Câu trả lời",
-            "text_question": "Câu hỏi"
+            "text_question": "Câu hỏi",
+            "indexQuestion": "Câu hỏi số",
+            "explanation": "Giải thích: ",
+            "textExplanation": "Không có giải thích ở đây!",
+            "btnNext": "Trước",
+            "btnPrev": "Sau",
+            "point": "điểm"
         }
     },
     "student_homepage": {
-        "explore": "Khám phá"
+        "explore": "Khám phá",
+        "categoryAll": "Tất cả",
+        "author": "Tác giả:",
+        "turnPlay": "Lượt chơi",
+        "btnThuThach": "Thử thách bạn",
+        "btnLuyenTap": "Luyện tập",
+        "desc": "Mô tả:",
+        "textDesc": "Không có mô tả ở đây!"
     },
     "profile":{
         "title":"Thông tin tài khoản",
