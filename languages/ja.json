@@ -106,6 +106,18 @@
             "buttonReview": "見直す"
         }
     },
+    "resetPassword":{
+        "title":"パスワードをリセット",
+        "email":"メール",
+        "send":"送信",
+        "back":"戻る",
+        "success":"パスワードをリセットしました",
+        "error":"メールアドレスが無効です",
+        "notification":"通知",
+        "password": "新しいパスワード",
+        "confirmPassword": "パスワードを確認",
+        "submit": "提出",
+    },
     "student_homepage": {
         "explore": "発見する"
     },
