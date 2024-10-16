@@ -21,46 +21,7 @@ export default function AppRootLayout() {
 	const { i18n, socket } = useAppProvider();
 	const { title } = useGlobalSearchParams();
 
-	useEffect(() => {
-		if (userData) {
-			fetchStatus();
-		}
-	}, [userData]);
 
-	socket.on('update-status', ({ user_id, teacher_status }) => {
-		if (userData._id === user_id) {
-			setTeacherStatus(teacher_status);
-		}
-	});
-
-	if (isLoading) {
-		return <Text>Loading...</Text>;
-	}
-
-	if (!userData) {
-		return <Redirect href={'/(auths)/sign-in'} />;
-	}
-
-	return (
-		<Stack>
-			<Stack.Screen
-				name="(home)"
-				options={{
-					headerShown: false,
-				}}
-			/>
-			<Stack.Screen
-				name="profile"
-				options={{
-					headerTitle: i18n.t('profile.title'),
-				}}
-			/>
-
-  const { userData, isLoading, fetchStatus,setTeacherStatus} = useContext(AuthContext);
-  const { isSave, setIsSave } = useQuizProvider();
-  const { i18n,socket } = useAppProvider();
-  const [userId,setUserId] = useState(null);
-  const { title } = useGlobalSearchParams();
 
   useEffect(() => {
     if (userData) {
