@@ -1,31 +1,31 @@
-import { View, Text, TouchableOpacity, Image } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import Wrapper from '../../../components/customs/Wrapper';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import Button from '../../../components/customs/Button';
-import Overlay from '../../../components/customs/Overlay';
-import BottomSheet from '../../../components/customs/BottomSheet';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { useRouter, useGlobalSearchParams } from 'expo-router';
-import { ScrollView } from 'react-native';
-import QuestionOverview from '../../../components/customs/QuestionOverview';
-import { useQuestionProvider } from '../../../contexts/QuestionProvider';
-import { useQuizProvider } from '../../../contexts/QuizProvider';
-import { useAuthContext } from '../../../contexts/AuthContext';
-import { API_URL, END_POINTS, API_VERSION } from '@/configs/api.config';
-import { useAppProvider } from '@/contexts/AppProvider';
-import Field from '@/components/customs/Field';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import * as ImagePicker from 'expo-image-picker';
-import { useSubjectProvider } from '@/contexts/SubjectProvider';
-import { convertSubjectData } from '@/utils';
-import QuestionOverviewSkeleton from '@/components/loadings/QuestionOverviewSkeleton';
-import QuizInforSkeleton from '@/components/loadings/QuizInforSkeleton';
-import { Feather } from '@expo/vector-icons';
-import ConfirmDialog from '@/components/dialogs/ConfirmDialog';
-import { Status } from '@/constants';
-import DropDownMultipleSelect from '@/components/customs/DropDownMultipleSelect';
+import { View, Text, TouchableOpacity, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import Wrapper from "../../../components/customs/Wrapper";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Button from "../../../components/customs/Button";
+import Overlay from "../../../components/customs/Overlay";
+import BottomSheet from "../../../components/customs/BottomSheet";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useRouter, useGlobalSearchParams } from "expo-router";
+import { ScrollView } from "react-native";
+import QuestionOverview from "../../../components/customs/QuestionOverview";
+import { useQuestionProvider } from "../../../contexts/QuestionProvider";
+import { useQuizProvider } from "../../../contexts/QuizProvider";
+import { useAuthContext } from "../../../contexts/AuthContext";
+import { API_URL, END_POINTS, API_VERSION } from "@/configs/api.config";
+import { useAppProvider } from "@/contexts/AppProvider";
+import Field from "@/components/customs/Field";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import * as ImagePicker from "expo-image-picker";
+import { useSubjectProvider } from "@/contexts/SubjectProvider";
+import { convertSubjectData } from "@/utils";
+import QuestionOverviewSkeleton from "@/components/loadings/QuestionOverviewSkeleton";
+import QuizInforSkeleton from "@/components/loadings/QuizInforSkeleton";
+import { Feather } from "@expo/vector-icons";
+import ConfirmDialog from "@/components/dialogs/ConfirmDialog";
+import { Status } from "@/constants";
+import DropDownMultipleSelect from "@/components/customs/DropDownMultipleSelect";
 
 const QuizzOverViewScreen = () => {
 	const router = useRouter();
@@ -85,6 +85,7 @@ const QuizzOverViewScreen = () => {
 	useEffect(() => {
 		if (isSave) {
 			handleUpdateQuiz(id);
+      router.back();
 		}
 	}, [isSave]);
 
