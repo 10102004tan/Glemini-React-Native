@@ -57,8 +57,8 @@ const CreateTitleQuizzScreen = () => {
 	return (
 		<Wrapper>
 			<View className="flex-1 items-center justify-center p-4">
-				<Text className="text-2xl">
-					Hãy đặt tên cho bộ Quiz của bạn
+				<Text className="text-2xl mb-4">
+					Hãy đặt tên cho bộ câu hỏi của bạn
 				</Text>
 				<Field
 					value={quizName}

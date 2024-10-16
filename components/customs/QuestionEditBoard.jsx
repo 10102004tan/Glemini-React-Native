@@ -37,18 +37,10 @@ const QuestionEditBoard = ({
 	const { deleteAnswer, markCorrectAnswer, checkCorrectAnswer } =
 		useQuestionProvider();
 
-	useEffect(() => {
-		if (content === '') {
-			console.log('true');
-		} else {
-			console.log('false');
-		}
-	}, [content]);
-
 	return (
 		<Animated.View
 			style={[animatedStyle]}
-			className="rounded-2xl border border-gray flex items-center justify-center min-h-[260px] absolute z-20 top-[5%]
+			className="rounded-2xl border border-gray flex items-center justify-center max-h-[460px] absolute z-20 top-[5%]
       left-[5%] right-[50%] w-[90%] bg-white"
 		>
 			{/* Dùng để chỉnh sửa câu hỏi, đáp án của quiz */}
