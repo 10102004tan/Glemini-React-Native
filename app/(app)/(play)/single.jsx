@@ -256,7 +256,7 @@ const SinglePlay = () => {
 								color: 'white',
 								fontSize: 25,
 								fontWeight: '700',
-                        height: 30
+                        height: 100
 							},
 						}}
 						contentWidth={width}
