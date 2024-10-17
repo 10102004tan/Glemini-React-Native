@@ -125,10 +125,10 @@ export default function ProfileScreen() {
 					onPress={() => {
 						router.push({
 							pathname: '/profile-edit',
-							params: { title: 'Thong tin ca nhan' },
+							params: { title: i18n.t("profile.info") },
 						});
 					}}
-					title={"Thông tin cá nhân"}
+					title={i18n.t("profile.info")}
 					description={i18n.t('profile.editNow')}
 					isActice={true}
 				/>

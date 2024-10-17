@@ -36,7 +36,10 @@
         "documentConfirm": "Document Comfirm",
         "cardDescription": "Card Image or ID Card",
         "documentDescription": "Document Comfirm",
-        "cardIdDescription": "Card Image or ID Card"
+        "cardIdDescription": "Card Image or ID Card",
+        "descForCard": "Please provide a clear card image",
+        "descForCardID": "Please take a photo of CCCD in a well-lit place",
+        "descForDocument": "Please provide a clear document confirmation image"
     },
     "error": {
         "notification": "Notification",
@@ -115,7 +118,7 @@
             "point": "pts"
         }
     },
-    "resetPassword":{
+    "resetPassword": {
         "title":"Reset Password",
         "email":"Email",
         "send":"Send",
@@ -125,7 +128,13 @@
         "notification":"Notification",
         "password": "New Password",
         "confirmPassword": "Confirm Password",
-        "submit": "Submit"
+        "submit": "Submit",
+        "haveAccount": "Already have an account?",
+        "notHaveAccount": "Don't have an account?",
+        "backToSignIn": "Back to Sign In",
+        "changeEmail": "Change Email",
+        "resendCode": "Resend Code",
+        "notReceiveCode": "Didn't receive the code?"
     },
     "student_homepage": {
         "explore": "Explore",
@@ -140,10 +149,14 @@
     "profile":{
         "title":"Profile",
         "fullname":"Fullname",
+        "info": "Personal Information",
         "email":"Email",
         "phone":"Phone",
         "address":"Address",
         "password":"Password",
+        "oldPassword":"Old Password",
+        "newPassword":"New Password",
+        "confirmPassword":"Confirm Password",
         "edit":"Edit",
         "save":"Save",
         "school":"School",
@@ -163,9 +176,19 @@
         "title": "Classes"
     },
     "account": {
-        "title": "Account"
+        "title": "Account",
+        "buttonEdit": "Edit"
     },
     "report": {
         "title": "Report"
+    },
+    "status": {
+        "title": "Status",
+        "active": "Active",
+        "pedding": "Pedding",
+        "reject": "Reject"
+    },
+    "library": {
+        "title": "Library"
     }
 }

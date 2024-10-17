@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { Text, View } from 'react-native';
+import {useAppProvider} from "@/contexts/AppProvider";
 
 export default function AccoutntStatusItem({ status = '' }) {
+	const {i18n} = useAppProvider();
 	let text;
 	let color;
 	if (status === 'active') {
-		text = 'Da xac thuc';
+		text = i18n.t("status.active");
 		color = 'bg-green-500';
 	} else if (status === 'pedding') {
-		text = 'Cho duyet ho so';
+		text = i18n.t("status.pedding");
 		color = 'bg-yellow-500';
 	} else {
-		text = 'Bi tu choi';
+		text = i18n.t("status.reject");
 		color = 'bg-red-500';
 	}
 	return (
