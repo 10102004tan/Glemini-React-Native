@@ -70,7 +70,6 @@ const SignUpScreen = () => {
                 allowsEditing: true,
                 quality: 1,
             })
-            console.log(result.assets[0].fileName.split(".")[1]);
             if (!result.canceled) {
                 setImageIDCard({
                     uri: result.assets[0].uri,
@@ -117,6 +116,7 @@ const SignUpScreen = () => {
     };
 
     const handlerLongPress = (type) => {
+        setIsOpenedModal(true);
         if (type === TYPEIMAGE.IDCard) {
             setImageCurrent(imageIDCard);
         }
@@ -126,7 +126,6 @@ const SignUpScreen = () => {
         else {
             setImageCurrent(imageConfirm);
         }
-        setDisabled(true);
     };
 
     const handlerValidate = () => {
@@ -161,7 +160,7 @@ const SignUpScreen = () => {
                 visibilityTime: TIME_SHOW_TOAST,
                 autoHide: true,
             });
-            return;
+            return false;
         }
         if(!validateEmail(email)){
             Toast.show({

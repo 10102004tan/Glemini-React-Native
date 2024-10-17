@@ -101,12 +101,14 @@ export const AuthProvider = ({ children }) => {
       console.log(data);
       await AsyncStorage.removeItem("userData");
       setUserData(null);
+      setTeacherStatus(null);
     } else {
       if (data.message === "expired") {
         await processAccessTokenExpired();
       } else {
         await AsyncStorage.removeItem("userData");
         setUserData(null);
+        setTeacherStatus(null);
       }
     }
   };

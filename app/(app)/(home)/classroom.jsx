@@ -1,8 +1,19 @@
 import { View, Text} from 'react-native';
-import React from 'react';
+import React, {useContext} from 'react';
 import Wrapper from '@/components/customs/Wrapper';
+import {AuthContext} from "@/contexts/AuthContext";
+import LockFeature from "@/components/customs/LockFeature";
 
 const ClassroomScreen = () => {
+
+	const {teacherStatus} = useContext(AuthContext);
+
+	console.log(teacherStatus)
+	if (teacherStatus && (teacherStatus === 'pedding' || teacherStatus === 'rejected')) {
+		return (
+			<LockFeature/>
+		)
+	}
 	
 	return (
 		<Wrapper>
