@@ -77,13 +77,16 @@ const RichTextEditor = ({
 	}, [editorValue]);
 
 	// Hàm tải ảnh lên server
-	const uploadImage = async (imageUri) => {
+	const uploadImage = async (file) => {
 		try {
 			const formData = new FormData();
-			formData.append('question_image', {
+
+			const cleanFileName = file.fileName.replace(/[^a-zA-Z0-9.]/g, '_');
+
+			formData.append('file', {
 				uri: imageUri,
-				name: 'photo.jpg',
-				type: 'image/jpeg',
+				name: cleanFileName,
+				type: file.mimeType,
 			});
 
 			const response = await fetch(
@@ -120,11 +123,11 @@ const RichTextEditor = ({
 		});
 
 		if (!result.canceled && result.assets.length > 0) {
-			const imageUri = result.assets[0].uri;
-			console.log(imageUri);
+			// const imageUri = result.assets[0].uri;
+			// console.log(imageUri);
 
 			// Tải ảnh lên server và lấy URL của ảnh
-			const imageUrl = await uploadImage(imageUri);
+			const imageUrl = await uploadImage(result.assets[0]);
 
 			// Chèn URL ảnh vào RichEditor
 			richText.current.insertImage(imageUrl);
@@ -132,11 +135,11 @@ const RichTextEditor = ({
 	};
 
 	return (
-		<View className="flex-1 p-4">
-			<ScrollView className="flex-1 h-full">
+		<View className="flex-1 w-full p-4 ">
+			<ScrollView className="">
 				<RichEditor
 					defaultParagraphSeparator=""
-					initialContentHTML={`<div>${content}</div>`}
+					initialContentHTML={content}
 					placeholder="Nhập giải thích cho câu hỏi ở đây ..."
 					style={{ width: '100%', height: 300 }}
 					ref={richText}
@@ -155,8 +158,8 @@ const RichTextEditor = ({
 					actions.setUnderline,
 					actions.insertBulletsList,
 					actions.insertOrderedList,
-					actions.insertImage,
 					actions.insertLink,
+					typingType !== actions.insertImage,
 				]}
 				iconMap={{
 					[actions.heading1]: handleHead,

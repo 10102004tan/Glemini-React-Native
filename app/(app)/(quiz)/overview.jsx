@@ -28,7 +28,6 @@ import { Status } from '@/constants';
 import DropDownMultipleSelect from '@/components/customs/DropDownMultipleSelect';
 import SkeletonLoading from '@/components/loadings/SkeletonLoading';
 
-
 const QuizzOverViewScreen = () => {
 	const router = useRouter();
 	const [
@@ -86,10 +85,10 @@ const QuizzOverViewScreen = () => {
 
 	// Lưu thông tin của quiz khi người dùng ấn nút lưu trên thanh header
 	useEffect(() => {
-		console.log("test::overview");
+		// console.log('test::overview');
 		if (isSave) {
 			handleUpdateQuiz(id);
-      router.back();
+			router.back();
 		}
 	}, [isSave]);
 
@@ -219,14 +218,17 @@ const QuizzOverViewScreen = () => {
 	};
 
 	// Hàm tải ảnh lên server
-	const uploadImage = async (imageUri, fileName, fileType) => {
+	const uploadImage = async (file) => {
 		try {
 			setUploadingImage(true);
+
+			console.log(JSON.stringify(file, null, 2));
+			const cleanFileName = file.fileName.replace(/[^a-zA-Z0-9.]/g, '_');
 			const formData = new FormData();
 			formData.append('file', {
-				uri: imageUri,
-				name: fileName,
-				type: fileType,
+				uri: file.uri,
+				name: cleanFileName,
+				type: file.mimeType,
 			});
 
 			const response = await fetch(
@@ -248,7 +250,6 @@ const QuizzOverViewScreen = () => {
 		} catch (error) {
 			if (error.message === 'Network request failed') {
 				alert('Lỗi mạng, vui lòng kiểm tra kết nối và thử lại');
-				await processAccessTokenExpired();
 			}
 		} finally {
 			setUploadingImage(false);
@@ -268,18 +269,10 @@ const QuizzOverViewScreen = () => {
 			if (!result.canceled && result.assets.length > 0) {
 				setUploadingImage(true);
 
-				const imageUri = result.assets[0].uri;
-				const fileName = imageUri.split('/').pop();
-				const fileType = result.assets[0].mimeType;
-
 				// console.log(JSON.stringify(result.assets[0], null, 2));
 
 				// Tải ảnh lên server và lấy URL của ảnh
-				const imageUrl = await uploadImage(
-					imageUri,
-					fileName,
-					fileType
-				);
+				const imageUrl = await uploadImage(result.assets[0]);
 				setQuizThumbnail(imageUrl);
 			}
 		}
@@ -299,12 +292,19 @@ const QuizzOverViewScreen = () => {
 	return (
 		<Wrapper>
 			{/* Overlay */}
-			{(visibleCreateQuestionBottomSheet ||
-				visibleEditQuizBottomSheet) && (
-				<Overlay onPress={handleCloseBottomSheet} />
-			)}
+			<Overlay
+				onPress={handleCloseBottomSheet}
+				visible={
+					visibleCreateQuestionBottomSheet ||
+					visibleEditQuizBottomSheet
+				}
+			/>
+
 			{/* Bottom Sheet Create */}
-			<BottomSheet visible={visibleCreateQuestionBottomSheet}>
+			<BottomSheet
+				visible={visibleCreateQuestionBottomSheet}
+				onClose={handleCloseBottomSheet}
+			>
 				<View className="flex flex-col items-start justify-start">
 					<Text className="text-lg">Chọn loại câu hỏi</Text>
 					<View className="mt-4">
@@ -348,7 +348,10 @@ const QuizzOverViewScreen = () => {
 			</BottomSheet>
 
 			{/* Bottom Sheet Edit */}
-			<BottomSheet visible={visibleEditQuizBottomSheet}>
+			<BottomSheet
+				visible={visibleEditQuizBottomSheet}
+				onClose={handleCloseBottomSheet}
+			>
 				<View className="flex flex-col items-start justify-start">
 					<View className="w-full">
 						<Field
