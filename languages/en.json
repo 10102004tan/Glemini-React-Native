@@ -112,7 +112,8 @@
             "textExplanation": "No explanation here!",
             "btnNext": "Next",
             "btnPrev": "Previous",
-            "point": "pts"
+            "point": "pts",
+            "userAnswer": "Your answer: "
         }
     },
     "resetPassword":{

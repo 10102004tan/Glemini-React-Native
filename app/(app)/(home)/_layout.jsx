@@ -109,14 +109,6 @@ export default function TabLayout() {
               color={color}
             />
           ),
-
-          tabBarButton: (props) => {
-            if (user_type === "teacher") {
-              return null;
-            } else {
-              return <TouchableOpacity {...props} />;
-            }
-          },
         }}
       />
 

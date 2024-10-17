@@ -113,7 +113,8 @@
             "textExplanation": "ここに説明はありません!",
             "btnNext": "次へ",
             "btnPrev": "前へ",
-            "point": "得点"
+            "point": "得点",
+            "userAnswer": "質問番号"
         }
     },
     "resetPassword":{
