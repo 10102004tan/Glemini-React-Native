@@ -54,12 +54,14 @@ const detailquizz = () => {
   const [quizStatus, setQuizStatus] = useState("");
   const [quizSubjects, setQuizSubjects] = useState([]);
   const [quizThumbnail, setQuizThumbnail] = useState("");
+  const [quizTurn, setQuizTurn] = useState("");
   const [currentQuizQuestion, setCurrentQuizQuestion] = useState([]);
 
   //selectlist
   const [selectedSchool, setSelectedSchool] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
 
+  // bottom sheet
   const {
     showBottomSheetMoreOptions,
     showBottomSheetSaveToLibrary,
@@ -92,6 +94,7 @@ const detailquizz = () => {
       setQuizDescription(data.metadata.quiz_description);
       setQuizStatus(data.metadata.quiz_status);
       setQuizSubjects(data.metadata.subject_ids);
+      setQuizTurn(data.metadata.quiz_turn);
     }
   };
 
@@ -133,7 +136,7 @@ const detailquizz = () => {
         },
         body: JSON.stringify({
           user_id: userData._id,
-          
+
           collection_id,
           quiz_id: quizId,
         }),
@@ -142,11 +145,10 @@ const detailquizz = () => {
     const data = await response.json();
     console.log(data);
     if (data.statusCode === 200) {
-      
       setSelectedCollection([]);
     }
   };
-  
+
   const getAllCollections = async () => {
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_GETALL}`,
@@ -222,12 +224,17 @@ const detailquizz = () => {
       />
 
       {/* Overlay */}
-      {(showBottomSheetMoreOptions || showBottomSheetSaveToLibrary) && (
-        <Overlay onPress={closeBottomSheet} />
-      )}
+
+      <Overlay
+        onPress={closeBottomSheet}
+        visible={showBottomSheetMoreOptions || showBottomSheetSaveToLibrary}
+      ></Overlay>
 
       {/* Bottom Sheet */}
-      <BottomSheet visible={showBottomSheetMoreOptions}>
+      <BottomSheet
+        visible={showBottomSheetMoreOptions}
+        onClose={closeBottomSheet}
+      >
         <Button
           text={"Chỉnh sửa"}
           otherStyles={"m-2 flex-row"}
@@ -255,7 +262,10 @@ const detailquizz = () => {
       </BottomSheet>
 
       {/* BottomSheet lưu vào bộ sưu tập */}
-      <BottomSheet visible={showBottomSheetSaveToLibrary}>
+      <BottomSheet
+        visible={showBottomSheetSaveToLibrary}
+        onClose={closeBottomSheet}
+      >
         <View className="m-2">
           <Text className="flex text-center text-[18px] text-gray">
             Lưu vào bộ sưu tập
@@ -353,7 +363,7 @@ const detailquizz = () => {
 
       <View>
         <Text className="text-gray mt-8 text-right right-4">
-          100 người đã tham gia
+          {quizTurn} người đã tham gia
         </Text>
       </View>
 
@@ -380,7 +390,7 @@ const detailquizz = () => {
       </ScrollView>
 
       <View className="w-full h-[1px] bg-gray"></View>
-      <View className="p-2">
+      <View className="p-2 flex justify-center">
         <Button
           text={"Bắt đầu Quiz"}
           otherStyles={"p-4"}
