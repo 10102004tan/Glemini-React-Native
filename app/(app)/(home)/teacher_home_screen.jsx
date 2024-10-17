@@ -38,10 +38,18 @@ const CreateQuizzScreen = () => {
 	return (
 		<Wrapper>
 			{/* Overlay */}
-			{visibleBottomSheet && <Overlay onPress={handleCloseBottomSheet} />}
+			{
+				<Overlay
+					onPress={handleCloseBottomSheet}
+					visible={visibleBottomSheet}
+				/>
+			}
 
 			{/* Bottom Sheet */}
-			<BottomSheet visible={visibleBottomSheet}>
+			<BottomSheet
+				visible={visibleBottomSheet}
+				onClose={handleCloseBottomSheet}
+			>
 				<View className="flex flex-col items-start justify-start">
 					<Text className="text-lg">Tạo bài kiểm tra với AI</Text>
 					<View className="flex items-center justify-start flex-row mt-4">
