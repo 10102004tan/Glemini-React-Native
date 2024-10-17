@@ -1,21 +1,21 @@
 import { View, Text, Image, TouchableWithoutFeedback } from 'react-native';
 import React, { useContext, useState } from 'react';
-import Wrapper from '../../../components/customs/Wrapper';
-import { Images } from '../../../constants';
-import Field from '../../../components/customs/Field';
+import Wrapper from '../../components/customs/Wrapper';
+import { Images } from '../../constants';
+import Field from '../../components/customs/Field';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import PressAction from '../../../components/customs/PressAction';
+import PressAction from '../../components/customs/PressAction';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import BottomSheet from '../../../components/customs/BottomSheet';
-import { useAppProvider } from '../../../contexts/AppProvider';
+import BottomSheet from '../../components/customs/BottomSheet';
+import { useAppProvider } from '../../contexts/AppProvider';
 import { useRouter } from 'expo-router';
-import Overlay from '../../../components/customs/Overlay';
+import Overlay from '../../components/customs/Overlay';
 import LockFeature from '@/components/customs/LockFeature';
 import { AuthContext } from '@/contexts/AuthContext';
-import QuizzCreateAction from '../../../components/customs/QuizCreateAction';
+import QuizzCreateAction from '../../components/customs/QuizCreateAction';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 
-const CreateQuizzScreen = () => {
+const TeacherHomeScreen = () => {
 	const { teacherStatus } = useContext(AuthContext);
 	const { setIsHiddenNavigationBar } = useAppProvider();
 	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
@@ -165,4 +165,4 @@ const CreateQuizzScreen = () => {
 	);
 };
 
-export default CreateQuizzScreen;
+export default TeacherHomeScreen;

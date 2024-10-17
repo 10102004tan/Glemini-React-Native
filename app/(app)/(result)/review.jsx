@@ -58,7 +58,7 @@ const ResultReview = () => {
 				</View>
 				<Text className='text-2xl text-slate-800 font-semibold text-center'>{i18n.t('result.review.title')}</Text>
 			</View>
-			<ScrollView className='py-4'>
+			<ScrollView className='py-4' showsVerticalScrollIndicator={false}>
 				{resultData.result_questions.map((question, index) => (
 					<TouchableOpacity key={index} onPress={() => openModal(index)}>
 						<QuestionResultItem question={question} />
