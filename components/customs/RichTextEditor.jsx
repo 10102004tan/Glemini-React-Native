@@ -12,12 +12,16 @@ import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import { Status } from '@/constants';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const RichTextEditor = ({
 	typingType = '',
 	content = '',
 	selectedAnswer = 0,
 	focus = false,
+	isSave = false,
+	setIsSaveData = () => {},
+	closeEditBoard = () => {},
 }) => {
 	const [editorValue, setEditorValue] = useState('');
 	const { question, setQuestion, editAnswerContent } = useQuestionProvider();
@@ -49,8 +53,12 @@ const RichTextEditor = ({
 	}, [content, richText]);
 
 	useEffect(() => {
-		// console.log(editorValue);
-		// Xử lý các trường hợp khác nhau của RichTextEditor
+		if (isSave) {
+			handleUpdateData();
+		}
+	}, [isSave]);
+
+	const handleUpdateData = () => {
 		switch (typingType) {
 			// Trương hợp dùng rich text editor tạo giải thích cho câu hỏi
 			case Status.quiz.EXPLAINATION:
@@ -74,7 +82,9 @@ const RichTextEditor = ({
 			default:
 				break;
 		}
-	}, [editorValue]);
+		setIsSaveData(false);
+		closeEditBoard();
+	};
 
 	// Hàm tải ảnh lên server
 	const uploadImage = async (file) => {
@@ -141,7 +151,7 @@ const RichTextEditor = ({
 					defaultParagraphSeparator=""
 					initialContentHTML={content}
 					placeholder="Nhập giải thích cho câu hỏi ở đây ..."
-					style={{ width: '100%', height: 300 }}
+					style={{ width: '100%' }}
 					ref={richText}
 					onChange={(descriptionText) => {
 						setEditorValue(descriptionText);

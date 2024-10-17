@@ -172,6 +172,7 @@ const EditQuizQuestion = () => {
 				handleClose={() => {
 					closeEditBoard();
 				}}
+				closeEditBoard={closeEditBoard}
 				mutipleChoice={mutipleChoice}
 				answerEditSelected={answerEditSelected}
 				visible={showQuestionBoard}
