@@ -110,7 +110,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 			<View className="flex-row p-5 bg-[#435362] mt-5 mx-3 rounded-lg">
 				<Image
 					source={{
-						uri: 'https://scontent.fsgn5-14.fna.fbcdn.net/v/t39.30808-1/456537396_794061249555708_1663471177791048027_n.jpg?stp=dst-jpg_s200x200&_nc_cat=101&ccb=1-7&_nc_sid=50d2ac&_nc_eui2=AeFsVKryqdDFHD9LyKwncdC1HTmCAzypGDgdOYIDPKkYOI3clzOxlMLTwLW5KtwEY70jyPrCI5YMekhp1w_ex4Jg&_nc_ohc=eyXn5PYjLdcQ7kNvgFdsotm&_nc_ht=scontent.fsgn5-14.fna&_nc_gid=A4COVmBRgOZfuOKFOuZclAs&oh=00_AYA8zKzNfJe9vsPnpwW-eW6zhp_h2K_2lbzlpiaIImOUhw&oe=66FF40CD',
+						uri: userData.user_avatar
 					}}
 					className="w-20 h-20 rounded-full"
 					style={{ resizeMode: 'cover' }}
