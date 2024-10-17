@@ -37,7 +37,10 @@
         "documentConfirm": "文書確認",
         "cardDescription": "カード画像またはIDカード",
         "documentDescription": "文書確認",
-        "cardIdDescription": "カード画像またはIDカード"
+        "cardIdDescription": "カード画像またはIDカード",
+        "descForCard": "はっきりとしたカード画像を提供してください",
+        "descForCardID": "明るい場所でCCCDを撮影してください",
+        "descForDocument": "はっきりとした文書確認画像を提供してください"
     },
     "error": {
         "notification": "通知",
@@ -126,7 +129,13 @@
         "notification":"通知",
         "password": "新しいパスワード",
         "confirmPassword": "パスワードを確認",
-        "submit": "提出"
+        "submit": "提出",
+        "haveAccount": "すでにアカウントをお持ちですか？",
+        "notHaveAccount": "アカウントをお持ちでない場合",
+        "backToSignIn": "サインインに戻る",
+        "changeEmail": "メールアドレスを変更",
+        "resendCode": "コードを再送信",
+        "notReceiveCode": "受信していない場合"
     },
     "student_homepage": {
         "explore": "探検する",
@@ -141,10 +150,14 @@
     "profile":{
         "title":"プロフィール",
         "fullname":"フルネーム",
+        "info": "個人情報",
         "email":"メール",
         "phone":"電話",
         "address":"住所",
         "password":"パスワード",
+        "oldPassword":"古いパスワード",
+        "newPassword":"新しいパスワード",
+        "confirmPassword":"パスワードを確認",
         "school":"学校",
         "editNow":"今すぐ編集",
         "save":"セーブ",
@@ -164,9 +177,19 @@
         "title": "クラス"
     },
     "account": {
-        "title": "アカウント"
+        "title": "アカウント",
+        "buttonEdit": "編集"
     },
     "report": {
         "title": "レポート"
+    },
+    "status": {
+        "title": "ステータス",
+        "active": "アクティブ",
+        "pedding": "保留中",
+        "reject": "拒否"
+    },
+    "library": {
+        "title": "ライブラリ"
     }
 }
