@@ -6,7 +6,13 @@ const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
 
-const ConfirmDialog = ({ visible, onConfirm, onCancel, title, message }) => {
+const ConfirmDialog = ({
+	visible = false,
+	onConfirm = () => {},
+	onCancel = () => {},
+	title = '',
+	message = '',
+}) => {
 	const [showModal, setShowModal] = useState(visible);
 	const scaleValue = useRef(new Animated.Value(0)).current;
 

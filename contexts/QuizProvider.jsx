@@ -32,7 +32,7 @@ const QuizProvider = ({ children }) => {
 			}
 		);
 		const data = await response.json();
-		console.log(data);
+		// console.log(data);
 		if (data.statusCode === 200) {
 			setQuizzes(data.metadata);
 			setQuizFetching(false);

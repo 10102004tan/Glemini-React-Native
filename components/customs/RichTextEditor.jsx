@@ -13,10 +13,15 @@ import { Status } from '@/constants';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 
-const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
+const RichTextEditor = ({
+	typingType = '',
+	content = '',
+	selectedAnswer = 0,
+	focus = false,
+}) => {
 	const [editorValue, setEditorValue] = useState('');
 	const { question, setQuestion, editAnswerContent } = useQuestionProvider();
-	const { userData } = useAuthContext();
+	const { userData, processAccessTokenExpired } = useAuthContext();
 	const richText = React.useRef();
 
 	useEffect(() => {
@@ -73,36 +78,36 @@ const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 
 	// Hàm tải ảnh lên server
 	const uploadImage = async (imageUri) => {
-		const formData = new FormData();
-		formData.append('question_image', {
-			uri: imageUri,
-			name: 'photo.jpg',
-			type: 'image/jpeg',
-		});
+		try {
+			const formData = new FormData();
+			formData.append('question_image', {
+				uri: imageUri,
+				name: 'photo.jpg',
+				type: 'image/jpeg',
+			});
 
-		const response = await fetch(
-			`${API_URL}${API_VERSION.V1}${END_POINTS.QUESTION_UPLOAD_IMAGE}`,
-			{
-				method: 'POST',
-				body: formData,
-				headers: {
-					'Content-Type': 'multipart/form-data',
-					'x-client-id': userData._id,
-					authorization: userData.accessToken,
-				},
+			const response = await fetch(
+				`${API_URL}${API_VERSION.V1}${END_POINTS.QUESTION_UPLOAD_IMAGE}`,
+				{
+					method: 'POST',
+					body: formData,
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						'x-client-id': userData._id,
+						authorization: userData.accessToken,
+					},
+				}
+			);
+
+			const data = await response.json();
+			console.log(data);
+			return data.metadata.url; // URL của ảnh trên server
+		} catch (error) {
+			if (error.message === 'Network request failed') {
+				alert('Lỗi mạng, vui lòng kiểm tra kết nối và thử lại');
+				await processAccessTokenExpired();
 			}
-		);
-
-		const data = await response.json();
-		console.log(data);
-		const newImageRation = data.metadata.thumbnail.replace(
-			'h_100,w_100',
-			'h_260,w_300'
-		);
-
-		console.log(newImageRation);
-
-		return newImageRation; // URL của ảnh trên server
+		}
 	};
 
 	// Hàm chọn ảnh từ thư viện

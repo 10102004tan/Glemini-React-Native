@@ -26,6 +26,7 @@ import { Feather } from '@expo/vector-icons';
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog';
 import { Status } from '@/constants';
 import DropDownMultipleSelect from '@/components/customs/DropDownMultipleSelect';
+import SkeletonLoading from '@/components/loadings/SkeletonLoading';
 
 const QuizzOverViewScreen = () => {
 	const router = useRouter();
@@ -37,7 +38,7 @@ const QuizzOverViewScreen = () => {
 		useState(false);
 	const { setIsHiddenNavigationBar } = useAppProvider();
 	const { id } = useGlobalSearchParams();
-	const { userData } = useAuthContext();
+	const { userData, processAccessTokenExpired } = useAuthContext();
 	const [quizId, setQuizId] = useState('');
 	// Save init state
 	const [quizName, setQuizName] = useState('');
@@ -53,6 +54,7 @@ const QuizzOverViewScreen = () => {
 	const [quizThumbnailChange, setQuizThumbnailChange] = useState('');
 	const [currentQuizQuestion, setCurrentQuizQuestion] = useState([]);
 	const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+	const [uploadingImage, setUploadingImage] = useState(false);
 
 	// Hàm kiểm tra xem có thay đổi thông tin quiz không
 	const isChange = () => {
@@ -159,29 +161,22 @@ const QuizzOverViewScreen = () => {
 			quiz_thumb: quizThumbnail,
 		};
 
-		// console.log(JSON.stringify(quiz, null, 2));
-
 		updateQuiz(quiz);
 		handleCloseBottomSheet();
 	};
 
 	useEffect(() => {
-		// Lấy dữ liệu của quiz hiện tại
-		// console.log(id);
 		if (id) {
 			fetchQuiz();
 			fetchQuestions();
-			// if (actionQuizType !== 'template') {
-			// Nếu trạng thái hiện tại đang là tạo quiz mới hoặc chỉnh sửa quiz
-			// } else {
-			// Nếu trạng thái hiện tại đang là tạo quiz từ template
-			// Thì lấy thông tin question từ template truyền vào currentQuestion
-			// console.log(JSON.stringify(questions, null, 2));
-			// setCurrentQuizQuestion(questions);
-			// console.log(JSON.stringify(currentQuizQuestion, null, 2));
-			// }
 		}
 	}, [id]);
+
+	useEffect(() => {
+		if (uploadingImage) {
+			alert('Ảnh đang được tải lên vui lòng chờ trong giây lát');
+		}
+	}, [uploadingImage]);
 
 	// Lấy danh sách câu hỏi của bộ quiz hiện tại
 	const createQuestion = () => {
@@ -221,51 +216,69 @@ const QuizzOverViewScreen = () => {
 	};
 
 	// Hàm tải ảnh lên server
-	const uploadImage = async (imageUri) => {
-		const formData = new FormData();
-		formData.append('quiz_image', {
-			uri: imageUri,
-			name: 'photo.jpg',
-			type: 'image/jpeg',
-		});
+	const uploadImage = async (imageUri, fileName, fileType) => {
+		try {
+			setUploadingImage(true);
+			const formData = new FormData();
+			formData.append('file', {
+				uri: imageUri,
+				name: fileName,
+				type: fileType,
+			});
 
-		const response = await fetch(
-			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_IMAGE}`,
-			{
-				method: 'POST',
-				body: formData,
-				headers: {
-					'Content-Type': 'multipart/form-data',
-					'x-client-id': userData._id,
-					authorization: userData.accessToken,
-				},
+			const response = await fetch(
+				`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_IMAGE}`,
+				{
+					method: 'POST',
+					body: formData,
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						'x-client-id': userData._id,
+						authorization: userData.accessToken,
+					},
+				}
+			);
+
+			const data = await response.json();
+			console.log(JSON.stringify(data, null, 2));
+			return data.metadata.url;
+		} catch (error) {
+			if (error.message === 'Network request failed') {
+				alert('Lỗi mạng, vui lòng kiểm tra kết nối và thử lại');
+				await processAccessTokenExpired();
 			}
-		);
-
-		const data = await response.json();
-		// console.log(data);
-		const newImageRation = data.metadata.thumbnail.replace(
-			'h_100,w_100',
-			'h_260,w_300'
-		);
-		// console.log(newImageRation);
-		return newImageRation;
+		} finally {
+			setUploadingImage(false);
+		}
 	};
 
 	// Hàm chọn ảnh từ thư viện
 	const pickImage = async () => {
-		let result = await ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ImagePicker.MediaTypeOptions.All,
-			allowsEditing: true,
-			aspect: [4, 3],
-			quality: 1,
-		});
+		if (!uploadingImage) {
+			let result = await ImagePicker.launchImageLibraryAsync({
+				mediaTypes: ImagePicker.MediaTypeOptions.All,
+				allowsEditing: true,
+				aspect: [4, 3],
+				quality: 1,
+			});
 
-		if (!result.canceled && result.assets.length > 0) {
-			const imageUri = result.assets[0].uri;
-			// Tải ảnh lên server và lấy URL của ảnh
-			const imageUrl = await uploadImage(imageUri);
-			setQuizThumbnail(imageUrl);
+			if (!result.canceled && result.assets.length > 0) {
+				setUploadingImage(true);
+
+				const imageUri = result.assets[0].uri;
+				const fileName = imageUri.split('/').pop();
+				const fileType = result.assets[0].mimeType;
+
+				// console.log(JSON.stringify(result.assets[0], null, 2));
+
+				// Tải ảnh lên server và lấy URL của ảnh
+				const imageUrl = await uploadImage(
+					imageUri,
+					fileName,
+					fileType
+				);
+				setQuizThumbnail(imageUrl);
+			}
 		}
 	};
 
@@ -409,10 +422,18 @@ const QuizzOverViewScreen = () => {
 											pickImage();
 										}}
 									>
-										<Image
-											className="flex-1"
-											source={{ uri: quizThumbnail }}
-										></Image>
+										{uploadingImage ? (
+											<>
+												<View className="flex-1 flex items-center justify-center w-full min-h-[120px]">
+													<SkeletonLoading styles="w-full h-full" />
+												</View>
+											</>
+										) : (
+											<Image
+												className="flex-1"
+												source={{ uri: quizThumbnail }}
+											></Image>
+										)}
 									</TouchableOpacity>
 								</>
 							) : (

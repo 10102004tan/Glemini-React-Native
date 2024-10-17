@@ -3,11 +3,11 @@ import React from 'react';
 import { useAppProvider } from '@/contexts/AppProvider';
 
 const Field = ({
-	onChange,
-	value,
-	type,
-	placeholder,
-	label,
+	onChange = () => {},
+	value = '',
+	type = 'text',
+	placeholder = '',
+	label = null,
 	wrapperStyles = '',
 	inputStyles = '',
 	icon = null,
