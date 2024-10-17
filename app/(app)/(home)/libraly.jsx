@@ -28,8 +28,11 @@ import {
 } from "react-native-dropdown-select-list";
 
 const Library = () => {
-  const { userData } = useAuthContext();
+  //biến name của bộ sưu tập
+  const [nameCollection, setNameCollection] = useState("");
+  const [collections, setCollections] = useState([]);
 
+  const { userData } = useAuthContext();
   // biến search
   const [search, setSearch] = useState("");
 
@@ -95,8 +98,9 @@ const Library = () => {
   const { quizzes, setQuizzes } = useQuizProvider();
 
   useEffect(() => {
-    console.log(startDate, endDate);
-  }, [startDate, endDate]);
+    // console.log(startDate, endDate);
+    getAllCollections();
+  }, []);
 
   // BottomSheet
   // Bộ sưu tập
@@ -154,7 +158,7 @@ const Library = () => {
       }
     );
     const data = await response.json();
-    console.log(JSON.stringify(data.metadata, null, 2));
+    // console.log(JSON.stringify(data.metadata, null, 2));
     if (data.statusCode === 200) {
       setQuizzes(data.metadata);
     } else {
@@ -188,6 +192,67 @@ const Library = () => {
       setQuizzes(data.metadata);
     } else {
       setQuizzes([]);
+    }
+  };
+
+  // tạo bộ sưu tập
+  const createCollection = async () => {
+    let check = false;
+    if (collections.length > 0) {
+      collections.forEach((item) => {
+        if (item.collection_name === nameCollection) {
+          check = true;
+          return;
+        }
+      });
+      console.log(check);
+    }
+
+    if (check === false) {
+      const response = await fetch(
+        `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_CREATE}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-client-id": userData._id,
+            authorization: userData.accessToken,
+          },
+          body: JSON.stringify({
+            collection_name: nameCollection,
+            user_id: userData._id,
+          }),
+        }
+      );
+      const data = await response.json();
+      // console.log(data);
+      if (data.statusCode === 200) {
+        setCollections([...collections, data.metadata]);
+      }
+    } else {
+      alert("Đã tồn tại tên !!!");
+    }
+  };
+
+  const getAllCollections = async () => {
+    const response = await fetch(
+      `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_GETALL}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-client-id": userData._id,
+          authorization: userData.accessToken,
+        },
+        body: JSON.stringify({
+          user_id: userData._id,
+        }),
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+    if (data.statusCode === 200) {
+      setCollections(data.metadata);
     }
   };
 
@@ -228,8 +293,8 @@ const Library = () => {
         <View className="m-3">
           <Text className="text-gray mb-2">Tên bộ sưu tập</Text>
           <TextInput
-            value={newCollectionName}
-            onChangeText={setNewCollectionName}
+            value={nameCollection}
+            onChangeText={setNameCollection}
             placeholder="Nhập tên bộ sưu tập"
             className="border border-gray w-[350px] h-[50px] rounded-xl px-4"
           />
@@ -241,12 +306,11 @@ const Library = () => {
             onPress={handleCloseBottomSheet}
           />
           <Button
-            text="Chọn"
+            text="Tạo"
             otherStyles="w-[50%] bg-blue-500 p-2 rounded-xl flex justify-center"
             textStyles="text-white text-center"
             onPress={() => {
-              // console.log("Tên bộ sưu tập:", newCollectionName);
-              setListNameCollection(newCollectionName);
+              createCollection();
               // Đóng BottomSheet sau khi lưu
               handleCloseBottomSheet();
             }}
@@ -414,6 +478,7 @@ const Library = () => {
             </View>
 
             <FlatList
+              key={(quiz) => quiz._id}
               style={{ marginBottom: 200 }}
               data={quizzes}
               keyExtractor={(quiz) => quiz._id}
@@ -468,28 +533,28 @@ const Library = () => {
               otherStyles={"w-1/2 justify-center mb-4"}
               textStyles={"text-center text-white"}
             />
-
-            {quizzes.length > 0 &&
-              quizzes.map((quiz) => (
-                <TouchableOpacity
-                  key={quiz._id}
-                  onPress={() => {
-                    router.push({
-                      pathname: "/(app)/(collection)/detail_collection",
-                      params: { id: quiz._id },
-                    });
-                  }}
-                >
-                  <View className="flex flex-row items-center justify-between m-4">
-                    <Text>{quiz.quiz_name}</Text>
-                    <Text>{listNameCollection}</Text>
-                    <TouchableOpacity>
-                      <AntDesign name="right" size={18} color="black" />
-                    </TouchableOpacity>
-                  </View>
-                  <View className="h-[1px] w-full bg-gray"></View>
-                </TouchableOpacity>
-              ))}
+            <ScrollView className="mb-[180px]">
+              {collections.length > 0 &&
+                collections.map((name) => (
+                  <TouchableOpacity
+                    key={name._id}
+                    onPress={() => {
+                      router.push({
+                        pathname: "/(app)/(collection)/detail_collection",
+                        params: { id: name._id },
+                      });
+                    }}
+                  >
+                    <View className="flex flex-row items-center justify-between m-4">
+                      <Text>{name.collection_name}</Text>
+                      <TouchableOpacity>
+                        <AntDesign name="right" size={18} color="black" />
+                      </TouchableOpacity>
+                    </View>
+                    <View className="h-[1px] w-full bg-gray"></View>
+                  </TouchableOpacity>
+                ))}
+            </ScrollView>
           </View>
         )}
       </View>

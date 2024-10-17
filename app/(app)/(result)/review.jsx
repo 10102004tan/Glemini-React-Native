@@ -13,8 +13,6 @@ const ResultReview = () => {
 	const { resultData } = route.params;
 	const { i18n } = useAppProvider();
 
-	console.log(resultData.result_questions[0].answer);
-	
 	// Trạng thái để lưu chỉ số câu hỏi được chọn và trạng thái hiển thị của Modal
 	const [selectedIndex, setSelectedIndex] = useState(null);
 	const [modalVisible, setModalVisible] = useState(false);
@@ -114,17 +112,16 @@ const ResultReview = () => {
 								})}
 							</View>
 
-{/* Hiển thị đáp án người dùng đã chọn nếu câu hỏi sai */}
-{!currentQuestion.correct && (
-					<View className='mt-4'>
-						<Text className='text-base text-slate-600 font-pregular'>
-							{i18n.t('result.review.userAnswer')}: {currentQuestion.answer.map(userAns => userAns.text).join(', ') || i18n.t('result.review.noAnswer')}
-						</Text>
-					</View>
-				)}
+							{!currentQuestion.correct && (
+								<View className='mt-4'>
+									<Text className='text-base text-slate-600 font-pregular'>
+										{i18n.t('result.review.userAnswer')}: {currentQuestion.answer.map(userAns => userAns.text).join(', ') || i18n.t('result.review.noAnswer')}
+									</Text>
+								</View>
+							)}
 							<View>
 								<Text className='text-base text-slate-600 font-pregular mt-4 underline'>
-								{i18n.t('result.review.explanation')}
+									{i18n.t('result.review.explanation')}
 								</Text>
 								<Text className='text-sm text-slate-600/90 font-pextralight'>
 									{currentQuestion.question_id.question_explanation || i18n.t('result.review.textExplanation')}

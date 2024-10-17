@@ -5,7 +5,7 @@ import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 const QuestionContext = createContext();
 const QuestionProvider = ({ children }) => {
 	const [question, setQuestion] = useState({
-		question_excerpt: '<div></div>',
+		question_excerpt: '',
 		question_description: '',
 		question_image: '',
 		question_audio: '',
@@ -61,22 +61,13 @@ const QuestionProvider = ({ children }) => {
 			};
 
 			saveQuestions(q, quizId);
-
-			// console.log(q);
-			// setQuestions((prev) => {
-			// 	return [...prev, q];
-			// }); // Thêm câu hỏi vào mảng câu hỏi
 		});
-
-		// Save to server
-
-		// Chuyển tới quiz overview page
 	};
 
 	// Reset lại mảng câu hỏi
 	const resetQuestion = () => {
 		setQuestion({
-			question_excerpt: '<div></div>',
+			question_excerpt: '',
 			question_description: '',
 			question_image: '',
 			question_audio: '',
@@ -217,6 +208,11 @@ const QuestionProvider = ({ children }) => {
 	// Lưu câu hỏi đã tạo lên server
 	const saveQuestion = async (quizId) => {
 		try {
+			if (question.question_excerpt === '') {
+				alert('Nội dung câu hỏi không được để trống');
+				return;
+			}
+
 			// Gọi API lưu câu hỏi
 			const response = await fetch(
 				`${API_URL}${API_VERSION.V1}${END_POINTS.QUESTION_CREATE}`,
@@ -231,7 +227,7 @@ const QuestionProvider = ({ children }) => {
 				}
 			);
 			const data = await response.json();
-			console.log(data);
+			// console.log(data);
 			if (data.statusCode === 200) {
 				console.log('Lưu câu hỏi thành công');
 				// Alert to user here
@@ -262,7 +258,7 @@ const QuestionProvider = ({ children }) => {
 				}
 			);
 			const data = await response.json();
-			console.log(data);
+			// console.log(data);
 			if (data.statusCode === 200) {
 				console.log('Lưu câu hỏi thành công');
 				// Alert to user here
@@ -277,7 +273,7 @@ const QuestionProvider = ({ children }) => {
 
 	// Cập nhật câu hỏi
 	const editQuestion = async (quizId, questionId) => {
-		console.log(JSON.stringify({ ...question, quiz_id: quizId }, null, 2));
+		// console.log(JSON.stringify({ ...question, quiz_id: quizId }, null, 2));
 
 		try {
 			// Gọi API cập nhật câu hỏi

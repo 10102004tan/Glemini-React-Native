@@ -49,9 +49,12 @@ const DemoCreateQuizByTemplate = () => {
 
 	const pickDocument = async () => {
 		try {
-			let result = await DocumentPicker.getDocumentAsync({ type: '*/*' });
+			const result = await DocumentPicker.getDocumentAsync({
+				type: '*/*',
+			});
+			// console.log(JSON.stringify(result, null, 2));
 			if (!result.canceled && result.assets && result.assets.length > 0) {
-				const { uri, mimeType, name, size } = result.assets[0];
+				const { mimeType, name, size } = result.assets[0];
 
 				// File size validation (e.g., max 5MB)
 				const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -94,22 +97,23 @@ const DemoCreateQuizByTemplate = () => {
 
 	const uploadFile = async (file) => {
 		try {
-			// console.log(userData);
+			console.log(JSON.stringify(file, null, 2));
 			let path = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_DOC}`;
 
 			if (file.mimeType === 'text/markdown') {
 				path = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_MD}`;
 			}
 
+			const cleanFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
 			const formData = new FormData();
 			formData.append('file', {
 				uri: file.uri,
-				name: file.name,
+				name: cleanFileName,
 				type: file.mimeType,
 			});
 
 			// Show progress feedback
-			setUploadStatus('Uploading file...');
+			// setUploadStatus('Uploading file...');
 
 			const response = await fetch(path, {
 				method: 'POST',
@@ -122,7 +126,7 @@ const DemoCreateQuizByTemplate = () => {
 			});
 
 			const data = await response.json();
-			console.log(JSON.stringify(data, null, 2));
+			// console.log(JSON.stringify(data, null, 2));
 
 			if (data.statusCode === 200) {
 				setUploadStatus(data.message);
@@ -135,6 +139,7 @@ const DemoCreateQuizByTemplate = () => {
 				throw new Error(data.message || 'File upload failed.');
 			}
 		} catch (error) {
+			console.log(error);
 			setUploadStatus('File upload failed.');
 			alert('An error occurred while uploading the file.');
 			// console.error('Upload Error:', error);
@@ -213,7 +218,7 @@ const DemoCreateQuizByTemplate = () => {
 
 	return (
 		<ScrollView className="px-4">
-			{uploadStatus && <Text>{uploadStatus}</Text>}
+			{/* {uploadStatus && <Text>{uploadStatus}</Text>} */}
 			<View className="flex items-center justify-center flex-1">
 				<View
 					className="w-full p-4 flex items-center justify-center rounded-2xl"
@@ -233,7 +238,9 @@ const DemoCreateQuizByTemplate = () => {
 						}}
 					/>
 					<TouchableOpacity onPress={pickDocument}>
-						<Text>Tải lên file câu hỏi của bạn</Text>
+						<Text className="font-semibold">
+							Ấn vào đây để tải lên file câu hỏi của bạn
+						</Text>
 					</TouchableOpacity>
 				</View>
 				<View className="mt-4">
@@ -306,10 +313,10 @@ const DemoCreateQuizByTemplate = () => {
 							<View className="mt-2">
 								<Text>
 									<Text className="font-semibold">
-										Question 1
-									</Text>
-									: Các câu hỏi sẽ bắt đầu bằng “Question” sau
-									đó đến số thứ tự của câu hỏi “1”
+										Question:
+									</Text>{' '}
+									Các câu hỏi sẽ bắt đầu bằng “Question:” sau
+									đó đến nội dung của câu hỏi 1
 								</Text>
 								<Text>A. Đáp án thứ 1</Text>
 								<Text>B. Đáp án thứ 2</Text>
@@ -323,10 +330,10 @@ const DemoCreateQuizByTemplate = () => {
 							<View className="mt-2">
 								<Text>
 									<Text className="font-semibold">
-										Question 2:
+										Question:
 									</Text>{' '}
-									Các câu hỏi sẽ bắt đầu bằng “Question” sau
-									đó đến số thứ tự của câu hỏi “2”
+									Các câu hỏi sẽ bắt đầu bằng “Question:” sau
+									đó đến nội dung của câu hỏi 2
 								</Text>
 								<Text>A. Đáp án thứ 1</Text>
 								<Text>B. Đáp án thứ 2</Text>
@@ -364,10 +371,10 @@ const DemoCreateQuizByTemplate = () => {
 							<View className="mt-2">
 								<Text>
 									<Text className="font-semibold">
-										## Question 1
-									</Text>
-									: Các câu hỏi sẽ bắt đầu bằng "## Question”
-									sau đó đến số thứ tự của câu hỏi “1”
+										## Question:
+									</Text>{' '}
+									Các câu hỏi sẽ bắt đầu bằng "## Question:”
+									sau đó đến nội dung của câu hỏi
 								</Text>
 								<Text>- A. Đáp án thứ 1</Text>
 								<Text>- B. Đáp án thứ 2</Text>
@@ -388,7 +395,7 @@ const DemoCreateQuizByTemplate = () => {
 						onPress={() => {
 							clearTemplatedDownload();
 						}}
-						otherStyles="p-3 mt-4"
+						otherStyles="p-3 mt-4 mb-4"
 						text="Xóa file mẫu đã tải"
 						icon={
 							<SimpleLineIcons
