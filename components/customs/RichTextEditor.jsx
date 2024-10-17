@@ -13,10 +13,15 @@ import { Status } from '@/constants';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 
-const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
+const RichTextEditor = ({
+	typingType = '',
+	content = '',
+	selectedAnswer = 0,
+	focus = false,
+}) => {
 	const [editorValue, setEditorValue] = useState('');
 	const { question, setQuestion, editAnswerContent } = useQuestionProvider();
-	const { userData } = useAuthContext();
+	const { userData, processAccessTokenExpired } = useAuthContext();
 	const richText = React.useRef();
 
 	useEffect(() => {
@@ -72,37 +77,40 @@ const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 	}, [editorValue]);
 
 	// Hàm tải ảnh lên server
-	const uploadImage = async (imageUri) => {
-		const formData = new FormData();
-		formData.append('question_image', {
-			uri: imageUri,
-			name: 'photo.jpg',
-			type: 'image/jpeg',
-		});
+	const uploadImage = async (file) => {
+		try {
+			const formData = new FormData();
 
-		const response = await fetch(
-			`${API_URL}${API_VERSION.V1}${END_POINTS.QUESTION_UPLOAD_IMAGE}`,
-			{
-				method: 'POST',
-				body: formData,
-				headers: {
-					'Content-Type': 'multipart/form-data',
-					'x-client-id': userData._id,
-					authorization: userData.accessToken,
-				},
+			const cleanFileName = file.fileName.replace(/[^a-zA-Z0-9.]/g, '_');
+
+			formData.append('file', {
+				uri: imageUri,
+				name: cleanFileName,
+				type: file.mimeType,
+			});
+
+			const response = await fetch(
+				`${API_URL}${API_VERSION.V1}${END_POINTS.QUESTION_UPLOAD_IMAGE}`,
+				{
+					method: 'POST',
+					body: formData,
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						'x-client-id': userData._id,
+						authorization: userData.accessToken,
+					},
+				}
+			);
+
+			const data = await response.json();
+			console.log(data);
+			return data.metadata.url; // URL của ảnh trên server
+		} catch (error) {
+			if (error.message === 'Network request failed') {
+				alert('Lỗi mạng, vui lòng kiểm tra kết nối và thử lại');
+				await processAccessTokenExpired();
 			}
-		);
-
-		const data = await response.json();
-		console.log(data);
-		const newImageRation = data.metadata.thumbnail.replace(
-			'h_100,w_100',
-			'h_260,w_300'
-		);
-
-		console.log(newImageRation);
-
-		return newImageRation; // URL của ảnh trên server
+		}
 	};
 
 	// Hàm chọn ảnh từ thư viện
@@ -115,11 +123,11 @@ const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 		});
 
 		if (!result.canceled && result.assets.length > 0) {
-			const imageUri = result.assets[0].uri;
-			console.log(imageUri);
+			// const imageUri = result.assets[0].uri;
+			// console.log(imageUri);
 
 			// Tải ảnh lên server và lấy URL của ảnh
-			const imageUrl = await uploadImage(imageUri);
+			const imageUrl = await uploadImage(result.assets[0]);
 
 			// Chèn URL ảnh vào RichEditor
 			richText.current.insertImage(imageUrl);
@@ -127,11 +135,11 @@ const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 	};
 
 	return (
-		<View className="flex-1 p-4">
-			<ScrollView className="flex-1 h-full">
+		<View className="flex-1 w-full p-4 ">
+			<ScrollView className="">
 				<RichEditor
 					defaultParagraphSeparator=""
-					initialContentHTML={`<div>${content}</div>`}
+					initialContentHTML={content}
 					placeholder="Nhập giải thích cho câu hỏi ở đây ..."
 					style={{ width: '100%', height: 300 }}
 					ref={richText}
@@ -150,8 +158,8 @@ const RichTextEditor = ({ typingType, content, selectedAnswer, focus }) => {
 					actions.setUnderline,
 					actions.insertBulletsList,
 					actions.insertOrderedList,
-					actions.insertImage,
 					actions.insertLink,
+					typingType !== actions.insertImage,
 				]}
 				iconMap={{
 					[actions.heading1]: handleHead,

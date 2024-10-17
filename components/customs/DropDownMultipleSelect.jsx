@@ -22,8 +22,8 @@ if (
 }
 
 const DropDownMultipleSelect = ({
-	data,
-	selectedIds,
+	data = [],
+	selectedIds = [],
 	onSelected = () => {},
 	label = '',
 	type = 'single',
@@ -120,7 +120,7 @@ const DropDownMultipleSelect = ({
 										name={
 											selectedIds.includes(item.key)
 												? 'check'
-												: 'circle'
+												: 'squared-plus'
 										}
 										size={16}
 										color={

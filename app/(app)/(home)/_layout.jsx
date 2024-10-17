@@ -31,28 +31,9 @@ export default function TabLayout() {
         tabBarShowLabel: false,
       }}
     >
-
+      
       <Tabs.Screen
-        name="teacher_home_screen"
-        options={{
-          title: "Lớp học",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "home" : "home-outline"}
-              color={color}
-            />
-          ),
-          tabBarButton: (props) => {
-            if (user_type === "student") {
-              return null;
-            } else {
-              return <TouchableOpacity {...props} />;
-            }
-          },
-        }} />
-
-      <Tabs.Screen
-        name="student_home_screen"
+        name='index'
         options={{
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
@@ -61,27 +42,9 @@ export default function TabLayout() {
               color={color}
             />
           ),
-          tabBarButton: (props) => {
-            if (user_type === "teacher") {
-              return null;
-            } else {
-              return <TouchableOpacity {...props} />;
-            }
-          },
-        }} />
-
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "home" : "home-outline"}
-              color={color}
-            />
-          ),
         }}
       />
+
 
       <Tabs.Screen
         name="libraly"
@@ -93,6 +56,13 @@ export default function TabLayout() {
               color={color}
             />
           ),
+          tabBarButton: (props) => {
+            if (user_type === "student") {
+              return null;
+            } else {
+              return <TouchableOpacity {...props} />;
+            }
+          },
         }}
       />
 

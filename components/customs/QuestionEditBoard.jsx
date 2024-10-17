@@ -12,15 +12,16 @@ import Button from '../../components/customs/Button';
 import { useQuestionProvider } from '../../contexts/QuestionProvider';
 
 const QuestionEditBoard = ({
-	content,
-	visible,
-	handleClose,
-	type,
+	content = '',
+	visible = false,
+	handleClose = () => {},
+	type = '',
 	answerEditSelected = 0,
 	mutipleChoice = false,
 }) => {
 	// Tạo hiệu ứng chuyển động
 	const translateY = useSharedValue(1000);
+
 	useEffect(() => {
 		if (visible) {
 			translateY.value = withTiming(0, { duration: 400 });
@@ -28,6 +29,7 @@ const QuestionEditBoard = ({
 			translateY.value = withTiming(1000, { duration: 500 });
 		}
 	}, [visible]);
+
 	const animatedStyle = useAnimatedStyle(() => {
 		return {
 			transform: [{ translateY: translateY.value }],
@@ -40,7 +42,7 @@ const QuestionEditBoard = ({
 	return (
 		<Animated.View
 			style={[animatedStyle]}
-			className="rounded-2xl border border-gray flex items-center justify-center max-h-[460px] absolute z-20 top-[5%]
+			className="rounded-2xl flex items-center justify-center max-h-[460px] absolute z-20 top-[5%]
       left-[5%] right-[50%] w-[90%] bg-white"
 		>
 			{/* Dùng để chỉnh sửa câu hỏi, đáp án của quiz */}

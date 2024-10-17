@@ -18,7 +18,7 @@ import { shareAsync } from 'expo-sharing';
 const DemoCreateQuizByTemplate = () => {
 	const { id } = useGlobalSearchParams();
 	const [uploadStatus, setUploadStatus] = useState(null);
-	const { userData } = useAuthContext();
+	const { userData, processAccessTokenExpired } = useAuthContext();
 	const { getQuestionFromDocx } = useQuestionProvider();
 	const router = useRouter();
 
@@ -48,55 +48,76 @@ const DemoCreateQuizByTemplate = () => {
 	};
 
 	const pickDocument = async () => {
-		let result = await DocumentPicker.getDocumentAsync({ type: '*/*' });
-		if (!result.canceled && result.assets && result.assets.length > 0) {
-			const { uri, mimeType, name } = result.assets[0];
+		try {
+			const result = await DocumentPicker.getDocumentAsync({
+				type: '*/*',
+			});
+			// console.log(JSON.stringify(result, null, 2));
+			if (!result.canceled && result.assets && result.assets.length > 0) {
+				const { mimeType, name, size } = result.assets[0];
 
-			// Kiểm tra kiểu file dựa trên mimeType hoặc phần mở rộng của tên file
-			const allowedMimeTypes = [
-				'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
-				'application/msword', // .doc
-				'text/markdown',
-			]; // .md
-			const allowedExtensions = ['.doc', '.docx', '.md'];
+				// File size validation (e.g., max 5MB)
+				const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+				if (size > MAX_FILE_SIZE) {
+					setUploadStatus('File size exceeds the 5MB limit.');
+					return;
+				}
 
-			// Kiểm tra mimeType hoặc phần mở rộng tên file
-			const isAllowedMimeType = allowedMimeTypes.includes(mimeType);
-			const isAllowedExtension = allowedExtensions.some((ext) =>
-				name.toLowerCase().endsWith(ext)
-			);
+				// Allowed file types
+				const allowedMimeTypes = [
+					'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+					'application/msword', // .doc
+					'text/markdown', // .md
+				];
 
-			if (isAllowedMimeType || isAllowedExtension) {
-				uploadFile(uri, mimeType);
-			} else {
-				setUploadStatus(
-					'Chỉ chấp nhận các file Word (.doc, .docx) hoặc Markdown (.md).'
+				const allowedExtensions = ['.doc', '.docx', '.md'];
+
+				// Check mimeType or file extension
+				const isAllowedMimeType = allowedMimeTypes.includes(mimeType);
+				const isAllowedExtension = allowedExtensions.some((ext) =>
+					name.toLowerCase().endsWith(ext)
 				);
+
+				if (isAllowedMimeType || isAllowedExtension) {
+					uploadFile(result.assets[0]);
+				} else {
+					setUploadStatus(
+						'Only Word (.doc, .docx) or Markdown (.md) files are accepted.'
+					);
+				}
+			} else {
+				setUploadStatus('File selection failed.');
 			}
-		} else {
-			setUploadStatus('File pick failed.');
+		} catch (error) {
+			await processAccessTokenExpired();
+			setUploadStatus('An error occurred while selecting the file.');
+			console.error('Document Picker Error:', error);
 		}
 	};
 
-	const uploadFile = async (fileUri, mimeType) => {
-		let nameFile = 'template_doc.docx';
-		let path = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_DOC}`;
-
-		if (mimeType === 'text/markdown') {
-			nameFile = 'template_md.md';
-			path = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_MD}`;
-		}
-		const formData = new FormData();
-		formData.append('file', {
-			uri: fileUri,
-			name: nameFile,
-			type: mimeType,
-		});
-
+	const uploadFile = async (file) => {
 		try {
+			console.log(JSON.stringify(file, null, 2));
+			let path = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_DOC}`;
+
+			if (file.mimeType === 'text/markdown') {
+				path = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_MD}`;
+			}
+
+			const cleanFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+			const formData = new FormData();
+			formData.append('file', {
+				uri: file.uri,
+				name: cleanFileName,
+				type: file.mimeType,
+			});
+
+			// Show progress feedback
+			// setUploadStatus('Uploading file...');
+
 			const response = await fetch(path, {
 				method: 'POST',
-				body: formData, // Directly pass the formData object
+				body: formData,
 				headers: {
 					'x-client-id': userData._id,
 					Authorization: userData.accessToken,
@@ -105,18 +126,22 @@ const DemoCreateQuizByTemplate = () => {
 			});
 
 			const data = await response.json();
-			setUploadStatus(data.message);
+			// console.log(JSON.stringify(data, null, 2));
 
 			if (data.statusCode === 200) {
-				// console.log(JSON.stringify(data, null, 2));
+				setUploadStatus(data.message);
 				getQuestionFromDocx(data.metadata, id);
 				router.replace({
 					pathname: '/(app)/(quiz)/overview',
 					params: { id: id },
 				});
+			} else {
+				throw new Error(data.message || 'File upload failed.');
 			}
 		} catch (error) {
+			console.log(error);
 			setUploadStatus('File upload failed.');
+			alert('An error occurred while uploading the file.');
 			// console.error('Upload Error:', error);
 		}
 	};
@@ -193,7 +218,7 @@ const DemoCreateQuizByTemplate = () => {
 
 	return (
 		<ScrollView className="px-4">
-			{uploadStatus && <Text>{uploadStatus}</Text>}
+			{/* {uploadStatus && <Text>{uploadStatus}</Text>} */}
 			<View className="flex items-center justify-center flex-1">
 				<View
 					className="w-full p-4 flex items-center justify-center rounded-2xl"
@@ -213,7 +238,9 @@ const DemoCreateQuizByTemplate = () => {
 						}}
 					/>
 					<TouchableOpacity onPress={pickDocument}>
-						<Text>Tải lên file câu hỏi của bạn</Text>
+						<Text className="font-semibold">
+							Ấn vào đây để tải lên file câu hỏi của bạn
+						</Text>
 					</TouchableOpacity>
 				</View>
 				<View className="mt-4">
@@ -286,10 +313,10 @@ const DemoCreateQuizByTemplate = () => {
 							<View className="mt-2">
 								<Text>
 									<Text className="font-semibold">
-										Question 1
-									</Text>
-									: Các câu hỏi sẽ bắt đầu bằng “Question” sau
-									đó đến số thứ tự của câu hỏi “1”
+										Question:
+									</Text>{' '}
+									Các câu hỏi sẽ bắt đầu bằng “Question:” sau
+									đó đến nội dung của câu hỏi 1
 								</Text>
 								<Text>A. Đáp án thứ 1</Text>
 								<Text>B. Đáp án thứ 2</Text>
@@ -303,10 +330,10 @@ const DemoCreateQuizByTemplate = () => {
 							<View className="mt-2">
 								<Text>
 									<Text className="font-semibold">
-										Question 2:
+										Question:
 									</Text>{' '}
-									Các câu hỏi sẽ bắt đầu bằng “Question” sau
-									đó đến số thứ tự của câu hỏi “2”
+									Các câu hỏi sẽ bắt đầu bằng “Question:” sau
+									đó đến nội dung của câu hỏi 2
 								</Text>
 								<Text>A. Đáp án thứ 1</Text>
 								<Text>B. Đáp án thứ 2</Text>
@@ -344,10 +371,10 @@ const DemoCreateQuizByTemplate = () => {
 							<View className="mt-2">
 								<Text>
 									<Text className="font-semibold">
-										## Question 1
-									</Text>
-									: Các câu hỏi sẽ bắt đầu bằng "## Question”
-									sau đó đến số thứ tự của câu hỏi “1”
+										## Question:
+									</Text>{' '}
+									Các câu hỏi sẽ bắt đầu bằng "## Question:”
+									sau đó đến nội dung của câu hỏi
 								</Text>
 								<Text>- A. Đáp án thứ 1</Text>
 								<Text>- B. Đáp án thứ 2</Text>
@@ -368,7 +395,7 @@ const DemoCreateQuizByTemplate = () => {
 						onPress={() => {
 							clearTemplatedDownload();
 						}}
-						otherStyles="p-3 mt-4"
+						otherStyles="p-3 mt-4 mb-4"
 						text="Xóa file mẫu đã tải"
 						icon={
 							<SimpleLineIcons

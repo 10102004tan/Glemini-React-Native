@@ -1,11 +1,8 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import Entypo from '@expo/vector-icons/Entypo';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Colors } from '../../../constants/Colors';
-import { useAppProvider } from '../../../contexts/AppProvider';
 import { useQuestionProvider } from '../../../contexts/QuestionProvider';
 import Overlay from '../../../components/customs/Overlay';
 import Wrapper from '../../../components/customs/Wrapper';
@@ -50,27 +47,15 @@ const EditQuizQuestion = () => {
 	const { quizId, questionId } = useGlobalSearchParams();
 	const { userData } = useAuthContext();
 
-	// Lấy type của câu hỏi hiện tại để xác định loại câu hỏi
-	useEffect(() => {
-		console.log("test::edit-quiz-question");
-		if (question) {
-			if (question.question_type === 'multiple') {
-				setMutipleChoice(true);
-			} else if (question.question_type === 'single') {
-				setMutipleChoice(false);
-			}
-		}
-	}, [question]);
-
 	// Khi người dùng chuyển từ chế độ chọn nhiều câu hỏi sang một câu hỏi thì bỏ chọn tất cả
 	useEffect(() => {
-		if (!mutipleChoice) {
-			resetMarkCorrectAnswer();
+		console.log('TEST::LOOP');
+		if (question.question_type === 'single') {
 			selectQuestionType('single');
 		} else {
 			selectQuestionType('multiple');
 		}
-	}, [mutipleChoice]);
+	}, [question.question_type]);
 
 	// Lấy thông tin của câu hỏi hiện tại
 	const getCurrentUpdateQuestion = async () => {
@@ -99,7 +84,7 @@ const EditQuizQuestion = () => {
 		if (actionQuizType === 'edit') {
 			getCurrentUpdateQuestion();
 		}
-	}, [quizId, questionId, actionQuizType]);
+	}, []);
 
 	// Đóng edit board
 	const closeEditBoard = () => {
@@ -114,16 +99,16 @@ const EditQuizQuestion = () => {
 	return (
 		<Wrapper>
 			{/* Overlay */}
-			{(showQuestionBoard ||
-				pointBotttomSheetVisible ||
-				timeBotttomSheetVisible) && (
-				<Overlay
-					onPress={() => {
-						closeEditBoard();
-					}}
-					type
-				/>
-			)}
+			<Overlay
+				onPress={() => {
+					closeEditBoard();
+				}}
+				visible={
+					showQuestionBoard ||
+					pointBotttomSheetVisible ||
+					timeBotttomSheetVisible
+				}
+			/>
 			{/* Bottom Sheet Point */}
 			<BottomSheet visible={pointBotttomSheetVisible}>
 				<View className="flex flex-col items-start justify-start">
@@ -234,9 +219,8 @@ const EditQuizQuestion = () => {
 								contentWidth={width}
 								source={{
 									html:
-										question.question_excerpt ===
-										'<div></div>'
-											? '<div>Chỉnh sửa câu hỏi của bạn</div>'
+										question.question_excerpt === ''
+											? '<div>Nội dung câu hỏi của bạn</div>'
 											: question.question_excerpt,
 								}}
 							/>
@@ -247,7 +231,15 @@ const EditQuizQuestion = () => {
 					</View>
 					<View className="flex items-center justify-between mt-4 flex-row">
 						<TouchableOpacity
-							onPress={() => setMutipleChoice(!mutipleChoice)}
+							onPress={() => {
+								if (mutipleChoice) {
+									selectQuestionType('single');
+									resetMarkCorrectAnswer();
+								} else {
+									selectQuestionType('multiple');
+								}
+								setMutipleChoice(!mutipleChoice);
+							}}
 							className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
 							style={
 								mutipleChoice

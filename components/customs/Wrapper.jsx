@@ -9,7 +9,7 @@ const Wrapper = ({ children }) => {
 			style={{ backgroundColor: theme.background }}
 			className="flex-1 relative"
 		>
-			<View className="flex-1">{children}</View>
+			<View className="flex-1 mt-[40px]">{children}</View>
 			<StatusBar
 				barStyle={
 					theme.text === '#000' ? 'dark-content' : 'light-content'

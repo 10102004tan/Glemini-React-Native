@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
 
-const PressAction = ({ icon, title, onPress }) => {
+const PressAction = ({ icon = null, title = '', onPress = () => {} }) => {
 	return (
 		<View className="flex items-center justify-center">
 			<TouchableOpacity

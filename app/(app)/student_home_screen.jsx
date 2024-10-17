@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, Image, ScrollView } from 'react-native';
 import Wrapper from '@/components/customs/Wrapper';
 import Carousel from 'react-native-reanimated-carousel';
@@ -10,6 +10,7 @@ import QuizItem from '@/components/customs/QuizItem';
 import { useNavigation } from '@react-navigation/native';
 import QuizModal from '@/components/modals/QuizModal';
 import LottieView from 'lottie-react-native';
+import { useFocusEffect } from 'expo-router';
 
 const StudentHomeScreen = () => {
 	const navigation = useNavigation();
@@ -22,13 +23,20 @@ const StudentHomeScreen = () => {
 	const width = Dimensions.get('window').width;
 	const carouselHeight = width * 2 / 3;
 
-	useEffect(() => {
-		getQuizzesPublished(selectedSubject);
-	}, [selectedSubject]);
 
 	useEffect(() => {
-		getQuizzesBanner()
-	}, [])
+		getQuizzesPublished(selectedSubject);
+
+	}, [selectedSubject])
+
+
+	useFocusEffect(
+		useCallback(() => {
+			setSelectedSubject('all')
+			getQuizzesPublished(selectedSubject);
+			getQuizzesBanner();
+		}, [])
+	);
 
 	const handlePressQuizItem = (quiz) => {
 		setSelectedQuiz(quiz);
@@ -45,7 +53,7 @@ const StudentHomeScreen = () => {
 			<ScrollView
 				showsVerticalScrollIndicator={false}
 				className='mt-10 mb-20'>
-				<View className={bannerQuizzes.length > 0 ?  `flex h-[${carouselHeight}px]` : `hidden`}>
+				<View className={bannerQuizzes.length > 0 ? `flex h-[${carouselHeight}px]` : `hidden`}>
 
 					<Carousel
 						loop
@@ -56,14 +64,14 @@ const StudentHomeScreen = () => {
 						mode='parallax'
 						scrollAnimationDuration={2500}
 						renderItem={({ item }) => (
-							<TouchableOpacity onPress={()=> {
+							<TouchableOpacity onPress={() => {
 								handlePressQuizItem(item)
 							}}>
 								<Image
-								source={item.quiz_thumb ? { uri: item.quiz_thumb } : Images.banner1}
-								className="w-full h-full rounded-2xl"
-								style={{ resizeMode: 'cover' }}
-							/>
+									source={item.quiz_thumb ? { uri: item.quiz_thumb } : Images.banner1}
+									className="w-full h-full rounded-2xl"
+									style={{ resizeMode: 'cover' }}
+								/>
 							</TouchableOpacity>
 						)}
 					/>
