@@ -4,11 +4,11 @@ import { TouchableOpacity } from 'react-native';
 import { useAppProvider } from '@/contexts/AppProvider';
 
 const Button = ({
-	text,
-	onPress,
-	otherStyles,
-	textStyles,
-	icon,
+	text = '',
+	onPress = () => {},
+	otherStyles = '',
+	textStyles = '',
+	icon = null,
 	disabled = false,
 	type = 'fill',
 	loading = false,
@@ -19,14 +19,10 @@ const Button = ({
 			onPress={() => {
 				onPress();
 			}}
-			className={`p-2 rounded-xl bg-primary ${otherStyles}`}
+			className={`p-2 rounded-xl flex items-center justify-start flex-row bg-primary ${otherStyles}`}
 		>
-			<Text
-				className={`${textStyles} font-pregular`}
-				style={{ color: theme.background }}
-			>
-				{text}
-			</Text>
+			{icon && <View className="mr-2">{icon}</View>}
+			<Text className={`text-white ${textStyles}`}>{text}</Text>
 		</TouchableOpacity>
 	);
 };

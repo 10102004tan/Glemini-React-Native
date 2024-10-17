@@ -10,9 +10,9 @@ module.exports = {
 			colors: {
 				primary: '#1C2833',
 				background: '#ffffff',
-				overlay: 'rgba(44, 44, 44, 0.5)',
-				error: '#F41D1D',
-				success: '#2AE453',
+				overlay: 'rgba(0, 0, 0, 0.2)',
+				error: '#e84118',
+				success: '#4cd137',
 				text: '#000000',
 				gray: '#757575',
 				qblue: '#008BE1',

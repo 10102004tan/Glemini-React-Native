@@ -1,36 +1,52 @@
 {
-  "expo": {
-    "name": "Glemini-React-Native",
-    "slug": "Glemini-React-Native",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+   "expo": {
+      "name": "Glemini-React-Native",
+      "slug": "Glemini-React-Native",
+      "version": "1.0.0",
+      "orientation": "portrait",
+      "icon": "./assets/images/icon.png",
+      "scheme": "myapp",
+      "userInterfaceStyle": "automatic",
+      "splash": {
+         "image": "./assets/images/splash.png",
+         "resizeMode": "contain",
+         "backgroundColor": "#ffffff"
+      },
+      "ios": {
+         "supportsTablet": true
+      },
+      "android": {
+         "adaptiveIcon": {
+            "foregroundImage": "./assets/images/adaptive-icon.png",
+            "backgroundColor": "#ffffff"
+         },
+         "permissions": [
+            "CAMERA",
+            "WRITE_EXTERNAL_STORAGE",
+            "READ_EXTERNAL_STORAGE"
+         ],
+         "softwareKeyboardLayoutMode": "pan"
+      },
+      "web": {
+         "bundler": "metro",
+         "output": "static",
+         "favicon": "./assets/images/favicon.png"
+      },
+      "plugins": [
+         "expo-router",
+         "expo-image-picker",
+         "expo-localization",
+         [
+            "expo-media-library",
+            {
+               "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+               "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
+               "isAccessMediaLocationEnabled": true
+            }
+         ]
+      ],
+      "experiments": {
+         "typedRoutes": true
       }
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "plugins": [
-      "expo-router"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    }
-  }
+   }
 }
