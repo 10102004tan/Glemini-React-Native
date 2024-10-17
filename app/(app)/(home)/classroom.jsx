@@ -8,7 +8,8 @@ const ClassroomScreen = () => {
 
 	const {teacherStatus} = useContext(AuthContext);
 
-	if (teacherStatus && teacherStatus === 'pedding' || teacherStatus === 'rejected') {
+	console.log(teacherStatus)
+	if (teacherStatus && (teacherStatus === 'pedding' || teacherStatus === 'rejected')) {
 		return (
 			<LockFeature/>
 		)
