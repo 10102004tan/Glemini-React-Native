@@ -8,7 +8,7 @@ import {
   ScrollView,
   FlatList,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Wrapper from "@/components/customs/Wrapper";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import Button from "@/components/customs/Button";
@@ -17,7 +17,7 @@ import BottomSheet from "@/components/customs/BottomSheet";
 import Overlay from "@/components/customs/Overlay";
 import { useQuizProvider } from "@/contexts/QuizProvider";
 import { router, useGlobalSearchParams } from "expo-router";
-import { useAuthContext } from "@/contexts/AuthContext";
+import {AuthContext, useAuthContext} from "@/contexts/AuthContext";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useSubjectProvider } from "@/contexts/SubjectProvider";
@@ -26,6 +26,7 @@ import {
   MultipleSelectList,
   SelectList,
 } from "react-native-dropdown-select-list";
+import LockFeature from "@/components/customs/LockFeature";
 
 const Library = () => {
   //biến name của bộ sưu tập
@@ -33,6 +34,7 @@ const Library = () => {
   const [collections, setCollections] = useState([]);
 
   const { userData } = useAuthContext();
+  const {teacherStatus} = useContext(AuthContext);
   // biến search
   const [search, setSearch] = useState("");
 
@@ -255,6 +257,14 @@ const Library = () => {
       setCollections(data.metadata);
     }
   };
+
+
+
+  if (teacherStatus === 'pedding' || teacherStatus === 'rejected') {
+    return (
+        <LockFeature/>
+    )
+  }
 
   return (
     <Wrapper>
