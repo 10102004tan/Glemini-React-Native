@@ -1,11 +1,8 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import Entypo from '@expo/vector-icons/Entypo';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Colors } from '../../../constants/Colors';
-import { useAppProvider } from '../../../contexts/AppProvider';
 import { useQuestionProvider } from '../../../contexts/QuestionProvider';
 import Overlay from '../../../components/customs/Overlay';
 import Wrapper from '../../../components/customs/Wrapper';
@@ -50,17 +47,6 @@ const EditQuizQuestion = () => {
 	const { quizId, questionId } = useGlobalSearchParams();
 	const { userData } = useAuthContext();
 
-	// Lấy type của câu hỏi hiện tại để xác định loại câu hỏi
-	useEffect(() => {
-		console.log("test::edit-quiz-question");
-		if (question) {
-			if (question.question_type === 'multiple') {
-				setMutipleChoice(true);
-			} else if (question.question_type === 'single') {
-				setMutipleChoice(false);
-			}
-		}
-	}, [question]);
 
 	// Khi người dùng chuyển từ chế độ chọn nhiều câu hỏi sang một câu hỏi thì bỏ chọn tất cả
 	useEffect(() => {
@@ -99,7 +85,7 @@ const EditQuizQuestion = () => {
 		if (actionQuizType === 'edit') {
 			getCurrentUpdateQuestion();
 		}
-	}, [quizId, questionId, actionQuizType]);
+	}, []);
 
 	// Đóng edit board
 	const closeEditBoard = () => {

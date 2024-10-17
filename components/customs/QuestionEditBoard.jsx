@@ -12,10 +12,10 @@ import Button from '../../components/customs/Button';
 import { useQuestionProvider } from '../../contexts/QuestionProvider';
 
 const QuestionEditBoard = ({
-	content,
-	visible,
-	handleClose,
-	type,
+	content = '',
+	visible = false,
+	handleClose = () => {},
+	type = '',
 	answerEditSelected = 0,
 	mutipleChoice = false,
 }) => {

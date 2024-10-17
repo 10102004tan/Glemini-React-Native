@@ -31,4 +31,4 @@ function QuizItem({ quiz }) {
     )
 }
 
-export default QuizItem
+export default QuizItem;
