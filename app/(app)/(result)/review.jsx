@@ -112,9 +112,16 @@ const ResultReview = () => {
 								})}
 							</View>
 
+							{!currentQuestion.correct && (
+								<View className='mt-4'>
+									<Text className='text-base text-slate-600 font-pregular'>
+										{i18n.t('result.review.userAnswer')}: {currentQuestion.answer.map(userAns => userAns.text).join(', ') || i18n.t('result.review.noAnswer')}
+									</Text>
+								</View>
+							)}
 							<View>
 								<Text className='text-base text-slate-600 font-pregular mt-4 underline'>
-								{i18n.t('result.review.explanation')}
+									{i18n.t('result.review.explanation')}
 								</Text>
 								<Text className='text-sm text-slate-600/90 font-pextralight'>
 									{currentQuestion.question_id.question_explanation || i18n.t('result.review.textExplanation')}

@@ -133,7 +133,8 @@
             "textExplanation": "Không có giải thích ở đây!",
             "btnNext": "Trước",
             "btnPrev": "Sau",
-            "point": "điểm"
+            "point": "điểm",
+            "userAnswer": "Đáp án của bạn: "
         }
     },
     "student_homepage": {
