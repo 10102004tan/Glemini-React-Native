@@ -259,14 +259,20 @@ const Library = () => {
   return (
     <Wrapper>
       {/* Overlay */}
-      {(visibleBottomSheet ||
-        visibleCreateNewBottomSheet ||
-        visibleFilterBottomSheet) && (
-        <Overlay onPress={handleCloseBottomSheet} />
-      )}
+      <Overlay
+        onPress={handleCloseBottomSheet}
+        visible={
+          visibleBottomSheet ||
+          visibleCreateNewBottomSheet ||
+          visibleFilterBottomSheet
+        }
+      ></Overlay>
 
       {/* Bottom Sheet của Thư viện của tôi */}
-      <BottomSheet visible={visibleCreateNewBottomSheet}>
+      <BottomSheet
+        visible={visibleCreateNewBottomSheet}
+        onClose={handleCloseBottomSheet}
+      >
         <View className="flex-col">
           <View className="m-1 w-full flex flex-row items-center justify-start">
             <Button
@@ -289,7 +295,10 @@ const Library = () => {
       </BottomSheet>
 
       {/* Bottom Sheet của Bộ sưu tập */}
-      <BottomSheet visible={visibleBottomSheet}>
+      <BottomSheet
+        visible={visibleBottomSheet}
+        onClose={handleCloseBottomSheet}
+      >
         <View className="m-3">
           <Text className="text-gray mb-2">Tên bộ sưu tập</Text>
           <TextInput
@@ -310,16 +319,19 @@ const Library = () => {
             otherStyles="w-[50%] bg-blue-500 p-2 rounded-xl flex justify-center"
             textStyles="text-white text-center"
             onPress={() => {
-              createCollection();
-              // Đóng BottomSheet sau khi lưu
-              handleCloseBottomSheet();
+              createCollection(); // Tạo bộ sưu tập
+              setNameCollection(""); // Đặt lại giá trị ô nhập liệu về chuỗi rỗng
+              handleCloseBottomSheet(); // Đóng BottomSheet
             }}
           />
         </View>
       </BottomSheet>
 
       {/* Bottom Sheet của Bộ lọc */}
-      <BottomSheet visible={visibleFilterBottomSheet}>
+      <BottomSheet
+        visible={visibleFilterBottomSheet}
+        onClose={handleCloseBottomSheet}
+      >
         <View className="flex flex-col">
           {/* search */}
           <View className="flex-row mb-4">
@@ -397,14 +409,6 @@ const Library = () => {
       </BottomSheet>
 
       <View className="flex-1">
-        {/* Header */}
-        {/* <View className="flex-row justify-between p-4">
-          <View className="border border-gray-300 rounded-xl px-4 w-[120px] flex-row items-center justify-between">
-            <AntDesign name="search1" size={18} color="black" />
-            <TextInput placeholder="Tìm kiếm" className="ml-2" />
-          </View>
-        </View> */}
-
         {/* Tabs */}
         <View className="flex flex-row justify-around mb-2">
           {/* Tab Thư viện của tôi */}
