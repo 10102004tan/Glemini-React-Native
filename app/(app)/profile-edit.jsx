@@ -83,8 +83,7 @@ export default function ProfileEditScreen() {
             return;
         }
 
-        if (data.email === prevData.email) return;
-
+        if (data.email === prevData.email && data.fullname === prevData.fullname) return;
         fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.PROFILE_EDIT}`,{
             method: 'PUT',
             headers: {
@@ -92,7 +91,10 @@ export default function ProfileEditScreen() {
                 authorization: `${accessToken}`,
                 'x-client-id': _id,
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify({
+                email: (data.email === prevData.email) ? null : data.email,
+                fullname: data.fullname,
+            })
         })
         .then((response) => response.json())
         .then(async (rs) => {
