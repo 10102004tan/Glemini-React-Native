@@ -1,10 +1,10 @@
-"use strict";
-import { Slot } from "expo-router";
-import { createContext, useContext, useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Alert } from "react-native";
+'use strict';
+import { Slot } from 'expo-router';
+import { createContext, useContext, useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from 'react-native';
 
-import { API_URL, END_POINTS, API_VERSION } from "../configs/api.config";
+import { API_URL, END_POINTS, API_VERSION } from '../configs/api.config';
 
 export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
@@ -331,6 +331,7 @@ export const AuthProvider = ({ children }) => {
     }
     throw new Error(data.message);
   }
+
 	return (
 		<AuthContext.Provider
 			value={{
@@ -346,17 +347,16 @@ export const AuthProvider = ({ children }) => {
 				teacherStatus,
 				fetchDetailUser,
 				setTeacherStatus,
-                forgotPassword,
-                verifyOTP,
-                resetPassword
+				forgotPassword,
+				verifyOTP,
+				resetPassword,
 			}}
 		>
 			{children}
 		</AuthContext.Provider>
 	);
-
 };
 
 export const useAuthContext = () => {
-  return useContext(AuthContext);
+	return useContext(AuthContext);
 };

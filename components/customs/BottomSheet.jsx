@@ -5,7 +5,7 @@ import Animated, {
 	withTiming,
 } from 'react-native-reanimated';
 
-const BottomSheet = ({ children, visible }) => {
+const BottomSheet = ({ children, visible = false }) => {
 	const translateY = useSharedValue(300); // Chạy từ dưới lên, 300 là chiều cao khởi điểm
 	useEffect(() => {
 		if (visible) {

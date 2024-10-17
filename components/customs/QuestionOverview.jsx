@@ -5,7 +5,7 @@ import { useWindowDimensions } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import { useRouter } from 'expo-router';
-const QuestionOverview = ({ quizId, question, index }) => {
+const QuestionOverview = ({ quizId = null, question = {}, index = 0 }) => {
 	const [showExpain, setShowExpain] = useState(false);
 	const { width } = useWindowDimensions();
 	const { setActionQuizType } = useQuizProvider();
