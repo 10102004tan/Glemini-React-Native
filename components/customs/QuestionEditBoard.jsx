@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
@@ -18,7 +18,9 @@ const QuestionEditBoard = ({
 	type = '',
 	answerEditSelected = 0,
 	mutipleChoice = false,
+	closeEditBoard = () => {},
 }) => {
+	const [isSaveData, setIsSaveData] = useState(false);
 	// Tạo hiệu ứng chuyển động
 	const translateY = useSharedValue(1000);
 
@@ -47,11 +49,15 @@ const QuestionEditBoard = ({
 		>
 			{/* Dùng để chỉnh sửa câu hỏi, đáp án của quiz */}
 			<RichTextEditor
+				closeEditBoard={closeEditBoard}
+				isSave={isSaveData}
+				setIsSaveData={setIsSaveData}
 				focus={visible}
 				typingType={type}
 				content={content}
 				selectedAnswer={answerEditSelected}
 			/>
+
 			{/* Đánh dấu đáp án chính xác của bộ quiz */}
 			{type === Status.quiz.ANSWER && (
 				<View className="flex flex-1 items-start justify-start flex-col w-full p-4">
@@ -92,6 +98,16 @@ const QuestionEditBoard = ({
 					/>
 				</View>
 			)}
+			<View className="flex flex-1 items-start justify-end flex-row w-full p-4">
+				<Button
+					onPress={() => {
+						setIsSaveData(true);
+					}}
+					otherStyles="bg-blue-500"
+					text={'Lưu'}
+					icon={<Feather name="save" size={18} color="white" />}
+				/>
+			</View>
 		</Animated.View>
 	);
 };
