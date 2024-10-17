@@ -49,7 +49,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="libraly"
         options={{
-          title: "Thư viện của tôi",
+          title: i18n.t("library.title"),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "library-sharp" : "library-outline"}
@@ -69,7 +69,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: "Tìm kiếm",
+          title: i18n.t("search.title"),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "search-circle-sharp" : "search-outline"}
@@ -82,7 +82,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="report"
         options={{
-          title: "Báo cáo",
+          title: i18n.t("report.title"),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "document-sharp" : "document-outline"}
@@ -109,21 +109,13 @@ export default function TabLayout() {
               color={color}
             />
           ),
-
-          tabBarButton: (props) => {
-            if (user_type === "teacher") {
-              return null;
-            } else {
-              return <TouchableOpacity {...props} />;
-            }
-          },
         }}
       />
 
       <Tabs.Screen
         name="account"
         options={{
-          title: "Tài khoản",
+          title: i18n.t("account.title"),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "moon" : "moon-outline"}

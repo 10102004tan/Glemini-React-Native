@@ -14,7 +14,7 @@ function QuizItem({ quiz }) {
                     style={{ resizeMode: 'cover' }} />
             </View>
             <View className='w-3/5 flex ml-2 items-start justify-around'>
-                { quiz.user_id.user_type === 'teacher' ? <Icon name='star-sharp' size={20} className='text-yellow-400 absolute top-2 right-2' /> : '' }
+                {/* { quiz.user_id.user_type === 'teacher' ? <Icon name='star-sharp' size={20} className='text-yellow-400 absolute top-2 right-2' /> : '' } */}
                 <Text className='text-lg font-bold'>{truncateDescription(quiz.quiz_name, 30)}</Text>
                 <View className='flex gap-1 items-baseline'>
                     <View className='flex-row'>

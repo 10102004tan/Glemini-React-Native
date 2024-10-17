@@ -4,9 +4,11 @@ import { useContext, useState } from "react";
 import { Image, Pressable, Text, View } from "react-native";
 import { AuthContext } from "@/contexts/AuthContext";
 import AccoutntStatusItem from "@/components/customs/AccountStatusItem";
+import {useAppProvider} from "@/contexts/AppProvider";
 
 export default function AccountScreen() {
     const {userData:{user_fullname,user_email,user_type,user_avatar},userData,teacherStatus} = useContext(AuthContext);
+    const {i18n} = useAppProvider();
     return (
         <View className="bg-white h-[100%] px-[20px]">
             <View>
@@ -20,7 +22,7 @@ export default function AccountScreen() {
                     <Link href={'(app)/profile'}>
                         <View className="flex flex-row items-center">
                             <FontAwesome name="edit" size={16} color="black" />
-                            <Text className="ms-2 text-[12px]">Chỉnh sửa</Text>
+                            <Text className="ms-2 text-[12px]">{i18n.t("account.buttonEdit")}</Text>
                         </View>
                     </Link>
                 </View>

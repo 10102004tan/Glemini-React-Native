@@ -105,7 +105,7 @@ export default function ForgotPasswordScreen() {
                         <View>
                             <CustomInput onChangeText={setEmail} value={email} label={i18n.t('forgetPassword.email')} />
                             <Link className={"mb-3 text-center"} href={"/(auths)/sign-in"}>
-                                <Text className={"text-[16px] text-gray"}>Back to sign in</Text>
+                                <Text className={"text-[16px] text-gray"}>{i18n.t("resetPassword.backToSignIn")}</Text>
                             </Link>
                             <CustomButton onPress={handleSendEmail} title={i18n.t('forgetPassword.send')} />
                         </View>
@@ -113,13 +113,13 @@ export default function ForgotPasswordScreen() {
                         <View>
                             <OTPTextView handleTextChange={setOtp} inputCount={COUNT_INPUT}/>
                             <View className={"flex-row mb-4 mt-3 justify-center"}>
-                                <Text className={"text-gray"}>If you didn’t receive a code, </Text>
+                                <Text className={"text-gray"}>{i18n.t("resetPassword.notReceiveCode")} </Text>
                                 <TouchableOpacity disabled={disableResend} onPress={handleSendEmail}>
-                                    <Text className={"font-semibold " +(!disableResend ? "text-orange-600":"text-gray")}>{(disableResend ? `Resend (${countResend})`:"Resend")}</Text>
+                                    <Text className={"font-semibold " +(!disableResend ? "text-orange-600":"text-gray")}>{(disableResend ? `${i18n.t("resetPassword.resendCode")} (${countResend})`:i18n.t("resetPassword.resendCode"))}</Text>
                                 </TouchableOpacity>
                             </View>
                             <TouchableOpacity onPress={()=>setIsSendEmail(true)}>
-                                <Text className={"mb-3 text-center font-semibold"}>Change Email</Text>
+                                <Text className={"mb-3 text-center font-semibold"}>{i18n.t("resetPassword.changeEmail")}</Text>
                             </TouchableOpacity>
                             <CustomButton onPress={handleSendOTP} title={i18n.t('forgetPassword.send')} />
                         </View>
@@ -129,7 +129,7 @@ export default function ForgotPasswordScreen() {
             </View>
             <View className={"mt-[100px]"}>
                 <Text className={"mb-4 text-gray text-center"}>
-                    Do you have account?
+                    {i18n.t("resetPassword.notHaveAccount")}
                 </Text>
                 <CustomButton onPress={()=>{
                     router.push({

@@ -16,7 +16,7 @@ import QuizzCreateAction from '../../components/customs/QuizCreateAction';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 
 const TeacherHomeScreen = () => {
-	const { teacherStatus } = useContext(AuthContext);
+	const { teacherStatus,userData:{user_fullname,user_avatar,user_email} } = useContext(AuthContext);
 	const { setIsHiddenNavigationBar } = useAppProvider();
 	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
 	const { setActionQuizType } = useQuizProvider();
@@ -31,7 +31,7 @@ const TeacherHomeScreen = () => {
 		setVisibleBottomSheet(false);
 	};
 
-	if (teacherStatus === 'pedding') {
+	if (teacherStatus === 'pedding' || teacherStatus === 'rejected') {
 		return <LockFeature />;
 	}
 
@@ -115,13 +115,13 @@ const TeacherHomeScreen = () => {
 			{/* Header */}
 			<View className="px-4 py-6 bg-primary rounded-b-3xl">
 				{/* Teacher Info */}
-				<View className="flex flex-row items-center justify-start">
-					<Image source={Images.woman} />
+				<View className="flex flex-row items-center justify-start mb-3">
+					<Image className={"w-[50px] h-[50px] rounded-full"} src={user_avatar} />
 					<View className="ml-3 max-w-[330px]">
 						<Text className="text-lg font-pmedium text-white">
-							Tên của giáo viên
+							{user_fullname}
 						</Text>
-						<Text className="text-white">Mô tả về giáo viên </Text>
+						<Text className="text-white">{user_email}</Text>
 					</View>
 				</View>
 

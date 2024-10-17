@@ -49,7 +49,7 @@ const dev = {
 		COLLECTION_ADD_QUIZ: '/collections/add-quiz',
 		COLLECTION_REMOVE_QUIZ: '/collections/remove-quiz',
 		COLLECTION_GETALL: '/collections',
-	},
+	}
 };
 
 const prod = {
