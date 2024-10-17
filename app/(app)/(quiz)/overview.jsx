@@ -28,6 +28,7 @@ import { Status } from '@/constants';
 import DropDownMultipleSelect from '@/components/customs/DropDownMultipleSelect';
 import SkeletonLoading from '@/components/loadings/SkeletonLoading';
 
+
 const QuizzOverViewScreen = () => {
 	const router = useRouter();
 	const [
@@ -85,8 +86,10 @@ const QuizzOverViewScreen = () => {
 
 	// Lưu thông tin của quiz khi người dùng ấn nút lưu trên thanh header
 	useEffect(() => {
+		console.log("test::overview");
 		if (isSave) {
 			handleUpdateQuiz(id);
+      router.back();
 		}
 	}, [isSave]);
 

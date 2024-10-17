@@ -47,6 +47,7 @@ const EditQuizQuestion = () => {
 	const { quizId, questionId } = useGlobalSearchParams();
 	const { userData } = useAuthContext();
 
+
 	// Khi người dùng chuyển từ chế độ chọn nhiều câu hỏi sang một câu hỏi thì bỏ chọn tất cả
 	useEffect(() => {
 		if (!mutipleChoice) {
