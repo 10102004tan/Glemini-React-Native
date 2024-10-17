@@ -6,7 +6,7 @@ import { View,Text } from "react-native";
 export default function ReportScreen(){
 	const {teacherStatus} = useContext(AuthContext);
 
-    if (teacherStatus === 'pedding') {
+    if (teacherStatus === 'pedding' || teacherStatus === 'rejected') {
 		return (
 			<LockFeature/>
 		)
