@@ -45,7 +45,7 @@ const SinglePlay = () => {
 						authorization: userData.accessToken,
 					},
 					body: JSON.stringify({
-						quiz_id: quiz,
+						quiz_id: quiz._id,
 					}),
 				});
 
