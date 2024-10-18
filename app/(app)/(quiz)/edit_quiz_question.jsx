@@ -49,13 +49,23 @@ const EditQuizQuestion = () => {
 
 	// Khi người dùng chuyển từ chế độ chọn nhiều câu hỏi sang một câu hỏi thì bỏ chọn tất cả
 	useEffect(() => {
-		console.log('TEST::LOOP');
-		if (question.question_type === 'single') {
+		if (question) {
+			const isMultiple = question.question_type !== 'single';
+			if (mutipleChoice !== isMultiple) {
+				setMutipleChoice(isMultiple);
+			}
+		}
+	}, [question]);
+
+	const handleTypeQuestion = () => {
+		if (mutipleChoice) {
+			resetMarkCorrectAnswer();
 			selectQuestionType('single');
 		} else {
 			selectQuestionType('multiple');
 		}
-	}, [question.question_type]);
+		setMutipleChoice(!mutipleChoice);
+	};
 
 	// Lấy thông tin của câu hỏi hiện tại
 	const getCurrentUpdateQuestion = async () => {
@@ -226,20 +236,11 @@ const EditQuizQuestion = () => {
 								}}
 							/>
 						</TouchableOpacity>
-						{/* <TouchableOpacity className="absolute top-4 right-4">
-							<FontAwesome name="image" size={20} color="white" />
-						</TouchableOpacity> */}
 					</View>
 					<View className="flex items-center justify-between mt-4 flex-row">
 						<TouchableOpacity
 							onPress={() => {
-								if (mutipleChoice) {
-									selectQuestionType('single');
-									resetMarkCorrectAnswer();
-								} else {
-									selectQuestionType('multiple');
-								}
-								setMutipleChoice(!mutipleChoice);
+								handleTypeQuestion();
 							}}
 							className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
 							style={
