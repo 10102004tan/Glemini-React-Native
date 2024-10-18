@@ -1,4 +1,4 @@
-import {Image, View} from "react-native";
+import {FlatList, Image, View} from "react-native";
 import {useContext, useEffect, useState} from "react";
 import AccoutntStatusItem from "@/components/customs/AccountStatusItem";
 import {API_VERSION,API_URL,END_POINTS} from "@/configs/api.config";
@@ -41,11 +41,14 @@ export default function ProfileAuth(){
             <View className={"w-[100%] p-3 rounded"}>
                 <AccoutntStatusItem status={teacherStatus}/>
             </View>
-            {
-                urls.map((url,index)=>(
-                    <Image key={index} source={{uri:url}} className={"w-[100%] h-[200px] my-3 border-2 border-gray"} />
-                ))
-            }
+            <FlatList keyExtractor={item => item} data={urls} renderItem={(item)=>{
+                return (
+                    <View className={"bg-white p-2 rounded mb-3 shadow"}>
+                        <Image source={{uri:item.item}} style={{width:100,height:100,borderRadius:10}}/>
+                    </View>
+                )
+            }}
+            />
         </View>
     )
 }

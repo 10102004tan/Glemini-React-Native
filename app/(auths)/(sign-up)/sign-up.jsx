@@ -35,9 +35,9 @@ const SignUpScreen = () => {
     const [imageConfirm, setImageConfirm] = useState('');
     const [imageCurrent, setImageCurrent] = useState('');
     const [isOpenedModal, setIsOpenedModal] = useState(false);
-    const [isDisabled, setIsDisabled] = useState(false);
+    const [disabled, setDisabled] = useState(false);
     const handlerSignUp = async () => {
-        setIsDisabled(true);
+        setDisabled(true);
         await signUp({email, password, fullname, type,images:[imageIDCard,imageCard,imageConfirm]})
             .then((message) => {
                 Toast.show({
@@ -47,7 +47,7 @@ const SignUpScreen = () => {
                     visibilityTime: TIME_SHOW_TOAST,
                     autoHide: true,
                 });
-                setIsDisabled(false);
+                setDisabled(false);
             })
             .catch((error) => {
                 Toast.show({
@@ -57,8 +57,9 @@ const SignUpScreen = () => {
                     visibilityTime: TIME_SHOW_TOAST,
                     autoHide: true,
                 });
-                console.log(error.message)
-                setIsDisabled(false);
+                setDisabled(false);
+            }).catch(e=>{
+                setDisabled(false);
             });
     };
 
@@ -69,7 +70,6 @@ const SignUpScreen = () => {
                 allowsEditing: true,
                 quality: 1,
             })
-
             if (!result.canceled) {
                 setImageIDCard({
                     uri: result.assets[0].uri,
@@ -116,6 +116,7 @@ const SignUpScreen = () => {
     };
 
     const handlerLongPress = (type) => {
+        setIsOpenedModal(true);
         if (type === TYPEIMAGE.IDCard) {
             setImageCurrent(imageIDCard);
         }
@@ -125,7 +126,6 @@ const SignUpScreen = () => {
         else {
             setImageCurrent(imageConfirm);
         }
-        setIsOpenedModal(true);
     };
 
     const handlerValidate = () => {
@@ -160,7 +160,7 @@ const SignUpScreen = () => {
                 visibilityTime: TIME_SHOW_TOAST,
                 autoHide: true,
             });
-            return;
+            return false;
         }
         if(!validateEmail(email)){
             Toast.show({
@@ -238,12 +238,12 @@ const SignUpScreen = () => {
                 <CustomInput secure={!showPasswordVerify} onChangeText={setPasswordVerify} label={i18n.t('signUp.confirmPassword')} value={passwordVerify} />
                 {type === "teacher" && (
                     <View>
-                        <InputImage onLongPress={()=>handlerLongPress(TYPEIMAGE.Card)} onPress={()=>{handlerPickImage(TYPEIMAGE.Card)}} desc={'Chúng tôi cần bạn cung cấp'} title={i18n.t('signUp.card')} logo={(imageCard ? imageCard.uri : 'https://cdn-icons-png.flaticon.com/512/175/175062.png')} />
-                        <InputImage onLongPress={()=>handlerLongPress(TYPEIMAGE.IDCard)} onPress={()=>{handlerPickImage(TYPEIMAGE.IDCard)}} desc={'CCCD bắt buộc chụp trực tiếp'} title={i18n.t('signUp.cardID')} logo={(imageIDCard?imageIDCard.uri:'https://cdn-icons-png.flaticon.com/512/6080/6080012.png')} />
-                        <InputImage onLongPress={()=>handlerLongPress(TYPEIMAGE.Confirm)} onPress={()=>{handlerPickImage(TYPEIMAGE.Confirm)}} desc={'Các giấy tờ chứng minh việc bạn có giảng dạy'} title={i18n.t('signUp.documentConfirm')} logo={(imageConfirm?imageConfirm.uri:'https://cdn-icons-png.freepik.com/256/888/888034.png?semt=ais_hybrid')} />
+                        <InputImage onLongPress={()=>handlerLongPress(TYPEIMAGE.Card)} onPress={()=>{handlerPickImage(TYPEIMAGE.Card)}} desc={i18n.t("signUp.descForCard")} title={i18n.t('signUp.card')} logo={(imageCard ? imageCard.uri : 'https://cdn-icons-png.flaticon.com/512/175/175062.png')} />
+                        <InputImage onLongPress={()=>handlerLongPress(TYPEIMAGE.IDCard)} onPress={()=>{handlerPickImage(TYPEIMAGE.IDCard)}} desc={i18n.t("signUp.descForCardID")} title={i18n.t('signUp.cardID')} logo={(imageIDCard?imageIDCard.uri:'https://cdn-icons-png.flaticon.com/512/6080/6080012.png')} />
+                        <InputImage onLongPress={()=>handlerLongPress(TYPEIMAGE.Confirm)} onPress={()=>{handlerPickImage(TYPEIMAGE.Confirm)}} desc={i18n.t("signUp.descForDocument")} title={i18n.t('signUp.documentConfirm')} logo={(imageConfirm?imageConfirm.uri:'https://cdn-icons-png.freepik.com/256/888/888034.png?semt=ais_hybrid')} />
                     </View>
                 )}
-                <CustomButton className={"mb-4"}  onPress={()=>handlerValidate() && handlerSignUp()} title={i18n.t('signUp.signUp')} />
+                <CustomButton disabled={disabled} className={"mb-4"}  onPress={()=>handlerValidate() && handlerSignUp()} title={i18n.t('signUp.signUp')} />
             </View>
                 
             <Modal animationType='slide' transparent={true} visible={isOpenedModal}>

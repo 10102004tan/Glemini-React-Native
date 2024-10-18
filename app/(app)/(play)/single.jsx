@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { View, Text, TouchableOpacity, useWindowDimensions, ScrollView } from 'react-native';
 import Button from '../../../components/customs/Button';
 import ResultSingle from '../(result)/single';
 import { useAuthContext } from '@/contexts/AuthContext';
@@ -15,7 +15,7 @@ const SinglePlay = () => {
 	const route = useRoute();
 	const navigation = useNavigation()
 	const { quiz } = route.params;
-	const {i18n} = useAppProvider();
+	const { i18n } = useAppProvider();
 	const { width } = useWindowDimensions();
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 	const [selectedAnswers, setSelectedAnswers] = useState([]);
@@ -233,7 +233,7 @@ const SinglePlay = () => {
 				<Text className="font-bold text-lg text-white">{truncateDescription(quiz.quiz_name, 20)}</Text>
 				<Button
 					text={i18n.t('play.single.buttonQuit')}
-					onPress={() => {navigation.popToTop()}}
+					onPress={() => { navigation.popToTop() }}
 					loading={false}
 					type="fill"
 					otherStyles={'bg-[#F41D1D]'}
@@ -250,20 +250,24 @@ const SinglePlay = () => {
 						{`${i18n.t('play.single.questionCouter')} ` + (currentQuestionIndex + 1) + " / " + questions.length}
 					</Text>
 
-					<RenderHTML
-						defaultTextProps={{
-							style: {
-								color: 'white',
-								fontSize: 25,
-								fontWeight: '700',
-                        height: 100
-							},
-						}}
-						contentWidth={width}
-						source={{
-							html: questions[currentQuestionIndex]?.question_excerpt,
-						}}
-					/>
+					<ScrollView
+						style={{ maxHeight: 100 }}
+						showsVerticalScrollIndicator={false}
+					>
+						<RenderHTML
+							defaultTextProps={{
+								style: {
+									color: 'white',
+									fontSize: 25,
+									fontWeight: '700',
+								},
+							}}
+							contentWidth={width}
+							source={{
+								html: questions[currentQuestionIndex]?.question_excerpt,
+							}}
+						/>
+					</ScrollView>
 				</View>
 
 				<View>

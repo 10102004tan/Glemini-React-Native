@@ -8,7 +8,10 @@ import AppProvider, { useAppProvider } from '@/contexts/AppProvider';
 import BottomSheet from '@/components/customs/BottomSheet';
 import Overlay from '@/components/customs/Overlay';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { SelectList } from 'react-native-dropdown-select-list';
+import {
+	MultipleSelectList,
+	SelectList,
+} from 'react-native-dropdown-select-list';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { router, useGlobalSearchParams } from 'expo-router';
 import { useQuizProvider } from '@/contexts/QuizProvider';
@@ -17,8 +20,17 @@ import QuestionOverview from '@/components/customs/QuestionOverview';
 import { ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog.jsx';
+import { collectionData } from '@/utils/index.js';
 
 const detailquizz = () => {
+	// tạo biến để lưu quiz vào bộ sưu tập
+	const [addNameToCollection, setAddNameToCollection] = useState('');
+
+	// biến để chọn các collection trong bottomsheet
+	const [selectedCollection, setSelectedCollection] = useState('');
+	// lưu tất cả các collections
+	const [collections, setCollections] = useState([]);
+
 	// dialog xác nhận để xóa
 	const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
@@ -42,12 +54,14 @@ const detailquizz = () => {
 	const [quizStatus, setQuizStatus] = useState('');
 	const [quizSubjects, setQuizSubjects] = useState([]);
 	const [quizThumbnail, setQuizThumbnail] = useState('');
+	const [quizTurn, setQuizTurn] = useState('');
 	const [currentQuizQuestion, setCurrentQuizQuestion] = useState([]);
 
 	//selectlist
 	const [selectedSchool, setSelectedSchool] = useState('');
 	const [selectedClass, setSelectedClass] = useState('');
 
+	// bottom sheet
 	const {
 		showBottomSheetMoreOptions,
 		showBottomSheetSaveToLibrary,
@@ -80,6 +94,7 @@ const detailquizz = () => {
 			setQuizDescription(data.metadata.quiz_description);
 			setQuizStatus(data.metadata.quiz_status);
 			setQuizSubjects(data.metadata.subject_ids);
+			setQuizTurn(data.metadata.quiz_turn);
 		}
 	};
 
@@ -107,6 +122,64 @@ const detailquizz = () => {
 		}
 		setQuestionFetching(false);
 	};
+
+	//thêm vào bộ sưu tập
+	const addQuizToCollection = async (collection_id) => {
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_ADD_QUIZ}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({
+					user_id: userData._id,
+
+					collection_id,
+					quiz_id: quizId,
+				}),
+			}
+		);
+		const data = await response.json();
+		console.log(data);
+		if (data.statusCode === 200) {
+			setSelectedCollection([]);
+		}
+	};
+
+	const getAllCollections = async () => {
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_GETALL}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({
+					user_id: userData._id,
+				}),
+			}
+		);
+		const data = await response.json();
+		console.log(data);
+		if (data.statusCode === 200) {
+			setCollections(collectionData(data.metadata));
+			console.log(collectionData(data.metadata));
+		}
+	};
+	useEffect(() => {
+		getAllCollections();
+	}, []);
+
+	useEffect(() => {
+		if (selectedCollection.length > 0) {
+			addQuizToCollection(selectedCollection[0]);
+		}
+	}, [selectedCollection]);
 
 	useEffect(() => {
 		if (id) {
@@ -151,12 +224,19 @@ const detailquizz = () => {
 			/>
 
 			{/* Overlay */}
-			{(showBottomSheetMoreOptions || showBottomSheetSaveToLibrary) && (
-				<Overlay onPress={closeBottomSheet} />
-			)}
+
+			<Overlay
+				onPress={closeBottomSheet}
+				visible={
+					showBottomSheetMoreOptions || showBottomSheetSaveToLibrary
+				}
+			></Overlay>
 
 			{/* Bottom Sheet */}
-			<BottomSheet visible={showBottomSheetMoreOptions}>
+			<BottomSheet
+				visible={showBottomSheetMoreOptions}
+				onClose={closeBottomSheet}
+			>
 				<Button
 					text={'Chỉnh sửa'}
 					otherStyles={'m-2 flex-row'}
@@ -186,7 +266,10 @@ const detailquizz = () => {
 			</BottomSheet>
 
 			{/* BottomSheet lưu vào bộ sưu tập */}
-			<BottomSheet visible={showBottomSheetSaveToLibrary}>
+			<BottomSheet
+				visible={showBottomSheetSaveToLibrary}
+				onClose={closeBottomSheet}
+			>
 				<View className="m-2">
 					<Text className="flex text-center text-[18px] text-gray">
 						Lưu vào bộ sưu tập
@@ -194,55 +277,12 @@ const detailquizz = () => {
 					<View className="w-full h-[1px] bg-gray my-2"></View>
 
 					{/* Tiếng Nhật với checkbox */}
-					<View className="flex-row items-center mb-4">
-						<TouchableOpacity
-							onPress={handleCheckboxToggle}
-							className="h-[20px] w-[20px] rounded-md border border-gray flex items-center justify-end"
-						>
-							{/* Nếu isChecked là true, hiện icon check */}
-							{isChecked && (
-								<Ionicons
-									name="checkmark"
-									size={16}
-									color="black"
-								/>
-							)}
-						</TouchableOpacity>
-						<Text className="ml-2">Tiếng Nhật</Text>
-					</View>
-
-					<View className="flex-row items-center mb-4">
-						<TouchableOpacity
-							onPress={handleCheckboxToggle}
-							className="h-[20px] w-[20px] rounded-md border border-gray flex items-center justify-end"
-						>
-							{/* Nếu isChecked là true, hiện icon check */}
-							{isChecked && (
-								<Ionicons
-									name="checkmark"
-									size={16}
-									color="black"
-								/>
-							)}
-						</TouchableOpacity>
-						<Text className="ml-2">Tiếng Việt</Text>
-					</View>
-
-					<View className="flex-row items-center mb-4">
-						<TouchableOpacity
-							onPress={handleCheckboxToggle}
-							className="h-[20px] w-[20px] rounded-md border border-gray flex items-center justify-end"
-						>
-							{/* Nếu isChecked là true, hiện icon check */}
-							{isChecked && (
-								<Ionicons
-									name="checkmark"
-									size={16}
-									color="black"
-								/>
-							)}
-						</TouchableOpacity>
-						<Text className="ml-2">Toán</Text>
+					<View className="w-full">
+						<MultipleSelectList
+							setSelected={(val) => setSelectedCollection(val)}
+							data={collections}
+							save="key"
+						/>
 					</View>
 				</View>
 			</BottomSheet>
@@ -284,9 +324,11 @@ const detailquizz = () => {
 				<View className="h-[100px] w-full border rounded-xl mt-4 flex-row">
 					{quizzes.length > 0 &&
 						quizzes.map((quiz) => (
-							<View className="h-[100px] w-full border rounded-xl flex-row mb-3">
+							<View
+								className="h-[100px] w-full border rounded-xl flex-row mb-3"
+								key={quiz._id}
+							>
 								<TouchableOpacity
-									key={quiz._id}
 									onPress={() => {
 										router.push({
 											pathname: '/(app)/(quiz)/overview',
@@ -329,7 +371,7 @@ const detailquizz = () => {
 
 			<View>
 				<Text className="text-gray mt-8 text-right right-4">
-					100 người đã tham gia
+					{quizTurn} người đã tham gia
 				</Text>
 			</View>
 
@@ -356,7 +398,7 @@ const detailquizz = () => {
 			</ScrollView>
 
 			<View className="w-full h-[1px] bg-gray"></View>
-			<View className="p-2">
+			<View className="p-2 flex justify-center">
 				<Button
 					text={'Bắt đầu Quiz'}
 					otherStyles={'p-4'}
