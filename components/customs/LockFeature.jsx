@@ -1,14 +1,16 @@
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
+import {useAppProvider} from "@/contexts/AppProvider";
 
 export default function LockFeature(){
+    const {i18n} = useAppProvider();
     return(
         <View className="flex flex-col items-center justify-center h-[100%]">
-            <Text className="text-[18px] font-semibold">Bạn chưa sử dụng được tính năng này</Text>
+            <Text className="text-[18px] font-semibold">{i18n.t("lockFeature.title")}</Text>
             <View className="flex flex-row gap-1">
-                <Text className="text-[14px] text-gray">Xem trạng thái hồ sơ của bạn</Text>
+                <Text className="text-[14px] text-gray">{i18n.t("lockFeature.desc")}</Text>
                 <Link href={'(app)/account'}>
-                    <Text className="text-[14px] font-semibold text-blue-500">Tại đây</Text>
+                    <Text className="text-[14px] font-semibold text-blue-500">{i18n.t("lockFeature.button")}</Text>
                 </Link>
             </View>
         </View>
