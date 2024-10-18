@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const dev = {
 	API_URL: 'http://10.0.249.255:3000/api',
@@ -50,20 +50,20 @@ const dev = {
 		COLLECTION_ADD_QUIZ: '/collections/add-quiz',
 		COLLECTION_REMOVE_QUIZ: '/collections/remove-quiz',
 		COLLECTION_GETALL: '/collections',
-	}
+	},
 };
 
 const prod = {
-  API_VERSION: {
-    V1: "/v1",
-  },
-  API_URL: "http://localhost:8000/api",
-  END_POINTS: {
-    LOGIN: "/login",
-    REGISTER: "/register",
-    LOGOUT: "/logout",
-    PROFILE: "/profile",
-  },
+	API_VERSION: {
+		V1: '/v1',
+	},
+	API_URL: 'http://localhost:8000/api',
+	END_POINTS: {
+		LOGIN: '/login',
+		REGISTER: '/register',
+		LOGOUT: '/logout',
+		PROFILE: '/profile',
+	},
 };
 
 module.exports = dev;

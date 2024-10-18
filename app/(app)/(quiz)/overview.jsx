@@ -83,6 +83,14 @@ const QuizzOverViewScreen = () => {
 	const { subjects } = useSubjectProvider();
 	const subjectsData = convertSubjectData(subjects);
 
+	useEffect(() => {
+		console.log(id);
+		if (id) {
+			fetchQuiz();
+			fetchQuestions();
+		}
+	}, [id]);
+
 	// Lưu thông tin của quiz khi người dùng ấn nút lưu trên thanh header
 	useEffect(() => {
 		// console.log('test::overview');
@@ -166,13 +174,6 @@ const QuizzOverViewScreen = () => {
 		updateQuiz(quiz);
 		handleCloseBottomSheet();
 	};
-
-	useEffect(() => {
-		if (id) {
-			fetchQuiz();
-			fetchQuestions();
-		}
-	}, [id]);
 
 	useEffect(() => {
 		if (uploadingImage) {
@@ -409,7 +410,7 @@ const QuizzOverViewScreen = () => {
 				onConfirm={() => {
 					deleteQuiz(id);
 					setShowConfirmDialog(false);
-					router.back('(app)/(quiz)/list');
+					router.back();
 				}}
 				message={'Bạn chắc chắn muốn xóa bộ câu hỏi này?'}
 			/>
