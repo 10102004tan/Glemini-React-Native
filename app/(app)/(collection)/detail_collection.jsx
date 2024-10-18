@@ -98,30 +98,69 @@ const detail_collection = () => {
     }
   };
 
-  const updateNameCollection = async (quiz_id) => {
-    console.log(quiz_id);
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_UPDATE_NAME}`,
+  // const updateNameCollection = async (quiz_id) => {
+  //   console.log(quiz_id);
+  //   const response = await fetch(
+  //     `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_UPDATE_NAME}`,
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "x-client-id": userData._id,
+  //         authorization: userData.accessToken,
+  //       },
+  //       body: JSON.stringify({
+  //         user_id: userData._id,
+  //         quiz_id,
+  //       }),
+  //     }
+  //   );
+  //   const data = await response.json();
+  //   console.log(data);
+  //   if (data.statusCode === 200) {
+  //   }
+  // };
+
+  // const deleteQuizInCollection = async (quiz_id) => {
+  //   console.log("Deleting quiz with ID:", quiz_id);
+  //   const response = await fetch(
+  //     `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_REMOVE_QUIZ}`,
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "x-client-id": userData._id,
+  //         authorization: userData.accessToken,
+  //       },
+  //       body: JSON.stringify({
+  //         user_id: userData._id,
+  //         quiz_id,
+  //         collection_id: id,
+  //       }),
+  //     }
+  //   );
+  //   const data = await response.json();
+  //   if (data.statusCode === 200) {
+  //     // Cập nhật danh sách quiz sau khi xóa thành công
+  //     setQuizzes((prev) => prev.filter((quiz) => quiz._id !== quiz_id));
+  //   } else {
+  //     console.log("Error: Quiz does not exist or could not be deleted");
+  //     Alert.alert("Error", "Quiz không tồn tại hoặc không thể xóa.");
+  //   }
+  // };
+
+  const handleDeleteQuiz = (quiz_id) => {
+    Alert.alert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa quiz này không?", [
+      { text: "Hủy", style: "cancel" },
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_id: userData._id,
-          quiz_id,
-        }),
-      }
-    );
-    const data = await response.json();
-    console.log(data);
-    if (data.statusCode === 200) {
-    }
+        text: "Xóa",
+        onPress: () => deleteQuizInCollection(quiz_id),
+        style: "destructive",
+      },
+    ]);
   };
 
-  // hiển thị nút xác nhận xóa
+  // hiển thị nút xác nhận xóa cho bộ sưu tập
   const handleDeletePress = () => {
     Alert.alert(
       "Xác nhận xóa",
@@ -193,7 +232,7 @@ const detail_collection = () => {
           renderItem={({ item: name }) => {
             return (
               <View className="h-[100px] w-full border rounded-xl flex-row mt-6">
-                <View className="flex flex-row ">
+                <View className="flex flex-row">
                   <View className="flex justify-center items-center m-2">
                     <Image
                       source={{
@@ -215,6 +254,12 @@ const detail_collection = () => {
                         : "Công khai"}
                     </Text>
                   </View>
+                  <TouchableOpacity
+                    className="flex mt-2 ml-[150px] border border-gray rounded-md"
+                    // onPress={() => handleDeleteQuiz(name.id)}
+                  >
+                    <MaterialIcons name="delete" size={24} color="black" />
+                  </TouchableOpacity>
                 </View>
               </View>
             );

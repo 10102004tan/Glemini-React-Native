@@ -317,45 +317,35 @@ const detailquizz = () => {
       {/* </BottomSheet> */}
 
       <View className="flex m-2 ">
-        <View className="h-[100px] w-full border rounded-xl mt-4 flex-row">
-          {quizzes.length > 0 &&
-            quizzes.map((quiz) => (
-              <View
-                className="h-[100px] w-full border rounded-xl flex-row mb-3"
-                key={quiz._id}
-              >
-                <TouchableOpacity
-                  onPress={() => {
-                    router.push({
-                      pathname: "/(app)/(quiz)/overview",
-                      params: { id: quiz._id },
-                    });
+        <View className="h-[100px] w-full border rounded-xl mt-4">
+          <TouchableOpacity
+            onPress={() => {
+              router.push({
+                pathname: "/(app)/(quiz)/overview",
+                params: { id: quizId }, 
+              });
+            }}
+          >
+            <View className="flex flex-row m-2">
+              <View className="flex justify-center items-center">
+                <Image
+                  source={{
+                    uri:
+                      quizThumbnail ||
+                      "https://www.shutterstock.com/image-vector/quiz-time-3d-editable-text-260nw-2482374583.jpg",
                   }}
-                >
-                  <View className="flex flex-row m-2">
-                    <View className="flex justify-center items-center">
-                      <Image
-                        source={{
-                          uri:
-                            quizThumbnail ||
-                            "https://www.shutterstock.com/image-vector/quiz-time-3d-editable-text-260nw-2482374583.jpg",
-                        }}
-                        className="w-[80px] h-[80px] rounded-xl"
-                      ></Image>
-                    </View>
-                    <View className="flex flex-col ml-4 justify-around">
-                      <Text className="text-lg font-bold">{quizName}</Text>
-                      <Text className="text-gray-500">{quizDescription}</Text>
-                      <Text className="text-gray-500">
-                        {quizStatus === "unpublished"
-                          ? "Riêng tư"
-                          : "Công khai"}
-                      </Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
+                  className="w-[80px] h-[80px] rounded-xl"
+                />
               </View>
-            ))}
+              <View className="flex flex-col ml-4 justify-around">
+                <Text className="text-lg font-bold">{quizName}</Text>
+                <Text className="text-gray-500">{quizDescription}</Text>
+                <Text className="text-gray-500">
+                  {quizStatus === "unpublished" ? "Riêng tư" : "Công khai"}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
 
