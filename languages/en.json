@@ -191,5 +191,10 @@
     },
     "library": {
         "title": "Library"
+    },
+    "lockFeature": {
+        "title": "You do not have access to this feature",
+        "desc": "Please upgrade your account to access this feature.",
+        "button": "Here"
     }
 }

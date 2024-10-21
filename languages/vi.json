@@ -192,5 +192,10 @@
     },
     "library":{
         "title":"Thư viện"
+    },
+    "lockFeature":{
+        "title":"Bạn chưa có quyền truy cập chức năng này",
+        "desc":"Xem trạng thái hồ sơ của bạn",
+        "button":"Tại đây"
     }
 }

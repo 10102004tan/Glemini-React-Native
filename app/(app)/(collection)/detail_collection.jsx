@@ -15,9 +15,9 @@ const detail_collection = () => {
   const { id } = useGlobalSearchParams();
   const { userData } = useAuthContext();
 
-  // Hàm lấy chi tiết bộ sưu tập
+  // lấy tất cả id của quiz
   const getCollectionById = async (collection_id) => {
-    console.log(collection_id);
+    // console.log(collection_id);
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_GET_DETAILS}`,
       {
@@ -149,16 +149,16 @@ const detail_collection = () => {
   //   }
   // };
 
-  const handleDeleteQuiz = (quiz_id) => {
-    Alert.alert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa quiz này không?", [
-      { text: "Hủy", style: "cancel" },
-      {
-        text: "Xóa",
-        onPress: () => deleteQuizInCollection(quiz_id),
-        style: "destructive",
-      },
-    ]);
-  };
+  // const handleDeleteQuiz = (quiz_id) => {
+  //   Alert.alert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa quiz này không?", [
+  //     { text: "Hủy", style: "cancel" },
+  //     {
+  //       text: "Xóa",
+  //       onPress: () => deleteQuizInCollection(quiz_id),
+  //       style: "destructive",
+  //     },
+  //   ]);
+  // };
 
   // hiển thị nút xác nhận xóa cho bộ sưu tập
   const handleDeletePress = () => {
@@ -178,7 +178,7 @@ const detail_collection = () => {
       ]
     );
   };
-
+// khi dữ liệu bị thay đổi thì useEffect này sẽ dc gọi
   useEffect(() => {
     getCollectionById(id);
   }, []);

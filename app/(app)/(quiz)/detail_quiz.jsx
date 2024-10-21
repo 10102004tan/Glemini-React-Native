@@ -136,7 +136,6 @@ const detailquizz = () => {
         },
         body: JSON.stringify({
           user_id: userData._id,
-
           collection_id,
           quiz_id: quizId,
         }),
@@ -168,7 +167,7 @@ const detailquizz = () => {
     console.log(data);
     if (data.statusCode === 200) {
       setCollections(collectionData(data.metadata));
-      console.log(collectionData(data.metadata));
+      // console.log(collectionData(data.metadata));
     }
   };
   useEffect(() => {
@@ -218,6 +217,7 @@ const detailquizz = () => {
         onConfirm={() => {
           deleteQuiz(id);
           setShowConfirmDialog(false);
+          closeBottomSheet();
           router.back("(app)/(home)/library");
         }}
         message={"Bạn chắc chắn muốn xóa bộ câu hỏi này?"}
@@ -282,70 +282,38 @@ const detailquizz = () => {
           </View>
         </View>
       </BottomSheet>
-
-      {/* Edit Bottom Sheet */}
-      {/* <BottomSheet visible={showBottomSheetSaveToLibrary}> */}
-      {/* Selected của trường */}
-      {/* <View className="mb-4">
-          <Text className="text-lg font-semibold m-2">Chọn trường</Text>
-          <SelectList
-            setSelected={(val) => setSelectedSchool(val)}
-            data={nameSchool}
-            save="value"
-          />
-        </View> */}
-
-      {/* Selected của lớp */}
-      {/* <View className="mb-4">
-          <Text className="text-lg font-semibold m-2">Chọn lớp</Text>
-          <SelectList
-            setSelected={(val) => setSelectedClass(val)}
-            data={nameClass}
-            save="value"
-          />
-        </View> */}
-
-      {/* Button Hủy và Chọn */}
-      {/* <View className="flex flex-row justify-between">
-          <Button text="Hủy" otherStyles="w-[45%] bg-gray-200 p-2 rounded-xl" />
-          <Button
-            text="Chọn"
-            otherStyles="w-[50%] bg-blue-500 p-2 rounded-xl"
-            textStyles="text-white"
-          />
-        </View> */}
-      {/* </BottomSheet> */}
-
       <View className="flex m-2 ">
-        <View className="h-[100px] w-full border rounded-xl mt-4">
-          <TouchableOpacity
-            onPress={() => {
-              router.push({
-                pathname: "/(app)/(quiz)/overview",
-                params: { id: quizId }, 
-              });
-            }}
-          >
-            <View className="flex flex-row m-2">
-              <View className="flex justify-center items-center">
-                <Image
-                  source={{
-                    uri:
-                      quizThumbnail ||
-                      "https://www.shutterstock.com/image-vector/quiz-time-3d-editable-text-260nw-2482374583.jpg",
-                  }}
-                  className="w-[80px] h-[80px] rounded-xl"
-                />
+        <View className="h-[100px] w-full border rounded-xl mt-4 flex-col">
+          <View className="h-[100px] w-full rounded-xl flex-row mb-3">
+            <TouchableOpacity
+              onPress={() => {
+                router.replace({
+                  pathname: "/(app)/(quiz)/overview",
+                  params: { id: quizId },
+                });
+              }}
+            >
+              <View className="flex flex-row m-2">
+                <View className="flex justify-center items-center">
+                  <Image
+                    source={{
+                      uri:
+                        quizThumbnail ||
+                        "https://www.shutterstock.com/image-vector/quiz-time-3d-editable-text-260nw-2482374583.jpg",
+                    }}
+                    className="w-[80px] h-[80px] rounded-xl"
+                  ></Image>
+                </View>
+                <View className="flex flex-col ml-4 justify-around">
+                  <Text className="text-lg font-bold">{quizName}</Text>
+                  <Text className="text-gray-500">{quizDescription}</Text>
+                  <Text className="text-gray-500">
+                    {quizStatus === "unpublished" ? "Riêng tư" : "Công khai"}
+                  </Text>
+                </View>
               </View>
-              <View className="flex flex-col ml-4 justify-around">
-                <Text className="text-lg font-bold">{quizName}</Text>
-                <Text className="text-gray-500">{quizDescription}</Text>
-                <Text className="text-gray-500">
-                  {quizStatus === "unpublished" ? "Riêng tư" : "Công khai"}
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
