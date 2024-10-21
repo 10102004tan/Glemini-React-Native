@@ -12,18 +12,16 @@ const ResultReview = () => {
 	const route = useRoute();
 	const { resultData } = route.params;
 	const { i18n } = useAppProvider();
-
+	
 	// Trạng thái để lưu chỉ số câu hỏi được chọn và trạng thái hiển thị của Modal
 	const [selectedIndex, setSelectedIndex] = useState(null);
 	const [modalVisible, setModalVisible] = useState(false);
 
-	// Hàm để mở Modal với câu hỏi được chọn
 	const openModal = (index) => {
 		setSelectedIndex(index);
 		setModalVisible(true);
 	};
 
-	// Hàm để đóng Modal
 	const closeModal = () => {
 		setModalVisible(false);
 		setSelectedIndex(null);
