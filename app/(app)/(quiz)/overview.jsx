@@ -2,7 +2,6 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Wrapper from '../../../components/customs/Wrapper';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Button from '../../../components/customs/Button';
 import Overlay from '../../../components/customs/Overlay';
 import BottomSheet from '../../../components/customs/BottomSheet';
@@ -55,6 +54,8 @@ const QuizzOverViewScreen = () => {
 	const [currentQuizQuestion, setCurrentQuizQuestion] = useState([]);
 	const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 	const [uploadingImage, setUploadingImage] = useState(false);
+	const [alertMessage, setAlertMessage] = useState('');
+	const [confirmFn, setConfirmFn] = useState('close');
 
 	// Hàm kiểm tra xem có thay đổi thông tin quiz không
 	const isChange = () => {
@@ -70,6 +71,7 @@ const QuizzOverViewScreen = () => {
 	const {
 		setActionQuizType,
 		quizFetching,
+		setQuizFetching,
 		deleteQuiz,
 		questionFetching,
 		updateQuiz,
@@ -77,14 +79,18 @@ const QuizzOverViewScreen = () => {
 		isSave,
 	} = useQuizProvider();
 
-	const { resetQuestion, selectQuestionType } = useQuestionProvider();
+	const {
+		resetQuestion,
+		selectQuestionType,
+		createBoxQuestion,
+		createBlankQuestion,
+	} = useQuestionProvider();
 
 	// Lấy dữ liệu môn học
 	const { subjects } = useSubjectProvider();
 	const subjectsData = convertSubjectData(subjects);
 
 	useEffect(() => {
-		console.log(id);
 		if (id) {
 			fetchQuiz();
 			fetchQuestions();
@@ -93,7 +99,6 @@ const QuizzOverViewScreen = () => {
 
 	// Lưu thông tin của quiz khi người dùng ấn nút lưu trên thanh header
 	useEffect(() => {
-		// console.log('test::overview');
 		if (isSave) {
 			handleUpdateQuiz(id);
 			router.back();
@@ -102,6 +107,7 @@ const QuizzOverViewScreen = () => {
 
 	// Lấy thông tin của quiz hiện tại
 	const fetchQuiz = async () => {
+		setQuizFetching(true);
 		const response = await fetch(
 			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`,
 			{
@@ -116,7 +122,6 @@ const QuizzOverViewScreen = () => {
 		);
 
 		const data = await response.json();
-		// console.log(data.metadata);
 		if (data.statusCode === 200) {
 			// Save init state
 			setQuizId(data.metadata._id);
@@ -132,6 +137,8 @@ const QuizzOverViewScreen = () => {
 			setQuizSubjectsChange(data.metadata.subject_ids);
 			setQuizThumbnailChange(data.metadata.quiz_thumb);
 		}
+
+		setQuizFetching(false);
 	};
 
 	// Lấy danh sách các câu hỏi thuộc quiz hiện tại
@@ -150,7 +157,6 @@ const QuizzOverViewScreen = () => {
 			}
 		);
 		const data = await response.json();
-		// console.log(data.metadata);
 		if (data.statusCode === 200) {
 			setCurrentQuizQuestion(data.metadata);
 		} else {
@@ -161,7 +167,6 @@ const QuizzOverViewScreen = () => {
 
 	// Cập nhật thông tin của quiz
 	const handleUpdateQuiz = async (id) => {
-		// console.log('UPDATE::QUIZ');
 		const quiz = {
 			quiz_id: id,
 			quiz_name: quizName,
@@ -177,19 +182,28 @@ const QuizzOverViewScreen = () => {
 
 	useEffect(() => {
 		if (uploadingImage) {
-			alert('Ảnh đang được tải lên vui lòng chờ trong giây lát');
+			setAlertMessage(
+				'Ảnh đang được tải lên vui lòng chờ trong giây lát'
+			);
+			setShowConfirmDialog(true);
 		}
 	}, [uploadingImage]);
 
 	// Lấy danh sách câu hỏi của bộ quiz hiện tại
-	const createQuestion = () => {
+	const createQuestion = (questionType) => {
 		handleCloseBottomSheet();
 		if (isChange()) {
 			handleUpdateQuiz(id);
 		}
 
-		// Trạng thái câu hỏi ở đây sẽ là multiple choice hoặc single
-		selectQuestionType('multiple');
+		// Trạng thái câu hỏi ở đây sẽ là multiple choice hoặc single, fill in the blank, essay
+		if (questionType !== 'box' && questionType !== 'blank') {
+			selectQuestionType(questionType);
+		} else if (questionType === 'box') {
+			createBoxQuestion();
+		} else if (questionType === 'blank') {
+			createBlankQuestion();
+		}
 
 		router.push({
 			pathname: '(app)/(quiz)/edit_quiz_question',
@@ -223,7 +237,7 @@ const QuizzOverViewScreen = () => {
 		try {
 			setUploadingImage(true);
 
-			console.log(JSON.stringify(file, null, 2));
+			// console.log(JSON.stringify(file, null, 2));
 			const cleanFileName = file.fileName.replace(/[^a-zA-Z0-9.]/g, '_');
 			const formData = new FormData();
 			formData.append('file', {
@@ -246,11 +260,14 @@ const QuizzOverViewScreen = () => {
 			);
 
 			const data = await response.json();
-			console.log(JSON.stringify(data, null, 2));
 			return data.metadata.url;
 		} catch (error) {
 			if (error.message === 'Network request failed') {
-				alert('Lỗi mạng, vui lòng kiểm tra kết nối và thử lại');
+				setAlertMessage(
+					'Lỗi mạng, vui lòng kiểm tra kết nối và thử lại'
+				);
+
+				setShowConfirmDialog(true);
 			}
 		} finally {
 			setUploadingImage(false);
@@ -269,9 +286,6 @@ const QuizzOverViewScreen = () => {
 
 			if (!result.canceled && result.assets.length > 0) {
 				setUploadingImage(true);
-
-				// console.log(JSON.stringify(result.assets[0], null, 2));
-
 				// Tải ảnh lên server và lấy URL của ảnh
 				const imageUrl = await uploadImage(result.assets[0]);
 				setQuizThumbnail(imageUrl);
@@ -313,7 +327,9 @@ const QuizzOverViewScreen = () => {
 						<View className="flex flex-col items-start justify-start mt-2">
 							<TouchableOpacity
 								className="flex flex-row items-center justify-start"
-								onPress={createQuestion}
+								onPress={() => {
+									createQuestion('multiple');
+								}}
 							>
 								<MaterialCommunityIcons
 									name="checkbox-outline"
@@ -322,7 +338,12 @@ const QuizzOverViewScreen = () => {
 								/>
 								<Text className="ml-2">Nhiều lựa chọn</Text>
 							</TouchableOpacity>
-							<TouchableOpacity className="flex flex-row items-center justify-start mt-1">
+							<TouchableOpacity
+								className="flex flex-row items-center justify-start mt-1"
+								onPress={() => {
+									createQuestion('box');
+								}}
+							>
 								<MaterialCommunityIcons
 									name="checkbox-blank-outline"
 									size={20}
@@ -335,7 +356,12 @@ const QuizzOverViewScreen = () => {
 					<View className="mt-4">
 						<Text className="text-sm text-gray">Tư duy</Text>
 						<View className="flex flex-col items-start justify-start mt-2">
-							<TouchableOpacity className="flex flex-row items-center justify-start">
+							<TouchableOpacity
+								className="flex flex-row items-center justify-start"
+								onPress={() => {
+									createQuestion('blank');
+								}}
+							>
 								<MaterialCommunityIcons
 									name="text"
 									size={20}
@@ -406,18 +432,27 @@ const QuizzOverViewScreen = () => {
 			<ConfirmDialog
 				title={'Chờ đã'}
 				visible={showConfirmDialog}
-				onCancel={() => setShowConfirmDialog(false)}
-				onConfirm={() => {
-					deleteQuiz(id);
+				onCancel={() => {
 					setShowConfirmDialog(false);
-					router.back();
+					setConfirmFn('close');
 				}}
-				message={'Bạn chắc chắn muốn xóa bộ câu hỏi này?'}
+				onConfirm={() => {
+					if (confirmFn === 'delete') {
+						deleteQuiz(id);
+						setConfirmFn('close');
+						router.back();
+					}
+					setShowConfirmDialog(false);
+				}}
+				message={alertMessage}
 			/>
 
 			<ScrollView className="mb-[100px]">
 				{quizFetching ? (
-					<QuizInforSkeleton />
+					<>
+						{/* <Text>LOADING</Text> */}
+						<QuizInforSkeleton />
+					</>
 				) : (
 					<>
 						<View className="p-4 flex items-center justify-center flex-col">
@@ -490,6 +525,10 @@ const QuizzOverViewScreen = () => {
 									<TouchableOpacity
 										className="ml-2 p-2 rounded-full bg-primary w-10 flex items-center justify-center h-10"
 										onPress={() => {
+											setConfirmFn('delete');
+											setAlertMessage(
+												'Bạn có chắc chắn muốn xóa bộ câu hỏi này không?'
+											);
 											setShowConfirmDialog(true);
 										}}
 									>
