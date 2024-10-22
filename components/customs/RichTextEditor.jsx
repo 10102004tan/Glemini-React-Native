@@ -145,12 +145,12 @@ const RichTextEditor = ({
 
 	return (
 		<View className="flex-1 w-full p-4 ">
-			<ScrollView className="">
+			<ScrollView className="max-h-[300px]">
 				<RichEditor
 					defaultParagraphSeparator=""
 					initialContentHTML={content}
 					placeholder="Nhập giải thích cho câu hỏi ở đây ..."
-					style={{ width: '100%' }}
+					style={{ width: '100%', height: 300 }}
 					ref={richText}
 					onChange={(descriptionText) => {
 						setEditorValue(descriptionText);

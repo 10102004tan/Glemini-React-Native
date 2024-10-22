@@ -188,6 +188,7 @@ const EditQuizQuestion = () => {
 				visible={showQuestionBoard}
 				type={editorType}
 				content={editorContent}
+				questionType={question.question_type}
 			/>
 			<View className="flex flex-row items-center justify-start p-4">
 				<TouchableOpacity
@@ -238,19 +239,30 @@ const EditQuizQuestion = () => {
 						</TouchableOpacity>
 					</View>
 					<View className="flex items-center justify-between mt-4 flex-row">
-						<TouchableOpacity
-							onPress={() => {
-								handleTypeQuestion();
-							}}
-							className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
-							style={
-								mutipleChoice
-									? { backgroundColor: '#0BCA5E' }
-									: {}
-							}
-						>
-							<Text className="text-white">Nhiều lựa chọn</Text>
-						</TouchableOpacity>
+						{(question.question_type === 'single' ||
+							question.question_type === 'multiple') && (
+							<TouchableOpacity
+								onPress={() => {
+									if (
+										question.question_type === 'box' ||
+										question.question_type === 'blank'
+									) {
+										return;
+									}
+									handleTypeQuestion();
+								}}
+								className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
+								style={
+									mutipleChoice
+										? { backgroundColor: '#0BCA5E' }
+										: {}
+								}
+							>
+								<Text className="text-white">
+									Nhiều lựa chọn
+								</Text>
+							</TouchableOpacity>
+						)}
 						<TouchableOpacity
 							className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
 							onPress={() => {
@@ -281,23 +293,28 @@ const EditQuizQuestion = () => {
 							);
 						})}
 					</View>
-					<View className="flex items-center justify-between mt-4 flex-row">
-						<TouchableOpacity
-							className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
-							onPress={() => {
-								if (
-									question.question_answer_ids.length <
-									MAX_ANSWER
-								) {
-									addAnswer();
-								} else {
-									// Alert to user here
-								}
-							}}
-						>
-							<Text className="text-white">Thêm phương án</Text>
-						</TouchableOpacity>
-					</View>
+					{question.question_type === 'single' ||
+						(question.question_type === 'multiple' && (
+							<View className="flex items-center justify-between mt-4 flex-row">
+								<TouchableOpacity
+									className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
+									onPress={() => {
+										if (
+											question.question_answer_ids
+												.length < MAX_ANSWER
+										) {
+											addAnswer();
+										} else {
+											// Alert to user here
+										}
+									}}
+								>
+									<Text className="text-white">
+										Thêm phương án
+									</Text>
+								</TouchableOpacity>
+							</View>
+						))}
 				</ScrollView>
 			</View>
 			{/* Button */}

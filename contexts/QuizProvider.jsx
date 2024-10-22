@@ -35,8 +35,8 @@ const QuizProvider = ({ children }) => {
 		// console.log(data);
 		if (data.statusCode === 200) {
 			setQuizzes(data.metadata);
-			setQuizFetching(false);
 		}
+		setQuizFetching(false);
 	};
 
 	// Get Quiz Published

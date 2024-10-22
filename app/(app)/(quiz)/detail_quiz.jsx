@@ -335,8 +335,8 @@ const detailquizz = () => {
 				</Text>
 			</View>
 
-			<ScrollView>
-				<View className="flex m-4 ">
+			<ScrollView className="mt-4">
+				<View className="flex">
 					{/* Quiz Questions */}
 					{questionFetching ? (
 						<Text>Loading</Text>

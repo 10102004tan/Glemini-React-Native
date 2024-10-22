@@ -64,6 +64,11 @@ const TeacherHomeScreen = () => {
 							}
 						/>
 						<QuizzCreateAction
+							handlePress={() => {
+								setActionQuizType('ai/prompt');
+								handleCloseBottomSheet();
+								router.push('/(app)/(quiz)/create_title');
+							}}
 							otherStyles="ml-2"
 							title={'Tạo từ văn bản'}
 							icon={
@@ -116,7 +121,10 @@ const TeacherHomeScreen = () => {
 			<View className="px-4 py-6 bg-primary rounded-b-3xl">
 				{/* Teacher Info */}
 				<View className="flex flex-row items-center justify-start mb-3">
-					<Image className={"w-[50px] h-[50px] rounded-full"} src={user_avatar} />
+					<Image
+						className={'w-[50px] h-[50px] rounded-full'}
+						src={user_avatar}
+					/>
 					<View className="ml-3 max-w-[330px]">
 						<Text className="text-lg font-pmedium text-white">
 							{user_fullname}
