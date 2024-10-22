@@ -197,5 +197,17 @@
         "title":"Bạn chưa có quyền truy cập chức năng này",
         "desc":"Xem trạng thái hồ sơ của bạn",
         "button":"Tại đây"
+    },
+    "classroom": {
+        "teacher": {
+            "btnAddClass": "Tạo lớp học mới",
+            "titleBts": "Nhập thông tin lớp học mới",
+            "fieldSchool": "Tên trường",
+            "placeholderFieldSchool": "Nhập tên trường ...",
+            "fieldClassroom": "Tên lớp học",
+            "placeholderFieldClassroom": "Nhập tên lớp học ...",
+            "btnSave": "Lưu",
+            "btnCancel": "Hủy"
+        }
     }
 }
