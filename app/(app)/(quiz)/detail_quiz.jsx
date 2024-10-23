@@ -36,10 +36,10 @@ const detailquizz = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   // checkbox của tên bộ sưu tập
-  const [isChecked, setIsChecked] = useState(false);
-  const handleCheckboxToggle = () => {
-    setIsChecked(!isChecked);
-  };
+  // const [isChecked, setIsChecked] = useState(false);
+  // const handleCheckboxToggle = () => {
+  //   setIsChecked(!isChecked);
+  // };
 
   // Lấy dữ liệu name, description, thumb đưa vào ô thông tin
   const { quizzes, setQuizzes } = useQuizProvider();
@@ -126,52 +126,60 @@ const detailquizz = () => {
 
   //thêm vào bộ sưu tập
   const addQuizToCollection = async (collection_id) => {
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_ADD_QUIZ}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_id: userData._id,
-          collection_id,
-          quiz_id: quizId,
-        }),
+    const collection = collections.find((col) => col.key === collection_id);
+    console.log(collection);
+
+    // Kiểm tra xem quiz đã tồn tại trong collection chưa
+    if (!collection.quizzes.some((quiz_id) => quiz_id === quizId)) {
+      const response = await fetch(
+        `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_ADD_QUIZ}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-client-id": userData._id,
+            authorization: userData.accessToken,
+          },
+          body: JSON.stringify({
+            user_id: userData._id,
+            collection_id,
+            quiz_id: quizId,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.statusCode === 200) {
+        getAllCollections(); // Cập nhật lại danh sách collections sau khi thêm
       }
-    );
-    const data = await response.json();
-    console.log(data);
-    if (data.statusCode === 200) {
-      setSelectedCollection([]);
     }
   };
 
   // xóa quiz ra khỏi bộ sưu tập
-  const deleteQuizInCollection = async (quiz_id) => {
-    console.log("Deleting quiz with ID:", quiz_id);
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_REMOVE_QUIZ}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_id: userData._id,
-          quiz_id,
-          collection_id: id,
-        }),
+  const deleteQuizInCollection = async (collection_id) => {
+    const collection = collections.find((col) => col.key === collection_id);
+
+    // Kiểm tra xem quiz có trong collection không
+    if (collection.quizzes.some((quiz_id) => quiz_id === quizId)) {
+      const response = await fetch(
+        `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_REMOVE_QUIZ}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-client-id": userData._id,
+            authorization: userData.accessToken,
+          },
+          body: JSON.stringify({
+            user_id: userData._id,
+            quiz_id: quizId,
+            collection_id: collection_id,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.statusCode === 200) {
+        getAllCollections(); // Cập nhật lại danh sách collections sau khi xóa
       }
-    );
-    const data = await response.json();
-    if (data.statusCode === 200) {
-      // Cập nhật danh sách quiz sau khi xóa thành công
-      setQuizzes((prev) => prev.filter((quiz) => quiz._id !== quiz_id));
     }
   };
 
@@ -284,7 +292,10 @@ const detailquizz = () => {
           text={"Lưu vào bộ sưu tập"}
           otherStyles={"m-2 flex-row"}
           icon={<Entypo name="save" size={16} color="white" />}
-          onPress={openBottomSheetSaveToLibrary}
+          onPress={() => {
+            closeBottomSheet();
+            openBottomSheetSaveToLibrary();
+          }}
         ></Button>
       </BottomSheet>
 
@@ -299,13 +310,31 @@ const detailquizz = () => {
           </Text>
           <View className="w-full h-[1px] bg-gray my-2"></View>
 
-          {/* Tiếng Nhật với checkbox */}
           <View className="w-full">
-            <MultipleSelectList
-              setSelected={(val) => setSelectedCollection(val)}
-              data={collections}
-              save="key"
-            />
+            <View>
+              {collections.length > 0 &&
+                collections.map((collection) => {
+                  return (
+                    <View key={collection.key} className="flex-row mb-2">
+                      <Checkbox
+                        isChecked={collection.quizzes.some(
+                          (quiz_id) => quiz_id === id
+                        )}
+                        onToggle={() => {
+                          if (
+                            collection.quizzes.some((quiz_id) => quiz_id === id)
+                          ) {
+                            deleteQuizInCollection(collection.key);
+                          } else {
+                            addQuizToCollection(collection.key);
+                          }
+                        }}
+                      />
+                      <Text>{collection.value}</Text>
+                    </View>
+                  );
+                })}
+            </View>
           </View>
         </View>
       </BottomSheet>
