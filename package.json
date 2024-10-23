@@ -55,6 +55,7 @@
     "react-native-loading-spinner-overlay": "^3.0.1",
     "react-native-modal-datetime-picker": "^18.0.0",
     "react-native-otp-textinput": "^1.1.6",
+    "react-native-paper": "^5.12.5",
     "react-native-pell-rich-editor": "^1.9.0",
     "react-native-reanimated": "~3.10.1",
     "react-native-reanimated-carousel": "^3.5.1",

@@ -21,6 +21,7 @@ import { ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ConfirmDialog from "@/components/dialogs/ConfirmDialog.jsx";
 import { collectionData } from "@/utils/index.js";
+import Checkbox from "@/components/customs/Checkbox.jsx";
 
 const detailquizz = () => {
   // tạo biến để lưu quiz vào bộ sưu tập
@@ -148,6 +149,32 @@ const detailquizz = () => {
     }
   };
 
+  // xóa quiz ra khỏi bộ sưu tập
+  const deleteQuizInCollection = async (quiz_id) => {
+    console.log("Deleting quiz with ID:", quiz_id);
+    const response = await fetch(
+      `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_REMOVE_QUIZ}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-client-id": userData._id,
+          authorization: userData.accessToken,
+        },
+        body: JSON.stringify({
+          user_id: userData._id,
+          quiz_id,
+          collection_id: id,
+        }),
+      }
+    );
+    const data = await response.json();
+    if (data.statusCode === 200) {
+      // Cập nhật danh sách quiz sau khi xóa thành công
+      setQuizzes((prev) => prev.filter((quiz) => quiz._id !== quiz_id));
+    }
+  };
+
   const getAllCollections = async () => {
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_GETALL}`,
@@ -167,7 +194,7 @@ const detailquizz = () => {
     console.log(data);
     if (data.statusCode === 200) {
       setCollections(collectionData(data.metadata));
-      // console.log(collectionData(data.metadata));
+      console.log(collectionData(data.metadata));
     }
   };
   useEffect(() => {

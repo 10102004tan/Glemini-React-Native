@@ -108,7 +108,7 @@ const Library = () => {
   const { quizzes, setQuizzes } = useQuizProvider();
 
   useEffect(() => {
-    // console.log(startDate, endDate);
+    console.log("jjjjjj");
     getAllCollections();
   }, []);
 
@@ -215,7 +215,6 @@ const Library = () => {
           return;
         }
       });
-      // console.log(check);
     }
 
     if (check === false) {
@@ -235,7 +234,7 @@ const Library = () => {
         }
       );
       const data = await response.json();
-      // console.log(data);
+      console.log(data);
       if (data.statusCode === 200) {
         setCollections([...collections, data.metadata]);
       }
@@ -245,6 +244,7 @@ const Library = () => {
   };
 
   const getAllCollections = async () => {
+    console.log(userData._id);
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_GETALL}`,
       {

@@ -16,7 +16,7 @@ const detail_collection = () => {
   const { userData } = useAuthContext();
 
   // lấy tất cả id của quiz
-  const getCollectionById = async (collection_id) => {
+  const getAllQuizById = async (collection_id) => {
     // console.log(collection_id);
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_GET_DETAILS}`,
@@ -90,6 +90,7 @@ const detail_collection = () => {
       }
     );
     const data = await response.json();
+    console.log(data);
     if (data.statusCode === 200) {
       // khi xóa xong thì chuyển lại về trang thư viện
       router.push({
@@ -121,44 +122,44 @@ const detail_collection = () => {
   //   }
   // };
 
-  // const deleteQuizInCollection = async (quiz_id) => {
-  //   console.log("Deleting quiz with ID:", quiz_id);
-  //   const response = await fetch(
-  //     `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_REMOVE_QUIZ}`,
-  //     {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "x-client-id": userData._id,
-  //         authorization: userData.accessToken,
-  //       },
-  //       body: JSON.stringify({
-  //         user_id: userData._id,
-  //         quiz_id,
-  //         collection_id: id,
-  //       }),
-  //     }
-  //   );
-  //   const data = await response.json();
-  //   if (data.statusCode === 200) {
-  //     // Cập nhật danh sách quiz sau khi xóa thành công
-  //     setQuizzes((prev) => prev.filter((quiz) => quiz._id !== quiz_id));
-  //   } else {
-  //     console.log("Error: Quiz does not exist or could not be deleted");
-  //     Alert.alert("Error", "Quiz không tồn tại hoặc không thể xóa.");
-  //   }
-  // };
+  const deleteQuizInCollection = async (quiz_id) => {
+    console.log("Deleting quiz with ID:", quiz_id);
+    const response = await fetch(
+      `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_REMOVE_QUIZ}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-client-id": userData._id,
+          authorization: userData.accessToken,
+        },
+        body: JSON.stringify({
+          quiz_id,
+          collection_id: id,
+        }),
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+    if (data.statusCode === 200) {
+      // Cập nhật danh sách quiz sau khi xóa thành công
+      setQuizzes((prev) => prev.filter((quiz) => quiz._id !== quiz_id));
+    } else {
+      console.log("Error: Quiz does not exist or could not be deleted");
+      Alert.alert("Error", "Quiz không tồn tại hoặc không thể xóa.");
+    }
+  };
 
-  // const handleDeleteQuiz = (quiz_id) => {
-  //   Alert.alert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa quiz này không?", [
-  //     { text: "Hủy", style: "cancel" },
-  //     {
-  //       text: "Xóa",
-  //       onPress: () => deleteQuizInCollection(quiz_id),
-  //       style: "destructive",
-  //     },
-  //   ]);
-  // };
+  const handleDeleteQuiz = (quiz_id) => {
+    Alert.alert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa quiz này không?", [
+      { text: "Hủy", style: "cancel" },
+      {
+        text: "Xóa",
+        onPress: () => deleteQuizInCollection(quiz_id),
+        style: "destructive",
+      },
+    ]);
+  };
 
   // hiển thị nút xác nhận xóa cho bộ sưu tập
   const handleDeletePress = () => {
@@ -178,9 +179,9 @@ const detail_collection = () => {
       ]
     );
   };
-// khi dữ liệu bị thay đổi thì useEffect này sẽ dc gọi
+  // khi dữ liệu bị thay đổi thì useEffect này sẽ dc gọi
   useEffect(() => {
-    getCollectionById(id);
+    getAllQuizById(id);
   }, []);
 
   return (
@@ -225,10 +226,10 @@ const detail_collection = () => {
 
         {/* Danh sách quiz */}
         <FlatList
-          key={(name) => name.id}
+          key={(name) => name._id}
           style={{ marginBottom: 100, marginTop: 50 }}
           data={quizzes}
-          keyExtractor={(name) => name.id}
+          keyExtractor={(name) => name._id}
           renderItem={({ item: name }) => {
             return (
               <View className="h-[100px] w-full border rounded-xl flex-row mt-6">
@@ -237,7 +238,7 @@ const detail_collection = () => {
                     <Image
                       source={{
                         uri:
-                          name.quizThumb ||
+                          name.quiz_thumb ||
                           "https://www.shutterstock.com/image-vector/quiz-time-3d-editable-text-260nw-2482374583.jpg",
                       }}
                       className="w-[80px] h-[80px] rounded-xl"
@@ -256,7 +257,7 @@ const detail_collection = () => {
                   </View>
                   <TouchableOpacity
                     className="flex mt-2 ml-[150px] border border-gray rounded-md"
-                    // onPress={() => handleDeleteQuiz(name.id)}
+                    onPress={() => handleDeleteQuiz(name._id)}
                   >
                     <MaterialIcons name="delete" size={24} color="black" />
                   </TouchableOpacity>
