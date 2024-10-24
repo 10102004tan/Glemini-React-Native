@@ -15,9 +15,10 @@ const CreateTitleQuizzScreen = () => {
 	const { actionQuizType } = useQuizProvider();
 	const [prompt, setPrompt] = useState('');
 	const { generateQuestionsFromGemini } = useQuestionProvider();
+	const [generating, setGenerating] = useState(false);
 
 	const handleGenerateQuestionFromGemini = async (quizId) => {
-		alert('handleGenerateQuestionFromGemini');
+		setGenerating(true);
 		// Xử lý tạo quiz từ gemini
 		const response = await fetch(
 			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_GENERATE_GEMINI}`,
@@ -35,8 +36,10 @@ const CreateTitleQuizzScreen = () => {
 		const data = await response.json();
 		if (data.statusCode === 200) {
 			const questions = data.metadata;
+			// console.log(JSON.stringify(questions, null, 2));
 			generateQuestionsFromGemini(questions, quizId);
 		}
+		setGenerating(false);
 	};
 
 	const handleCreateQuizTitle = async () => {
@@ -110,6 +113,7 @@ const CreateTitleQuizzScreen = () => {
 			</View>
 			<View className="p-4">
 				<Button
+					loading={generating}
 					onPress={handleCreateQuizTitle}
 					text={'Bắt đầu tạo'}
 					otherStyles={'p-4 justify-center'}

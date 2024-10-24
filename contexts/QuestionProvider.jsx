@@ -66,11 +66,20 @@ const QuestionProvider = ({ children }) => {
 
 	// Hàm tạo các câu hỏi được generate từ AI
 	const generateQuestionsFromGemini = async (questionData, quizId) => {
+		console.log(JSON.stringify(questionData, null, 2));
 		setQuestions([]); // Reset mảng câu hỏi
 
 		questionData.forEach((question) => {
 			const q = {
 				question_excerpt: question.questionName,
+				question_type: question.questionType,
+				question_explanation: question.questionExplanation,
+				question_description: '',
+				question_image: '',
+				question_audio: '',
+				question_video: '',
+				question_point: 1,
+				question_time: 30,
 				question_answer_ids: question.answers.map((answer, index) => ({
 					_id: index + 1,
 					text: answer.answerName,
@@ -332,12 +341,11 @@ const QuestionProvider = ({ children }) => {
 				}
 			);
 			const data = await response.json();
-			// console.log(data);
+			console.log(data);
 			if (data.statusCode === 200) {
 				console.log('Lưu câu hỏi thành công');
 				// Alert to user here
-				// Lưu câu hỏi vào mảng các câu hỏi
-				setQuestions([...questions, question]);
+				setQuestions([...questions, data.metadata]);
 				resetQuestion();
 			}
 		} catch (error) {
