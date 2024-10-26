@@ -1,7 +1,7 @@
 "use strict";
 
 const dev = {
-  API_URL: "http://192.168.1.128:3000/api",
+  API_URL: "http://192.168.2.65:3000/api",
   API_VERSION: {
     V1: "/v1",
   },
@@ -49,6 +49,7 @@ const dev = {
     COLLECTION_ADD_QUIZ: "/collections/add-quiz",
     COLLECTION_REMOVE_QUIZ: "/collections/remove-quiz",
     COLLECTION_GETALL: "/collections",
+    SEND_QUIZ_TO_TEACHER: "/email/send-quiz-to-teacher",
   },
 };
 
