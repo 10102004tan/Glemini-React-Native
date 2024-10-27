@@ -11,6 +11,7 @@ import { useQuizProvider } from '@/contexts/QuizProvider';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import SpinningIcon from '@/components/loadings/SpinningIcon';
 import Toast from 'react-native-toast-message';
+import Icon from "react-native-vector-icons/Ionicons";
 
 export default function AppRootLayout() {
 	const { userData, isLoading, fetchStatus, setTeacherStatus } =
@@ -57,7 +58,7 @@ export default function AppRootLayout() {
 			<Stack.Screen
 				name="(home)"
 				options={{
-					headerShown: false,
+					headerShown: false
 				}}
 			/>
 			<Stack.Screen

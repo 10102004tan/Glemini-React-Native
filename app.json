@@ -28,7 +28,7 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.ACCESS_MEDIA_LOCATION"
       ],
-      "googleServicesFile": "./android/app/google-services.json",
+      "googleServicesFile": "./google-services.json",
       "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
@@ -40,6 +40,13 @@
       "expo-router",
       "expo-image-picker",
       "expo-localization",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/logos/logo.jpg",
+          "sounds": ["./assets/sounds/notification.wav"]
+        }
+      ],
       [
         "expo-build-properties",
         {
