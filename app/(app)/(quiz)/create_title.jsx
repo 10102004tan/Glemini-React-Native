@@ -7,11 +7,41 @@ import { router } from 'expo-router';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { API_URL, END_POINTS, API_VERSION } from '@/configs/api.config';
+import { useQuestionProvider } from '@/contexts/QuestionProvider';
 const CreateTitleQuizzScreen = () => {
 	const { userData } = useAuthContext();
 	const [quizName, setQuizName] = useState('');
 	const { setNeedUpdate } = useQuizProvider();
 	const { actionQuizType } = useQuizProvider();
+	const [prompt, setPrompt] = useState('');
+	const { generateQuestionsFromGemini } = useQuestionProvider();
+	const [generating, setGenerating] = useState(false);
+
+	const handleGenerateQuestionFromGemini = async (quizId) => {
+		setGenerating(true);
+		// Xử lý tạo quiz từ gemini
+		const response = await fetch(
+			`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_GENERATE_GEMINI}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({ prompt: prompt }),
+			}
+		);
+
+		const data = await response.json();
+		if (data.statusCode === 200) {
+			const questions = data.metadata;
+			// console.log(JSON.stringify(questions, null, 2));
+			generateQuestionsFromGemini(questions, quizId);
+		}
+		setGenerating(false);
+	};
+
 	const handleCreateQuizTitle = async () => {
 		// Xử lý tạo quiz rỗng
 		if (userData) {
@@ -39,11 +69,13 @@ const CreateTitleQuizzScreen = () => {
 						pathname: '/(app)/(quiz)/overview/',
 						params: { id: data.metadata._id },
 					});
-				} else {
+				} else if (actionQuizType === 'template') {
 					router.replace({
 						pathname: '/(app)/(quiz)/demo_create_quiz_by_template',
 						params: { id: data.metadata._id },
 					});
+				} else if (actionQuizType === 'ai/prompt') {
+					handleGenerateQuestionFromGemini(data.metadata._id);
 				}
 			} else {
 				// Alert to user here
@@ -57,21 +89,32 @@ const CreateTitleQuizzScreen = () => {
 	return (
 		<Wrapper>
 			<View className="flex-1 items-center justify-center p-4">
-				<Text className="text-2xl mb-4">
-					Hãy đặt tên cho bộ câu hỏi của bạn
-				</Text>
 				<Field
+					label={'Tên bài kiểm tra'}
 					value={quizName}
 					onChange={(text) => setQuizName(text)}
 					placeholder={'Nhập tên bài kiểm tra'}
 					wrapperStyles="w-full"
 					inputStyles="p-4"
 				/>
+
+				{actionQuizType === 'ai/prompt' && (
+					<Field
+						label={'Promt'}
+						value={prompt}
+						onChange={(text) => setPrompt(text)}
+						placeholder={
+							'Nhập vào mô tả bài kiểm tra mà bạn muốn tạo'
+						}
+						wrapperStyles="w-full mt-4"
+						inputStyles="p-4"
+					/>
+				)}
 			</View>
 			<View className="p-4">
 				<Button
+					loading={generating}
 					onPress={handleCreateQuizTitle}
-					handleCreateQuizTitle
 					text={'Bắt đầu tạo'}
 					otherStyles={'p-4 justify-center'}
 					textStyles={'text-center'}

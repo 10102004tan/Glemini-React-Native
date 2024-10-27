@@ -49,13 +49,23 @@ const EditQuizQuestion = () => {
 
 	// Khi người dùng chuyển từ chế độ chọn nhiều câu hỏi sang một câu hỏi thì bỏ chọn tất cả
 	useEffect(() => {
-		console.log('TEST::LOOP');
-		if (question.question_type === 'single') {
+		if (question) {
+			const isMultiple = question.question_type !== 'single';
+			if (mutipleChoice !== isMultiple) {
+				setMutipleChoice(isMultiple);
+			}
+		}
+	}, [question]);
+
+	const handleTypeQuestion = () => {
+		if (mutipleChoice) {
+			resetMarkCorrectAnswer();
 			selectQuestionType('single');
 		} else {
 			selectQuestionType('multiple');
 		}
-	}, [question.question_type]);
+		setMutipleChoice(!mutipleChoice);
+	};
 
 	// Lấy thông tin của câu hỏi hiện tại
 	const getCurrentUpdateQuestion = async () => {
@@ -178,6 +188,7 @@ const EditQuizQuestion = () => {
 				visible={showQuestionBoard}
 				type={editorType}
 				content={editorContent}
+				questionType={question.question_type}
 			/>
 			<View className="flex flex-row items-center justify-start p-4">
 				<TouchableOpacity
@@ -226,30 +237,32 @@ const EditQuizQuestion = () => {
 								}}
 							/>
 						</TouchableOpacity>
-						{/* <TouchableOpacity className="absolute top-4 right-4">
-							<FontAwesome name="image" size={20} color="white" />
-						</TouchableOpacity> */}
 					</View>
 					<View className="flex items-center justify-between mt-4 flex-row">
-						<TouchableOpacity
-							onPress={() => {
-								if (mutipleChoice) {
-									selectQuestionType('single');
-									resetMarkCorrectAnswer();
-								} else {
-									selectQuestionType('multiple');
+						{(question.question_type === 'single' ||
+							question.question_type === 'multiple') && (
+							<TouchableOpacity
+								onPress={() => {
+									if (
+										question.question_type === 'box' ||
+										question.question_type === 'blank'
+									) {
+										return;
+									}
+									handleTypeQuestion();
+								}}
+								className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
+								style={
+									mutipleChoice
+										? { backgroundColor: '#0BCA5E' }
+										: {}
 								}
-								setMutipleChoice(!mutipleChoice);
-							}}
-							className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
-							style={
-								mutipleChoice
-									? { backgroundColor: '#0BCA5E' }
-									: {}
-							}
-						>
-							<Text className="text-white">Nhiều lựa chọn</Text>
-						</TouchableOpacity>
+							>
+								<Text className="text-white">
+									Nhiều lựa chọn
+								</Text>
+							</TouchableOpacity>
+						)}
 						<TouchableOpacity
 							className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
 							onPress={() => {
@@ -280,23 +293,28 @@ const EditQuizQuestion = () => {
 							);
 						})}
 					</View>
-					<View className="flex items-center justify-between mt-4 flex-row">
-						<TouchableOpacity
-							className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
-							onPress={() => {
-								if (
-									question.question_answer_ids.length <
-									MAX_ANSWER
-								) {
-									addAnswer();
-								} else {
-									// Alert to user here
-								}
-							}}
-						>
-							<Text className="text-white">Thêm phương án</Text>
-						</TouchableOpacity>
-					</View>
+					{question.question_type === 'single' ||
+						(question.question_type === 'multiple' && (
+							<View className="flex items-center justify-between mt-4 flex-row">
+								<TouchableOpacity
+									className="flex items-center justify-center flex-row bg-overlay py-2 px-4 rounded-xl"
+									onPress={() => {
+										if (
+											question.question_answer_ids
+												.length < MAX_ANSWER
+										) {
+											addAnswer();
+										} else {
+											// Alert to user here
+										}
+									}}
+								>
+									<Text className="text-white">
+										Thêm phương án
+									</Text>
+								</TouchableOpacity>
+							</View>
+						))}
 				</ScrollView>
 			</View>
 			{/* Button */}

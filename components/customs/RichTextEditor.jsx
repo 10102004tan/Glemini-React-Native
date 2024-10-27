@@ -67,12 +67,6 @@ const RichTextEditor = ({
 			// Trường hợp dùng rich text editor tạo nội dung câu hỏi
 			case Status.quiz.QUESTION:
 				setQuestion({ ...question, question_excerpt: editorValue });
-				if (editorValue === '') {
-					setQuestion({
-						...question,
-						question_excerpt: '<div>Nội dung câu hỏi</div>',
-					});
-				}
 				break;
 			// Trường hợp dùng rich text editor tạo nội dung câu trả lời
 			case Status.quiz.ANSWER:
@@ -89,12 +83,13 @@ const RichTextEditor = ({
 	// Hàm tải ảnh lên server
 	const uploadImage = async (file) => {
 		try {
+			console.log(file);
 			const formData = new FormData();
 
 			const cleanFileName = file.fileName.replace(/[^a-zA-Z0-9.]/g, '_');
 
 			formData.append('file', {
-				uri: imageUri,
+				uri: file.uri,
 				name: cleanFileName,
 				type: file.mimeType,
 			});
@@ -112,13 +107,17 @@ const RichTextEditor = ({
 				}
 			);
 
+			console.log(
+				`${API_URL}${API_VERSION.V1}${END_POINTS.QUESTION_UPLOAD_IMAGE}`
+			);
+
 			const data = await response.json();
 			console.log(data);
 			return data.metadata.url; // URL của ảnh trên server
 		} catch (error) {
+			console.log(error);
 			if (error.message === 'Network request failed') {
 				alert('Lỗi mạng, vui lòng kiểm tra kết nối và thử lại');
-				await processAccessTokenExpired();
 			}
 		}
 	};
@@ -146,12 +145,12 @@ const RichTextEditor = ({
 
 	return (
 		<View className="flex-1 w-full p-4 ">
-			<ScrollView className="">
+			<ScrollView className="max-h-[300px]">
 				<RichEditor
 					defaultParagraphSeparator=""
 					initialContentHTML={content}
 					placeholder="Nhập giải thích cho câu hỏi ở đây ..."
-					style={{ width: '100%' }}
+					style={{ width: '100%', height: 300 }}
 					ref={richText}
 					onChange={(descriptionText) => {
 						setEditorValue(descriptionText);
@@ -169,7 +168,9 @@ const RichTextEditor = ({
 					actions.insertBulletsList,
 					actions.insertOrderedList,
 					actions.insertLink,
-					typingType !== actions.insertImage,
+					typingType !== Status.quiz.ANSWER && typingType !== ''
+						? actions.insertImage
+						: null,
 				]}
 				iconMap={{
 					[actions.heading1]: handleHead,

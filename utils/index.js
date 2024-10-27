@@ -27,6 +27,7 @@ const collectionData = (data) => {
   return data.map((item) => ({
     key: item._id,
     value: item.collection_name,
+    quizzes: item.quizzes,
   }));
 };
 

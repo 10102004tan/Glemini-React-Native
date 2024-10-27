@@ -21,6 +21,7 @@ import { ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ConfirmDialog from "@/components/dialogs/ConfirmDialog.jsx";
 import { collectionData } from "@/utils/index.js";
+import Checkbox from "@/components/customs/Checkbox.jsx";
 
 const detailquizz = () => {
   // tạo biến để lưu quiz vào bộ sưu tập
@@ -35,10 +36,10 @@ const detailquizz = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   // checkbox của tên bộ sưu tập
-  const [isChecked, setIsChecked] = useState(false);
-  const handleCheckboxToggle = () => {
-    setIsChecked(!isChecked);
-  };
+  // const [isChecked, setIsChecked] = useState(false);
+  // const handleCheckboxToggle = () => {
+  //   setIsChecked(!isChecked);
+  // };
 
   // Lấy dữ liệu name, description, thumb đưa vào ô thông tin
   const { quizzes, setQuizzes } = useQuizProvider();
@@ -125,27 +126,60 @@ const detailquizz = () => {
 
   //thêm vào bộ sưu tập
   const addQuizToCollection = async (collection_id) => {
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_ADD_QUIZ}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_id: userData._id,
+    const collection = collections.find((col) => col.key === collection_id);
+    console.log(collection);
 
-          collection_id,
-          quiz_id: quizId,
-        }),
+    // Kiểm tra xem quiz đã tồn tại trong collection chưa
+    if (!collection.quizzes.some((quiz_id) => quiz_id === quizId)) {
+      const response = await fetch(
+        `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_ADD_QUIZ}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-client-id": userData._id,
+            authorization: userData.accessToken,
+          },
+          body: JSON.stringify({
+            user_id: userData._id,
+            collection_id,
+            quiz_id: quizId,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.statusCode === 200) {
+        getAllCollections(); // Cập nhật lại danh sách collections sau khi thêm
       }
-    );
-    const data = await response.json();
-    console.log(data);
-    if (data.statusCode === 200) {
-      setSelectedCollection([]);
+    }
+  };
+
+  // xóa quiz ra khỏi bộ sưu tập
+  const deleteQuizInCollection = async (collection_id) => {
+    const collection = collections.find((col) => col.key === collection_id);
+
+    // Kiểm tra xem quiz có trong collection không
+    if (collection.quizzes.some((quiz_id) => quiz_id === quizId)) {
+      const response = await fetch(
+        `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_REMOVE_QUIZ}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-client-id": userData._id,
+            authorization: userData.accessToken,
+          },
+          body: JSON.stringify({
+            user_id: userData._id,
+            quiz_id: quizId,
+            collection_id: collection_id,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.statusCode === 200) {
+        getAllCollections(); // Cập nhật lại danh sách collections sau khi xóa
+      }
     }
   };
 
@@ -218,6 +252,7 @@ const detailquizz = () => {
         onConfirm={() => {
           deleteQuiz(id);
           setShowConfirmDialog(false);
+          closeBottomSheet();
           router.back("(app)/(home)/library");
         }}
         message={"Bạn chắc chắn muốn xóa bộ câu hỏi này?"}
@@ -257,7 +292,10 @@ const detailquizz = () => {
           text={"Lưu vào bộ sưu tập"}
           otherStyles={"m-2 flex-row"}
           icon={<Entypo name="save" size={16} color="white" />}
-          onPress={openBottomSheetSaveToLibrary}
+          onPress={() => {
+            closeBottomSheet();
+            openBottomSheetSaveToLibrary();
+          }}
         ></Button>
       </BottomSheet>
 
@@ -272,90 +310,66 @@ const detailquizz = () => {
           </Text>
           <View className="w-full h-[1px] bg-gray my-2"></View>
 
-          {/* Tiếng Nhật với checkbox */}
           <View className="w-full">
-            <MultipleSelectList
-              setSelected={(val) => setSelectedCollection(val)}
-              data={collections}
-              save="key"
-            />
+            <View>
+              {collections.length > 0 &&
+                collections.map((collection) => {
+                  return (
+                    <View key={collection.key} className="flex-row mb-2">
+                      <Checkbox
+                        isChecked={collection.quizzes.some(
+                          (quiz_id) => quiz_id === id
+                        )}
+                        onToggle={() => {
+                          if (
+                            collection.quizzes.some((quiz_id) => quiz_id === id)
+                          ) {
+                            deleteQuizInCollection(collection.key);
+                          } else {
+                            addQuizToCollection(collection.key);
+                          }
+                        }}
+                      />
+                      <Text>{collection.value}</Text>
+                    </View>
+                  );
+                })}
+            </View>
           </View>
         </View>
       </BottomSheet>
-
-      {/* Edit Bottom Sheet */}
-      {/* <BottomSheet visible={showBottomSheetSaveToLibrary}> */}
-      {/* Selected của trường */}
-      {/* <View className="mb-4">
-          <Text className="text-lg font-semibold m-2">Chọn trường</Text>
-          <SelectList
-            setSelected={(val) => setSelectedSchool(val)}
-            data={nameSchool}
-            save="value"
-          />
-        </View> */}
-
-      {/* Selected của lớp */}
-      {/* <View className="mb-4">
-          <Text className="text-lg font-semibold m-2">Chọn lớp</Text>
-          <SelectList
-            setSelected={(val) => setSelectedClass(val)}
-            data={nameClass}
-            save="value"
-          />
-        </View> */}
-
-      {/* Button Hủy và Chọn */}
-      {/* <View className="flex flex-row justify-between">
-          <Button text="Hủy" otherStyles="w-[45%] bg-gray-200 p-2 rounded-xl" />
-          <Button
-            text="Chọn"
-            otherStyles="w-[50%] bg-blue-500 p-2 rounded-xl"
-            textStyles="text-white"
-          />
-        </View> */}
-      {/* </BottomSheet> */}
-
       <View className="flex m-2 ">
-        <View className="h-[100px] w-full border rounded-xl mt-4 flex-row">
-          {quizzes.length > 0 &&
-            quizzes.map((quiz) => (
-              <View
-                className="h-[100px] w-full border rounded-xl flex-row mb-3"
-                key={quiz._id}
-              >
-                <TouchableOpacity
-                  onPress={() => {
-                    router.push({
-                      pathname: "/(app)/(quiz)/overview",
-                      params: { id: quiz._id },
-                    });
-                  }}
-                >
-                  <View className="flex flex-row m-2">
-                    <View className="flex justify-center items-center">
-                      <Image
-                        source={{
-                          uri:
-                            quizThumbnail ||
-                            "https://www.shutterstock.com/image-vector/quiz-time-3d-editable-text-260nw-2482374583.jpg",
-                        }}
-                        className="w-[80px] h-[80px] rounded-xl"
-                      ></Image>
-                    </View>
-                    <View className="flex flex-col ml-4 justify-around">
-                      <Text className="text-lg font-bold">{quizName}</Text>
-                      <Text className="text-gray-500">{quizDescription}</Text>
-                      <Text className="text-gray-500">
-                        {quizStatus === "unpublished"
-                          ? "Riêng tư"
-                          : "Công khai"}
-                      </Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
+        <View className="h-[100px] w-full border rounded-xl mt-4 flex-col">
+          <View className="h-[100px] w-full rounded-xl flex-row mb-3">
+            <TouchableOpacity
+              onPress={() => {
+                router.replace({
+                  pathname: "/(app)/(quiz)/overview",
+                  params: { id: quizId },
+                });
+              }}
+            >
+              <View className="flex flex-row m-2">
+                <View className="flex justify-center items-center">
+                  <Image
+                    source={{
+                      uri:
+                        quizThumbnail ||
+                        "https://www.shutterstock.com/image-vector/quiz-time-3d-editable-text-260nw-2482374583.jpg",
+                    }}
+                    className="w-[80px] h-[80px] rounded-xl"
+                  ></Image>
+                </View>
+                <View className="flex flex-col ml-4 justify-around">
+                  <Text className="text-lg font-bold">{quizName}</Text>
+                  <Text className="text-gray-500">{quizDescription}</Text>
+                  <Text className="text-gray-500">
+                    {quizStatus === "unpublished" ? "Riêng tư" : "Công khai"}
+                  </Text>
+                </View>
               </View>
-            ))}
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
