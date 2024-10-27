@@ -2,7 +2,7 @@ import { Link, Redirect, Tabs } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { useAppProvider } from "@/contexts/AppProvider";
 import { AuthContext } from "@/contexts/AuthContext";
 
@@ -31,7 +31,7 @@ export default function TabLayout() {
         tabBarShowLabel: false,
       }}
     >
-      
+
       <Tabs.Screen
         name='index'
         options={{
@@ -102,7 +102,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="classroom"
         options={{
-          title: i18n.t('classes.title'),
+          title: i18n.t('classroom.title'),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? 'school' : 'school-outline'}
