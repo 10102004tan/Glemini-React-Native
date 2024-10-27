@@ -255,6 +255,7 @@ const SinglePlay = () => {
 						showsVerticalScrollIndicator={false}
 					>
 						<RenderHTML
+							defaultViewProps={{}}
 							defaultTextProps={{
 								style: {
 									color: 'white',
@@ -264,7 +265,7 @@ const SinglePlay = () => {
 							}}
 							contentWidth={width}
 							source={{
-								html: questions[currentQuestionIndex]?.question_excerpt,
+								html: questions[currentQuestionIndex]?.question_excerpt || ''
 							}}
 						/>
 					</ScrollView>

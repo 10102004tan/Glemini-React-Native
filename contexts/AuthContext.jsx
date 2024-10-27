@@ -97,7 +97,6 @@ export const AuthProvider = ({ children }) => {
       }
     );
     const data = await response.json();
-    console.log(data)
     if (data.statusCode === 200) {
       console.log(data);
       await AsyncStorage.removeItem("userData");

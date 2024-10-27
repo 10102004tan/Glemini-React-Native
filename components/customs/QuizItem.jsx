@@ -19,7 +19,7 @@ function QuizItem({ quiz }) {
                 <View className='flex gap-1 items-baseline'>
                     <View className='flex-row'>
                         <Text className='text-sm font-semibold text-slate-500'>{i18n.t('student_homepage.author')} </Text>
-                        <Text className='text-green-700'>{quiz.user_id.user_fullname}</Text>
+                        <Text className='text-green-700'>{quiz.user_id?.user_fullname}</Text>
                     </View>
                     <View className='flex-row'>
                         <Text className='text-sm font-semibold text-slate-500'>{i18n.t('student_homepage.turnPlay')} </Text>

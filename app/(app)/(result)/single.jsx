@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, Text, Image } from 'react-native';
-import Button from '../../../components/customs/Button'; // Sử dụng Button tùy chỉnh
+import Button from '../../../components/customs/Button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuthContext } from '@/contexts/AuthContext';

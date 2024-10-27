@@ -3,24 +3,25 @@ import React, {useContext} from 'react';
 import Wrapper from '@/components/customs/Wrapper';
 import {AuthContext} from "@/contexts/AuthContext";
 import LockFeature from "@/components/customs/LockFeature";
+import StudentView from '../(classroom)/student_view';
+import TeacherView from '../(classroom)/teacher_view';
 
 const ClassroomScreen = () => {
 
-	const {teacherStatus} = useContext(AuthContext);
+	const {teacherStatus, userData} = useContext(AuthContext);
 
-	console.log(teacherStatus)
-	if (teacherStatus && (teacherStatus === 'pedding' || teacherStatus === 'rejected')) {
-		return (
-			<LockFeature/>
-		)
+	if (userData.user_type === 'student') {
+		return <StudentView/>
+	} else if (userData.user_type === 'teacher') {
+		if (teacherStatus && (teacherStatus === 'pedding' || teacherStatus === 'rejected')) {
+			return (
+				<LockFeature/>
+			)
+		} else {
+			return <TeacherView/>
+		}
 	}
 	
-	return (
-		<Wrapper>
-			<Text>Classroom</Text>
-		</Wrapper>
-
-	);
 };
 
 export default ClassroomScreen;
