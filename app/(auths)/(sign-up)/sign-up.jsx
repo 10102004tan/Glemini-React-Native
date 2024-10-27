@@ -1,5 +1,5 @@
 import {View, Text, TextInput, Button, Pressable, Alert, Image, Modal, TouchableOpacity} from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 
 import { Link, router } from 'expo-router';
 import { useLocalSearchParams } from 'expo-router';
@@ -11,6 +11,8 @@ import {debounce, validateEmail, validateFullname, validatePassword} from '@/uti
 import { useAppProvider } from '@/contexts/AppProvider';
 import Toast from 'react-native-toast-message';
 import CustomButton from "@/components/customs/CustomButton";
+import * as Notifications from "expo-notifications";
+import {registerForPushNotificationsAsync} from "@/helpers/notification";
 
 
 const TIME_SHOW_TOAST = 1500;
@@ -29,6 +31,7 @@ const SignUpScreen = () => {
     const [showPasswordVerify, setShowPasswordVerify] = useState(false);
     const [password, setPassword] = useState('');
     const [fullname, setFullname] = useState('');
+    const [expoPushToken,setExpoPushToken] = useState('');
     const [passwordVerify, setPasswordVerify] = useState('');
     const [imageIDCard, setImageIDCard] = useState('');
     const [imageCard, setImageCard] = useState('');
@@ -36,17 +39,17 @@ const SignUpScreen = () => {
     const [imageCurrent, setImageCurrent] = useState('');
     const [isOpenedModal, setIsOpenedModal] = useState(false);
     const [disabled, setDisabled] = useState(false);
+
+    useEffect(() => {
+        registerForPushNotificationsAsync()
+            .then(token => setExpoPushToken(token ?? ''))
+            .catch((error) => setExpoPushToken(`${error}`));
+    }, []);
+
     const handlerSignUp = async () => {
         setDisabled(true);
-        await signUp({email, password, fullname, type,images:[imageIDCard,imageCard,imageConfirm]})
+        await signUp({email, password, fullname,expoPushToken, type,images:[imageIDCard,imageCard,imageConfirm]})
             .then((message) => {
-                Toast.show({
-                    type: 'success',
-                    text1: i18n.t('success.signUp'),
-                    text2: message,
-                    visibilityTime: TIME_SHOW_TOAST,
-                    autoHide: true,
-                });
                 setDisabled(false);
             })
             .catch((error) => {

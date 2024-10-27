@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
     }
     throw new Error(data.message);
   };
-  const signUp = async ({ email, password, fullname, type, images }) => {
+  const signUp = async ({ email, password,expoPushToken,fullname, type, images }) => {
     // trim data
     email = email.trim();
     password = password.trim();
@@ -55,6 +55,7 @@ export const AuthProvider = ({ children }) => {
     formData.append("password", password);
     formData.append("fullname", fullname);
     formData.append("type", type);
+    formData.append("expo_push_token",expoPushToken);
     // if type = teacher => add image to form data
     if (type === "teacher" && images.length > 0) {
       images.forEach((image, index) => {

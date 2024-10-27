@@ -17,7 +17,6 @@ const dev = {
 		REFRESH_TOKEN: '/auth/refresh-token',
 		PROFILE: '/user/profile',
 		PROFILE_EDIT: '/user/profile',
-		RE_UPLOAD: '/user/profile/verification',
 		PROFILE_EDIT_AVATAR: '/user/profile/avatar',
 		PROFILE_TEACHER_IMAGES: '/user/profile/verification/images',
 		CHANGE_PASSWORD: '/auth/change-password',

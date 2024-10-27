@@ -18,6 +18,7 @@ const QuestionEditBoard = ({
 	type = '',
 	answerEditSelected = 0,
 	mutipleChoice = false,
+	questionType = '',
 	closeEditBoard = () => {},
 }) => {
 	const [isSaveData, setIsSaveData] = useState(false);
@@ -59,45 +60,51 @@ const QuestionEditBoard = ({
 			/>
 
 			{/* Đánh dấu đáp án chính xác của bộ quiz */}
-			{type === Status.quiz.ANSWER && (
-				<View className="flex flex-1 items-start justify-start flex-col w-full p-4">
-					<Button
-						onPress={() => {
-							markCorrectAnswer(
-								answerEditSelected,
-								mutipleChoice
-							);
-							handleClose();
-						}}
-						otherStyles="bg-success"
-						text={
-							!checkCorrectAnswer(answerEditSelected)
-								? 'Đánh dấu là đáp án chính xác'
-								: 'Bỏ đánh dấu là đáp án chính xác'
-						}
-						icon={
-							<Feather
-								name="check-circle"
-								size={18}
-								color="white"
-							/>
-						}
-					/>
-					<Button
-						onPress={() => {
-							if (answerEditSelected !== 0) {
-								deleteAnswer(answerEditSelected);
+			{type === Status.quiz.ANSWER &&
+				questionType !== 'box' &&
+				questionType !== 'blank' && (
+					<View className="flex flex-1 items-start justify-start flex-col w-full p-4">
+						<Button
+							onPress={() => {
+								markCorrectAnswer(
+									answerEditSelected,
+									mutipleChoice
+								);
 								handleClose();
+							}}
+							otherStyles="bg-success"
+							text={
+								!checkCorrectAnswer(answerEditSelected)
+									? 'Đánh dấu là đáp án chính xác'
+									: 'Bỏ đánh dấu là đáp án chính xác'
 							}
-						}}
-						otherStyles="bg-error mt-2 justify-center"
-						text="Loại bỏ đáp án này"
-						icon={
-							<Feather name="trash-2" size={18} color="white" />
-						}
-					/>
-				</View>
-			)}
+							icon={
+								<Feather
+									name="check-circle"
+									size={18}
+									color="white"
+								/>
+							}
+						/>
+						<Button
+							onPress={() => {
+								if (answerEditSelected !== 0) {
+									deleteAnswer(answerEditSelected);
+									handleClose();
+								}
+							}}
+							otherStyles="bg-error mt-2 justify-center"
+							text="Loại bỏ đáp án này"
+							icon={
+								<Feather
+									name="trash-2"
+									size={18}
+									color="white"
+								/>
+							}
+						/>
+					</View>
+				)}
 			<View className="flex flex-1 items-start justify-end flex-row w-full p-4">
 				<Button
 					onPress={() => {

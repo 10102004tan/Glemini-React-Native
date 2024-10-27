@@ -8,7 +8,7 @@ import {
   ScrollView,
   FlatList,
 } from "react-native";
-import React, {useContext, useEffect, useState} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Wrapper from "@/components/customs/Wrapper";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import Button from "@/components/customs/Button";
@@ -17,7 +17,7 @@ import BottomSheet from "@/components/customs/BottomSheet";
 import Overlay from "@/components/customs/Overlay";
 import { useQuizProvider } from "@/contexts/QuizProvider";
 import { router, useGlobalSearchParams } from "expo-router";
-import {AuthContext, useAuthContext} from "@/contexts/AuthContext";
+import { AuthContext, useAuthContext } from "@/contexts/AuthContext";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useSubjectProvider } from "@/contexts/SubjectProvider";
@@ -34,7 +34,7 @@ const Library = () => {
   const [collections, setCollections] = useState([]);
 
   const { userData } = useAuthContext();
-  const {teacherStatus} = useContext(AuthContext);
+  const { teacherStatus } = useContext(AuthContext);
   // biến search
   const [search, setSearch] = useState("");
 
@@ -68,14 +68,22 @@ const Library = () => {
 
   // Xử lý chọn ngày
   const handleConfirmStartDate = (date) => {
-    setStartDate(date);
-    console.log("Ngày bắt đầu:", date);
+    if (endDate && date > endDate) {
+      alert("Ngày bắt đầu không thể lớn hơn ngày kết thúc");
+    } else {
+      setStartDate(date);
+      console.log("Ngày bắt đầu:", date);
+    }
     hideStartDatePicker();
   };
 
   const handleConfirmEndDate = (date) => {
-    setEndDate(date);
-    console.log("Ngày kết thúc:", date);
+    if (startDate && date < startDate) {
+      alert("Ngày kết thúc không thể nhỏ hơn ngày bắt đầu");
+    } else {
+      setEndDate(date);
+      console.log("Ngày kết thúc:", date);
+    }
     hideEndDatePicker();
   };
 
@@ -100,7 +108,7 @@ const Library = () => {
   const { quizzes, setQuizzes } = useQuizProvider();
 
   useEffect(() => {
-    // console.log(startDate, endDate);
+    console.log("jjjjjj");
     getAllCollections();
   }, []);
 
@@ -133,7 +141,7 @@ const Library = () => {
 
     // Di chuyển dòng bôi đen dựa trên tab
     Animated.timing(translateValue, {
-      toValue: tab === "library" ? 0 : 200, // Giá trị tương ứng với vị trí của từng tab
+      toValue: tab === "library" ? 0 : 210, // Giá trị tương ứng với vị trí của từng tab
       duration: 300,
       useNativeDriver: true,
     }).start();
@@ -207,7 +215,6 @@ const Library = () => {
           return;
         }
       });
-      console.log(check);
     }
 
     if (check === false) {
@@ -227,7 +234,7 @@ const Library = () => {
         }
       );
       const data = await response.json();
-      // console.log(data);
+      console.log(data);
       if (data.statusCode === 200) {
         setCollections([...collections, data.metadata]);
       }
@@ -237,6 +244,7 @@ const Library = () => {
   };
 
   const getAllCollections = async () => {
+    console.log(userData._id);
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_GETALL}`,
       {
@@ -258,17 +266,12 @@ const Library = () => {
     }
   };
 
-
-
-  if (teacherStatus === 'pedding' || teacherStatus === 'rejected') {
-    return (
-        <LockFeature/>
-    )
+  if (teacherStatus === "pedding" || teacherStatus === "rejected") {
+    return <LockFeature />;
   }
 
   return (
-    <Wrapper>
-      {/* Overlay */}
+    <View className="flex-1 mt-4">
       <Overlay
         onPress={handleCloseBottomSheet}
         visible={
@@ -572,7 +575,7 @@ const Library = () => {
           </View>
         )}
       </View>
-    </Wrapper>
+    </View>
   );
 };
 
