@@ -31,7 +31,6 @@ const SignUpScreen = () => {
     const [showPasswordVerify, setShowPasswordVerify] = useState(false);
     const [password, setPassword] = useState('');
     const [fullname, setFullname] = useState('');
-    const [expoPushToken,setExpoPushToken] = useState('');
     const [passwordVerify, setPasswordVerify] = useState('');
     const [imageIDCard, setImageIDCard] = useState('');
     const [imageCard, setImageCard] = useState('');
@@ -40,15 +39,10 @@ const SignUpScreen = () => {
     const [isOpenedModal, setIsOpenedModal] = useState(false);
     const [disabled, setDisabled] = useState(false);
 
-    useEffect(() => {
-        registerForPushNotificationsAsync()
-            .then(token => setExpoPushToken(token ?? ''))
-            .catch((error) => setExpoPushToken(`${error}`));
-    }, []);
 
     const handlerSignUp = async () => {
         setDisabled(true);
-        await signUp({email, password, fullname,expoPushToken, type,images:[imageIDCard,imageCard,imageConfirm]})
+        await signUp({email, password, fullname,type,images:[imageIDCard,imageCard,imageConfirm]})
             .then((message) => {
                 setDisabled(false);
             })
