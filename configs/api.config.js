@@ -1,8 +1,7 @@
 "use strict";
 
 const dev = {
-	API_URL: 'http://10.0.124.92:3000/api',
-
+	API_URL: 'http://10.0.141.227:3000/api',
 	API_VERSION: {
 		V1: '/v1',
 	},
@@ -24,6 +23,9 @@ const dev = {
 		CHANGE_PASSWORD: '/auth/change-password',
 		FORGOT_PASSWORD: '/auth/forgot-password',
 		USER_STATUS: '/auth/status',
+
+		//Notification
+		UPDATE_NOTIFICATION_STATUS:'/notification',
 
 		// Quiz and Question
 		GET_QUIZ_BY_USER: '/quizzes/get-by-user',

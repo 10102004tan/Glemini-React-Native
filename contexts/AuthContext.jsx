@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [teacherStatus, setTeacherStatus] = useState(null);
   const [expoPushToken, setExpoPushToken] = useState(null);
+  const [notification, setNotification] = useState([]);
 
   useEffect(() => {
     fetchAccessToken();
@@ -343,6 +344,36 @@ export const AuthProvider = ({ children }) => {
     throw new Error(data.message);
   }
 
+  const fetchNotification = async () => {
+    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'authorization': `${userData.accessToken}`,
+        'x-client-id': `${userData._id}`
+      }
+    });
+    const data = await response.json();
+    if (data.statusCode === 200) {
+      setNotification(data.metadata);
+    }
+  }
+
+
+  const updateNotificationStatus = async ({notiId,status="read"}) =>{
+    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.UPDATE_NOTIFICATION_STATUS}`,{
+        method:'PUT',
+        headers:{
+            'Content-Type':'application/json',
+            'authorization':`${userData.accessToken}`,
+            'x-client-id':`${userData._id}`,
+        },
+        body:JSON.stringify({notiId,status})
+    });
+    const data = await response.json();
+    return data.statusCode;
+  }
+
 	return (
 		<AuthContext.Provider
 			value={{
@@ -361,6 +392,10 @@ export const AuthProvider = ({ children }) => {
 				forgotPassword,
 				verifyOTP,
 				resetPassword,
+              notification,
+              setNotification,
+              fetchNotification,
+              updateNotificationStatus
 			}}
 		>
 			{children}
