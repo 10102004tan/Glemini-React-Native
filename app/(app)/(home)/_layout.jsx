@@ -32,7 +32,7 @@ export default function TabLayout() {
         tabBarShowLabel: false,
       }}
     >
-      
+
       <Tabs.Screen
         name='index'
         options={{title:"Home",
@@ -116,7 +116,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="classroom"
         options={{
-          title: i18n.t('classes.title'),
+          title: i18n.t('classroom.title'),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? 'school' : 'school-outline'}
