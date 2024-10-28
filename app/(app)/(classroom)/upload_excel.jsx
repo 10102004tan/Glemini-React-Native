@@ -64,9 +64,11 @@ const UploadExcelScreen = () => {
             });
         }
     };
+
     const handleUploadSuccess = () => {
         router.back({ refresh: true });
     };
+    
     const uploadFile = async (file) => {
         if (!file || !file.uri || !file.name || !file.mimeType) {
             setUploadStatus('Định dạng tệp không hợp lệ.');
@@ -81,10 +83,8 @@ const UploadExcelScreen = () => {
         try {
             const path = `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_UPLOAD}`;
 
-            // Tạo tên tệp không có ký tự đặc biệt
             const cleanFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
 
-            // Tạo FormData và thêm tệp
             const formData = new FormData();
             formData.append('file', {
                 uri: file.uri,

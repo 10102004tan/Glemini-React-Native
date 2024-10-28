@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "108326245438",
+    "project_id": "glemini",
+    "storage_bucket": "glemini.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:108326245438:android:4b957aae76c4fecd8dad6f",
+        "android_client_info": {
+          "package_name": "com.glemini.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCoCPtA0A-ZchLHMaApRua4BZJMeNINkI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
