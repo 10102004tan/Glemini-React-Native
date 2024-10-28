@@ -22,8 +22,12 @@ import { Ionicons } from "@expo/vector-icons";
 import ConfirmDialog from "@/components/dialogs/ConfirmDialog.jsx";
 import { collectionData } from "@/utils/index.js";
 import Checkbox from "@/components/customs/Checkbox.jsx";
+import EmailDialog from "@/components/dialogs/EmailDialog.jsx";
 
 const detailquizz = () => {
+  // biến cho dialog email
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
+
   // tạo biến để lưu quiz vào bộ sưu tập
   const [addNameToCollection, setAddNameToCollection] = useState("");
 
@@ -34,12 +38,6 @@ const detailquizz = () => {
 
   // dialog xác nhận để xóa
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-
-  // checkbox của tên bộ sưu tập
-  // const [isChecked, setIsChecked] = useState(false);
-  // const handleCheckboxToggle = () => {
-  //   setIsChecked(!isChecked);
-  // };
 
   // Lấy dữ liệu name, description, thumb đưa vào ô thông tin
   const { quizzes, setQuizzes } = useQuizProvider();
@@ -245,6 +243,16 @@ const detailquizz = () => {
 
   return (
     <Wrapper>
+      <EmailDialog
+        visible={showEmailDialog}
+        onClose={() => setShowEmailDialog(false)}
+        onConfirm={() => {
+          closeBottomSheet();
+          setShowEmailDialog(false);
+        }}
+        message={"Bạn chắc chắn muốn chia sẻ câu hỏi này?"}
+      />
+
       <ConfirmDialog
         title={"Chờ đã"}
         visible={showConfirmDialog}
@@ -287,6 +295,10 @@ const detailquizz = () => {
           text={"Chia sẻ bài kiểm tra"}
           otherStyles={"m-2 flex-row"}
           icon={<AntDesign name="sharealt" size={16} color="white" />}
+          onPress={() => {
+            // closeBottomSheet();
+            setShowEmailDialog(true);
+          }}
         ></Button>
         <Button
           text={"Lưu vào bộ sưu tập"}
