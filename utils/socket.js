@@ -1,4 +1,4 @@
 "use strict";
 import { io } from "socket.io-client";
-const socket = io.connect("http://172.168.98.38:3000");
+const socket = io.connect("http://10.0.124.92:3000");
 export default socket;

@@ -1,7 +1,7 @@
 'use strict';
 
 const dev = {
-	API_URL: 'http://172.168.98.38:3000/api',
+	API_URL: 'http://10.0.124.92:3000/api',
 	API_VERSION: {
 		V1: '/v1',
 	},
@@ -15,6 +15,7 @@ const dev = {
 		REFRESH_TOKEN: '/auth/refresh-token',
 		PROFILE: '/user/profile',
 		PROFILE_EDIT: '/user/profile',
+		USER_NOTIFICATION: '/user/notifications',
 		PROFILE_EDIT_AVATAR: '/user/profile/avatar',
 		PROFILE_TEACHER_IMAGES: '/user/profile/verification/images',
 		CHANGE_PASSWORD: '/auth/change-password',
