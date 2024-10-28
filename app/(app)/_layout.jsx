@@ -10,7 +10,7 @@ import AppProvider, { useAppProvider } from '@/contexts/AppProvider';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import SpinningIcon from '@/components/loadings/SpinningIcon';
-import Toast from 'react-native-toast-message';
+import Toast from 'react-native-toast-message-custom';
 import Icon from "react-native-vector-icons/Ionicons";
 
 export default function AppRootLayout() {

@@ -9,7 +9,7 @@ import { useAppProvider } from '@/contexts/AppProvider';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import { useSubjectProvider } from '@/contexts/SubjectProvider';
 import { SelectList } from 'react-native-dropdown-select-list';
-import Toast from 'react-native-toast-message';
+import Toast from 'react-native-toast-message-custom';
 import ClassroomCard from '@/components/customs/ClassroomCard';
 import { Pressable } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';

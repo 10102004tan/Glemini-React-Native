@@ -1,7 +1,8 @@
 "use strict";
 
 const dev = {
-	API_URL: 'http://10.0.141.227:3000/api',
+	API_URL: 'http://192.168.247.116:3000/api',
+
 	API_VERSION: {
 		V1: '/v1',
 	},
@@ -71,12 +72,12 @@ const dev = {
 		CLASSROOM: '/classroom',
 		CLASSROOM_CREATE: '/classroom/create',
 		CLASSROOM_DELETE: '/classroom/delete',
-		CLASSROOM_ADD_STUDENT: '/classroom/add-student',
 		CLASSROOM_INFO: '/classroom/info',
 		CLASSROOM_GET_BY_TEACHER: '/classroom/teacher',
 		CLASSROOM_GET_BY_STUDENT: '/classroom/student',
 		CLASSROOM_UPLOAD: '/classroom/upload',
 		CLASSROOM_GET_EXCEL_TEMPLATE: '/classroom/get-templates/template_excel',
+		CLASSROOM_ADD_STUDENT: '/classroom/add-student',
 		CLASSROOM_REMOVE_STUDENT: '/classroom/rm-student',
       
       //email

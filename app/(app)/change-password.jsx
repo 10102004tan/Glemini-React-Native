@@ -3,7 +3,7 @@ import { View,Text,Button } from "react-native";
 import CustomInput from "@/components/customs/CustomInput";
 import {AuthContext} from "@/contexts/AuthContext";
 import CustomButton from "@/components/customs/CustomButton";
-import Toast from "react-native-toast-message";
+import Toast from "react-native-toast-message-custom";
 import {useAppProvider} from "@/contexts/AppProvider";
 
 export default function ChangePasswordScreen(){
