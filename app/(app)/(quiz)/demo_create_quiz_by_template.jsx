@@ -131,10 +131,6 @@ const DemoCreateQuizByTemplate = () => {
 			if (data.statusCode === 200) {
 				setUploadStatus(data.message);
 				getQuestionFromDocx(data.metadata, id);
-				router.replace({
-					pathname: '/(app)/(quiz)/overview',
-					params: { id: id },
-				});
 			} else {
 				throw new Error(data.message || 'File upload failed.');
 			}

@@ -16,7 +16,10 @@ import QuizzCreateAction from '../../components/customs/QuizCreateAction';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 
 const TeacherHomeScreen = () => {
-	const { teacherStatus,userData:{user_fullname,user_avatar,user_email} } = useContext(AuthContext);
+	const {
+		teacherStatus,
+		userData: { user_fullname, user_avatar, user_email },
+	} = useContext(AuthContext);
 	const { setIsHiddenNavigationBar } = useAppProvider();
 	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
 	const { setActionQuizType } = useQuizProvider();
@@ -36,7 +39,7 @@ const TeacherHomeScreen = () => {
 	}
 
 	return (
-		<Wrapper>
+		<Wrapper statusTheme="light-content">
 			{/* Overlay */}
 			{
 				<Overlay
@@ -54,10 +57,15 @@ const TeacherHomeScreen = () => {
 					<Text className="text-lg">Tạo bài kiểm tra với AI</Text>
 					<View className="flex items-center justify-start flex-row mt-4">
 						<QuizzCreateAction
-							title={'Tạo bài kiểm tra'}
+							handlePress={() => {
+								setActionQuizType('ai/images');
+								handleCloseBottomSheet();
+								router.push('/(app)/(quiz)/create_title');
+							}}
+							title={'Tạo từ hình ảnh'}
 							icon={
 								<Ionicons
-									name="documents-outline"
+									name="images-outline"
 									size={24}
 									color="black"
 								/>
@@ -118,7 +126,7 @@ const TeacherHomeScreen = () => {
 			</BottomSheet>
 
 			{/* Header */}
-			<View className="px-4 py-6 bg-primary rounded-b-3xl">
+			<View className="px-4 py-6 bg-primary rounded-b-3xl pt-[40px]">
 				{/* Teacher Info */}
 				<View className="flex flex-row items-center justify-start mb-3">
 					<Image
