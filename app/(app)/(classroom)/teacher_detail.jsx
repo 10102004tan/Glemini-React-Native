@@ -1,4 +1,4 @@
-import { View, Text, FlatList, ScrollView, Pressable, TouchableOpacity, Image, Modal } from 'react-native';
+import { View, Text, FlatList, ScrollView, Pressable, TouchableOpacity, Image, Modal, TextInput } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import { useRoute } from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -9,17 +9,19 @@ import Button from '@/components/customs/Button';
 import { router, useFocusEffect } from 'expo-router';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import { EvilIcons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message-custom';
 
 const TeacherDetail = () => {
     const route = useRoute();
     const { classroomId } = route.params;
-    const [first, setFirst] = useState(false);
+    const [showBottomSheet, setShowBottomSheet] = useState(0); // 0: không hiển thị, 1: BottomSheet 1, 2: BottomSheet 2
     const [showQuizzes, setShowQuizzes] = useState(false);
     const [showStudents, setShowStudents] = useState(false);
-    const [modalVisible, setModalVisible] = useState(false); // State for the confirmation modal
+    const [modalVisible, setModalVisible] = useState(false);
     const [studentToRemove, setStudentToRemove] = useState(null);
     const { setIsHiddenNavigationBar, i18n } = useAppProvider();
-    const { classroom, fetchClassroom, removeStudent } = useClassroomProvider();
+    const { classroom, fetchClassroom, removeStudent, addStudent } = useClassroomProvider();
+    const [email, setEmail] = useState('');
 
     useFocusEffect(
         useCallback(() => {
@@ -27,8 +29,8 @@ const TeacherDetail = () => {
         }, [classroomId])
     );
 
-    const handleCloseBts = () => {
-        setFirst(false);
+    const handleCloseBottomSheet = () => {
+        setShowBottomSheet(0);
         setIsHiddenNavigationBar(false);
     };
 
@@ -42,37 +44,67 @@ const TeacherDetail = () => {
 
     const confirmDeleteStudent = (studentId) => {
         setStudentToRemove(studentId);
-        setModalVisible(true); // Show confirmation modal
+        setModalVisible(true);
     };
 
     const handleDeleteStudent = async () => {
         if (studentToRemove) {
             await removeStudent(classroomId, studentToRemove);
-            fetchClassroom(classroomId); // Refresh classroom data
+            fetchClassroom(classroomId);
         }
-        setModalVisible(false); // Close the modal after deletion
+        setModalVisible(false);
     };
+
+    const handleAddStudent = async () => {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+        if (!email || !emailPattern.test(email)) {
+            setEmail('');
+            Toast.show({
+                type: 'warn',
+                text1: `${i18n.t('play.single.errorTitle')}`,
+                text2: email ? `"${email}" không hợp lệ. 🤨` : `Vui lòng nhập Email 🤨`,
+            });
+            return;
+        }
+    
+        try {
+            await addStudent(classroomId, email);
+            setEmail('');
+            setShowBottomSheet(0);
+            Toast.show({
+                type: 'success',
+                text1: 'Thêm mới thành công!' 
+            });
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error adding student',
+                text2: error.message,
+            });
+        }
+    };
+    
 
     return (
         <View className='flex-1 bg-white'>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View className='w-full h-44 bg-red-800 flex justify-center items-center'>
                     <Text className='text-2xl font-pmedium text-slate-100'>{classroom.class_name} - {classroom.subject?.name} - {classroom.school?.school_code}</Text>
-                    <TouchableOpacity className='bg-slate-50/50 rounded-full p-2 absolute bottom-5 right-5' onPress={() => { setFirst(true); setIsHiddenNavigationBar(true); }}>
-                        <AntDesign name='adduser' className='text-white' size={25} />
+                    <TouchableOpacity className='bg-slate-50/50 rounded-full p-2 absolute bottom-5 right-5' onPress={() => { setShowBottomSheet(1); setIsHiddenNavigationBar(true); }}>
+                        <AntDesign name='adduser' size={25} />
                     </TouchableOpacity>
                 </View>
 
-                {/* Box for quizzes and students list */}
-                <View className='w-full flex flex-row justify-evenly p-3 mt-4'>
+                <View className='w-full flex-row justify-evenly p-3 mt-4'>
                     <Button
-                        text="Quizzes"
+                        text="Danh sách bộ câu đố"
                         onPress={handleOpenQuizzes}
                         otherStyles='bg-purple-500 px-5'
                         textStyles='text-base font-semibold'
                     />
                     <Button
-                        text="Students List"
+                        text="Danh sách lớp"
                         onPress={handleOpenStudents}
                         otherStyles='bg-green-500 px-5'
                         textStyles='text-base font-semibold'
@@ -157,8 +189,11 @@ const TeacherDetail = () => {
                 </View>
             </Modal>
 
-            <Overlay onPress={handleCloseBts} visible={first} />
-            <BottomSheet onClose={handleCloseBts} visible={first}>
+            {/* Overlay and BottomSheets */}
+            <Overlay onPress={handleCloseBottomSheet} visible={showBottomSheet !== 0} />
+            
+            {/* BottomSheet 1 */}
+            <BottomSheet onClose={handleCloseBottomSheet} visible={showBottomSheet === 1}>
                 <View className='items-center'>
                     <Text className='text-lg font-semibold'>{i18n.t('classroom.teacher.titleBtsAddStudent')}</Text>
                     <Button
@@ -172,15 +207,49 @@ const TeacherDetail = () => {
                             });
                         }}
                     />
-                    <View className='h-[2px] bg-green-100 rounded-full w-40 my-4' />
+                    <View className='h-[1px] bg-green-100 rounded-full w-40 my-4' />
                     <Button
                         otherStyles='bg-blue-500 px-4'
                         textStyles='text-base font-semibold'
                         text={i18n.t('classroom.teacher.btnSave')}
+                        onPress={() => setShowBottomSheet(2)} 
                     />
                 </View>
             </BottomSheet>
 
+            {/* BottomSheet 2 */}
+            <BottomSheet onClose={handleCloseBottomSheet} visible={showBottomSheet === 2}>
+                <View className='items-center'>
+                    <Text className='text-lg font-semibold'>Thông tin học sinh mới</Text>
+
+                    <View className='pt-5 w-full'>
+                    <Text className='pb-2 mt-3 text-base text-slate-700 font-semibold'>Địa chỉ liên lạc (email) </Text>
+                        <TextInput
+                            value={email}
+                            onChangeText={setEmail}
+                            placeholder='Nhập địa chỉ email'
+                            className='border border-slate-500 rounded-xl py-2 px-5'
+                        />
+
+                    </View>
+
+                    <View className='pt-8 flex-row justify-end w-full px-4'>
+                        <Button
+                            otherStyles='mr-3 bg-transparent px-4'
+                            textStyles='text-black text-base'
+                            text={i18n.t('classroom.teacher.btnCancel')}
+                            onPress={handleCloseBottomSheet}
+                        />
+                        <Button
+                            otherStyles='ml-3 bg-violet-500 px-4'
+                            textStyles='text-base'
+                            text={i18n.t('classroom.teacher.btnSave')}
+                            onPress={()=>{handleAddStudent()}}/>
+                    </View>
+                </View>
+            </BottomSheet>
+
+            {/* Confirmation Modal for Student Deletion */}
             <Modal
                 animationType="fade"
                 transparent={true}
@@ -193,10 +262,10 @@ const TeacherDetail = () => {
                         <Text>Bạn có chắc chắn muốn xóa học sinh này khỏi lớp học không?</Text>
                         <View className='flex-row justify-between mt-4'>
                             <Pressable onPress={() => setModalVisible(false)}>
-                                <Text className='text-red-500 font-semibold'>Hủy</Text>
+                                <Text className='text-red-500 bg-red-500/30 rounded-lg font-semibold px-3 py-2'>Hủy</Text>
                             </Pressable>
                             <Pressable onPress={handleDeleteStudent}>
-                                <Text className='text-blue-500 font-semibold'>Xóa</Text>
+                                <Text className='text-blue-500 bg-blue-500/30 rounded-lg font-semibold px-3 py-2'>Xóa</Text>
                             </Pressable>
                         </View>
                     </View>

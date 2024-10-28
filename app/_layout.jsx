@@ -3,7 +3,7 @@ import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import {useEffect, useRef, useState} from 'react';
 import 'react-native-reanimated';
-import Toast from 'react-native-toast-message';
+import Toast from 'react-native-toast-message-custom';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { LogBox } from 'react-native';
 import Providers from '@/contexts/Providers';

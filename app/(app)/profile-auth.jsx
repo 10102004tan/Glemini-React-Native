@@ -8,7 +8,7 @@ import InputImage from "@/components/customs/InputImage";
 import {useAppProvider} from "@/contexts/AppProvider";
 import * as ImagePicker from "expo-image-picker";
 import CustomButton from "@/components/customs/CustomButton";
-import Toast from "react-native-toast-message";
+import Toast from "react-native-toast-message-custom";
 
 
 const TIME_SHOW_TOAST = 1500;

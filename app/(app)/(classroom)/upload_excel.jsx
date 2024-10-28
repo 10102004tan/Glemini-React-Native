@@ -11,7 +11,7 @@ import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
 import Wrapper from '@/components/customs/Wrapper';
-import Toast from 'react-native-toast-message';
+import Toast from 'react-native-toast-message-custom';
 
 const UploadExcelScreen = () => {
     const [uploadStatus, setUploadStatus] = useState(null);

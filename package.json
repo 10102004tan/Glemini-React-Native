@@ -73,7 +73,7 @@
     "react-native-screens": "3.31.1",
     "react-native-select-dropdown": "^4.0.1",
     "react-native-textinput-effects": "^0.6.3",
-    "react-native-toast-message": "^2.2.1",
+    "react-native-toast-message-custom": "^2.2.1",
     "react-native-web": "~0.19.10",
     "react-native-webview": "13.8.6",
     "reactotron-react-native": "^5.1.9",

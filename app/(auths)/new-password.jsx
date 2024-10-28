@@ -5,7 +5,7 @@ import {AuthContext} from "@/contexts/AuthContext";
 import {useAppProvider} from "@/contexts/AppProvider";
 import CustomButton from "@/components/customs/CustomButton";
 import {router, useLocalSearchParams} from "expo-router";
-import Toast from "react-native-toast-message";
+import Toast from "react-native-toast-message-custom";
 
 export default function NewPasswordScreen() {
     const {resetPassword} = useContext(AuthContext);
