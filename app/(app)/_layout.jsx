@@ -192,12 +192,33 @@ export default function AppRootLayout() {
 				}}
 			/>
 
-			<Stack.Screen
-				name="(result)/review"
-				options={{
-					headerShown: false,
-				}}
-			/>
+      <Stack.Screen
+        name="(result)/review"
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="(classroom)/teacher_detail"
+        options={{
+          headerTitle: "Chi tiết lớp học",
+        }}
+      />
+
+      <Stack.Screen
+        name="(classroom)/student_detail"
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="(classroom)/upload_excel"
+        options={{
+          headerShown: false,
+        }}
+      />
 
 			<Stack.Screen
 				name="(collection)/detail_collection"
