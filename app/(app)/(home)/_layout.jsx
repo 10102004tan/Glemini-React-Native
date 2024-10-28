@@ -36,26 +36,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name='index'
         options={{title:"Home",
+            headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "home" : "home-outline"}
               color={color}
             />
-          ),
-            headerRight:()=> {
-                return (
-                    <TouchableOpacity onPress={()=>{
-                        router.push({
-                            pathname:'(app)/notification',
-                        })
-                    }}>
-                        <View className={"mr-2"}>
-                            <Text className={'text-center absolute z-50 right-0 top-0 h-[18px] w-[18px] rounded-full text-white bg-red-600 text-[12px]'}>9+</Text>
-                            <Ionicons size={32} name={'notifications-outline'}/>
-                        </View>
-                    </TouchableOpacity>
-                )
-            }
+          )
         }}
       />
 

@@ -1,48 +1,63 @@
-import {Alert, FlatList, Image, Text, TouchableOpacity, View} from "react-native";
-import {useContext, useEffect, useState} from "react";
-import {END_POINTS, API_URL, API_VERSION} from "../../configs/api.config";
+import {Alert, FlatList, Text, TouchableOpacity, View} from "react-native";
+import {useContext, useEffect, useRef, useState} from "react";
 import {AuthContext} from "../../contexts/AuthContext";
-import {Feather, FontAwesome} from "@expo/vector-icons";
-import Icon from "react-native-vector-icons/Ionicons";
-import moment from "moment";
-import {Link, router} from "expo-router";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import CustomButton from "../../components/customs/CustomButton";
-import {LinearGradient} from "expo-linear-gradient";
 import NotificationCard from "@/components/customs/NotificationCard";
+import {Modalize} from 'react-native-modalize';
+import {router} from "expo-router";
+import {Portal} from "react-native-paper";
 
 export default function NotificationScreen() {
-    const {userData} = useContext(AuthContext);
-    const [notifications, setNotifications] = useState([]);
-
+    const {notification, fetchNotification} = useContext(AuthContext);
+    const modalizeRef = useRef(null);
+    const [currentSelected, setCurrentSelected] = useState(null);
     useEffect(() => {
-        fetchNotifications();
+        fetchNotification();
     }, []);
 
+    const onOpen = () => {
+        modalizeRef.current?.open();
+    };
 
-    const fetchNotifications = async () => {
-        const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': `${userData.accessToken}`,
-                'x-client-id': `${userData._id}`
-            }
-        });
-        const data = await response.json();
-        if (data.statusCode === 200) {
-            setNotifications(data.metadata);
+    const handleNotification = (item) => {
+        switch (item.noti_type) {
+            case "SYS-001":
+                setCurrentSelected(item);
+                onOpen();
+                break;
+            case "SYS-002":
+                setCurrentSelected(item);
+                onOpen();
+                break;
+            case "SHARE-001":
+                router.push({pathname: "/(app)/(quiz)/overview", query: {id: item.noti_options.id}});
+                break;
+            case "SHARE-002":
+                break;
+            case "ROOM-001":
+                Alert.alert("Thông báo", "Bạn đã được thêm vào phòng học");
+                break;
+            default:
+                break;
         }
-    }
+    };
 
     return (
         <View className={"px-2 bg-white pt-[20px]"}>
-            <FlatList data={notifications} renderItem={(notification) => {
-                const {noti_type, noti_content, createdAt, noti_options} = notification.item;
+            <FlatList data={notification} renderItem={(item) => {
+                const {noti_type, noti_content, createdAt, noti_options, noti_status} = item.item;
                 return (
-                    <NotificationCard type={noti_type} content={noti_content} time={createdAt} options={noti_options}/>
+                    <NotificationCard onPress={()=>handleNotification(item.item)} type={noti_type} content={noti_content}
+                                      status={noti_status} time={createdAt} options={noti_options}/>
                 )
             }}/>
+
+            <Modalize avoidKeyboardLikeIOS={true} children={<View></View>} modalStyle={{padding: 10, marginTop: 30}}  ref={modalizeRef}
+                      withHandle={false} scrollViewProps={{showsVerticalScrollIndicator: false}}
+                      HeaderComponent={<View><Text>Header</Text></View>}>
+                <View>
+                    <Text>{currentSelected?.noti_content}</Text>
+                </View>
+            </Modalize>
         </View>
     )
 }

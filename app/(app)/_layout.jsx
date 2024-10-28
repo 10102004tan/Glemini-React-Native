@@ -14,7 +14,7 @@ import Toast from 'react-native-toast-message';
 import Icon from "react-native-vector-icons/Ionicons";
 
 export default function AppRootLayout() {
-	const { userData, isLoading, fetchStatus, setTeacherStatus } =
+	const { userData, isLoading, fetchStatus, setTeacherStatus,setNotification } =
 		useContext(AuthContext);
 	const { isSave, setIsSave } = useQuizProvider();
 	const { i18n, socket } = useAppProvider();
@@ -42,6 +42,13 @@ export default function AppRootLayout() {
 					}
 				}
 			);
+
+			socket.on(`notification${userData._id}`,(noti)=>{
+				console.log(`TEST`,noti);
+				setNotification((prev)=>{
+					return [noti,...prev];
+				});
+			})
 		}
 	}, [userData]);
 
