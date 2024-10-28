@@ -5,16 +5,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 
 import { API_URL, END_POINTS, API_VERSION } from '../configs/api.config';
+import {registerForPushNotificationsAsync} from "@/helpers/notification";
 
 export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState(null);
   const [teacherStatus, setTeacherStatus] = useState(null);
+  const [expoPushToken, setExpoPushToken] = useState(null);
 
   useEffect(() => {
     fetchAccessToken();
   }, []);
+
+  useEffect(()=>{
+    registerForPushNotificationsAsync()
+        .then(token => setExpoPushToken(token ?? ''))
+        .catch((error) => setExpoPushToken(`${error}`));
+  },[]);
 
   // fetch access token from local storage
   const fetchAccessToken = async () => {
@@ -34,7 +42,7 @@ export const AuthProvider = ({ children }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password,user_push_token:expoPushToken }),
       }
     );
 
@@ -44,7 +52,7 @@ export const AuthProvider = ({ children }) => {
     }
     throw new Error(data.message);
   };
-  const signUp = async ({ email, password, fullname, type, images }) => {
+  const signUp = async ({ email, password,fullname, type, images }) => {
     // trim data
     email = email.trim();
     password = password.trim();
@@ -55,6 +63,7 @@ export const AuthProvider = ({ children }) => {
     formData.append("password", password);
     formData.append("fullname", fullname);
     formData.append("type", type);
+    formData.append("expo_push_token",expoPushToken);
     // if type = teacher => add image to form data
     if (type === "teacher" && images.length > 0) {
       images.forEach((image, index) => {
@@ -93,12 +102,11 @@ export const AuthProvider = ({ children }) => {
           authorization: `${userData.accessToken}`,
           "x-client-id": userData._id,
         },
+        body: JSON.stringify({ expo_push_token: expoPushToken })
       }
     );
     const data = await response.json();
-    console.log(data)
     if (data.statusCode === 200) {
-      console.log(data);
       await AsyncStorage.removeItem("userData");
       setUserData(null);
       setTeacherStatus(null);

@@ -1,10 +1,11 @@
-import { Link, Redirect, Tabs } from "expo-router";
+import {Link, Redirect, router, Tabs} from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
-import { TouchableOpacity } from "react-native";
+import {Alert, Text, TouchableOpacity, View} from "react-native";
 import { useAppProvider } from "@/contexts/AppProvider";
 import { AuthContext } from "@/contexts/AuthContext";
+import {Ionicons} from "@expo/vector-icons";
 
 export default function TabLayout() {
   const { isHiddenNavigationBar, i18n } = useAppProvider();
@@ -31,17 +32,30 @@ export default function TabLayout() {
         tabBarShowLabel: false,
       }}
     >
-      
+
       <Tabs.Screen
         name='index'
-        options={{
-          headerShown: false,
+        options={{title:"Home",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "home" : "home-outline"}
               color={color}
             />
           ),
+            headerRight:()=> {
+                return (
+                    <TouchableOpacity onPress={()=>{
+                        router.push({
+                            pathname:'(app)/notification',
+                        })
+                    }}>
+                        <View className={"mr-2"}>
+                            <Text className={'text-center absolute z-50 right-0 top-0 h-[18px] w-[18px] rounded-full text-white bg-red-600 text-[12px]'}>9+</Text>
+                            <Ionicons size={32} name={'notifications-outline'}/>
+                        </View>
+                    </TouchableOpacity>
+                )
+            }
         }}
       />
 
@@ -102,7 +116,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="classroom"
         options={{
-          title: i18n.t('classes.title'),
+          title: i18n.t('classroom.title'),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? 'school' : 'school-outline'}

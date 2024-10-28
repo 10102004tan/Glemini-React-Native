@@ -197,5 +197,24 @@
         "title":"Bạn chưa có quyền truy cập chức năng này",
         "desc":"Xem trạng thái hồ sơ của bạn",
         "button":"Tại đây"
+    },
+    "classroom": {
+        "title": "Lớp học",
+        "teacher": {
+            "btnAddClass": "Tạo lớp học mới",
+            "titleBts": "Nhập thông tin lớp học mới",
+            "fieldSchool": "Tên trường",
+            "placeholderFieldSchool": "Chọn tên trường ...",
+            "fieldSubject": "Tên môn học",
+            "placeholderFieldSubject": "Chọn môn học ...",
+            "fieldClassroom": "Tên lớp",
+            "placeholderFieldClassroom": "Nhập tên lớp ...",
+            "btnSave": "Tạo mới",
+            "btnCancel": "Hủy",
+            "btnEdit": "Chỉnh sửa",
+            "titleBtsAddStudent": "Thêm danh sách học sinh"
+
+        },
+        "student": {}
     }
 }
