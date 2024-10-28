@@ -108,7 +108,6 @@ const Library = () => {
   const { quizzes, setQuizzes } = useQuizProvider();
 
   useEffect(() => {
-    console.log("jjjjjj");
     getAllCollections();
   }, []);
 
