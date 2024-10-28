@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const dev = {
 	API_URL: 'http://192.168.247.116:3000/api',
@@ -24,6 +24,9 @@ const dev = {
 		CHANGE_PASSWORD: '/auth/change-password',
 		FORGOT_PASSWORD: '/auth/forgot-password',
 		USER_STATUS: '/auth/status',
+
+		//Notification
+		UPDATE_NOTIFICATION_STATUS:'/notification',
 
 		// Quiz and Question
 		GET_QUIZ_BY_USER: '/quizzes/get-by-user',
@@ -76,20 +79,23 @@ const dev = {
 		CLASSROOM_GET_EXCEL_TEMPLATE: '/classroom/get-templates/template_excel',
 		CLASSROOM_ADD_STUDENT: '/classroom/add-student',
 		CLASSROOM_REMOVE_STUDENT: '/classroom/rm-student',
+      
+      //email
+      CHECK_EMAIL: "/user/check-email",
 	},
 };
 
 const prod = {
-	API_VERSION: {
-		V1: '/v1',
-	},
-	API_URL: 'http://localhost:8000/api',
-	END_POINTS: {
-		LOGIN: '/login',
-		REGISTER: '/register',
-		LOGOUT: '/logout',
-		PROFILE: '/profile',
-	},
+  API_VERSION: {
+    V1: "/v1",
+  },
+  API_URL: "http://localhost:8000/api",
+  END_POINTS: {
+    LOGIN: "/login",
+    REGISTER: "/register",
+    LOGOUT: "/logout",
+    PROFILE: "/profile",
+  },
 };
 
 module.exports = dev;

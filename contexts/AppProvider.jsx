@@ -12,11 +12,13 @@ import vi from '../languages/vi.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const AppContext = createContext();
 import socket from '../utils/socket';
+import {API_URL, API_VERSION, END_POINTS} from "@/configs/api.config";
 
 // Example about a context provider in React Native
 const AppProvider = ({ children }) => {
   // Dùng cho việc chuyển đổi ngôn ngữ
   const [language, setLanguage] = useState("vi");
+  const [notification, setNotification] = useState([]);
   const i18n = new I18n({
     en,
     ja,
@@ -85,6 +87,8 @@ const AppProvider = ({ children }) => {
         closeBottomSheet,
         showBottomSheetMoreOptions,
         showBottomSheetSaveToLibrary,
+          notification,
+          setNotification
       }}
     >
       {children}
