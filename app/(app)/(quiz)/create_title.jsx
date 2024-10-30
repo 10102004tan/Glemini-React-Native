@@ -11,7 +11,7 @@ import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import * as ImagePicker from 'expo-image-picker';
 
 const CreateTitleQuizzScreen = () => {
-   const { userData } = useAuthContext();
+   const { userData, processAccessTokenExpired } = useAuthContext();
    const [quizName, setQuizName] = useState('');
    const { setNeedUpdate } = useQuizProvider();
    const { actionQuizType } = useQuizProvider();
@@ -108,7 +108,7 @@ const CreateTitleQuizzScreen = () => {
             }
          );
          const data = await response.json();
-
+         console.log(data)
          if (data.statusCode === 200) {
             setNeedUpdate(true);
 
@@ -136,6 +136,10 @@ const CreateTitleQuizzScreen = () => {
                   break;
             }
          } else {
+            if (data.statusCode === 404 && data.message === 'Access denied') {
+               await processAccessTokenExpired();
+            }
+
             // Alert to user here
             console.log('Error when create quiz');
          }

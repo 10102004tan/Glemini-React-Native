@@ -4,6 +4,7 @@ import { useAuthContext } from './AuthContext';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 const QuestionContext = createContext();
 const QuestionProvider = ({ children }) => {
+   const [isChangeData, setIsChangeData] = useState(false);
    const [question, setQuestion] = useState({
       question_excerpt: '',
       question_description: '',
@@ -46,7 +47,7 @@ const QuestionProvider = ({ children }) => {
    const { userData } = useAuthContext();
 
    // Lấy nội dung câu hỏi từ file template docx
-   const getQuestionFromDocx = async (questionData, quizId) => {
+   const getQuestionFromTemplateFile = async (questionData, quizId) => {
       setQuestions([]); // Reset mảng câu hỏi
 
       const insertDatas = questionData.map((question) => {
@@ -233,9 +234,9 @@ const QuestionProvider = ({ children }) => {
 
       const data = await response.json();
       if (data.statusCode === 200) {
-         const newQuestions = questions.filter((question) => question._id !== id);
+         const newQuestions = questions.filter((question) => question._id !== questionId);
          setQuestions(newQuestions);
-
+         setIsChangeData(true);
          router.back();
 
       } else {
@@ -245,7 +246,7 @@ const QuestionProvider = ({ children }) => {
 
    // Đánh dấu đáp án chính xác
    const markCorrectAnswer = (id, isMultiple) => {
-      // console.log(id);
+
 
       // Nếu không cho phép chọn nhiều đáp án, reset các đáp án về false
       const resetAnswers = isMultiple
@@ -356,6 +357,7 @@ const QuestionProvider = ({ children }) => {
             // Lưu câu hỏi vào mảng các câu hỏi
             setQuestions([...questions, question]);
             resetQuestion();
+            setIsChangeData(true);
             router.back();
          }
       } catch (error) {
@@ -384,7 +386,8 @@ const QuestionProvider = ({ children }) => {
          if (data.statusCode === 200) {
             console.log('Lưu câu hỏi thành công');
             // Alert to user here
-            // setQuestions(data.metadata);
+            setQuestions(data.metadata);
+            setIsChangeData(true);
             resetQuestion();
             return true;
          } else {
@@ -399,6 +402,7 @@ const QuestionProvider = ({ children }) => {
    // Cập nhật câu hỏi
    const editQuestion = async (quizId, questionId) => {
       // console.log(JSON.stringify({ ...question, quiz_id: quizId }, null, 2));
+      console.log(JSON.stringify(questions, null, 2));
 
       try {
          // Gọi API cập nhật câu hỏi
@@ -415,20 +419,24 @@ const QuestionProvider = ({ children }) => {
             }
          );
          const data = await response.json();
+         console.log(data)
          if (data.statusCode === 200) {
             console.log('Cập nhật câu hỏi thành công');
             // Alert to user here
 
             // Cập nhật lại câu hỏi vào mảng câu hỏi
             const newQuestions = questions.map((q) => {
-               if (q.id === questionId) {
-                  return question;
+               if (q._id === questionId) {
+                  return data.metadata;
                }
                return q;
             });
 
+            console.log(JSON.stringify(newQuestions, null, 2));
+
             setQuestions(newQuestions);
             resetQuestion();
+            setIsChangeData(true);
             // console.log('Quiz ID: ', quizId);
             router.back();
          }
@@ -456,12 +464,14 @@ const QuestionProvider = ({ children }) => {
             updateQuestionPoint,
             editQuestion,
             checkCorrectAnswer,
-            getQuestionFromDocx,
+            getQuestionFromTemplateFile,
             selectQuestionType,
             createBoxQuestion,
             createBlankQuestion,
             generateQuestionsFromGemini,
-            deleteQuestion
+            deleteQuestion,
+            isChangeData,
+            setIsChangeData,
          }}
       >
          {children}

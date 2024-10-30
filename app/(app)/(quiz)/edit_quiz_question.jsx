@@ -17,6 +17,7 @@ import { useQuizProvider } from '../../../contexts/QuizProvider';
 import { useGlobalSearchParams } from 'expo-router';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useAuthContext } from '@/contexts/AuthContext';
+import QuestionEditScreenSkeleton from '../../../components/loadings/QuestionEditScreenSkeleton';
 const MAX_ANSWER = 8;
 
 const EditQuizQuestion = () => {
@@ -47,6 +48,7 @@ const EditQuizQuestion = () => {
    const { width } = useWindowDimensions();
    const { quizId, questionId } = useGlobalSearchParams();
    const { userData } = useAuthContext();
+   const [loading, setLoading] = useState(true);
 
    // Khi người dùng chuyển từ chế độ chọn nhiều câu hỏi sang một câu hỏi thì bỏ chọn tất cả
    useEffect(() => {
@@ -85,6 +87,7 @@ const EditQuizQuestion = () => {
       const data = await response.json();
       if (data.statusCode === 200) {
          setQuestion(data.metadata);
+         setLoading(false);
       } else {
          // Alert to user here
          console.log('Error when get question details');
@@ -106,6 +109,12 @@ const EditQuizQuestion = () => {
       setPointBotttomSheetVisible(false);
       setTimeBotttomSheetVisible(false);
    };
+
+   if (loading) {
+      return (
+         <QuestionEditScreenSkeleton />
+      );
+   }
 
    return (
       <Wrapper>
