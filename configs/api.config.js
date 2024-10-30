@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 const dev = {
-	API_URL: 'http://192.168.247.116:3000/api',
+	API_URL: 'http://192.168.1.8:3000/api',
 
 	API_VERSION: {
 		V1: '/v1',
@@ -25,16 +25,21 @@ const dev = {
 		FORGOT_PASSWORD: '/auth/forgot-password',
 		USER_STATUS: '/auth/status',
 
-		//Notification
-		UPDATE_NOTIFICATION_STATUS:'/notification',
+		// Notification
+		UPDATE_NOTIFICATION_STATUS: '/notification',
 
-		// Quiz and Question
+		// Question
 		GET_QUIZ_BY_USER: '/quizzes/get-by-user',
 		GET_QUIZ_QUESTIONS: '/quizzes/get-questions',
 		GET_QUESTION_DETAIL: '/questions/get-details',
 		QUESTION_UPDATE: '/questions/update',
 		QUESTION_CREATE: '/questions/create',
+		QUESTION_CREATE_MANY: '/questions/creates',
 		QUESTION_UPLOAD_IMAGE: '/questions/upload',
+		QUESTION_DELETE: '/questions/delete',
+		QUIZ_GENERATE_GEMINI_IMAGE: '/quizzes/gemini/generate/images',
+
+		// Quizzes
 		QUIZ_UPLOAD_IMAGE: '/quizzes/upload',
 		QUIZ_DETAIL: '/quizzes/get-details',
 		QUIZ_CREATE: '/quizzes/create',
@@ -43,12 +48,15 @@ const dev = {
 		QUIZ_BANNER: '/quizzes/banner',
 		QUIZ_UPLOAD_DOC: '/quizzes/docs/upload',
 		QUIZ_UPLOAD_MD: '/quizzes/md/upload',
+		QUIZ_UPLOAD_TXT: '/quizzes/txt/upload',
 		QUIZ_GET_DOCX_TEMPLATE: '/quizzes/get-templates/template_docx',
 		QUIZ_GET_MD_TEMPLATE: '/quizzes/get-templates/template_md',
+		QUIZ_GET_TXT_TEMPLATE: '/quizzes/get-templates/template_txt',
 		QUIZ_FILTER: '/quizzes/filter',
+		QUIZ_GENERATE_GEMINI: '/quizzes/gemini/generate/prompt',
 		QUIZ_UPDATE: '/quizzes/update',
 
-		// Result
+		// Results
 		RESULT_SAVE_QUESTION: '/result/save-question',
 		RESULT_COMPLETED: '/result/complete-quiz',
 		RESULT_REVIEW: '/result/review',
@@ -79,23 +87,23 @@ const dev = {
 		CLASSROOM_GET_EXCEL_TEMPLATE: '/classroom/get-templates/template_excel',
 		CLASSROOM_ADD_STUDENT: '/classroom/add-student',
 		CLASSROOM_REMOVE_STUDENT: '/classroom/rm-student',
-      
-      //email
-      CHECK_EMAIL: "/user/check-email",
+
+		//email
+		CHECK_EMAIL: '/user/check-email',
 	},
 };
 
 const prod = {
-  API_VERSION: {
-    V1: "/v1",
-  },
-  API_URL: "http://localhost:8000/api",
-  END_POINTS: {
-    LOGIN: "/login",
-    REGISTER: "/register",
-    LOGOUT: "/logout",
-    PROFILE: "/profile",
-  },
+	API_VERSION: {
+		V1: '/v1',
+	},
+	API_URL: 'http://localhost:8000/api',
+	END_POINTS: {
+		LOGIN: '/login',
+		REGISTER: '/register',
+		LOGOUT: '/logout',
+		PROFILE: '/profile',
+	},
 };
 
 module.exports = dev;
