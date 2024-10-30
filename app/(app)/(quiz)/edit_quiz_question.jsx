@@ -72,6 +72,7 @@ const EditQuizQuestion = () => {
 
    // Lấy thông tin của câu hỏi hiện tại
    const getCurrentUpdateQuestion = async () => {
+      console.log("RUNNING")
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUESTION_DETAIL}`,
          {

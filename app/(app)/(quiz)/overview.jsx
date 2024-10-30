@@ -64,6 +64,7 @@ const QuizzOverViewScreen = () => {
    // Hàm kiểm tra xem câu hỏi có thay đổi không
    useEffect(() => {
       if (isChangeData && id) {
+         // console.log("CALL WHENN OVERVIEW ID CHANGE AND ISCHANGEDATA")
          fetchQuestions();
          setIsChangeData(false);
       }
@@ -108,6 +109,7 @@ const QuizzOverViewScreen = () => {
 
    useEffect(() => {
       if (id) {
+         // console.log("CALL THE FIRST TIME")
          fetchQuiz();
          fetchQuestions();
       }
@@ -117,6 +119,7 @@ const QuizzOverViewScreen = () => {
    useEffect(() => {
       const handleSaveQuiz = async () => {
          if (isSave) {
+            // console.log("CALL SAVE QUIZ")
             // Cập nhật lại ảnh thumbnail của quiz nếu người dùng thay đổi
             if (uploadedImage) {
                const imageUrl = await uploadImage(uploadedImage);

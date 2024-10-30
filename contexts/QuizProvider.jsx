@@ -133,12 +133,12 @@ const QuizProvider = ({ children }) => {
    };
 
    // Update quiz if need
-   // useEffect(() => {
-   //    if (needUpdate) {
-   //       fetchQuizzes();
-   //       setNeedUpdate(false);
-   //    }
-   // }, [needUpdate]);
+   useEffect(() => {
+      if (needUpdate) {
+         fetchQuizzes();
+         setNeedUpdate(false);
+      }
+   }, [needUpdate]);
 
    // Get all quizzes of the user
    useEffect(() => {
