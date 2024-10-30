@@ -1,200 +1,237 @@
 {
-    "signIn": {
-        "title": "Sign In",
-        "email": "Email",
-        "password": "Password",
-        "login": "Login",
-        "forgot": "Forgot Password?",
-        "signUp": "Sign Up Here",
-        "notHaveAccount": "Don't have an account?",
-        "startNow": "Start Now",
-        "welcome": "Welcome to Glemini App",
-        "forgetPassword": "Forget Password",
-        "success": "Login successfully"
-    },
-    "signUp": {
-        "title": "Sign Up",
-        "email": "Email",
-        "password": "Password",
-        "signInNow": "Sign In Now",
-        "confirmPassword": "Confirm Password",
-        "signUp": "Create Account",
-        "haveAccount": "Already have an account?",
-        "startNow": "Start Now",
-        "signIn": "Sign In Now",
-        "fullname": "Fullname",
-        "welcome": "Welcome to Glemini App",
-        "choice": {
-            "student": "Student",
-            "teacher": "Teacher",
-            "studentDescription": "Join fun classroom activities",
-            "teacherDescription": "Manage quizzes, classrooms and results",
-            "title": "Choose account type"
-        },
-        "card": "Card Image",
-        "cardID": "ID Card",
-        "documentConfirm": "Document Comfirm",
-        "cardDescription": "Card Image or ID Card",
-        "documentDescription": "Document Comfirm",
-        "cardIdDescription": "Card Image or ID Card",
-        "descForCard": "Please provide a clear card image",
-        "descForCardID": "Please take a photo of CCCD in a well-lit place",
-        "descForDocument": "Please provide a clear document confirmation image"
-    },
-    "error": {
-        "notification": "Notification",
-        "emailInvalid": "Invalid email",
-        "passwordInvalid": "Password must be at least 8 characters",
-        "confirmPassword": "Password confirmation does not match",
-        "fullnameInvalid": "Invalid fullname",
-        "emailRequired": "Email is required",
-        "emailExist": "Email already exists",
-        "passwordRequired": "Password is required",
-        "confirmPasswordRequired": "Confirm password is required",
-        "fullnameRequired": "Fullname is required",
-        "cardRequired": "Card image is required",
-        "cardIDRequired": "ID Card is required",
-        "documentConfirmRequired": "Document Comfirm is required",
-        "nameNotIncludeChar": "Fullname can't include special characters",
-        "title": "Error",
-        "passwordNotMatch": "Password does not match",
-        "imageRequired": "Image is required"
-    },
-    "success": {
-        "signUp": "Sign up successfully",
-        "title": "Success"
-    },
-    "language": {
-        "title": "Choose language",
-        "english": "English",
-        "vietnamese": "Vietnamese",
-        "japanese": "Japanese",
-        "changeLanguage": "Change language",
-        "edit": "Edit now"
-    },
-    "logout": {
-        "title": "Logout",
-        "logout": "Logout",
-        "notification": "Notification",
-        "logoutSuccess": "Logout successfully"
-    },
-    "forgetPassword": {
-        "title": "Forget Password",
-        "email": "Email",
-        "send": "Send"
-    },
-    "play": {
-        "single": {
-            "buttonQuit": "Quit",
-            "score": "Score",
-            "questionCouter": "Question number:",
-            "buttonConfirm": "Confirm",
-            "incorrect": "Incorrect!!!",
-            "errorTitle": "Error",
-            "errorText": "Please select an answer!"
-        }
-    },
-    "result": {
-        "single": {
-            "buttonQuit": "Quit",
-            "buttonReplay": "Replay",
-            "buttonPlayNewQuiz": "Find new quiz",
-            "score": "Score",
-            "totalQuestions": "Total questions",
-            "correct": "Correct",
-            "incorrect": "Incorrect",
-            "textResult": "Result",
-            "textDesc": "Practice",
-            "buttonReview": "Review"
-        },
-        "review": {
-            "title": "Review Answers",
-            "text_question": "Question",
-            "indexQuestion": "Question No.",
-            "explanation": "Explanation: ",
-            "textExplanation": "No explanation here!",
-            "btnNext": "Next",
-            "btnPrev": "Previous",
-            "point": "pts",
-            "userAnswer": "Your answer: "
-        }
-    },
-    "resetPassword": {
-        "title":"Reset Password",
-        "email":"Email",
-        "send":"Send",
-        "back":"Back",
-        "success":"Reset password successfully",
-        "error":"Invalid email",
-        "notification":"Notification",
-        "password": "New Password",
-        "confirmPassword": "Confirm Password",
-        "submit": "Submit",
-        "haveAccount": "Already have an account?",
-        "notHaveAccount": "Don't have an account?",
-        "backToSignIn": "Back to Sign In",
-        "changeEmail": "Change Email",
-        "resendCode": "Resend Code",
-        "notReceiveCode": "Didn't receive the code?"
-    },
-    "student_homepage": {
-        "explore": "Explore",
-        "categoryAll": "All Categories",
-        "author": "Author:",
-        "turnPlay": "Turns:",
-        "btnThuThach": "Challenge",
-        "btnLuyenTap": "Practice",
-        "desc": "Description:",
-        "textDesc": "No description here!"
-    },
-    "profile":{
-        "title":"Profile",
-        "fullname":"Fullname",
-        "info": "Personal Information",
-        "email":"Email",
-        "phone":"Phone",
-        "address":"Address",
-        "password":"Password",
-        "oldPassword":"Old Password",
-        "newPassword":"New Password",
-        "confirmPassword":"Confirm Password",
-        "edit":"Edit",
-        "save":"Save",
-        "school":"School",
-        "editNow":"Edit Now",
-        "infoAuth":"Authentication Information"
-    },
-    "settings": {
-        "title": "Settings"
-    },
-    "home": {
-        "title": "Home"
-    },
-    "search": {
-        "title": "Search"
-    },
-    "classes": {
-        "title": "Classes"
-    },
-    "account": {
-        "title": "Account",
-        "buttonEdit": "Edit"
-    },
-    "report": {
-        "title": "Report"
-    },
-    "status": {
-        "title": "Status",
-        "active": "Active",
-        "pedding": "Pedding",
-        "reject": "Reject"
-    },
-    "library": {
-        "title": "Library"
-    },
-    "lockFeature": {
-        "title": "You do not have access to this feature",
-        "desc": "Please upgrade your account to access this feature.",
-        "button": "Here"
-    }
+   "signIn": {
+      "title": "Sign In",
+      "email": "Email",
+      "password": "Password",
+      "login": "Login",
+      "forgot": "Forgot Password?",
+      "signUp": "Sign Up Here",
+      "notHaveAccount": "Don't have an account?",
+      "startNow": "Start Now",
+      "welcome": "Welcome to Glemini App",
+      "forgetPassword": "Forget Password",
+      "success": "Login successfully"
+   },
+   "signUp": {
+      "title": "Sign Up",
+      "email": "Email",
+      "password": "Password",
+      "signInNow": "Sign In Now",
+      "confirmPassword": "Confirm Password",
+      "signUp": "Create Account",
+      "haveAccount": "Already have an account?",
+      "startNow": "Start Now",
+      "signIn": "Sign In Now",
+      "fullname": "Fullname",
+      "welcome": "Welcome to Glemini App",
+      "choice": {
+         "student": "Student",
+         "teacher": "Teacher",
+         "studentDescription": "Join fun classroom activities",
+         "teacherDescription": "Manage quizzes, classrooms and results",
+         "title": "Choose account type"
+      },
+      "card": "Card Image",
+      "cardID": "ID Card",
+      "documentConfirm": "Document Comfirm",
+      "cardDescription": "Card Image or ID Card",
+      "documentDescription": "Document Comfirm",
+      "cardIdDescription": "Card Image or ID Card",
+      "descForCard": "Please provide a clear card image",
+      "descForCardID": "Please take a photo of CCCD in a well-lit place",
+      "descForDocument": "Please provide a clear document confirmation image"
+   },
+   "error": {
+      "notification": "Notification",
+      "emailInvalid": "Invalid email",
+      "passwordInvalid": "Password must be at least 8 characters",
+      "confirmPassword": "Password confirmation does not match",
+      "fullnameInvalid": "Invalid fullname",
+      "emailRequired": "Email is required",
+      "emailExist": "Email already exists",
+      "passwordRequired": "Password is required",
+      "confirmPasswordRequired": "Confirm password is required",
+      "fullnameRequired": "Fullname is required",
+      "cardRequired": "Card image is required",
+      "cardIDRequired": "ID Card is required",
+      "documentConfirmRequired": "Document Comfirm is required",
+      "nameNotIncludeChar": "Fullname can't include special characters",
+      "title": "Error",
+      "passwordNotMatch": "Password does not match",
+      "imageRequired": "Image is required"
+   },
+   "success": {
+      "signUp": "Sign up successfully",
+      "title": "Success"
+   },
+   "language": {
+      "title": "Choose language",
+      "english": "English",
+      "vietnamese": "Vietnamese",
+      "japanese": "Japanese",
+      "changeLanguage": "Change language",
+      "edit": "Edit now"
+   },
+   "logout": {
+      "title": "Logout",
+      "logout": "Logout",
+      "notification": "Notification",
+      "logoutSuccess": "Logout successfully"
+   },
+   "forgetPassword": {
+      "title": "Forget Password",
+      "email": "Email",
+      "send": "Send"
+   },
+   "play": {
+      "single": {
+         "buttonQuit": "Quit",
+         "score": "Score",
+         "questionCouter": "Question number:",
+         "buttonConfirm": "Confirm",
+         "incorrect": "Incorrect!!!",
+         "errorTitle": "Error",
+         "errorText": "Please select an answer!"
+      }
+   },
+   "result": {
+      "single": {
+         "buttonQuit": "Quit",
+         "buttonReplay": "Replay",
+         "buttonPlayNewQuiz": "Find new quiz",
+         "score": "Score",
+         "totalQuestions": "Total questions",
+         "correct": "Correct",
+         "incorrect": "Incorrect",
+         "textResult": "Result",
+         "textDesc": "Practice",
+         "buttonReview": "Review"
+      },
+      "review": {
+         "title": "Review Answers",
+         "text_question": "Question",
+         "indexQuestion": "Question No.",
+         "explanation": "Explanation: ",
+         "textExplanation": "No explanation here!",
+         "btnNext": "Next",
+         "btnPrev": "Previous",
+         "point": "pts",
+         "userAnswer": "Your answer: "
+      }
+   },
+   "resetPassword": {
+      "title": "Reset Password",
+      "email": "Email",
+      "send": "Send",
+      "back": "Back",
+      "success": "Reset password successfully",
+      "error": "Invalid email",
+      "notification": "Notification",
+      "password": "New Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Submit",
+      "haveAccount": "Already have an account?",
+      "notHaveAccount": "Don't have an account?",
+      "backToSignIn": "Back to Sign In",
+      "changeEmail": "Change Email",
+      "resendCode": "Resend Code",
+      "notReceiveCode": "Didn't receive the code?"
+   },
+   "student_homepage": {
+      "explore": "Explore",
+      "categoryAll": "All Categories",
+      "author": "Author:",
+      "turnPlay": "Turns:",
+      "btnThuThach": "Challenge",
+      "btnLuyenTap": "Practice",
+      "desc": "Description:",
+      "textDesc": "No description here!"
+   },
+   "teacher_homepage": {
+      "searchInputPlaceholder": "Create a quiz or a lesson",
+      "createQuizButtonTitle": "Create Quiz",
+      "myLibraryButtonTitle": "My Library",
+      "reportButtonTitle": "Report",
+      "createQuizWithAi": "Create Quiz with AI",
+      "createFromImage": "Create from Image",
+      "createFromText": "Create from Text",
+      "uploadTemplate": "Upload Template",
+      "createWithHand": "Create Manually"
+   },
+   "create_title_quiz_screen": {
+      "quizName": "Quiz Name",
+      "quizNameRequest": "Please tell us the name of your quiz",
+      "quizDescription": "Quiz Description",
+      "prompt": "Prompt",
+      "promptRequest": "Please tell us your prompt",
+      "quizThumbnailUploadTitle": "Upload an image file to create questions from its content",
+      "startCreateQuiz": "Start Creating Quiz"
+   },
+   "overview_quiz_screen": {
+      "detail": "Detail",
+      "quizName": "Quiz Name",
+      "quizDescription": "Quiz Description",
+      "questionType": "Question Type",
+      "second": "second",
+      "point": "point",
+      "edit": "Edit",
+      "viewExplain": "View Explanation",
+      "quizSubject": "Field, Subject",
+      "viewMode": "View Mode",
+      "notification": "Notification",
+      "confirmDelete": "Are you sure you want to delete this quiz?",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "confirm": "Confirm"
+   },
+   "profile": {
+      "title": "Profile",
+      "fullname": "Fullname",
+      "info": "Personal Information",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "password": "Password",
+      "oldPassword": "Old Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "edit": "Edit",
+      "save": "Save",
+      "school": "School",
+      "editNow": "Edit Now",
+      "infoAuth": "Authentication Information"
+   },
+   "settings": {
+      "title": "Settings"
+   },
+   "home": {
+      "title": "Home"
+   },
+   "search": {
+      "title": "Search"
+   },
+   "classes": {
+      "title": "Classes"
+   },
+   "account": {
+      "title": "Account",
+      "buttonEdit": "Edit"
+   },
+   "report": {
+      "title": "Report"
+   },
+   "status": {
+      "title": "Status",
+      "active": "Active",
+      "pedding": "Pedding",
+      "reject": "Reject"
+   },
+   "library": {
+      "title": "Library"
+   },
+   "lockFeature": {
+      "title": "You do not have access to this feature",
+      "desc": "Please upgrade your account to access this feature.",
+      "button": "Here"
+   }
 }

@@ -59,6 +59,7 @@ const QuizzOverViewScreen = () => {
    const [confirmFn, setConfirmFn] = useState('close');
    const [uploadedImage, setUploadedImage] = useState(null);
    const { isChangeData, setIsChangeData, setQuestions } = useQuestionProvider();
+   const { i18n } = useAppProvider();
 
 
    // Hàm kiểm tra xem câu hỏi có thay đổi không
@@ -432,7 +433,7 @@ const QuizzOverViewScreen = () => {
                <View className="w-full">
                   <Field
                      wrapperStyles="w-full"
-                     label={'Tên'}
+                     label={i18n.t('overview_quiz_screen.quizName')}
                      value={quizName}
                      onChange={(text) => {
                         if (text.length <= 100) {
@@ -443,7 +444,7 @@ const QuizzOverViewScreen = () => {
                            setShowConfirmDialog(true);
                         }
                      }}
-                     placeholder={'Nhập tên của bộ Quiz'}
+                     placeholder={i18n.t('overview_quiz_screen.quizName')}
                   />
                </View>
                <View className="w-full mt-4">
@@ -462,27 +463,27 @@ const QuizzOverViewScreen = () => {
                            setShowConfirmDialog(true);
                         }
                      }}
-                     placeholder={'Thêm mô tả cho bộ quiz này'}
+                     placeholder={i18n.t('overview_quiz_screen.quizDescription')}
                   />
                </View>
                <View className="w-full mt-4">
                   <Text className="text-gray mb-1">
-                     Lĩnh vực, môn học
+                     {i18n.t('overview_quiz_screen.quizSubject')}
                   </Text>
                   {/* Mutiple Select List */}
                   <DropDownMultipleSelect
-                     label={'Chọn môn học'}
+                     label={i18n.t('overview_quiz_screen.quizSubject')}
                      data={subjectsData}
                      selectedIds={quizSubjects}
                      onSelected={(key) => handleSelectSubjects(key)}
                   />
                </View>
                <View className="w-full mt-4">
-                  <Text className="text-gray mb-1">Chế độ hiển thị</Text>
+                  <Text className="text-gray mb-1">{i18n.t('overview_quiz_screen.viewMode')}</Text>
 
                   {/* Single Select */}
                   <DropDownMultipleSelect
-                     label={'Chọn chế độ hiển thị'}
+                     label={i18n.t('overview_quiz_screen.viewMode')}
                      data={Status.view}
                      selectedIds={
                         quizStatus === 'published'
@@ -497,7 +498,7 @@ const QuizzOverViewScreen = () => {
 
          {/* Confirm dialog */}
          <ConfirmDialog
-            title={'Thông báo'}
+            title={i18n.t('overview_quiz_screen.notification')}
             visible={showConfirmDialog}
             onCancel={() => {
                setShowConfirmDialog(false);
@@ -590,11 +591,11 @@ const QuizzOverViewScreen = () => {
                      <View className="flex items-center justify-between flex-row">
                         <View className="max-w-[300px]">
                            <Text className="text-lg font-semibold">
-                              {quizName || 'Tên bộ quiz'}
+                              {quizName || i18n.t('overview_quiz_screen.quizName')}
                            </Text>
                            <Text className="text-gray max-w-[300px]">
                               {quizDescription ||
-                                 'Thêm mô tả cho bộ quiz này'}
+                                 i18n.t('overview_quiz_screen.quizDescription')}
                            </Text>
                         </View>
                         <View className="flex items-center flex-row justify-center">
@@ -616,7 +617,7 @@ const QuizzOverViewScreen = () => {
                               onPress={() => {
                                  setConfirmFn('delete');
                                  setAlertMessage(
-                                    'Bạn có chắc chắn muốn xóa bộ câu hỏi này không?'
+                                    i18n.t('overview_quiz_screen.confirmDelete')
                                  );
                                  setShowConfirmDialog(true);
                               }}

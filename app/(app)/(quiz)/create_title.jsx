@@ -11,7 +11,7 @@ import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import * as ImagePicker from 'expo-image-picker';
 import LottieView from 'lottie-react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-
+import { useAppProvider } from '@/contexts/AppProvider';
 const CreateTitleQuizzScreen = () => {
    const { userData, processAccessTokenExpired } = useAuthContext();
    const [quizName, setQuizName] = useState('');
@@ -22,6 +22,7 @@ const CreateTitleQuizzScreen = () => {
    const [generating, setGenerating] = useState(false);
    const [uploadedImage, setUploadedImage] = useState(null);
    const [uploadingImage, setUploadingImage] = useState(false);
+   const { i18n } = useAppProvider();
 
    const handleGenerateQuestionFromGemini = async (quizId) => {
       setGenerating(true);
@@ -216,14 +217,13 @@ const CreateTitleQuizzScreen = () => {
 
    return (
       <Wrapper>
-         <View className="flex-1 items-center justify-center">
+         <View className="flex-1 items-center justify-center flex">
             <ScrollView className="pt-4 px-4">
-
                <Field
-                  label={'Tên bài kiểm tra'}
+                  label={i18n.t('create_title_quiz_screen.quizName')}
                   value={quizName}
                   onChange={(text) => setQuizName(text)}
-                  placeholder={'Nhập tên bài kiểm tra'}
+                  placeholder={i18n.t('create_title_quiz_screen.quizNameRequest')}
                   wrapperStyles="w-full"
                   inputStyles="p-4"
                />
@@ -233,9 +233,7 @@ const CreateTitleQuizzScreen = () => {
                      label={'Promt'}
                      value={prompt}
                      onChange={(text) => setPrompt(text)}
-                     placeholder={
-                        'Nhập vào mô tả bài kiểm tra mà bạn muốn tạo'
-                     }
+                     placeholder={i18n.t('create_title_quiz_screen.promptRequest')}
                      wrapperStyles="w-full mt-4"
                      inputStyles="p-4"
                   />
@@ -244,12 +242,10 @@ const CreateTitleQuizzScreen = () => {
                {actionQuizType === 'ai/images' && (
                   <>
                      <Field
-                        label={'Promt'}
+                        label={i18n.t('create_title_quiz_screen.prompt')}
                         value={prompt}
                         onChange={(text) => setPrompt(text)}
-                        placeholder={
-                           'Hãy cho chúng tôi biết yêu cầu của bạn'
-                        }
+                        placeholder={i18n.t('create_title_quiz_screen.promptRequest')}
                         wrapperStyles="w-full mt-4"
                         inputStyles="p-4"
                      />
@@ -274,8 +270,8 @@ const CreateTitleQuizzScreen = () => {
                                     height: 120,
                                  }}
                               />
-                              <Text className="font-semibold">
-                                 Tải lên một bức ảnh mà bạn muốn tạo bài kiểm tra
+                              <Text className="font-semibold text-center">
+                                 {i18n.t('create_title_quiz_screen.quizThumbnailUploadTitle')}
                               </Text>
                            </>}
 
@@ -289,7 +285,7 @@ const CreateTitleQuizzScreen = () => {
             <Button
                loading={generating}
                onPress={handleCreateQuizTitle}
-               text={'Bắt đầu tạo'}
+               text={i18n.t('create_title_quiz_screen.startCreateQuiz')}
                otherStyles={'p-4 justify-center'}
                textStyles={'text-center'}
             />
