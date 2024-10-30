@@ -66,7 +66,9 @@ const detailquizz = () => {
    // bottom sheet
    const {
       showBottomSheetMoreOptions,
+      setShowBottomSheetMoreOptions,
       showBottomSheetSaveToLibrary,
+      setShowBottomSheetSaveToLibrary,
       openBottomSheetSaveToLibrary,
       closeBottomSheet,
    } = useAppProvider();
@@ -221,7 +223,7 @@ const detailquizz = () => {
          fetchQuiz();
          fetchQuestions();
       }
-   }, [id]);
+   }, []);
 
    //Dropdown
    const nameSchool = [
@@ -247,6 +249,9 @@ const detailquizz = () => {
    return (
       <Wrapper>
          <EmailDialog
+            onSend={() => {
+               console.log("Send email");
+            }}
             visible={showEmailDialog}
             onClose={() => setShowEmailDialog(false)}
             onConfirm={() => {
@@ -271,7 +276,7 @@ const detailquizz = () => {
 
          <Overlay
             onPress={closeBottomSheet}
-            visible={showBottomSheetMoreOptions || showBottomSheetSaveToLibrary}
+            visible={showBottomSheetMoreOptions || showBottomSheetSaveToLibrary || showEmailDialog}
          ></Overlay>
 
          {/* Bottom Sheet */}
@@ -315,12 +320,12 @@ const detailquizz = () => {
          >
             <Button
                text={"Chỉnh sửa"}
-               otherStyles={"m-2 flex-row"}
+               otherStyles={"m-2 flex-row p-4"}
                icon={<Entypo name="edit" size={16} color="white" />}
             ></Button>
             <Button
                text={"Xóa"}
-               otherStyles={"m-2 flex-row"}
+               otherStyles={"m-2 flex-row p-4"}
                icon={<MaterialIcons name="delete" size={16} color="white" />}
                onPress={() => {
                   setShowConfirmDialog(true);
@@ -328,16 +333,18 @@ const detailquizz = () => {
             ></Button>
             <Button
                text={"Chia sẻ bài kiểm tra"}
-               otherStyles={"m-2 flex-row"}
+               otherStyles={"m-2 flex-row p-4"}
                icon={<AntDesign name="sharealt" size={16} color="white" />}
                onPress={() => {
                   // closeBottomSheet();
                   setShowEmailDialog(true);
+                  setShowBottomSheetMoreOptions(false);
+                  setShowBottomSheetSaveToLibrary(false);
                }}
             ></Button>
             <Button
                text={"Lưu vào bộ sưu tập"}
-               otherStyles={"m-2 flex-row"}
+               otherStyles={"m-2 flex-row p-4"}
                icon={<Entypo name="save" size={16} color="white" />}
                onPress={() => {
                   closeBottomSheet();
