@@ -5,13 +5,11 @@ import { Alert, Text, TouchableOpacity } from 'react-native';
 import { useGlobalSearchParams } from 'expo-router';
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
-import ResultReview from './(result)/review';
 import AppProvider, { useAppProvider } from '@/contexts/AppProvider';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import SpinningIcon from '@/components/loadings/SpinningIcon';
 import Toast from 'react-native-toast-message';
-import Icon from "react-native-vector-icons/Ionicons";
 
 export default function AppRootLayout() {
 	const { userData, isLoading, fetchStatus, setTeacherStatus,setNotification,fetchNotification,setNumberOfUnreadNoti } =
@@ -111,6 +109,7 @@ export default function AppRootLayout() {
 				}}
 			/>
 
+
 			<Stack.Screen
 				name="(quiz)/overview"
 				options={{
@@ -148,27 +147,6 @@ export default function AppRootLayout() {
 				}}
 			/>
 
-			<Stack.Screen
-				name="(quiz)/detail_quiz"
-				options={{
-					headerTitle: 'Quay lại thư viện',
-					headerRight: () => {
-						return (
-							<View className="flex flex-row items-center justify-between">
-								<TouchableOpacity
-									onPress={openBottomSheetMoreOptions}
-								>
-									<Entypo
-										name="dots-three-vertical"
-										size={24}
-										color="black"
-									/>
-								</TouchableOpacity>
-							</View>
-						);
-					},
-				}}
-			/>
 
 			<Stack.Screen
 				name="(quiz)/create_title"

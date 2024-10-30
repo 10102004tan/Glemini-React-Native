@@ -1,424 +1,427 @@
 'use strict';
-import { Slot } from 'expo-router';
-import { createContext, useContext, useEffect, useState } from 'react';
+import {Slot} from 'expo-router';
+import {createContext, useContext, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Alert } from 'react-native';
+import {Alert} from 'react-native';
 
-import { API_URL, END_POINTS, API_VERSION } from '../configs/api.config';
+import {API_URL, END_POINTS, API_VERSION} from '../configs/api.config';
 import {registerForPushNotificationsAsync} from "@/helpers/notification";
 
 export const AuthContext = createContext();
-export const AuthProvider = ({ children }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [userData, setUserData] = useState(null);
-  const [teacherStatus, setTeacherStatus] = useState(null);
-  const [expoPushToken, setExpoPushToken] = useState(null);
-  const [notification, setNotification] = useState([]);
-  const [numberOfUnreadNoti,setNumberOfUnreadNoti] = useState(0);
-  const [skip, setSkip] = useState(0);
+export const AuthProvider = ({children}) => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [userData, setUserData] = useState(null);
+    const [teacherStatus, setTeacherStatus] = useState(null);
+    const [expoPushToken, setExpoPushToken] = useState(null);
+    const [notification, setNotification] = useState([]);
+    const [numberOfUnreadNoti, setNumberOfUnreadNoti] = useState(0);
+    const [skip, setSkip] = useState(0);
 
-  useEffect(() => {
-    fetchAccessToken();
-  }, []);
+    useEffect(() => {
+        fetchAccessToken();
+    }, []);
 
-  useEffect(()=>{
-    registerForPushNotificationsAsync()
-        .then(token => setExpoPushToken(token ?? ''))
-        .catch((error) => setExpoPushToken(`${error}`));
-  },[]);
+    useEffect(() => {
+        registerForPushNotificationsAsync()
+            .then(token => setExpoPushToken(token ?? ''))
+            .catch((error) => setExpoPushToken(`${error}`));
+    }, []);
 
-  // fetch access token from local storage
-  const fetchAccessToken = async () => {
-    const value = await AsyncStorage.getItem("userData");
-    setUserData(JSON.parse(value));
-    console.log(JSON.parse(value));
-    setIsLoading(false);
-  };
-
-  const signIn = async ({ email, password }) => {
-    email = email.trim();
-    password = password.trim();
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.LOGIN}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password,user_push_token:expoPushToken }),
-      }
-    );
-
-    const data = await response.json();
-    if (data.statusCode === 200) {
-       return await storeUserData(data);
-    }
-    throw new Error(data.message);
-  };
-  const signUp = async ({ email, password,fullname, type, images }) => {
-    // trim data
-    email = email.trim();
-    password = password.trim();
-    fullname = fullname.trim();
-
-    let formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
-    formData.append("fullname", fullname);
-    formData.append("type", type);
-    formData.append("expo_push_token",expoPushToken);
-    // if type = teacher => add image to form data
-    if (type === "teacher" && images.length > 0) {
-      images.forEach((image, index) => {
-        formData.append("images", {
-          uri: image.uri,
-          name: image.name,
-          type: `${image.type}/${image.name.split(".")[1]}`,
-        });
-      });
-    }
-
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.SIGN_UP}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        body: formData,
-      }
-    );
-    const data = await response.json();
-    if (data.statusCode === 200) {
-      return await storeUserData(data);
-    }
-    throw new Error(data.message);
-  };
-
-  const signOut = async () => {
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.LOGOUT}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `${userData.accessToken}`,
-          "x-client-id": userData._id,
-        },
-        body: JSON.stringify({ expo_push_token: expoPushToken })
-      }
-    );
-    const data = await response.json();
-    if (data.statusCode === 200) {
-      await AsyncStorage.removeItem("userData");
-      setUserData(null);
-      setTeacherStatus(null);
-    } else {
-      if (data.message === "expired") {
-        await processAccessTokenExpired();
-      } else {
-        await AsyncStorage.removeItem("userData");
-        setUserData(null);
-        setTeacherStatus(null);
-      }
-    }
-  };
-
-  const storeUserData = async (data) =>{
-    const {
-      tokens: { accessToken, refreshToken },
-      user: {
-        user_type,
-        user_fullname,
-        _id,
-        user_avatar,
-        user_email,
-        teacher_status,
-      },
-    } = data.metadata;
-    const dataStore = {
-      user_type,
-      user_fullname,
-      _id,
-      user_avatar,
-      accessToken,
-      refreshToken,
-      user_email,
+    // fetch access token from local storage
+    const fetchAccessToken = async () => {
+        const value = await AsyncStorage.getItem("userData");
+        setUserData(JSON.parse(value));
+        console.log(JSON.parse(value));
+        setIsLoading(false);
     };
-    await AsyncStorage.setItem("userData", JSON.stringify(dataStore));
-    setUserData(dataStore);
-    teacher_status && setTeacherStatus(teacher_status);
-    return data.message;
-  }
 
-  const changePassword = async ({ oldPassword, newPassword }) => {
-    if (!userData) return;
-    const { accessToken, _id: user_id } = userData;
-
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.CHANGE_PASSWORD}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `${accessToken}`,
-          "x-client-id": user_id,
-        },
-        body: JSON.stringify({ oldPassword, newPassword }),
-      }
-    );
-
-    const data = await response.json();
-
-    // if old password is incorrect
-    if (data.statusCode === 400) {
-        throw new Error(data.message);
-    }
-
-    // if access token expired
-    if (data.statusCode === 401) {
-      processAccessTokenExpired();
-      changePassword({ oldPassword, newPassword });
-    }
-
-    if (data.statusCode === 200) {
-      if (data.statusCode === 200) {
-        // update refresh token and access token
-        const {
-          tokens: { accessToken, refreshToken },
-        } = data.metadata;
-        const dataStore = { ...userData, accessToken, refreshToken };
-        await AsyncStorage.setItem("userData", JSON.stringify(dataStore));
-        setUserData(dataStore);
-        return data.message;
-      }
-    }
-  };
-
-  /**
-   * @description : Xu ly khi access token het han, su dung refresh token de lay access token moi
-   */
-  const processAccessTokenExpired = async () => {
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.REFRESH_TOKEN}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-refresh-token": `${userData.refreshToken}`,
-          "x-client-id": userData._id,
-        },
-      }
-    );
-
-    const data = await response.json();
-    if (data.statusCode === 200) {
-      const {
-        tokens: { accessToken, refreshToken },
-      } = data.metadata;
-      const dataStore = { ...userData, accessToken, refreshToken };
-      await AsyncStorage.setItem("userData", JSON.stringify(dataStore));
-      setUserData(dataStore);
-    }else{
-      await AsyncStorage.removeItem("userData");
-      setUserData(null);
-      Alert.alert("Session expired", "Please login again");
-    }
-  };
-
-  /**
-   * @description: Get status of user
-   *
-   */
-
-  // fetch get status when start app
-  const fetchStatus = async () => {
-    try {
-      const response = await fetch(
-          `${API_URL}${API_VERSION.V1}${END_POINTS.USER_STATUS}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              authorization: `${userData.accessToken}`,
-              "x-client-id": userData._id,
-            },
-          }
-      );
-      const data = await response.json();
-      const {
-        statusCode,
-        message,
-      } = data;
-
-      if (message === "expired" ) {
-        await processAccessTokenExpired();
-      }
-
-        if (statusCode === 200) {
-          const { teacher_status } = data.metadata;
-          teacher_status && setTeacherStatus(teacher_status);
-        }
-
-    }catch (e) {
-      console.log(e);
-    }
-  };
-
-  //fetch detail user
-  const fetchDetailUser = async () => {
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.PROFILE}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `${userData.accessToken}`,
-          "x-client-id": userData._id,
-        },
-      }
-    );
-    const data = await response.json();
-    const { statusCode, metadata } = data;
-    if (statusCode !== 200) return;
-    return metadata;
-  };
-
-  // fetch forgot password
-  const forgotPassword = async ({ email }) => {
+    const signIn = async ({email, password}) => {
         email = email.trim();
+        password = password.trim();
         const response = await fetch(
-        `${API_URL}${API_VERSION.V1}${END_POINTS.FORGOT_PASSWORD}`,
-        {
-            method: "POST",
-            headers: {
-            "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email }),
+            `${API_URL}${API_VERSION.V1}${END_POINTS.LOGIN}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({email, password, user_push_token: expoPushToken}),
+            }
+        );
+
+        const data = await response.json();
+        if (data.statusCode === 200) {
+            return await storeUserData(data);
         }
+        throw new Error(data.message);
+    };
+    const signUp = async ({email, password, fullname, type, images}) => {
+        // trim data
+        email = email.trim();
+        password = password.trim();
+        fullname = fullname.trim();
+
+        let formData = new FormData();
+        formData.append("email", email);
+        formData.append("password", password);
+        formData.append("fullname", fullname);
+        formData.append("type", type);
+        formData.append("expo_push_token", expoPushToken);
+        // if type = teacher => add image to form data
+        if (type === "teacher" && images.length > 0) {
+            images.forEach((image, index) => {
+                formData.append("images", {
+                    uri: image.uri,
+                    name: image.name,
+                    type: `${image.type}/${image.name.split(".")[1]}`,
+                });
+            });
+        }
+
+        const response = await fetch(
+            `${API_URL}${API_VERSION.V1}${END_POINTS.SIGN_UP}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+                body: formData,
+            }
         );
         const data = await response.json();
         if (data.statusCode === 200) {
-          return data.message;
+            return await storeUserData(data);
         }
         throw new Error(data.message);
     };
 
-  // fetch verify otp
-  const verifyOTP = async ({email,otp})=>{
-    email = email.trim();
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.VERIFY_OTP}`,{
-      method:'POST',
-        headers:{
-            'Content-Type':'application/json'
-        },
-        body:JSON.stringify({email,otp})
-    });
+    const signOut = async () => {
+        const response = await fetch(
+            `${API_URL}${API_VERSION.V1}${END_POINTS.LOGOUT}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    authorization: `${userData.accessToken}`,
+                    "x-client-id": userData._id,
+                },
+                body: JSON.stringify({expo_push_token: expoPushToken})
+            }
+        );
+        const data = await response.json();
+        if (data.statusCode === 200) {
+            await AsyncStorage.removeItem("userData");
+            setUserData(null);
+            setTeacherStatus(null);
+            setNotification([]);
+            setNumberOfUnreadNoti(0);
+            setSkip(0);
+        } else {
+            if (data.message === "expired") {
+                await processAccessTokenExpired();
+            } else {
+                await AsyncStorage.removeItem("userData");
+                setUserData(null);
+                setTeacherStatus(null);
+                setNotification([]);
+                setNumberOfUnreadNoti(0);
+                setSkip(0);
+            }
+        }
+    };
 
-    const data = await response.json();
-
-    if (data.statusCode === 200){
-      return data.message;
+    const storeUserData = async (data) => {
+        const {
+            tokens: {accessToken, refreshToken},
+            user: {
+                user_type,
+                user_fullname,
+                _id,
+                user_avatar,
+                user_email,
+                teacher_status,
+            },
+        } = data.metadata;
+        const dataStore = {
+            user_type,
+            user_fullname,
+            _id,
+            user_avatar,
+            accessToken,
+            refreshToken,
+            user_email,
+        };
+        await AsyncStorage.setItem("userData", JSON.stringify(dataStore));
+        setUserData(dataStore);
+        teacher_status && setTeacherStatus(teacher_status);
+        return data.message;
     }
-    throw new Error(data.message);
-  }
 
-  // fetch reset password
-  const resetPassword = async ({email,otp,password})=>{
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.RESET_PASSWORD}`,{
-      method:'POST',
-        headers:{
-            'Content-Type':'application/json'
-        },
-        body:JSON.stringify({email,otp,password})
-    });
+    const changePassword = async ({oldPassword, newPassword}) => {
+        if (!userData) return;
+        const {accessToken, _id: user_id} = userData;
 
-    const data = await response.json();
+        const response = await fetch(
+            `${API_URL}${API_VERSION.V1}${END_POINTS.CHANGE_PASSWORD}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    authorization: `${accessToken}`,
+                    "x-client-id": user_id,
+                },
+                body: JSON.stringify({oldPassword, newPassword}),
+            }
+        );
 
-    if (data.statusCode === 200){
-      return data.message;
-    }
-    throw new Error(data.message);
-  }
+        const data = await response.json();
 
-  const fetchNotification = async ({skip=0,limit=11}) => {
-    console.log('skip',skip);
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'authorization': `${userData.accessToken}`,
-        'x-client-id': `${userData._id}`
-      },
-        body: JSON.stringify({skip,limit})
-    });
-    const data = await response.json();
-    if (data.statusCode === 200) {
-      const {totalUnread,listNoti} = data.metadata;
-      setNumberOfUnreadNoti(totalUnread);
-      if (listNoti.length === 11) {
-        listNoti.pop();
-        setNotification((prev)=>{
-          return [...prev,...listNoti];
+        // if old password is incorrect
+        if (data.statusCode === 400) {
+            throw new Error(data.message);
+        }
+
+        // if access token expired
+        if (data.statusCode === 401) {
+            processAccessTokenExpired();
+            changePassword({oldPassword, newPassword});
+        }
+
+        if (data.statusCode === 200) {
+            if (data.statusCode === 200) {
+                // update refresh token and access token
+                const {
+                    tokens: {accessToken, refreshToken},
+                } = data.metadata;
+                const dataStore = {...userData, accessToken, refreshToken};
+                await AsyncStorage.setItem("userData", JSON.stringify(dataStore));
+                setUserData(dataStore);
+                return data.message;
+            }
+        }
+    };
+
+    /**
+     * @description : Xu ly khi access token het han, su dung refresh token de lay access token moi
+     */
+    const processAccessTokenExpired = async () => {
+        const response = await fetch(
+            `${API_URL}${API_VERSION.V1}${END_POINTS.REFRESH_TOKEN}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-refresh-token": `${userData.refreshToken}`,
+                    "x-client-id": userData._id,
+                },
+            }
+        );
+
+        const data = await response.json();
+        if (data.statusCode === 200) {
+            const {
+                tokens: {accessToken, refreshToken},
+            } = data.metadata;
+            const dataStore = {...userData, accessToken, refreshToken};
+            await AsyncStorage.setItem("userData", JSON.stringify(dataStore));
+            setUserData(dataStore);
+        } else {
+            await AsyncStorage.removeItem("userData");
+            setUserData(null);
+            Alert.alert("Session expired", "Please login again");
+        }
+    };
+
+    /**
+     * @description: Get status of user
+     *
+     */
+
+        // fetch get status when start app
+    const fetchStatus = async () => {
+            try {
+                const response = await fetch(
+                    `${API_URL}${API_VERSION.V1}${END_POINTS.USER_STATUS}`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            authorization: `${userData.accessToken}`,
+                            "x-client-id": userData._id,
+                        },
+                    }
+                );
+                const data = await response.json();
+                const {
+                    statusCode,
+                    message,
+                } = data;
+
+                if (message === "expired") {
+                    await processAccessTokenExpired();
+                }
+
+                if (statusCode === 200) {
+                    const {teacher_status} = data.metadata;
+                    teacher_status && setTeacherStatus(teacher_status);
+                }
+
+            } catch (e) {
+                console.log(e);
+            }
+        };
+
+    //fetch detail user
+    const fetchDetailUser = async () => {
+        const response = await fetch(
+            `${API_URL}${API_VERSION.V1}${END_POINTS.PROFILE}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    authorization: `${userData.accessToken}`,
+                    "x-client-id": userData._id,
+                },
+            }
+        );
+        const data = await response.json();
+        const {statusCode, metadata} = data;
+        if (statusCode !== 200) return;
+        return metadata;
+    };
+
+    // fetch forgot password
+    const forgotPassword = async ({email}) => {
+        email = email.trim();
+        const response = await fetch(
+            `${API_URL}${API_VERSION.V1}${END_POINTS.FORGOT_PASSWORD}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({email}),
+            }
+        );
+        const data = await response.json();
+        if (data.statusCode === 200) {
+            return data.message;
+        }
+        throw new Error(data.message);
+    };
+
+    // fetch verify otp
+    const verifyOTP = async ({email, otp}) => {
+        email = email.trim();
+        const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.VERIFY_OTP}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({email, otp})
         });
-      }
-      else if (listNoti.length < 11){
-        setNotification((prev)=>{
-          return [...prev,...listNoti];
-        });
-        return -1;
-      }
+
+        const data = await response.json();
+
+        if (data.statusCode === 200) {
+            return data.message;
+        }
+        throw new Error(data.message);
     }
-  }
 
+    // fetch reset password
+    const resetPassword = async ({email, otp, password}) => {
+        const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.RESET_PASSWORD}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({email, otp, password})
+        });
 
-  const updateNotificationStatus = async ({notiId,status="read"}) =>{
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.UPDATE_NOTIFICATION_STATUS}`,{
-        method:'PUT',
-        headers:{
-            'Content-Type':'application/json',
-            'authorization':`${userData.accessToken}`,
-            'x-client-id':`${userData._id}`,
-        },
-        body:JSON.stringify({notiId,status})
-    });
-    const data = await response.json();
-    return data.statusCode;
-  }
+        const data = await response.json();
 
-	return (
-		<AuthContext.Provider
-			value={{
-				signIn,
-				signUp,
-				signOut,
-				isLoading,
-				setUserData,
-				userData,
-				changePassword,
-				processAccessTokenExpired,
-				fetchStatus,
-				teacherStatus,
-				fetchDetailUser,
-				setTeacherStatus,
-				forgotPassword,
-				verifyOTP,
-				resetPassword,
-              notification,
-              setNotification,
-              fetchNotification,
-              updateNotificationStatus,
-              numberOfUnreadNoti,
-              setNumberOfUnreadNoti,
-              skip,
-              setSkip
-			}}
-		>
-			{children}
-		</AuthContext.Provider>
-	);
+        if (data.statusCode === 200) {
+            return data.message;
+        }
+        throw new Error(data.message);
+    }
+
+    const fetchNotification = async ({skip = 0, limit = 11}) => {
+        const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': `${userData.accessToken}`,
+                'x-client-id': `${userData._id}`
+            },
+            body: JSON.stringify({skip, limit})
+        });
+        const data = await response.json();
+        if (data.statusCode === 200) {
+            const {totalUnread, listNoti} = data.metadata;
+            setNumberOfUnreadNoti(totalUnread);
+            if (listNoti.length === 11) {
+                listNoti.pop();
+                setNotification((prev) => {
+                    return [...prev, ...listNoti];
+                });
+            } else if (listNoti.length < 11) {
+                setNotification((prev) => {
+                    return [...prev, ...listNoti];
+                });
+                return -1;
+            }
+        }
+    }
+
+    const updateNotificationStatus = async ({notiId, status = "read"}) => {
+        const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.UPDATE_NOTIFICATION_STATUS}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': `${userData.accessToken}`,
+                'x-client-id': `${userData._id}`,
+            },
+            body: JSON.stringify({notiId, status})
+        });
+        const data = await response.json();
+        return data.statusCode;
+    }
+
+    return (
+        <AuthContext.Provider
+            value={{
+                signIn,
+                signUp,
+                signOut,
+                isLoading,
+                setUserData,
+                userData,
+                changePassword,
+                processAccessTokenExpired,
+                fetchStatus,
+                teacherStatus,
+                fetchDetailUser,
+                setTeacherStatus,
+                forgotPassword,
+                verifyOTP,
+                resetPassword,
+                notification,
+                setNotification,
+                fetchNotification,
+                updateNotificationStatus,
+                numberOfUnreadNoti,
+                setNumberOfUnreadNoti,
+                skip,
+                setSkip
+            }}
+        >
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export const useAuthContext = () => {
-	return useContext(AuthContext);
+    return useContext(AuthContext);
 };

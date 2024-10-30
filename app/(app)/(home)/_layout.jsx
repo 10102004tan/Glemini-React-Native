@@ -6,11 +6,12 @@ import {Alert, Text, TouchableOpacity, View} from "react-native";
 import { useAppProvider } from "@/contexts/AppProvider";
 import { AuthContext } from "@/contexts/AuthContext";
 import {Ionicons} from "@expo/vector-icons";
+import NotificationIcon from "@/components/customs/NotificationIcon";
 
 export default function TabLayout() {
   const { isHiddenNavigationBar, i18n } = useAppProvider();
   const {
-    userData: { user_type },
+    userData: { user_type },numberOfUnreadNoti
   } = useContext(AuthContext);
   return (
     <Tabs
@@ -79,6 +80,7 @@ export default function TabLayout() {
           ),
         }}
       />
+
 
       <Tabs.Screen
         name="report"
