@@ -434,7 +434,15 @@ const QuizzOverViewScreen = () => {
                      wrapperStyles="w-full"
                      label={'Tên'}
                      value={quizName}
-                     onChange={(text) => setQuizName(text)}
+                     onChange={(text) => {
+                        if (text.length <= 100) {
+                           setQuizName(text);
+                        } else {
+                           setAlertMessage('Tên bộ quiz không được quá 200 ký tự');
+                           setConfirmFn('close');
+                           setShowConfirmDialog(true);
+                        }
+                     }}
                      placeholder={'Nhập tên của bộ Quiz'}
                   />
                </View>
@@ -443,7 +451,17 @@ const QuizzOverViewScreen = () => {
                      wrapperStyles="w-full"
                      label={'Mô tả'}
                      value={quizDescription}
-                     onChange={(text) => setQuizDescription(text)}
+                     onChange={(text) => {
+                        if (text.length <= 200) {
+                           setQuizDescription(text);
+                        } else {
+                           setAlertMessage(
+                              'Mô tả bộ quiz không được quá 200 ký tự'
+                           );
+                           setConfirmFn('close');
+                           setShowConfirmDialog(true);
+                        }
+                     }}
                      placeholder={'Thêm mô tả cho bộ quiz này'}
                   />
                </View>
@@ -570,8 +588,8 @@ const QuizzOverViewScreen = () => {
                   {/* Quiz infor */}
                   <View className="mt-4 p-4">
                      <View className="flex items-center justify-between flex-row">
-                        <View>
-                           <Text className="text-lg">
+                        <View className="max-w-[300px]">
+                           <Text className="text-lg font-semibold">
                               {quizName || 'Tên bộ quiz'}
                            </Text>
                            <Text className="text-gray max-w-[300px]">

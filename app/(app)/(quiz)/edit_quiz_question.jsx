@@ -72,7 +72,6 @@ const EditQuizQuestion = () => {
 
    // Lấy thông tin của câu hỏi hiện tại
    const getCurrentUpdateQuestion = async () => {
-      console.log("RUNNING")
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUESTION_DETAIL}`,
          {
@@ -131,7 +130,9 @@ const EditQuizQuestion = () => {
             }
          />
          {/* Bottom Sheet Point */}
-         <BottomSheet visible={pointBotttomSheetVisible}>
+         <BottomSheet visible={pointBotttomSheetVisible} onClose={() => {
+            setPointBotttomSheetVisible(false)
+         }}>
             <View className="flex flex-col items-start justify-start">
                <Text className="font-semibold text-gray">
                   Chọn số điểm
@@ -142,7 +143,7 @@ const EditQuizQuestion = () => {
                         return (
                            <TouchableOpacity
                               key={index}
-                              className="flex flex-row items-center justify-start p-2 mb-2 rounded-xl bg-overlay"
+                              className="flex flex-row items-center justify-start p-3 mb-2 rounded-xl bg-overlay"
                               onPress={() => {
                                  setSelectedPoint(point);
                                  updateQuestionPoint(point);
@@ -160,7 +161,9 @@ const EditQuizQuestion = () => {
             </View>
          </BottomSheet>
          {/* Bottom Sheet Time */}
-         <BottomSheet visible={timeBotttomSheetVisible}>
+         <BottomSheet visible={timeBotttomSheetVisible} onClose={() => {
+            setTimeBotttomSheetVisible(false)
+         }}>
             <View className="flex flex-col items-start justify-start">
                <Text className="font-semibold text-gray">
                   Chọn thời gian
@@ -171,7 +174,7 @@ const EditQuizQuestion = () => {
                         return (
                            <TouchableOpacity
                               key={index}
-                              className="flex flex-row items-center justify-start p-2 mb-2 rounded-xl bg-overlay"
+                              className="flex flex-row items-center justify-start p-3 mb-2 rounded-xl bg-overlay"
                               onPress={() => {
                                  setSelectedTime(time);
                                  updateQuestionTime(time);
@@ -357,7 +360,7 @@ const EditQuizQuestion = () => {
                textStyles={'text-center'}
             />
          </View>
-      </Wrapper>
+      </Wrapper >
    );
 };
 
