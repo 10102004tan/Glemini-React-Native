@@ -24,6 +24,7 @@ import { collectionData } from "@/utils/index.js";
 import Checkbox from "@/components/customs/Checkbox.jsx";
 import CardQuiz from "@/components/customs/CardQuiz.jsx";
 import EmailDialog from "@/components/dialogs/EmailDialog.jsx";
+import { useQuestionProvider } from "@/contexts/QuestionProvider.jsx";
 
 
 const detailquizz = () => {
@@ -42,8 +43,9 @@ const detailquizz = () => {
 
    // Lấy dữ liệu name, description, thumb đưa vào ô thông tin
    const { quizzes, setQuizzes } = useQuizProvider();
-   const { deleteQuiz, questionFetching, setQuestionFetching } =
+   const { deleteQuiz, } =
       useQuizProvider();
+   const [questionFetching, setQuestionFetching] = useState(false);
 
    const { id } = useGlobalSearchParams();
 
@@ -75,6 +77,7 @@ const detailquizz = () => {
 
    // Lấy thông tin của quiz hiện tại
    const fetchQuiz = async () => {
+      // console.log("QUIZ_IN_DETAIL_REQUEST");
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`,
          {
@@ -209,6 +212,7 @@ const detailquizz = () => {
       }
    };
    useEffect(() => {
+      // console.log("COLLECTIONS")
       getAllCollections();
    }, []);
 
@@ -219,11 +223,12 @@ const detailquizz = () => {
    }, [selectedCollection]);
 
    useEffect(() => {
+      // console.log("RUNNING")
       if (id) {
          fetchQuiz();
          fetchQuestions();
       }
-   }, []);
+   }, [id]);
 
    //Dropdown
    const nameSchool = [
