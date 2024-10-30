@@ -83,7 +83,7 @@ const TeacherView = () => {
                 otherStyles='mx-auto my-5 bg-[#fab1a0]'
                 textStyles='text-base text-black'
                 text={i18n.t('classroom.teacher.btnAddClass')}
-                icon={<Icon className='text-lg' name='add-circle-outline' />}
+                icon={<Icon className='text-lg' name='add-circle-outline' size={18} />}
             />
 
             <FlatList

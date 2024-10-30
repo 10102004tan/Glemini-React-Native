@@ -5,7 +5,7 @@ import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import {Alert, Text, TouchableOpacity, View} from "react-native";
 import { useAppProvider } from "@/contexts/AppProvider";
 import { AuthContext } from "@/contexts/AuthContext";
-import {Ionicons} from "@expo/vector-icons";
+import {Feather} from "@expo/vector-icons/Feather";
 
 export default function TabLayout() {
   const { isHiddenNavigationBar, i18n } = useAppProvider();
@@ -92,6 +92,26 @@ export default function TabLayout() {
           ),
           tabBarButton: (props) => {
             if (user_type === "student") {
+              return null;
+            } else {
+              return <TouchableOpacity {...props} />;
+            }
+          },
+        }}
+      />
+
+<Tabs.Screen
+        name="activity"
+        options={{
+          title: '',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "analytics-sharp" : "analytics-outline"}
+              color={color}
+            />
+          ),
+          tabBarButton: (props) => {
+            if (user_type === "teacher") {
               return null;
             } else {
               return <TouchableOpacity {...props} />;
