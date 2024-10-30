@@ -97,6 +97,8 @@ const EditQuizQuestion = () => {
    useEffect(() => {
       if (actionQuizType === 'edit') {
          getCurrentUpdateQuestion();
+      } else {
+         setLoading(false);
       }
    }, []);
 
