@@ -8,16 +8,19 @@ import { View } from 'react-native';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import SpinningIcon from '@/components/loadings/SpinningIcon';
-import Toast from 'react-native-toast-message';
+import Toast from 'react-native-toast-message-custom';
+import Icon from "react-native-vector-icons/Ionicons";
 
 export default function AppRootLayout() {
-   const { userData, isLoading, fetchStatus, setTeacherStatus } =
+   const { userData, isLoading, fetchStatus, setTeacherStatus, setNotification } =
       useContext(AuthContext);
    const { isSave, setIsSave } = useQuizProvider();
    const { i18n, socket } = useAppProvider();
    const { title } = useGlobalSearchParams();
    const {
       openBottomSheetMoreOptions,
+      openBottomSheetSaveToLibrary,
+      closeBottomSheet,
    } = useAppProvider();
 
    useEffect(() => {
@@ -37,6 +40,13 @@ export default function AppRootLayout() {
                }
             }
          );
+
+         socket.on(`notification${userData._id}`, (noti) => {
+            console.log(`TEST`, noti);
+            setNotification((prev) => {
+               return [noti, ...prev];
+            });
+         })
       }
    }, [userData]);
 
@@ -53,16 +63,16 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(home)"
             options={{
-               headerShown: false,
+               headerShown: false
             }}
          />
-
          <Stack.Screen
             name="profile"
             options={{
                headerTitle: i18n.t('profile.title'),
             }}
          />
+
 
          <Stack.Screen
             name="change-password"
@@ -181,8 +191,23 @@ export default function AppRootLayout() {
             }}
          />
 
+
          <Stack.Screen
-            name="(play)/single"
+            name="(classroom)/teacher_detail"
+            options={{
+               headerTitle: "Chi tiết lớp học",
+            }}
+         />
+
+         <Stack.Screen
+            name="(classroom)/student_detail"
+            options={{
+               headerShown: false,
+            }}
+         />
+
+         <Stack.Screen
+            name="(classroom)/upload_excel"
             options={{
                headerShown: false,
             }}

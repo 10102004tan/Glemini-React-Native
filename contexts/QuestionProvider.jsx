@@ -104,7 +104,7 @@ const QuestionProvider = ({ children }) => {
 
       if (data) {
          router.replace({
-            pathname: '/(app)/(quiz)/overview/',
+            pathname: '/(app)/(quiz)/overview',
             params: { id: quizId },
          });
       }

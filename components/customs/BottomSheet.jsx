@@ -42,7 +42,7 @@ const BottomSheet = ({ children, visible = false, onClose = () => { } }) => {
                onClose();
             }}
          >
-            <AntDesign name="downcircleo" size={20} color="gray" />
+            <AntDesign name="close" size={20} color="black" />
          </TouchableOpacity>
          {visible && children}
       </Animated.View>

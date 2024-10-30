@@ -8,7 +8,7 @@ import CardSetting from '@/components/customs/CardSetting';
 import { useAppProvider } from '@/contexts/AppProvider';
 import PROFCODE from "../../utils/ProfCode";
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
-import Toast from "react-native-toast-message";
+import Toast from "react-native-toast-message-custom";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LottieView from "lottie-react-native";
 import CustomButton from "@/components/customs/CustomButton";

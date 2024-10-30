@@ -1,10 +1,11 @@
-import { Link, Redirect, Tabs } from "expo-router";
+import { Link, Redirect, router, Tabs } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
-import { TouchableOpacity } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { useAppProvider } from "@/contexts/AppProvider";
 import { AuthContext } from "@/contexts/AuthContext";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function TabLayout() {
    const { isHiddenNavigationBar, i18n } = useAppProvider();
@@ -35,20 +36,20 @@ export default function TabLayout() {
          <Tabs.Screen
             name='index'
             options={{
+               title: "Home",
                headerShown: false,
                tabBarIcon: ({ color, focused }) => (
                   <TabBarIcon
                      name={focused ? "home" : "home-outline"}
                      color={color}
                   />
-               ),
+               )
             }}
          />
 
 
          <Tabs.Screen
             name="libraly"
-
             options={{
                headerShown: false,
                title: i18n.t("library.title"),
@@ -82,29 +83,9 @@ export default function TabLayout() {
          />
 
          <Tabs.Screen
-            name="report"
-            options={{
-               title: i18n.t("report.title"),
-               tabBarIcon: ({ color, focused }) => (
-                  <TabBarIcon
-                     name={focused ? "document-sharp" : "document-outline"}
-                     color={color}
-                  />
-               ),
-               tabBarButton: (props) => {
-                  if (user_type === "student") {
-                     return null;
-                  } else {
-                     return <TouchableOpacity {...props} />;
-                  }
-               },
-            }}
-         />
-
-         <Tabs.Screen
             name="classroom"
             options={{
-               title: i18n.t('classes.title'),
+               title: i18n.t('classroom.title'),
                tabBarIcon: ({ color, focused }) => (
                   <TabBarIcon
                      name={focused ? 'school' : 'school-outline'}

@@ -4,7 +4,7 @@ import Button from '../../../components/customs/Button';
 import ResultSingle from '../(result)/single';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useAppProvider } from '@/contexts/AppProvider';
-import Toast from 'react-native-toast-message';
+import Toast from 'react-native-toast-message-custom';
 import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
 import RenderHTML from 'react-native-render-html';
 import { Audio } from 'expo-av';
@@ -255,6 +255,7 @@ const SinglePlay = () => {
 						showsVerticalScrollIndicator={false}
 					>
 						<RenderHTML
+							defaultViewProps={{}}
 							defaultTextProps={{
 								style: {
 									color: 'white',
@@ -264,7 +265,7 @@ const SinglePlay = () => {
 							}}
 							contentWidth={width}
 							source={{
-								html: questions[currentQuestionIndex]?.question_excerpt,
+								html: questions[currentQuestionIndex]?.question_excerpt || ''
 							}}
 						/>
 					</ScrollView>

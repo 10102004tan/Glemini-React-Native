@@ -23,8 +23,12 @@ import ConfirmDialog from "@/components/dialogs/ConfirmDialog.jsx";
 import { collectionData } from "@/utils/index.js";
 import Checkbox from "@/components/customs/Checkbox.jsx";
 import CardQuiz from "@/components/customs/CardQuiz.jsx";
+import EmailDialog from "@/components/dialogs/EmailDialog.jsx";
+
 
 const detailquizz = () => {
+   // biến cho dialog email
+   const [showEmailDialog, setShowEmailDialog] = useState(false);
    // tạo biến để lưu quiz vào bộ sưu tập
    const [addNameToCollection, setAddNameToCollection] = useState("");
 
@@ -35,12 +39,6 @@ const detailquizz = () => {
 
    // dialog xác nhận để xóa
    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-
-   // checkbox của tên bộ sưu tập
-   // const [isChecked, setIsChecked] = useState(false);
-   // const handleCheckboxToggle = () => {
-   //   setIsChecked(!isChecked);
-   // };
 
    // Lấy dữ liệu name, description, thumb đưa vào ô thông tin
    const { quizzes, setQuizzes } = useQuizProvider();
@@ -248,6 +246,16 @@ const detailquizz = () => {
 
    return (
       <Wrapper>
+         <EmailDialog
+            visible={showEmailDialog}
+            onClose={() => setShowEmailDialog(false)}
+            onConfirm={() => {
+               closeBottomSheet();
+               setShowEmailDialog(false);
+            }}
+            message={"Bạn chắc chắn muốn chia sẻ câu hỏi này?"}
+         />
+
          <ConfirmDialog
             title={"Chờ đã"}
             visible={showConfirmDialog}
@@ -260,8 +268,6 @@ const detailquizz = () => {
             }}
             message={"Bạn chắc chắn muốn xóa bộ câu hỏi này?"}
          />
-
-         {/* Overlay */}
 
          <Overlay
             onPress={closeBottomSheet}
@@ -302,45 +308,71 @@ const detailquizz = () => {
             ></Button>
          </BottomSheet>
 
-         {/* BottomSheet lưu vào bộ sưu tập */}
+         {/* Bottom Sheet */}
          <BottomSheet
-            visible={showBottomSheetSaveToLibrary}
+            visible={showBottomSheetMoreOptions}
             onClose={closeBottomSheet}
          >
-            <View className="m-2">
-               <Text className="flex text-center text-[18px] text-gray">
-                  Lưu vào bộ sưu tập
-               </Text>
-               <View className="w-full h-[1px] bg-gray my-2"></View>
-
-               <View className="w-full">
-                  <View>
-                     {collections.length > 0 &&
-                        collections.map((collection) => {
-                           return (
-                              <View key={collection.key} className="flex-row mb-2">
-                                 <Checkbox
-                                    isChecked={collection.quizzes.some(
-                                       (quiz_id) => quiz_id === id
-                                    )}
-                                    onToggle={() => {
-                                       if (
-                                          collection.quizzes.some((quiz_id) => quiz_id === id)
-                                       ) {
-                                          deleteQuizInCollection(collection.key);
-                                       } else {
-                                          addQuizToCollection(collection.key);
-                                       }
-                                    }}
-                                 />
-                                 <Text>{collection.value}</Text>
-                              </View>
-                           );
-                        })}
-                  </View>
-               </View>
-            </View>
+            <Button
+               text={"Chỉnh sửa"}
+               otherStyles={"m-2 flex-row"}
+               icon={<Entypo name="edit" size={16} color="white" />}
+            ></Button>
+            <Button
+               text={"Xóa"}
+               otherStyles={"m-2 flex-row"}
+               icon={<MaterialIcons name="delete" size={16} color="white" />}
+               onPress={() => {
+                  setShowConfirmDialog(true);
+               }}
+            ></Button>
+            <Button
+               text={"Chia sẻ bài kiểm tra"}
+               otherStyles={"m-2 flex-row"}
+               icon={<AntDesign name="sharealt" size={16} color="white" />}
+               onPress={() => {
+                  // closeBottomSheet();
+                  setShowEmailDialog(true);
+               }}
+            ></Button>
+            <Button
+               text={"Lưu vào bộ sưu tập"}
+               otherStyles={"m-2 flex-row"}
+               icon={<Entypo name="save" size={16} color="white" />}
+               onPress={() => {
+                  closeBottomSheet();
+                  openBottomSheetSaveToLibrary();
+               }}
+            ></Button>
          </BottomSheet>
+
+         <View className="w-full">
+            <View>
+               {collections.length > 0 &&
+                  collections.map((collection) => {
+                     return (
+                        <View key={collection.key} className="flex-row mb-2">
+                           <Checkbox
+                              isChecked={collection.quizzes.some(
+                                 (quiz_id) => quiz_id === id
+                              )}
+                              onToggle={() => {
+                                 if (
+                                    collection.quizzes.some((quiz_id) => quiz_id === id)
+                                 ) {
+                                    deleteQuizInCollection(collection.key);
+                                 } else {
+                                    addQuizToCollection(collection.key);
+                                 }
+                              }}
+                           />
+                           <Text>{collection.value}</Text>
+                        </View>
+                     );
+                  })}
+            </View>
+         </View>
+
          <ScrollView>
             <View className="flex mb-4 mx-4">
                <View className="w-full rounded-xl mt-4 flex-col">
@@ -387,9 +419,8 @@ const detailquizz = () => {
                   </View>
                )}
             </View>
-
-
          </ScrollView>
+
          <View className="w-full h-[1px] bg-gray"></View>
          <View className="p-2 flex justify-center">
             <Button
@@ -398,7 +429,8 @@ const detailquizz = () => {
                textStyles={"text-center"}
             ></Button>
          </View>
-      </Wrapper>
+
+      </Wrapper >
    );
 };
 
