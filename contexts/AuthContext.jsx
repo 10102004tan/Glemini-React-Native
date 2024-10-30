@@ -14,6 +14,8 @@ export const AuthProvider = ({ children }) => {
   const [teacherStatus, setTeacherStatus] = useState(null);
   const [expoPushToken, setExpoPushToken] = useState(null);
   const [notification, setNotification] = useState([]);
+  const [numberOfUnreadNoti,setNumberOfUnreadNoti] = useState(0);
+  const [skip, setSkip] = useState(0);
 
   useEffect(() => {
     fetchAccessToken();
@@ -217,9 +219,7 @@ export const AuthProvider = ({ children }) => {
       const dataStore = { ...userData, accessToken, refreshToken };
       await AsyncStorage.setItem("userData", JSON.stringify(dataStore));
       setUserData(dataStore);
-    }
-
-    if (data.message === "expired") {
+    }else{
       await AsyncStorage.removeItem("userData");
       setUserData(null);
       Alert.alert("Session expired", "Please login again");
@@ -233,39 +233,36 @@ export const AuthProvider = ({ children }) => {
 
   // fetch get status when start app
   const fetchStatus = async () => {
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.USER_STATUS}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `${userData.accessToken}`,
-          "x-client-id": userData._id,
-        },
-      }
-    );
-    const data = await response.json();
-    const {
-      statusCode,
-      metadata: { user_status, teacher_status },
-    } = data;
-    if (statusCode !== 200) return;
-    if (user_status !== "active") {
-      Alert.alert(
-        "Account status",
-        "Your account is inactive, please contact admin",
-        [
+    try {
+      const response = await fetch(
+          `${API_URL}${API_VERSION.V1}${END_POINTS.USER_STATUS}`,
           {
-            text: "Thoát",
-            onPress: async () => {
-              await signOut();
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `${userData.accessToken}`,
+              "x-client-id": userData._id,
             },
-          },
-        ]
+          }
       );
+      const data = await response.json();
+      const {
+        statusCode,
+        message,
+      } = data;
+
+      if (message === "expired" ) {
+        await processAccessTokenExpired();
+      }
+
+        if (statusCode === 200) {
+          const { teacher_status } = data.metadata;
+          teacher_status && setTeacherStatus(teacher_status);
+        }
+
+    }catch (e) {
+      console.log(e);
     }
-    // set teacher status
-    teacher_status && setTeacherStatus(teacher_status);
   };
 
   //fetch detail user
@@ -344,18 +341,33 @@ export const AuthProvider = ({ children }) => {
     throw new Error(data.message);
   }
 
-  const fetchNotification = async () => {
+  const fetchNotification = async ({skip=0,limit=11}) => {
+    console.log('skip',skip);
     const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'authorization': `${userData.accessToken}`,
         'x-client-id': `${userData._id}`
-      }
+      },
+        body: JSON.stringify({skip,limit})
     });
     const data = await response.json();
     if (data.statusCode === 200) {
-      setNotification(data.metadata);
+      const {totalUnread,listNoti} = data.metadata;
+      setNumberOfUnreadNoti(totalUnread);
+      if (listNoti.length === 11) {
+        listNoti.pop();
+        setNotification((prev)=>{
+          return [...prev,...listNoti];
+        });
+      }
+      else if (listNoti.length < 11){
+        setNotification((prev)=>{
+          return [...prev,...listNoti];
+        });
+        return -1;
+      }
     }
   }
 
@@ -395,7 +407,11 @@ export const AuthProvider = ({ children }) => {
               notification,
               setNotification,
               fetchNotification,
-              updateNotificationStatus
+              updateNotificationStatus,
+              numberOfUnreadNoti,
+              setNumberOfUnreadNoti,
+              skip,
+              setSkip
 			}}
 		>
 			{children}

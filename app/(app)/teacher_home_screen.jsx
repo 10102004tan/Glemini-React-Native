@@ -14,9 +14,10 @@ import LockFeature from '@/components/customs/LockFeature';
 import { AuthContext } from '@/contexts/AuthContext';
 import QuizzCreateAction from '../../components/customs/QuizCreateAction';
 import { useQuizProvider } from '@/contexts/QuizProvider';
+import NotificationIcon from "@/components/customs/NotificationIcon";
 
 const TeacherHomeScreen = () => {
-	const { teacherStatus,userData:{user_fullname,user_avatar,user_email} } = useContext(AuthContext);
+	const { teacherStatus,userData:{user_fullname,user_avatar,user_email},numberOfUnreadNoti } = useContext(AuthContext);
 	const { setIsHiddenNavigationBar } = useAppProvider();
 	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
 	const { setActionQuizType } = useQuizProvider();
@@ -134,16 +135,7 @@ const TeacherHomeScreen = () => {
 						</View>
 
 				</View>
-					<TouchableOpacity onPress={()=>{
-						router.push({
-							pathname:'(app)/notification',
-						})
-					}}>
-						<View className={"mr-2"}>
-							<Text className={'text-center absolute z-50 right-0 top-0 h-[18px] w-[18px] rounded-full text-white bg-red-600 text-[12px]'}>9+</Text>
-							<Ionicons size={32} color={"white"} name={'notifications-outline'}/>
-						</View>
-					</TouchableOpacity>
+						<NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti}/>
 				</View>
 
 				{/* Search */}
