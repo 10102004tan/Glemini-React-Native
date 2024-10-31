@@ -12,9 +12,9 @@ const Wrapper = ({ children, className, statusTheme = 'dark-content' }) => {
          <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={{ flex: 1 }}>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-               <View className={`flex-1 ${className}`}>{children}</View>
-            </TouchableWithoutFeedback>
+            {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss}> */}
+            <View className={`flex-1 ${className}`}>{children}</View>
+            {/* </TouchableWithoutFeedback> */}
          </KeyboardAvoidingView>
          <StatusBar barStyle={statusTheme} />
       </SafeAreaView>

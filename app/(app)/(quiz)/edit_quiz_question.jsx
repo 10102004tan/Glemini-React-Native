@@ -18,9 +18,11 @@ import { useGlobalSearchParams } from 'expo-router';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useAuthContext } from '@/contexts/AuthContext';
 import QuestionEditScreenSkeleton from '../../../components/loadings/QuestionEditScreenSkeleton';
+import { useAppProvider } from '@/contexts/AppProvider';
 const MAX_ANSWER = 8;
 
 const EditQuizQuestion = () => {
+   const { i18n } = useAppProvider();
    const [pointBotttomSheetVisible, setPointBotttomSheetVisible] =
       useState(false); // bottom sheet để chọn số điểm
    const [timeBotttomSheetVisible, setTimeBotttomSheetVisible] =
@@ -84,7 +86,9 @@ const EditQuizQuestion = () => {
             body: JSON.stringify({ question_id: questionId }),
          }
       );
+
       const data = await response.json();
+
       if (data.statusCode === 200) {
          setQuestion(data.metadata);
          setLoading(false);
@@ -137,7 +141,7 @@ const EditQuizQuestion = () => {
          }}>
             <View className="flex flex-col items-start justify-start">
                <Text className="font-semibold text-gray">
-                  Chọn số điểm
+                  {i18n.t('edit_quiz_screen.choosePoint')}
                </Text>
                <View className="flex items-center justify-start flex-row mt-4">
                   <ScrollView>
@@ -153,7 +157,7 @@ const EditQuizQuestion = () => {
                               }}
                            >
                               <Text className="ml-2">
-                                 {point} điểm
+                                 {point} {i18n.t('edit_quiz_screen.point')}
                               </Text>
                            </TouchableOpacity>
                         );
@@ -168,7 +172,7 @@ const EditQuizQuestion = () => {
          }}>
             <View className="flex flex-col items-start justify-start">
                <Text className="font-semibold text-gray">
-                  Chọn thời gian
+                  {i18n.t('edit_quiz_screen.chooseTime')}
                </Text>
                <View className="flex items-center justify-start flex-row mt-4">
                   <ScrollView>
@@ -184,7 +188,7 @@ const EditQuizQuestion = () => {
                               }}
                            >
                               <Text className="ml-2">
-                                 {time} giây
+                                 {time} {i18n.t('edit_quiz_screen.second')}
                               </Text>
                            </TouchableOpacity>
                         );
@@ -213,7 +217,7 @@ const EditQuizQuestion = () => {
                   setTimeBotttomSheetVisible(true);
                }}
             >
-               <Text className="mr-2">{selectedTime} giây</Text>
+               <Text className="mr-2">{selectedTime} {i18n.t('edit_quiz_screen.second')}</Text>
                <Entypo name="time-slot" size={15} color="black" />
             </TouchableOpacity>
             <TouchableOpacity
@@ -222,7 +226,7 @@ const EditQuizQuestion = () => {
                   setPointBotttomSheetVisible(true);
                }}
             >
-               <Text className="mr-2">{selectedPoint} điểm</Text>
+               <Text className="mr-2">{selectedPoint} {i18n.t('edit_quiz_screen.point')}</Text>
                <AntDesign name="checkcircleo" size={15} color="black" />
             </TouchableOpacity>
          </View>
@@ -248,7 +252,7 @@ const EditQuizQuestion = () => {
                         source={{
                            html:
                               question.question_excerpt === ''
-                                 ? '<div>Nội dung câu hỏi của bạn</div>'
+                                 ? `<div>${i18n.t('edit_quiz_screen.questionContent')}</div>`
                                  : question.question_excerpt,
                         }}
                      />
@@ -275,7 +279,7 @@ const EditQuizQuestion = () => {
                            }
                         >
                            <Text className="text-white">
-                              Nhiều lựa chọn
+                              {i18n.t('edit_quiz_screen.mutipleChoice')}
                            </Text>
                         </TouchableOpacity>
                      )}
@@ -287,7 +291,7 @@ const EditQuizQuestion = () => {
                         setEditorType(Status.quiz.EXPLAINATION);
                      }}
                   >
-                     <Text className="text-white">Thêm giải thích</Text>
+                     <Text className="text-white">{i18n.t('edit_quiz_screen.addExplain')}</Text>
                   </TouchableOpacity>
                </View>
                {/* Answers */}
@@ -326,7 +330,7 @@ const EditQuizQuestion = () => {
                            }}
                         >
                            <Text className="text-white">
-                              Thêm phương án
+                              {i18n.t('edit_quiz_screen.addAnswer')}
                            </Text>
                         </TouchableOpacity>
                      )}
@@ -337,7 +341,7 @@ const EditQuizQuestion = () => {
                      }}
                   >
                      <Text className="text-white">
-                        Xóa câu hỏi này
+                        {i18n.t('edit_quiz_screen.deleteAnswer')}
                      </Text>
                   </TouchableOpacity>
                </View>
@@ -355,8 +359,8 @@ const EditQuizQuestion = () => {
                }}
                text={
                   actionQuizType === 'create'
-                     ? 'Thêm câu hỏi'
-                     : 'Lưu câu hỏi'
+                     ? i18n.t('edit_quiz_screen.createQuestion')
+                     : i18n.t('edit_quiz_screen.saveQuestion')
                }
                otherStyles={'p-4 justify-center'}
                textStyles={'text-center'}
