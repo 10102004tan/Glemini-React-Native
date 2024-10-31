@@ -6,7 +6,7 @@ import CustomButton from "@/components/customs/CustomButton";
 import { SelectList } from "react-native-dropdown-select-list";
 import { AuthContext } from "@/contexts/AuthContext";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
-import Toast from "react-native-toast-message";
+import Toast from "react-native-toast-message-custom";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useAppProvider} from "@/contexts/AppProvider";
 

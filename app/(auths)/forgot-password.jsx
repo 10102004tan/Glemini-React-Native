@@ -8,7 +8,7 @@ import OTPTextView from "react-native-otp-textinput";
 import {Link, router} from "expo-router";
 import {AuthContext} from "@/contexts/AuthContext";
 import {validateEmail} from "@/utils";
-import Toast from "react-native-toast-message";
+import Toast from "react-native-toast-message-custom";
 
 const COUNT_INPUT = 5;
 const COUNT_RESEND = 30;

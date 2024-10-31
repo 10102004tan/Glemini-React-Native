@@ -141,6 +141,38 @@ const ClassroomProvider = ({ children }) => {
         }
     };
 
+    const addStudent = async (classroomId, studentEmail) => {
+        try {
+            const response = await fetch(
+                `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_ADD_STUDENT}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-client-id': userData._id,
+                        authorization: userData.accessToken,
+                    },
+                    body: JSON.stringify(
+                        {
+                            classroomId: classroomId, 
+                            user_email: studentEmail
+                        }
+                    )
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.statusCode === 200) {
+                fetchClassroom(classroomId)
+            } else {
+                console.error('Failed to add student:', data.message);
+            }
+        } catch (error) {
+            console.error('Error add student:', error);
+        }
+    };
+
     useEffect(() => {
         if (userData) {
             fetchSchools();
@@ -157,7 +189,8 @@ const ClassroomProvider = ({ children }) => {
             fetchClassroom, 
             fetchClassrooms, 
             classroom,
-            removeStudent
+            removeStudent,
+            addStudent
         }}>
             {children}
         </ClassroomContext.Provider>
