@@ -19,13 +19,14 @@ const TYPEIMAGE = {
 };
 
 export default function ProfileAuth(){
-    const {userData:{accessToken,_id},teacherStatus} = useContext(AuthContext);
+    const {userData:{accessToken,_id},teacherStatus,setTeacherStatus} = useContext(AuthContext);
     const [isOpenedModal, setIsOpenedModal] = useState(false);
     const [imageCurrent, setImageCurrent] = useState('');
     const [urls,setUrls] = useState([]);
     const [imageIDCard, setImageIDCard] = useState('');
     const [imageCard, setImageCard] = useState('');
     const [imageConfirm, setImageConfirm] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const {i18n} = useAppProvider();
     useEffect(()=>{
         if (teacherStatus !== "rejected"){
@@ -67,23 +68,29 @@ export default function ProfileAuth(){
             return;
         }
 
+
+
         const formData = new FormData();
         formData.append('images', {
             uri: imageCard.uri,
-            type: imageCard.type,
+            type: `${imageCard.type}/${imageCard.name.split(".")[1]}`,
             name: imageCard.name
         });
+
+
         formData.append('images', {
             uri: imageIDCard.uri,
-            type: imageIDCard.type,
+            type: `${imageIDCard.type}/${imageIDCard.name.split(".")[1]}`,
             name: imageIDCard.name
         });
         formData.append('images', {
             uri: imageConfirm.uri,
-            type: imageConfirm.type,
+            type:`${imageConfirm.type}/${imageConfirm.name.split(".")[1]}`,
             name: imageConfirm.name
         });
 
+
+        setIsLoading(true);
         fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.RE_UPLOAD}`,{
             method:'POST',
             headers:{
@@ -94,9 +101,16 @@ export default function ProfileAuth(){
             body:formData
         }).then(response => response.json())
             .then(data => {
-                console.log(data)
+                if (data.statusCode ===200){
+                    // set teacher status
+                    setTeacherStatus("pedding");
+                    setUrls(data.metadata);
+                }
+                setIsLoading(false);
             })
-            .catch(err => console.log(err));
+            .catch(err =>
+                setIsLoading(false)
+            );
     }
 
     const handlerLongPress = ({type,uri}) => {
@@ -107,7 +121,6 @@ export default function ProfileAuth(){
 
         if (type){
             if (type === TYPEIMAGE.Card){
-                console.log(imageCard.uri);
                 setImageCurrent(imageCard.uri);
             }
             else if (type === TYPEIMAGE.IDCard){
@@ -169,6 +182,8 @@ export default function ProfileAuth(){
                 });
             }
         }
+
+        console.log(imageCard,imageIDCard,imageConfirm);
     };
 
 
@@ -208,7 +223,7 @@ export default function ProfileAuth(){
                 <InputImage onLongPress={()=>handlerLongPress({type:TYPEIMAGE.Card})} onPress={()=>{handlerPickImage(TYPEIMAGE.Card)}} desc={i18n.t("signUp.descForCard")} title={i18n.t('signUp.card')} logo={(imageCard ? imageCard.uri : 'https://cdn-icons-png.flaticon.com/512/175/175062.png')} />
                 <InputImage onLongPress={()=>handlerLongPress({type:TYPEIMAGE.IDCard})} onPress={()=>{handlerPickImage(TYPEIMAGE.IDCard)}} desc={i18n.t("signUp.descForCardID")} title={i18n.t('signUp.cardID')} logo={(imageIDCard?imageIDCard.uri:'https://cdn-icons-png.flaticon.com/512/6080/6080012.png')} />
                 <InputImage onLongPress={()=>handlerLongPress({type:TYPEIMAGE.Confirm})} onPress={()=>{handlerPickImage(TYPEIMAGE.Confirm)}} desc={i18n.t("signUp.descForDocument")} title={i18n.t('signUp.documentConfirm')} logo={(imageConfirm?imageConfirm.uri:'https://cdn-icons-png.freepik.com/256/888/888034.png?semt=ais_hybrid')} />
-                <CustomButton title={"Gửi yêu cầu xác thực"} onPress={reUploadFiles}/>
+                <CustomButton disabled={isLoading} title={"Gửi yêu cầu xác thực"} onPress={reUploadFiles}/>
             </View>
             )
             }
