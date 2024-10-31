@@ -6,10 +6,10 @@ const Status = {
 	},
 	// Chế độ hiển thị của quiz
 	view: [
-		{ key: 'published', value: 'Công khai', data_selected: 'published' },
+		{ key: 'published', value: 'published', data_selected: 'published' },
 		{
 			key: 'unpublished',
-			value: 'Chỉ mình tôi',
+			value: 'unpublished',
 			data_selected: 'unpublished',
 		},
 	],

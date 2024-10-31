@@ -14,116 +14,109 @@ import LockFeature from '@/components/customs/LockFeature';
 import { AuthContext } from '@/contexts/AuthContext';
 import QuizzCreateAction from '../../components/customs/QuizCreateAction';
 import { useQuizProvider } from '@/contexts/QuizProvider';
+import NotificationIcon from "@/components/customs/NotificationIcon";
 
 const TeacherHomeScreen = () => {
-   const {
-      teacherStatus,
-      userData: { user_fullname, user_avatar, user_email },
-   } = useContext(AuthContext);
-   const { setIsHiddenNavigationBar } = useAppProvider();
-   const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
-   const { setActionQuizType } = useQuizProvider();
-   const router = useRouter();
-   const handleCreateQuiz = () => {
-      setIsHiddenNavigationBar(true);
-      setVisibleBottomSheet(true);
-   };
+	const { teacherStatus,userData:{user_fullname,user_avatar,user_email},numberOfUnreadNoti } = useContext(AuthContext);
+	const { setIsHiddenNavigationBar } = useAppProvider();
+	const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
+	const { setActionQuizType } = useQuizProvider();
+	const router = useRouter();
+	const handleCreateQuiz = () => {
+		setIsHiddenNavigationBar(true);
+		setVisibleBottomSheet(true);
+	};
 
-   const handleCloseBottomSheet = () => {
-      setIsHiddenNavigationBar(false);
-      setVisibleBottomSheet(false);
-   };
+	const handleCloseBottomSheet = () => {
+		setIsHiddenNavigationBar(false);
+		setVisibleBottomSheet(false);
+	};
 
-   if (teacherStatus === 'pedding' || teacherStatus === 'rejected') {
-      return <LockFeature />;
-   }
+	if (teacherStatus === 'pedding' || teacherStatus === 'rejected') {
+		return <LockFeature />;
+	}
 
-   return (
-      <Wrapper>
-         {/* Overlay */}
-         {
-            <Overlay
-               onPress={handleCloseBottomSheet}
-               visible={visibleBottomSheet}
-            />
-         }
+	return (
+		<Wrapper>
+			{/* Overlay */}
+			{
+				<Overlay
+					onPress={handleCloseBottomSheet}
+					visible={visibleBottomSheet}
+				/>
+			}
 
-         {/* Bottom Sheet */}
-         <BottomSheet
-            visible={visibleBottomSheet}
-            onClose={handleCloseBottomSheet}
-         >
-            <View className="flex flex-col items-start justify-start">
-               <Text className="text-lg">Tạo bài kiểm tra với AI</Text>
-               <View className="flex items-center justify-start flex-row mt-4">
-                  <QuizzCreateAction
-                     handlePress={() => {
-                        setActionQuizType('ai/images');
-                        handleCloseBottomSheet();
-                        router.push('/(app)/(quiz)/create_title');
-                     }}
-                     title={'Tạo từ hình ảnh'}
-                     icon={
-                        <Ionicons
-                           name="images-outline"
-                           size={24}
-                           color="black"
-                        />
-                     }
-                  />
-                  <QuizzCreateAction
-                     handlePress={() => {
-                        setActionQuizType('ai/prompt');
-                        handleCloseBottomSheet();
-                        router.push('/(app)/(quiz)/create_title');
-                     }}
-                     otherStyles="ml-2"
-                     title={'Tạo từ văn bản'}
-                     icon={
-                        <Ionicons
-                           name="text-outline"
-                           size={24}
-                           color="black"
-                        />
-                     }
-                  />
-               </View>
-               <Text className="text-lg mt-8">Tạo thủ công</Text>
-               <View className="flex items-center justify-start flex-row mt-4">
-                  <QuizzCreateAction
-                     handlePress={() => {
-                        setActionQuizType('template');
-                        handleCloseBottomSheet();
-                        router.push('/(app)/(quiz)/create_title');
-                     }}
-                     title={'Tải lên mẫu'}
-                     icon={
-                        <Ionicons
-                           name="documents-outline"
-                           size={24}
-                           color="black"
-                        />
-                     }
-                  />
-                  <QuizzCreateAction
-                     handlePress={() => {
-                        setActionQuizType('create');
-                        handleCloseBottomSheet();
-                        router.push('(app)/(quiz)/create_title');
-                     }}
-                     otherStyles="ml-2"
-                     title={'Tạo bằng tay'}
-                     icon={
-                        <Ionicons
-                           name="hand-left-outline"
-                           size={24}
-                           color="black"
-                        />
-                     }
-                  />
-               </View>
-            </View>
-         </BottomSheet>
+			{/* Bottom Sheet */}
+			<BottomSheet
+				visible={visibleBottomSheet}
+				onClose={handleCloseBottomSheet}
+			>
+				<View className="flex flex-col items-start justify-start">
+					<Text className="text-lg">Tạo bài kiểm tra với AI</Text>
+					<View className="flex items-center justify-start flex-row mt-4">
+						<QuizzCreateAction
+							title={'Tạo bài kiểm tra'}
+							icon={
+								<Ionicons
+									name="documents-outline"
+									size={24}
+									color="black"
+								/>
+							}
+						/>
+						<QuizzCreateAction
+							handlePress={() => {
+								setActionQuizType('ai/prompt');
+								handleCloseBottomSheet();
+								router.push('/(app)/(quiz)/create_title');
+							}}
+							otherStyles="ml-2"
+							title={'Tạo từ văn bản'}
+							icon={
+								<Ionicons
+									name="text-outline"
+									size={24}
+									color="black"
+								/>
+							}
+						/>
+					</View>
+					<Text className="text-lg mt-8">Tạo thủ công</Text>
+					<View className="flex items-center justify-start flex-row mt-4">
+						<QuizzCreateAction
+							handlePress={() => {
+								setActionQuizType('template');
+								handleCloseBottomSheet();
+								router.push('/(app)/(quiz)/create_title');
+							}}
+							title={'Tải lên mẫu'}
+							icon={
+								<Ionicons
+									name="documents-outline"
+									size={24}
+									color="black"
+								/>
+							}
+						/>
+						<QuizzCreateAction
+							handlePress={() => {
+								setActionQuizType('create');
+								handleCloseBottomSheet();
+								router.push('(app)/(quiz)/create_title');
+							}}
+							otherStyles="ml-2"
+							title={'Tạo bằng tay'}
+							icon={
+								<Ionicons
+									name="hand-left-outline"
+									size={24}
+									color="black"
+								/>
+							}
+						/>
+					</View>
+				</View>
+			</BottomSheet>
 
          {/* Header */}
          <View className="px-4 py-6 bg-primary rounded-b-3xl">
@@ -141,57 +134,48 @@ const TeacherHomeScreen = () => {
                      <Text className="text-white">{user_email}</Text>
                   </View>
 
-               </View>
-               <TouchableOpacity onPress={() => {
-                  router.push({
-                     pathname: '(app)/notification',
-                  })
-               }}>
-                  <View className={"mr-2"}>
-                     <Text className={'text-center absolute z-50 right-0 top-0 h-[18px] w-[18px] rounded-full text-white bg-red-600 text-[12px]'}>9+</Text>
-                     <Ionicons size={32} color={"white"} name={'notifications-outline'} />
-                  </View>
-               </TouchableOpacity>
-            </View>
+				</View>
+						<NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti}/>
+				</View>
 
-            {/* Search */}
-            <Field
-               icon={<AntDesign name="search1" size={24} color="black" />}
-               inputStyles="bg-white"
-               placeholder={'Tìm kiếm một bài kiểm tra hoặc bài học'}
-            />
+				{/* Search */}
+				<Field
+					icon={<AntDesign name="search1" size={24} color="black" />}
+					inputStyles="bg-white"
+					placeholder={'Tìm kiếm một bài kiểm tra hoặc bài học'}
+				/>
 
-            {/* Actions */}
-            <View className="flex flex-row items-center justify-between mt-6">
-               <PressAction
-                  onPress={handleCreateQuiz}
-                  title={'Tạo Quiz'}
-                  icon={<AntDesign name="plus" size={24} color="black" />}
-               />
-               <PressAction
-                  title={'Thư viện của tôi'}
-                  icon={
-                     <Ionicons
-                        name="library-outline"
-                        size={24}
-                        color="black"
-                     />
-                  }
-               />
-               <PressAction
-                  title={'Báo cáo'}
-                  icon={
-                     <Ionicons
-                        name="analytics-outline"
-                        size={24}
-                        color="black"
-                     />
-                  }
-               />
-            </View>
-         </View>
-      </Wrapper>
-   );
+				{/* Actions */}
+				<View className="flex flex-row items-center justify-between mt-6">
+					<PressAction
+						onPress={handleCreateQuiz}
+						title={'Tạo Quiz'}
+						icon={<AntDesign name="plus" size={24} color="black" />}
+					/>
+					<PressAction
+						title={'Thư viện của tôi'}
+						icon={
+							<Ionicons
+								name="library-outline"
+								size={24}
+								color="black"
+							/>
+						}
+					/>
+					<PressAction
+						title={'Báo cáo'}
+						icon={
+							<Ionicons
+								name="analytics-outline"
+								size={24}
+								color="black"
+							/>
+						}
+					/>
+				</View>
+			</View>
+		</Wrapper>
+	);
 };
 
 export default TeacherHomeScreen;

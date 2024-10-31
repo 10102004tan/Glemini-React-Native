@@ -10,6 +10,8 @@ import { View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import Button from '../../components/customs/Button';
 import { useQuestionProvider } from '../../contexts/QuestionProvider';
+import { useAppProvider } from '@/contexts/AppProvider';
+
 
 const QuestionEditBoard = ({
    content = '',
@@ -21,6 +23,7 @@ const QuestionEditBoard = ({
    questionType = '',
    closeEditBoard = () => { },
 }) => {
+   const { i18n } = useAppProvider();
    const [isSaveData, setIsSaveData] = useState(false);
    // Tạo hiệu ứng chuyển động
    const translateY = useSharedValue(1000);
@@ -75,8 +78,8 @@ const QuestionEditBoard = ({
                      otherStyles={`p-4 ${!checkCorrectAnswer(answerEditSelected) ? 'bg-green-500' : 'bg-yellow-500'}`}
                      text={
                         !checkCorrectAnswer(answerEditSelected)
-                           ? 'Đánh dấu là đáp án chính xác'
-                           : 'Bỏ đánh dấu là đáp án chính xác'
+                           ? i18n.t('edit_quiz_screen.markCorrectAnswer')
+                           : i18n.t('edit_quiz_screen.unmarkCorrectAnswer')
                      }
                      icon={
                         <Feather
@@ -94,7 +97,7 @@ const QuestionEditBoard = ({
                         }
                      }}
                      otherStyles="bg-error mt-2 justify-center p-4"
-                     text="Loại bỏ đáp án này"
+                     text={i18n.t('edit_quiz_screen.deleteAnswer')}
                      icon={
                         <Feather
                            name="trash-2"
@@ -111,7 +114,7 @@ const QuestionEditBoard = ({
                   setIsSaveData(true);
                }}
                otherStyles="bg-blue-500 p-4"
-               text={'Lưu'}
+               text={i18n.t('edit_quiz_screen.save')}
                icon={<Feather name="save" size={18} color="white" />}
             />
          </View>

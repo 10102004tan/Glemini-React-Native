@@ -59,6 +59,7 @@ const QuizzOverViewScreen = () => {
    const [confirmFn, setConfirmFn] = useState('close');
    const [uploadedImage, setUploadedImage] = useState(null);
    const { isChangeData, setIsChangeData, setQuestions } = useQuestionProvider();
+   const { i18n } = useAppProvider();
 
 
    // Hàm kiểm tra xem câu hỏi có thay đổi không
@@ -311,7 +312,7 @@ const QuizzOverViewScreen = () => {
       } catch (error) {
          if (error.message === 'Network request failed') {
             setAlertMessage(
-               'Lỗi mạng, vui lòng kiểm tra kết nối và thử lại'
+               i18n.t('overview_quiz_screen.alertNetwork')
             );
 
             setShowConfirmDialog(true);
@@ -370,9 +371,9 @@ const QuizzOverViewScreen = () => {
             onClose={handleCloseBottomSheet}
          >
             <View className="flex flex-col items-start justify-start">
-               <Text className="text-lg">Chọn loại câu hỏi</Text>
+               <Text className="text-lg">{i18n.t('overview_quiz_screen.chooseQuestionType')}</Text>
                <View className="mt-4">
-                  <Text className="text-sm text-gray">Đánh giá</Text>
+                  <Text className="text-sm text-gray">{i18n.t('overview_quiz_screen.evaluation')}</Text>
                   <View className="flex flex-col items-start justify-start mt-2">
                      <TouchableOpacity
                         className="flex flex-row items-center justify-start"
@@ -385,7 +386,7 @@ const QuizzOverViewScreen = () => {
                            size={20}
                            color="black"
                         />
-                        <Text className="ml-2">Nhiều lựa chọn</Text>
+                        <Text className="ml-2">{i18n.t('overview_quiz_screen.mutipleChoice')}</Text>
                      </TouchableOpacity>
                      <TouchableOpacity
                         className="flex flex-row items-center justify-start mt-1"
@@ -398,12 +399,12 @@ const QuizzOverViewScreen = () => {
                            size={20}
                            color="black"
                         />
-                        <Text className="ml-2">Điền vào chỗ trống</Text>
+                        <Text className="ml-2">{i18n.t('overview_quiz_screen.fillInBlank')}</Text>
                      </TouchableOpacity>
                   </View>
                </View>
                <View className="mt-4">
-                  <Text className="text-sm text-gray">Tư duy</Text>
+                  <Text className="text-sm text-gray">{i18n.t('overview_quiz_screen.logical')}</Text>
                   <View className="flex flex-col items-start justify-start mt-2">
                      <TouchableOpacity
                         className="flex flex-row items-center justify-start"
@@ -416,7 +417,7 @@ const QuizzOverViewScreen = () => {
                            size={20}
                            color="black"
                         />
-                        <Text className="ml-2">Tự luận</Text>
+                        <Text className="ml-2">{i18n.t('overview_quiz_screen.blank')}</Text>
                      </TouchableOpacity>
                   </View>
                </View>
@@ -432,39 +433,57 @@ const QuizzOverViewScreen = () => {
                <View className="w-full">
                   <Field
                      wrapperStyles="w-full"
-                     label={'Tên'}
+                     label={i18n.t('overview_quiz_screen.quizName')}
                      value={quizName}
-                     onChange={(text) => setQuizName(text)}
-                     placeholder={'Nhập tên của bộ Quiz'}
+                     onChange={(text) => {
+                        if (text.length <= 100) {
+                           setQuizName(text);
+                        } else {
+                           setAlertMessage(i18n.t('overview_quiz_screen.alertMessageQuizName'));
+                           setConfirmFn('close');
+                           setShowConfirmDialog(true);
+                        }
+                     }}
+                     placeholder={i18n.t('overview_quiz_screen.quizName')}
                   />
                </View>
                <View className="w-full mt-4">
                   <Field
                      wrapperStyles="w-full"
-                     label={'Mô tả'}
+                     label={i18n.t('overview_quiz_screen.quizDescription')}
                      value={quizDescription}
-                     onChange={(text) => setQuizDescription(text)}
-                     placeholder={'Thêm mô tả cho bộ quiz này'}
+                     onChange={(text) => {
+                        if (text.length <= 200) {
+                           setQuizDescription(text);
+                        } else {
+                           setAlertMessage(
+                              setAlertMessage(i18n.t('overview_quiz_screen.alertMessageQuizDescription'))
+                           );
+                           setConfirmFn('close');
+                           setShowConfirmDialog(true);
+                        }
+                     }}
+                     placeholder={i18n.t('overview_quiz_screen.quizDescription')}
                   />
                </View>
                <View className="w-full mt-4">
                   <Text className="text-gray mb-1">
-                     Lĩnh vực, môn học
+                     {i18n.t('overview_quiz_screen.quizSubject')}
                   </Text>
                   {/* Mutiple Select List */}
                   <DropDownMultipleSelect
-                     label={'Chọn môn học'}
+                     label={i18n.t('overview_quiz_screen.quizSubject')}
                      data={subjectsData}
                      selectedIds={quizSubjects}
                      onSelected={(key) => handleSelectSubjects(key)}
                   />
                </View>
                <View className="w-full mt-4">
-                  <Text className="text-gray mb-1">Chế độ hiển thị</Text>
+                  <Text className="text-gray mb-1">{i18n.t('overview_quiz_screen.viewMode')}</Text>
 
                   {/* Single Select */}
                   <DropDownMultipleSelect
-                     label={'Chọn chế độ hiển thị'}
+                     label={i18n.t('overview_quiz_screen.viewMode')}
                      data={Status.view}
                      selectedIds={
                         quizStatus === 'published'
@@ -479,7 +498,7 @@ const QuizzOverViewScreen = () => {
 
          {/* Confirm dialog */}
          <ConfirmDialog
-            title={'Thông báo'}
+            title={i18n.t('overview_quiz_screen.notification')}
             visible={showConfirmDialog}
             onCancel={() => {
                setShowConfirmDialog(false);
@@ -561,7 +580,7 @@ const QuizzOverViewScreen = () => {
                                  color="black"
                               />
                               <Text className="text-center mt-1">
-                                 Thêm hình ảnh
+                                 {i18n.t('overview_quiz_screen.addImageTitle')}
                               </Text>
                            </TouchableOpacity>
                         </>
@@ -570,13 +589,13 @@ const QuizzOverViewScreen = () => {
                   {/* Quiz infor */}
                   <View className="mt-4 p-4">
                      <View className="flex items-center justify-between flex-row">
-                        <View>
-                           <Text className="text-lg">
-                              {quizName || 'Tên bộ quiz'}
+                        <View className="max-w-[300px]">
+                           <Text className="text-lg font-semibold">
+                              {quizName || i18n.t('overview_quiz_screen.quizName')}
                            </Text>
                            <Text className="text-gray max-w-[300px]">
                               {quizDescription ||
-                                 'Thêm mô tả cho bộ quiz này'}
+                                 i18n.t('overview_quiz_screen.quizDescription')}
                            </Text>
                         </View>
                         <View className="flex items-center flex-row justify-center">
@@ -598,7 +617,7 @@ const QuizzOverViewScreen = () => {
                               onPress={() => {
                                  setConfirmFn('delete');
                                  setAlertMessage(
-                                    'Bạn có chắc chắn muốn xóa bộ câu hỏi này không?'
+                                    i18n.t('overview_quiz_screen.confirmDelete')
                                  );
                                  setShowConfirmDialog(true);
                               }}
@@ -623,7 +642,7 @@ const QuizzOverViewScreen = () => {
                </>
             ) : (
                <View className="mt-2 p-4">
-                  <Text className="mb-2">Chỉnh sửa câu hỏi</Text>
+                  <Text className="mb-2">{i18n.t('overview_quiz_screen.editQuestionTitle')}</Text>
                   {currentQuizQuestion.length > 0 &&
                      currentQuizQuestion.map((question, index) => {
                         return (
@@ -641,7 +660,7 @@ const QuizzOverViewScreen = () => {
          <View className="p-4 absolute bg-white bottom-0 w-full border-t border border-gray">
             <Button
                onPress={handleShowCreateQuizQuestionBottomSheet}
-               text={'Tạo câu hỏi'}
+               text={i18n.t('overview_quiz_screen.btnAddQuestion')}
                otherStyles={'p-4 justify-center'}
                textStyles={'text-center'}
             />

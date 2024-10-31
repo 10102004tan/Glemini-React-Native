@@ -1,15 +1,15 @@
 import { Redirect, Stack } from 'expo-router';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
-import { Text, TouchableOpacity } from 'react-native';
+import { Alert, Text, TouchableOpacity } from 'react-native';
 import { useGlobalSearchParams } from 'expo-router';
-import { Entypo, Ionicons } from '@expo/vector-icons';
+import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
-import { useAppProvider } from '@/contexts/AppProvider';
+import AppProvider, { useAppProvider } from '@/contexts/AppProvider';
 import { useQuizProvider } from '@/contexts/QuizProvider';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import SpinningIcon from '@/components/loadings/SpinningIcon';
 import Toast from 'react-native-toast-message-custom';
-import Icon from "react-native-vector-icons/Ionicons";
 
 export default function AppRootLayout() {
    const { userData, isLoading, fetchStatus, setTeacherStatus, setNotification } =
@@ -112,7 +112,7 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(quiz)/overview"
             options={{
-               headerTitle: 'Chi tiết',
+               headerTitle: i18n.t('overview_quiz_screen.detail'),
                headerRight: () => {
                   return (
                      <TouchableOpacity
@@ -132,7 +132,7 @@ export default function AppRootLayout() {
                               color="white"
                            />
                         )}
-                        <Text className="ml-2 text-white">Lưu</Text>
+                        <Text className="ml-2 text-white">{i18n.t('overview_quiz_screen.btnSaveDetail')}</Text>
                      </TouchableOpacity>
                   );
                },
@@ -183,7 +183,7 @@ export default function AppRootLayout() {
                   return (
                      <View className="flex flex-row items-center justify-between">
                         <Text className="ml-4 px-4 py-2 rounded-xl bg-overlay">
-                           Chỉnh sửa câu hỏi
+                           {i18n.t('edit_quiz_screen.title')}
                         </Text>
                      </View>
                   );

@@ -9,7 +9,9 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { API_URL, END_POINTS, API_VERSION } from '@/configs/api.config';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import * as ImagePicker from 'expo-image-picker';
-
+import LottieView from 'lottie-react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { useAppProvider } from '@/contexts/AppProvider';
 const CreateTitleQuizzScreen = () => {
    const { userData, processAccessTokenExpired } = useAuthContext();
    const [quizName, setQuizName] = useState('');
@@ -20,6 +22,7 @@ const CreateTitleQuizzScreen = () => {
    const [generating, setGenerating] = useState(false);
    const [uploadedImage, setUploadedImage] = useState(null);
    const [uploadingImage, setUploadingImage] = useState(false);
+   const { i18n } = useAppProvider();
 
    const handleGenerateQuestionFromGemini = async (quizId) => {
       setGenerating(true);
@@ -214,63 +217,75 @@ const CreateTitleQuizzScreen = () => {
 
    return (
       <Wrapper>
-         <View className="flex-1 items-center justify-center p-4">
-            <Field
-               label={'Tên bài kiểm tra'}
-               value={quizName}
-               onChange={(text) => setQuizName(text)}
-               placeholder={'Nhập tên bài kiểm tra'}
-               wrapperStyles="w-full"
-               inputStyles="p-4"
-            />
-
-            {actionQuizType === 'ai/prompt' && (
+         <View className="flex-1 items-center justify-center flex">
+            <ScrollView className="pt-4 px-4">
                <Field
-                  label={'Promt'}
-                  value={prompt}
-                  onChange={(text) => setPrompt(text)}
-                  placeholder={
-                     'Nhập vào mô tả bài kiểm tra mà bạn muốn tạo'
-                  }
-                  wrapperStyles="w-full mt-4"
+                  label={i18n.t('create_title_quiz_screen.quizName')}
+                  value={quizName}
+                  onChange={(text) => setQuizName(text)}
+                  placeholder={i18n.t('create_title_quiz_screen.quizNameRequest')}
+                  wrapperStyles="w-full"
                   inputStyles="p-4"
                />
-            )}
 
-            {actionQuizType === 'ai/images' && (
-               <>
+               {actionQuizType === 'ai/prompt' && (
                   <Field
                      label={'Promt'}
                      value={prompt}
                      onChange={(text) => setPrompt(text)}
-                     placeholder={
-                        'Nhập vào mô tả bài kiểm tra mà bạn muốn tạo'
-                     }
+                     placeholder={i18n.t('create_title_quiz_screen.promptRequest')}
                      wrapperStyles="w-full mt-4"
                      inputStyles="p-4"
                   />
-                  <TouchableOpacity
-                     onPress={() => {
-                        pickImage();
-                     }}
-                     className="bg-gray-200 p-4 rounded-lg mt-4 bg-blue-600"
-                  >
-                     <Text className="text-white">Chọn ảnh</Text>
-                  </TouchableOpacity>
+               )}
 
-                  {uploadedImage ? <Image className="mt-4" source={{
-                     uri: uploadedImage.uri
-                  }} style={{
-                     width: 300, height: 200
-                  }} /> : null}
-               </>
-            )}
+               {actionQuizType === 'ai/images' && (
+                  <>
+                     <Field
+                        label={i18n.t('create_title_quiz_screen.prompt')}
+                        value={prompt}
+                        onChange={(text) => setPrompt(text)}
+                        placeholder={i18n.t('create_title_quiz_screen.promptRequest')}
+                        wrapperStyles="w-full mt-4"
+                        inputStyles="p-4"
+                     />
+
+                     <TouchableOpacity onPress={pickImage} className="p-4 flex flex-1 items-center justify-center rounded-2xl mt-6"
+                        style={{
+                           borderWidth: 2,
+                           borderStyle: 'dashed',
+                           borderColor: '#757575',
+                        }}
+                     >
+                        <View
+                           className="items-center justify-center flex flex-1 min-h-[300px]"
+                        >
+                           {uploadedImage ? <Image className="mt-4 w-[300px] h-[500px] object-center rounded-2xl" source={{ uri: uploadedImage.uri }} /> : <>
+                              <LottieView
+                                 source={require('@/assets/jsons/clound-upload.json')}
+                                 autoPlay
+                                 loop
+                                 style={{
+                                    width: 200,
+                                    height: 120,
+                                 }}
+                              />
+                              <Text className="font-semibold text-center">
+                                 {i18n.t('create_title_quiz_screen.quizThumbnailUploadTitle')}
+                              </Text>
+                           </>}
+
+                        </View>
+                     </TouchableOpacity>
+                  </>
+               )}
+            </ScrollView>
          </View>
          <View className="p-4">
             <Button
                loading={generating}
                onPress={handleCreateQuizTitle}
-               text={'Bắt đầu tạo'}
+               text={i18n.t('create_title_quiz_screen.startCreateQuiz')}
                otherStyles={'p-4 justify-center'}
                textStyles={'text-center'}
             />

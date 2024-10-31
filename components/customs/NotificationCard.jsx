@@ -4,18 +4,19 @@ import moment from "moment/moment";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import CustomButton from "@/components/customs/CustomButton";
 import {LinearGradient} from "expo-linear-gradient";
-import {useContext} from "react";
-import {AuthContext} from "@/contexts/AuthContext";
+import {SYSTEM_NEW_FEATURE,SYSTEM_MAINTENANCE,ROOM_REALTIME,SHARE_QUIZ_TO_CLASSROOM,SHARE_QUIZ_TO_TEACHER} from "../../utils/notificationCode";
 
 export default function NotificationCard({type,status,content = "", time, options = {},onPress}) {
-    const {updateNotificationStatus} = useContext(AuthContext);
-    if (type === "SYS-001") {
+    if (type === SYSTEM_MAINTENANCE) {
         return (
             <TouchableOpacity onPress={onPress}>
                 <View className={`px-3 py-4 flex-row justify-between mb-4 rounded shadow-2xl`}
                       style={{flex: 1, borderWidth: 1, borderColor: "000"}}>
                     <View className={"flex gap-3 flex-row"}>
-                        <Icon name={"settings"} size={24} color={"#000"}/>
+                        <View>
+                            <Icon name={"settings"} size={24} color={"#000"}/>
+                            {status ==="unread" && <View className={"w-[10px] absolute top-0 h-[10px] pb-2 rounded-full bg-red-600 "}></View>}
+                        </View>
                         <View className={"max-w-[200px]"}>
                             <Text className={"text-[14px] font-semibold mb-2"}>Glemini System</Text>
                             <Text className={"text-[12px] text-gray"}>{content}</Text>
@@ -23,21 +24,21 @@ export default function NotificationCard({type,status,content = "", time, option
                     </View>
                     <View>
                         <Text className={"text-gray text-[10px] mb-2"}>{moment(time).fromNow()}</Text>
-                        {
-                            status ==="unread" && <Text className={"text-gray text-[10px]"}>Chưa đọc</Text>
-                        }
                     </View>
                 </View>
             </TouchableOpacity>
 
         )
-    } else if (type === "SYS-002") {
+    } else if (type === SYSTEM_NEW_FEATURE) {
         return (
             <TouchableOpacity onPress={onPress}>
                 <View className={`px-3 py-4 flex-row justify-between mb-4 rounded shadow-2xl}`}
                       style={{flex: 1, borderWidth: 1, borderColor: "000"}}>
                     <View className={"flex gap-3 flex-row"}>
-                        <AntDesign name={"rocket1"} size={24} color={"#9f75ff"}/>
+                        <View>
+                            <AntDesign name={"rocket1"} size={24} color={"#9f75ff"}/>
+                            {status ==="unread" && <View className={"w-[10px] absolute top-0 h-[10px] pb-2 rounded-full bg-red-600 "}></View>}
+                        </View>
                         <View className={"max-w-[200px]"}>
                             <Text className={"text-[14px] font-semibold mb-2"}>Glemini System</Text>
                             <Text className={"text-[12px] text-gray"}>{content}</Text></View>
@@ -51,7 +52,7 @@ export default function NotificationCard({type,status,content = "", time, option
                 </View>
             </TouchableOpacity>
         )
-    } else if (type === "SHARE-001") {
+    } else if (type === SHARE_QUIZ_TO_TEACHER) {
         const {avatar, name} = options;
         return (
             <View style={{flex: 1, borderWidth: 1, borderColor: "000"}}
@@ -82,9 +83,9 @@ export default function NotificationCard({type,status,content = "", time, option
                 </View>
             </View>
         )
-    } else if (type === "SHARE-002") {
+    } else if (type === SHARE_QUIZ_TO_CLASSROOM) {
 
-    } else if (type === "ROOM-001") {
+    } else if (type === ROOM_REALTIME) {
         const {avatar, name, room_id} = options;
         return (
             <LinearGradient className={"px-3 py-4 h-[180px] mb-4 shadow-2xl"} style={{flex:1,borderWidth: 2, borderColor: "#eee",borderRadius:8}} start={{x:0.1,y:0.2}} colors={["#BBD2C5","#536976", "#292E49"]}>
@@ -102,11 +103,11 @@ export default function NotificationCard({type,status,content = "", time, option
                                        borderColor: "#eee"
                                    }}/>
                         </View>
-                        <View className={"flex flex-row gap-1"}>
-                            <Text className={"text-black text-[10px]"}>{moment(time).fromNow()}</Text>
+                        <View className={"flex flex-row gap-1 mb-2"}>
                             {
-                                status ==="unread" && <Text className={"text-gray text-[10px]"}>Chưa đọc</Text>
+                                status ==="unread" && <Text className={"text-black text-[10px] p-1 rounded bg-white"}>Chưa đọc</Text>
                             }
+                            <Text className={"text-black text-[10px]"}>{moment(time).fromNow()}</Text>
                         </View>
                         <Text className={"text-[12px] text-black mb-3"}>{content.replace("@@@", name)}</Text>
                         <CustomButton size={12} color={"#000"} bg={"#fff"} title={"Vào phòng"} onPress={onPress}/>

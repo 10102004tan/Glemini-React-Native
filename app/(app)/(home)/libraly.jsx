@@ -533,7 +533,7 @@ const Library = () => {
                               size={16}
                               color="white"
                            />}
-                           onPress={FilterBottomSheet}
+                           onPress={resetFilters}
                            otherStyles={'bg-primary p-4 rounded-xl ml-2'}
                         />
                      </View>
