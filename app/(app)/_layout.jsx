@@ -9,7 +9,7 @@ import AppProvider, { useAppProvider } from '@/contexts/AppProvider';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import SpinningIcon from '@/components/loadings/SpinningIcon';
-import Toast from 'react-native-toast-message';
+import Toast from 'react-native-toast-message-custom';
 
 export default function AppRootLayout() {
    const { userData, isLoading, fetchStatus, setTeacherStatus, setNotification } =
@@ -202,7 +202,7 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(classroom)/student_detail"
             options={{
-               headerShown: false,
+               headerTitle: "Chi tiết lớp học",
             }}
          />
 
@@ -215,6 +215,20 @@ export default function AppRootLayout() {
 
          <Stack.Screen
             name="(result)/review"
+            options={{
+               headerShown: false,
+            }}
+         />
+
+         <Stack.Screen
+            name="(play)/single"
+            options={{
+               headerShown: false,
+            }}
+         />
+
+         <Stack.Screen
+            name="(result)/single"
             options={{
                headerShown: false,
             }}

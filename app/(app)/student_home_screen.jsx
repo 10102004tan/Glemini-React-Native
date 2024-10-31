@@ -48,11 +48,11 @@ const StudentHomeScreen = () => {
 
 	const handleNavigateToQuiz = () => {
 		setModalVisible(false);
-		navigation.push('(play)/single', { quiz: selectedQuiz });
+		navigation.push('(play)/single', { quizId: selectedQuiz._id });
 	};
 
 	return (
-		<Wrapper>
+		<View className='flex-1 pt-10'>
 			<ScrollView
 				showsVerticalScrollIndicator={false}
 				className='mb-20'>
@@ -121,7 +121,7 @@ const StudentHomeScreen = () => {
 				<View className='px-4 pt-4 flex gap-2'>
 					{filterQuizzes?.length > 0 ? (
 						filterQuizzes.map((quiz) => (
-							<TouchableOpacity key={quiz._id} onPress={() => handlePressQuizItem(quiz)}>
+							<TouchableOpacity key={quiz._id} onPress={() => handlePressQuizItem(quiz._id)}>
 								<QuizItem quiz={quiz} />
 							</TouchableOpacity>
 						))
@@ -147,7 +147,7 @@ const StudentHomeScreen = () => {
 				onStartQuiz={handleNavigateToQuiz}
 				quiz={selectedQuiz}
 			/>
-		</Wrapper>
+		</View>
 	);
 };
 

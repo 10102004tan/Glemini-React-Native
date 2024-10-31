@@ -8,13 +8,10 @@ import Toast from 'react-native-toast-message-custom';
 import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
 import RenderHTML from 'react-native-render-html';
 import { Audio } from 'expo-av';
-import { truncateDescription } from '@/utils'
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { router, useLocalSearchParams } from 'expo-router';
 
 const SinglePlay = () => {
-	const route = useRoute();
-	const navigation = useNavigation()
-	const { quiz } = route.params;
+	const { quizId, exerciseId } = useLocalSearchParams()
 	const { i18n } = useAppProvider();
 	const { width } = useWindowDimensions();
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -45,18 +42,24 @@ const SinglePlay = () => {
 						authorization: userData.accessToken,
 					},
 					body: JSON.stringify({
-						quiz_id: quiz._id,
+						exercise_id: exerciseId,
+						quiz_id: quizId,
 					}),
 				});
-
+	
+				
 				const data = await res.json();
 				setQuestions(data.metadata);
 			} catch (error) {
-				console.error('Lỗi khi lấy câu hỏi:', error);
+				Toast.show({
+					type: 'error',
+					text1: 'Lỗi khi lấy câu hỏi',
+					text2: { error}
+				});
 			}
 		};
 		fetchQuestions();
-	}, [userData]);
+	}, [quizId]);
 
 	const saveQuestionResult = async (questionId, answerId, correct, score) => {
 		await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_SAVE_QUESTION, {
@@ -67,9 +70,9 @@ const SinglePlay = () => {
 				authorization: userData.accessToken,
 			},
 			body: JSON.stringify({
-				exercise_id: null,
+				exercise_id: exerciseId,
 				user_id: userData._id,
-				quiz_id: questions[currentQuestionIndex].quiz_id,
+				quiz_id: quizId,
 				question_id: questionId,
 				answer: answerId,
 				correct,
@@ -88,14 +91,18 @@ const SinglePlay = () => {
 					authorization: userData.accessToken,
 				},
 				body: JSON.stringify({
-					exercise_id: null,
+					exercise_id: exerciseId,
 					user_id: userData._id,
-					quiz_id: questions[0].quiz_id,
+					quiz_id: quizId,
 					status: 'completed',
 				}),
 			});
 		} catch (error) {
-			console.error('Lỗi khi cập nhật trạng thái hoàn thành:', error);
+			Toast.show({
+                type: 'error',
+                text1: 'Lỗi khi cập nhật trạng thái hoàn thành.',
+				text2: {error}
+            });
 		}
 	};
 
@@ -217,7 +224,7 @@ const SinglePlay = () => {
 	if (isCompleted) {
 		return (
 			<ResultSingle
-				quizId={quiz._id}
+				quizId={quizId}
 				correctCount={correctCount}
 				wrongCount={wrongCount}
 				score={score}
@@ -230,10 +237,9 @@ const SinglePlay = () => {
 	return (
 		<View className="flex-1">
 			<View className="flex-row justify-between items-center px-5 pt-10 pb-3 bg-black">
-				<Text className="font-bold text-lg text-white">{truncateDescription(quiz.quiz_name, 20)}</Text>
 				<Button
 					text={i18n.t('play.single.buttonQuit')}
-					onPress={() => { navigation.popToTop() }}
+					onPress={() => { router.popToTop() }}
 					loading={false}
 					type="fill"
 					otherStyles={'bg-[#F41D1D]'}

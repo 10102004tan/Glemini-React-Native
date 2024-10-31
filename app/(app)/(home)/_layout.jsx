@@ -102,6 +102,26 @@ export default function TabLayout() {
         }}
       />
 
+<Tabs.Screen
+        name="activity"
+        options={{
+          title: 'Hoạt đông',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "analytics-sharp" : "analytics-outline"}
+              color={color}
+            />
+          ),
+          tabBarButton: (props) => {
+            if (user_type === "teacher") {
+              return null;
+            } else {
+              return <TouchableOpacity {...props} />;
+            }
+          },
+        }}
+      />
+
       <Tabs.Screen
         name="classroom"
         options={{

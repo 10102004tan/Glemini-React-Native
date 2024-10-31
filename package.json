@@ -78,6 +78,7 @@
     "react-native-screens": "3.31.1",
     "react-native-select-dropdown": "^4.0.1",
     "react-native-skeleton-placeholder": "^5.2.4",
+    "react-native-tab-view": "^3.5.2",
     "react-native-textinput-effects": "^0.6.3",
     "react-native-toast-message-custom": "^2.2.1",
     "react-native-web": "~0.19.10",
