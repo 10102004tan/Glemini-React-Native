@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Modal, TouchableOpacity, Animated } from 'react-native';
 import { styled } from 'nativewind';
 import Entypo from '@expo/vector-icons/Entypo';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -15,6 +16,7 @@ const ConfirmDialog = ({
    message = '',
 }) => {
    const [showModal, setShowModal] = useState(visible);
+   const { i18n } = useAppProvider();
    const scaleValue = useRef(new Animated.Value(0)).current;
 
    useEffect(() => {
@@ -61,7 +63,7 @@ const ConfirmDialog = ({
                         onPress={onCancel}
                      >
                         <StyledText className="text-black font-semibold">
-                           Hủy
+                           {i18n.t('overview_quiz_screen.cancel')}
                         </StyledText>
                      </StyledTouchableOpacity>
                      <StyledTouchableOpacity
@@ -69,7 +71,7 @@ const ConfirmDialog = ({
                         onPress={onConfirm}
                      >
                         <StyledText className="text-white font-semibold">
-                           Xác nhận
+                           {i18n.t('overview_quiz_screen.confirm')}
                         </StyledText>
                      </StyledTouchableOpacity>
                   </StyledView>

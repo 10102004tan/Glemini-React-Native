@@ -112,7 +112,7 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(quiz)/overview"
             options={{
-               headerTitle: 'Chi tiết',
+               headerTitle: i18n.t('overview_quiz_screen.detail'),
                headerRight: () => {
                   return (
                      <TouchableOpacity
@@ -132,7 +132,7 @@ export default function AppRootLayout() {
                               color="white"
                            />
                         )}
-                        <Text className="ml-2 text-white">Lưu</Text>
+                        <Text className="ml-2 text-white">{i18n.t('overview_quiz_screen.btnSaveDetail')}</Text>
                      </TouchableOpacity>
                   );
                },
@@ -183,7 +183,7 @@ export default function AppRootLayout() {
                   return (
                      <View className="flex flex-row items-center justify-between">
                         <Text className="ml-4 px-4 py-2 rounded-xl bg-overlay">
-                           Chỉnh sửa câu hỏi
+                           {i18n.t('edit_quiz_screen.title')}
                         </Text>
                      </View>
                   );
