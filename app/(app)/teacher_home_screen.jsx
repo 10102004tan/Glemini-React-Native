@@ -1,4 +1,4 @@
-import {View, Text, Image, TouchableWithoutFeedback, TouchableOpacity} from 'react-native';
+import { View, Text, Image, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import React, { useContext, useState } from 'react';
 import Wrapper from '../../components/customs/Wrapper';
 import { Images } from '../../constants';
@@ -8,7 +8,7 @@ import PressAction from '../../components/customs/PressAction';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import BottomSheet from '../../components/customs/BottomSheet';
 import { useAppProvider } from '../../contexts/AppProvider';
-import {router, useRouter} from 'expo-router';
+import { router, useRouter } from 'expo-router';
 import Overlay from '../../components/customs/Overlay';
 import LockFeature from '@/components/customs/LockFeature';
 import { AuthContext } from '@/contexts/AuthContext';
@@ -125,34 +125,34 @@ const TeacherHomeScreen = () => {
             </View>
          </BottomSheet>
 
-			{/* Header */}
-			<View className="px-4 py-6 bg-primary rounded-b-3xl">
-				{/* Teacher Info */}
-				<View className={"flex flex-row justify-between"}>
-					<View className="flex flex-row items-center justify-start mb-3">
-						<Image
-							className={'w-[50px] h-[50px] rounded-full'}
-							src={user_avatar}
-						/>
-						<View className="ml-3 max-w-[330px]">
-							<Text className="text-lg font-pmedium text-white">
-								{user_fullname}
-							</Text>
-							<Text className="text-white">{user_email}</Text>
-						</View>
+         {/* Header */}
+         <View className="px-4 py-6 bg-primary rounded-b-3xl">
+            {/* Teacher Info */}
+            <View className={"flex flex-row justify-between"}>
+               <View className="flex flex-row items-center justify-start mb-3">
+                  <Image
+                     className={'w-[50px] h-[50px] rounded-full'}
+                     src={user_avatar}
+                  />
+                  <View className="ml-3 max-w-[330px]">
+                     <Text className="text-lg font-pmedium text-white">
+                        {user_fullname}
+                     </Text>
+                     <Text className="text-white">{user_email}</Text>
+                  </View>
 
-				</View>
-					<TouchableOpacity onPress={()=>{
-						router.push({
-							pathname:'(app)/notification',
-						})
-					}}>
-						<View className={"mr-2"}>
-							<Text className={'text-center absolute z-50 right-0 top-0 h-[18px] w-[18px] rounded-full text-white bg-red-600 text-[12px]'}>9+</Text>
-							<Ionicons size={32} color={"white"} name={'notifications-outline'}/>
-						</View>
-					</TouchableOpacity>
-				</View>
+               </View>
+               <TouchableOpacity onPress={() => {
+                  router.push({
+                     pathname: '(app)/notification',
+                  })
+               }}>
+                  <View className={"mr-2"}>
+                     <Text className={'text-center absolute z-50 right-0 top-0 h-[18px] w-[18px] rounded-full text-white bg-red-600 text-[12px]'}>9+</Text>
+                     <Ionicons size={32} color={"white"} name={'notifications-outline'} />
+                  </View>
+               </TouchableOpacity>
+            </View>
 
             {/* Search */}
             <Field

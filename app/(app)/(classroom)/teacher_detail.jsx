@@ -10,11 +10,13 @@ import Button from '@/components/customs/Button';
 import { router, useFocusEffect } from 'expo-router';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import Toast from 'react-native-toast-message-custom';
+import LottieView from 'lottie-react-native';
+import moment from 'moment';
 
 const TeacherDetail = () => {
     const route = useRoute();
     const { classroomId } = route.params;
-    const [showBottomSheet, setShowBottomSheet] = useState(0); 
+    const [showBottomSheet, setShowBottomSheet] = useState(0);
     const [modalVisible, setModalVisible] = useState(false);
     const [studentToRemove, setStudentToRemove] = useState(null);
     const { setIsHiddenNavigationBar, i18n } = useAppProvider();
@@ -43,7 +45,7 @@ const TeacherDetail = () => {
             fetchClassroom(classroomId);
             Toast.show({
                 type: 'success',
-                text1: 'Xóa thành công!' 
+                text1: 'Xóa thành công!'
             });
         }
         setModalVisible(false);
@@ -66,7 +68,7 @@ const TeacherDetail = () => {
             setShowBottomSheet(0);
             Toast.show({
                 type: 'success',
-                text1: 'Thêm mới thành công!' 
+                text1: 'Thêm mới thành công!'
             });
         } catch (error) {
             Toast.show({
@@ -78,23 +80,58 @@ const TeacherDetail = () => {
     };
 
     // Tab routes
-    const renderQuizzes = () => (
+    const renderExercises = () => (
         <View className='p-5'>
-            {classroom.quizzes?.length > 0 ? (
+            {classroom.exercises?.length > 0 ? (
                 <FlatList
-                    data={classroom.quizzes}
-                    keyExtractor={(quiz) => quiz._id}
-                    renderItem={({ item }) => (
-                        <View className='py-2'>
-                            <Text>{item.name}</Text>
-                        </View>
-                    )}
+                    data={classroom.exercises}
+                    keyExtractor={(exercise) => exercise._id}
+                    renderItem={({ item }) => {
+                        const endDate = moment(item.date_end);
+                        const now = moment();
+                        const duration = moment.duration(endDate.diff(now));
+                        const isExpired = duration.asMilliseconds() <= 0;
+    
+                        const timeRemaining = isExpired
+                            ? 'Đã kết thúc'
+                            : duration.asDays() >= 1
+                            ? `${Math.floor(duration.asDays())} ngày nữa`
+                            : duration.asHours() >= 1
+                            ? `${Math.floor(duration.asHours())} giờ nữa`
+                            : `${Math.floor(duration.asMinutes())} phút nữa`;
+    
+                        return (
+                            <Pressable onPress={() => console.log(item._id)}>
+                                <View className='bg-slate-100 px-4 py-2 mb-2 rounded-md'>
+                                    <View className='flex-row items-center justify-between'>
+                                        <View className='flex items-start gap-2'>
+                                            <Text className='text-base font-semibold'>{item.name}</Text>
+                                            <Text className='text-base text-red-500 '>
+                                                {timeRemaining}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </Pressable>
+                        );
+                    }}
                 />
             ) : (
-                <Text className='text-center text-gray-500'>No quizzes available</Text>
+                <View className='h-full flex items-center justify-center'>
+                    <LottieView
+                        source={require('@/assets/jsons/not-found.json')}
+                        autoPlay
+                        loop
+                        style={{
+                            width: 300,
+                            height: 300,
+                        }}
+                    />
+                </View>
             )}
         </View>
     );
+    
 
     const renderStudents = () => (
         <View className='p-5'>
@@ -104,7 +141,7 @@ const TeacherDetail = () => {
                     keyExtractor={(student) => student._id}
                     renderItem={({ item }) => (
                         <Pressable onPress={() => console.log(item._id)}>
-                            <View className='bg-slate-100 px-4 py-2 mb-2 rounded-md'>
+                            <View className='bg-slate-100 p-4 mb-2 rounded-md'>
                                 <View className='flex-row items-center justify-between'>
                                     <View className='flex-row items-center gap-3'>
                                         <Image source={{ uri: item.user_avatar }} className='w-10 h-10 rounded-full' />
@@ -122,19 +159,29 @@ const TeacherDetail = () => {
                     )}
                 />
             ) : (
-                <Text className='text-center text-gray-500'>No students enrolled</Text>
+                <View className='h-full flex items-center justify-center'>
+                    <LottieView
+                        source={require('@/assets/jsons/not-found.json')}
+                        autoPlay
+                        loop
+                        style={{
+                            width: 300,
+                            height: 300,
+                        }}
+                    />
+                </View>
             )}
         </View>
     );
 
     const [index, setIndex] = useState(0);
     const [routes] = useState([
-        { key: 'quizzes', title: 'Danhh sách câu hỏi' },
+        { key: 'exercises', title: 'Danhh sách bài tập' },
         { key: 'students', title: 'Danh sách học sinh' },
     ]);
 
     const renderScene = SceneMap({
-        quizzes: renderQuizzes,
+        exercises: renderExercises,
         students: renderStudents,
     });
 
@@ -146,7 +193,7 @@ const TeacherDetail = () => {
                     <AntDesign name='adduser' size={25} />
                 </TouchableOpacity>
             </View>
-            
+
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={renderScene}
@@ -161,9 +208,9 @@ const TeacherDetail = () => {
                 )}
             />
 
-             {/* Overlay and BottomSheets */}
-             <Overlay onPress={handleCloseBottomSheet} visible={showBottomSheet !== 0} />
-            
+            {/* Overlay and BottomSheets */}
+            <Overlay onPress={handleCloseBottomSheet} visible={showBottomSheet !== 0} />
+
             {/* BottomSheet 1 */}
             <BottomSheet onClose={handleCloseBottomSheet} visible={showBottomSheet === 1}>
                 <View className='items-center'>
@@ -184,7 +231,7 @@ const TeacherDetail = () => {
                         otherStyles='bg-blue-500 px-4'
                         textStyles='text-base font-semibold'
                         text={i18n.t('classroom.teacher.btnSave')}
-                        onPress={() => setShowBottomSheet(2)} 
+                        onPress={() => setShowBottomSheet(2)}
                     />
                 </View>
             </BottomSheet>
@@ -195,7 +242,7 @@ const TeacherDetail = () => {
                     <Text className='text-lg font-semibold'>Thông tin học sinh mới</Text>
 
                     <View className='pt-5 w-full'>
-                    <Text className='pb-2 mt-3 text-base text-slate-700 font-semibold'>Địa chỉ liên lạc (email) </Text>
+                        <Text className='pb-2 mt-3 text-base text-slate-700 font-semibold'>Địa chỉ liên lạc (email) </Text>
                         <TextInput
                             value={email}
                             onChangeText={setEmail}
@@ -216,7 +263,7 @@ const TeacherDetail = () => {
                             otherStyles='ml-3 bg-violet-500 px-4'
                             textStyles='text-base'
                             text={i18n.t('classroom.teacher.btnSave')}
-                            onPress={()=>{handleAddStudent()}}/>
+                            onPress={() => { handleAddStudent() }} />
                     </View>
                 </View>
             </BottomSheet>

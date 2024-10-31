@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useAuthContext } from './AuthContext';
+import Toast from 'react-native-toast-message-custom';
 
 const ClassroomContext = createContext();
 
@@ -44,9 +45,7 @@ const ClassroomProvider = ({ children }) => {
                     'x-client-id': userData._id,
                     authorization: userData.accessToken,
                 },
-				body: JSON.stringify(
-                    userData.user_type === 'teacher' ? {user_id: userData._id} : {_id: userData._id}
-                )
+				body: JSON.stringify({user_id: userData._id})
             }
         );
 
@@ -60,7 +59,7 @@ const ClassroomProvider = ({ children }) => {
 	}
 
     const fetchClassroom = async (classroomId) => {
-		const response = await fetch(
+		const response = await fetch (
             `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_INFO}`,
             {
                 method: 'POST',
@@ -173,6 +172,51 @@ const ClassroomProvider = ({ children }) => {
         }
     };
 
+    const addQuizToClassroom = async (name, classroomId, quizId, start, deadline) => {
+        try {
+            const response = await fetch(
+                `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_ADD_QUIZ}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-client-id': userData._id,
+                        authorization: userData.accessToken,
+                    },
+                    body: JSON.stringify(
+                        {
+                            name: name,
+                            classroomId: classroomId, 
+                            quizId: quizId, 
+                            start: start, 
+                            deadline: deadline
+                        }
+                    )
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.statusCode === 200) {
+                Toast.show({
+                   type: 'success',
+                   text1: "Giao bài tập thành công."
+               });
+             } else {
+                Toast.show({
+                   type: 'error',
+                   text1: "Giao bài tập thất bại."
+               });
+             }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: `${error}`
+            });
+        }
+    };
+
     useEffect(() => {
         if (userData) {
             fetchSchools();
@@ -190,7 +234,8 @@ const ClassroomProvider = ({ children }) => {
             fetchClassrooms, 
             classroom,
             removeStudent,
-            addStudent
+            addStudent,
+            addQuizToClassroom
         }}>
             {children}
         </ClassroomContext.Provider>

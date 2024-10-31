@@ -50,7 +50,7 @@ const TeacherView = () => {
 
         await createClassroom(classData);
         await fetchClassrooms(); 
-        handleCloseBts(); // Close the bottom sheet after creating a class
+        handleCloseBts();
     };
 
     const handleNavigateToDetail = (classroomId) => {

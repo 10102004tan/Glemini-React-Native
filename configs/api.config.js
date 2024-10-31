@@ -1,7 +1,7 @@
 'use strict';
 
 const dev = {
-	API_URL: 'http://192.168.1.80:3000/api',
+	API_URL: 'http://192.168.247.116:3000/api',
 
 	API_VERSION: {
 		V1: '/v1',
@@ -86,6 +86,7 @@ const dev = {
 		CLASSROOM_UPLOAD: '/classroom/upload',
 		CLASSROOM_GET_EXCEL_TEMPLATE: '/classroom/get-templates/template_excel',
 		CLASSROOM_ADD_STUDENT: '/classroom/add-student',
+		CLASSROOM_ADD_QUIZ: '/classroom/add-quiz',
 		CLASSROOM_REMOVE_STUDENT: '/classroom/rm-student',
 
 		//email

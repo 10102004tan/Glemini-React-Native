@@ -202,7 +202,7 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(classroom)/student_detail"
             options={{
-               headerShown: false,
+               headerTitle: "Chi tiết lớp học",
             }}
          />
 
@@ -215,6 +215,20 @@ export default function AppRootLayout() {
 
          <Stack.Screen
             name="(result)/review"
+            options={{
+               headerShown: false,
+            }}
+         />
+
+         <Stack.Screen
+            name="(play)/single"
+            options={{
+               headerShown: false,
+            }}
+         />
+
+         <Stack.Screen
+            name="(result)/single"
             options={{
                headerShown: false,
             }}

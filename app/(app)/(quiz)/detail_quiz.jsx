@@ -24,6 +24,9 @@ import { collectionData } from "@/utils/index.js";
 import Checkbox from "@/components/customs/Checkbox.jsx";
 import CardQuiz from "@/components/customs/CardQuiz.jsx";
 import EmailDialog from "@/components/dialogs/EmailDialog.jsx";
+import { useClassroomProvider } from "@/contexts/ClassroomProvider.jsx";
+import AssignQuizModal from "@/components/modals/AssignQuizModal.jsx";
+import Toast from "react-native-toast-message-custom";
 
 
 const detailquizz = () => {
@@ -42,6 +45,7 @@ const detailquizz = () => {
 
    // Lấy dữ liệu name, description, thumb đưa vào ô thông tin
    const { quizzes, setQuizzes } = useQuizProvider();
+   const { addQuizToClassroom } = useClassroomProvider()
    const { deleteQuiz, questionFetching, setQuestionFetching } =
       useQuizProvider();
 
@@ -72,6 +76,13 @@ const detailquizz = () => {
       openBottomSheetSaveToLibrary,
       closeBottomSheet,
    } = useAppProvider();
+
+   const [showAssignModal, setShowAssignModal] = useState(false);
+
+   const handleAssignQuiz = async (items) => {      
+      await addQuizToClassroom(items.assignmentName, items.selectedClass, quizId, items.startDate, items.deadline)
+      
+   };
 
    // Lấy thông tin của quiz hiện tại
    const fetchQuiz = async () => {
@@ -322,7 +333,7 @@ const detailquizz = () => {
                text={"Chỉnh sửa"}
                otherStyles={"m-2 flex-row p-4"}
                icon={<Entypo name="edit" size={16} color="white" />}
-            ></Button>
+            />
             <Button
                text={"Xóa"}
                otherStyles={"m-2 flex-row p-4"}
@@ -330,7 +341,7 @@ const detailquizz = () => {
                onPress={() => {
                   setShowConfirmDialog(true);
                }}
-            ></Button>
+            />
             <Button
                text={"Chia sẻ bài kiểm tra"}
                otherStyles={"m-2 flex-row p-4"}
@@ -341,7 +352,15 @@ const detailquizz = () => {
                   setShowBottomSheetMoreOptions(false);
                   setShowBottomSheetSaveToLibrary(false);
                }}
-            ></Button>
+            />
+            <Button
+               text={"Giao bài tập"}
+               otherStyles={"m-2 flex-row p-4"}
+               icon={<Entypo name="home" size={16} color="white" />}
+               onPress={() => {setShowAssignModal(true);
+                  closeBottomSheet();}
+               }
+            />
             <Button
                text={"Lưu vào bộ sưu tập"}
                otherStyles={"m-2 flex-row p-4"}
@@ -350,7 +369,7 @@ const detailquizz = () => {
                   closeBottomSheet();
                   openBottomSheetSaveToLibrary();
                }}
-            ></Button>
+            />
          </BottomSheet>
 
          <View className="w-full">
@@ -436,6 +455,12 @@ const detailquizz = () => {
                textStyles={"text-center"}
             ></Button>
          </View>
+
+         <AssignQuizModal
+            visible={showAssignModal}
+            onClose={() => setShowAssignModal(false)}
+            onAssign={handleAssignQuiz}
+         />
 
       </Wrapper >
    );
