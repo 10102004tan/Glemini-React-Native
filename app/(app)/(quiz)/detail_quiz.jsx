@@ -27,6 +27,8 @@ import EmailDialog from "@/components/dialogs/EmailDialog.jsx";
 import { useClassroomProvider } from "@/contexts/ClassroomProvider.jsx";
 import AssignQuizModal from "@/components/modals/AssignQuizModal.jsx";
 import Toast from "react-native-toast-message-custom";
+import RoomWaitingModal from "@/components/modals/RoomWaitingModal.jsx";
+import { useRoomProvider } from "@/contexts/RoomProvider.jsx";
 
 
 const detailquizz = () => {
@@ -46,6 +48,7 @@ const detailquizz = () => {
    // Lấy dữ liệu name, description, thumb đưa vào ô thông tin
    const { quizzes, setQuizzes } = useQuizProvider();
    const { addQuizToClassroom } = useClassroomProvider()
+   const {createRoom} = useRoomProvider()
    const { deleteQuiz, questionFetching, setQuestionFetching } =
       useQuizProvider();
 
@@ -78,10 +81,14 @@ const detailquizz = () => {
    } = useAppProvider();
 
    const [showAssignModal, setShowAssignModal] = useState(false);
+   const [showRoomWaitingModal, setShowRoomWaitingModal] = useState(false);
 
-   const handleAssignQuiz = async (items) => {      
+   const handleAssignQuiz = async (items) => {
       await addQuizToClassroom(items.assignmentName, items.selectedClass, quizId, items.startDate, items.deadline)
-      
+   };
+
+   const handleCreateRoom = async (items) => {
+      await createRoom(items.roomCode, quizId, userData._id, items.userMax, items.description)
    };
 
    // Lấy thông tin của quiz hiện tại
@@ -360,8 +367,10 @@ const detailquizz = () => {
                text={"Giao bài tập"}
                otherStyles={"m-2 flex-row p-4"}
                icon={<Entypo name="home" size={16} color="white" />}
-               onPress={() => {setShowAssignModal(true);
-                  closeBottomSheet();}
+               onPress={() => {
+                  setShowAssignModal(true);
+                  closeBottomSheet();
+               }
                }
             />
             <Button
@@ -451,13 +460,29 @@ const detailquizz = () => {
          </ScrollView>
 
          <View className="w-full h-[1px] bg-gray"></View>
-         <View className="p-2 flex justify-center">
+         <View className="p-2 flex-row justify-around">
             <Button
-               text={"Bắt đầu Quiz"}
+               text={"Thi thử"}
                otherStyles={"p-4"}
                textStyles={"text-center"}
-            ></Button>
+            />
+            <Button
+               text={"Tạo phòng"}
+               otherStyles={"p-4"}
+               textStyles={"text-center"}
+               onPress={() => {
+                  setShowRoomWaitingModal(true);
+                  closeBottomSheet();
+               }
+               }
+            />
          </View>
+
+         <RoomWaitingModal
+            visible={showRoomWaitingModal}
+            onClose={() => setShowRoomWaitingModal(false)}
+            onSubmit={handleCreateRoom}
+         />
 
          <AssignQuizModal
             visible={showAssignModal}

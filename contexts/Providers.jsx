@@ -5,6 +5,7 @@ import QuestionProvider from './QuestionProvider';
 import SubjectProvider from './SubjectProvider';
 import { AuthProvider } from './AuthContext';
 import ClassroomProvider from './ClassroomProvider';
+import RoomProvider from './RoomProvider';
 
 const combineProviders = (...providers) =>
 	providers.reduce(
@@ -24,6 +25,7 @@ const Providers = combineProviders(
 	QuestionProvider, // Thêm QuestionProvider
 	SubjectProvider, // Thêm SubjectProvider
 	ClassroomProvider, // Thêm ClassroomProvider
+	RoomProvider, // Thêm RoomProvider
 );
 
 export default Providers;
