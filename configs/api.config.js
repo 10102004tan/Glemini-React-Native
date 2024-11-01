@@ -93,6 +93,9 @@ const dev = {
 
 		//email
 		CHECK_EMAIL: '/user/check-email',
+
+		// room
+		ROOM_CREATE: '/room/create'
 	},
 };
 

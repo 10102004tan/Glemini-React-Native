@@ -200,7 +200,7 @@ const UploadExcelScreen = () => {
     };
 
     return (
-        <Wrapper>
+        <View className='flex-1 pt-10'>
             <ScrollView className="px-4">
                 <View className="flex items-center justify-center flex-1">
                     <View
@@ -279,7 +279,7 @@ const UploadExcelScreen = () => {
                     </View>
                 </View>
             </ScrollView>
-        </Wrapper>
+        </View>
     );
 };
 
