@@ -59,6 +59,8 @@ const dev = {
 		QUIZ_SEARCH: '/quizzes/search',
 
 		// Results
+		RESULT_STUDENT: '/result/student',
+		RESULT_TEACHER: '/result/teacher',
 		RESULT_SAVE_QUESTION: '/result/save-question',
 		RESULT_COMPLETED: '/result/complete-quiz',
 		RESULT_REVIEW: '/result/review',

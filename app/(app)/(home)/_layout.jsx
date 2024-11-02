@@ -105,7 +105,7 @@ export default function TabLayout() {
 <Tabs.Screen
         name="activity"
         options={{
-          title: 'Hoạt đông',
+          title: 'Hoạt động',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "analytics-sharp" : "analytics-outline"}
