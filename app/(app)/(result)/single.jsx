@@ -185,7 +185,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 						<Icon
 							name="ribbon-outline"
 							size={25}
-							className="text-white"
+							color={'white'}
 						/>
 					</View>
 				</View>
@@ -202,7 +202,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 						<Icon
 							name="help-circle-outline"
 							size={25}
-							className="text-white"
+							color={'white'}
 						/>
 					</View>
 				</View>
@@ -220,7 +220,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 						<Icon2
 							name="checkbox-marked-outline"
 							size={40}
-							className="text-green-500"
+							color={'green'}
 						/>
 					</View>
 				</View>
@@ -237,7 +237,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 						<Icon2
 							name="close-box-outline"
 							size={40}
-							className="text-red-500"
+							color={'red'}
 						/>
 					</View>
 				</View>
