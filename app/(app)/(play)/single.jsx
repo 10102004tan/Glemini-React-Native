@@ -46,15 +46,17 @@ const SinglePlay = () => {
 						quiz_id: quizId,
 					}),
 				});
-	
-				
+
+
 				const data = await res.json();
 				setQuestions(data.metadata);
 			} catch (error) {
 				Toast.show({
 					type: 'error',
 					text1: 'Lỗi khi lấy câu hỏi',
-					text2: { error}
+					text2: { error },
+					visibilityTime: 1000,
+            autoHide: true,
 				});
 			}
 		};
@@ -99,10 +101,12 @@ const SinglePlay = () => {
 			});
 		} catch (error) {
 			Toast.show({
-                type: 'error',
-                text1: 'Lỗi khi cập nhật trạng thái hoàn thành.',
-				text2: {error}
-            });
+				type: 'error',
+				text1: 'Lỗi khi cập nhật trạng thái hoàn thành.',
+				text2: { error },
+				visibilityTime: 1000,
+            autoHide: true,
+			});
 		}
 	};
 
@@ -145,6 +149,8 @@ const SinglePlay = () => {
 				type: 'error',
 				text1: `${i18n.t('play.single.errorTitle')}`,
 				text2: `${i18n.t('play.single.errorText')}`,
+				visibilityTime: 1000,
+				autoHide: true,
 			});
 			setIsProcessing(false);
 			return;
@@ -236,10 +242,10 @@ const SinglePlay = () => {
 
 	return (
 		<View className="flex-1">
-			<View className="flex-row justify-between items-center px-5 pt-10 pb-3 bg-black">
+			<View className="flex-row px-5 pt-10 pb-3 bg-black">
 				<Button
 					text={i18n.t('play.single.buttonQuit')}
-					onPress={() => { router.popToTop() }}
+					onPress={() => { router.back() }}
 					loading={false}
 					type="fill"
 					otherStyles={'bg-[#F41D1D]'}
