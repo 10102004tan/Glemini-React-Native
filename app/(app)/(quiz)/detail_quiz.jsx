@@ -24,6 +24,9 @@ import { collectionData } from "@/utils/index.js";
 import Checkbox from "@/components/customs/Checkbox.jsx";
 import CardQuiz from "@/components/customs/CardQuiz.jsx";
 import EmailDialog from "@/components/dialogs/EmailDialog.jsx";
+import { useClassroomProvider } from "@/contexts/ClassroomProvider.jsx";
+import AssignQuizModal from "@/components/modals/AssignQuizModal.jsx";
+import Toast from "react-native-toast-message-custom";
 
 
 const detailquizz = () => {
@@ -42,6 +45,7 @@ const detailquizz = () => {
 
    // Lấy dữ liệu name, description, thumb đưa vào ô thông tin
    const { quizzes, setQuizzes } = useQuizProvider();
+   const { addQuizToClassroom } = useClassroomProvider()
    const { deleteQuiz, questionFetching, setQuestionFetching } =
       useQuizProvider();
 
@@ -73,8 +77,16 @@ const detailquizz = () => {
       closeBottomSheet,
    } = useAppProvider();
 
+   const [showAssignModal, setShowAssignModal] = useState(false);
+
+   const handleAssignQuiz = async (items) => {      
+      await addQuizToClassroom(items.assignmentName, items.selectedClass, quizId, items.startDate, items.deadline)
+      
+   };
+
    // Lấy thông tin của quiz hiện tại
    const fetchQuiz = async () => {
+      // console.log("QUIZ_IN_DETAIL_REQUEST");
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`,
          {
@@ -202,13 +214,14 @@ const detailquizz = () => {
          }
       );
       const data = await response.json();
-      // console.log(data);
+      console.log(data);
       if (data.statusCode === 200) {
          setCollections(collectionData(data.metadata));
          console.log(collectionData(data.metadata));
       }
    };
    useEffect(() => {
+      // console.log("COLLECTIONS")
       getAllCollections();
    }, []);
 
@@ -219,11 +232,12 @@ const detailquizz = () => {
    }, [selectedCollection]);
 
    useEffect(() => {
+      // console.log("RUNNING")
       if (id) {
          fetchQuiz();
          fetchQuestions();
       }
-   }, []);
+   }, [id]);
 
    //Dropdown
    const nameSchool = [
@@ -247,197 +261,201 @@ const detailquizz = () => {
    ];
 
    return (
-      <Wrapper>
-         <EmailDialog
-            onSend={() => {
-               console.log("Send email");
-            }}
-            visible={showEmailDialog}
-            onClose={() => setShowEmailDialog(false)}
-            onConfirm={() => {
-               closeBottomSheet();
-               setShowEmailDialog(false);
-            }}
-            message={"Bạn chắc chắn muốn chia sẻ câu hỏi này?"}
-         />
+     <Wrapper>
+       <EmailDialog
+         quiz_id={id}
+         onSend={() => {
+           console.log("Send email");
+         }}
+         visible={showEmailDialog}
+         onClose={() => setShowEmailDialog(false)}
+         onConfirm={() => {
+           closeBottomSheet();
+           setShowEmailDialog(false);
+         }}
+         message={"Bạn chắc chắn muốn chia sẻ câu hỏi này?"}
+       />
 
-         <ConfirmDialog
-            title={"Chờ đã"}
-            visible={showConfirmDialog}
-            onCancel={() => setShowConfirmDialog(false)}
-            onConfirm={() => {
-               deleteQuiz(id);
-               setShowConfirmDialog(false);
-               closeBottomSheet();
-               router.back("(app)/(home)/library");
-            }}
-            message={"Bạn chắc chắn muốn xóa bộ câu hỏi này?"}
-         />
+       <ConfirmDialog
+         title={"Chờ đã"}
+         visible={showConfirmDialog}
+         onCancel={() => setShowConfirmDialog(false)}
+         onConfirm={() => {
+           deleteQuiz(id);
+           setShowConfirmDialog(false);
+           closeBottomSheet();
+           router.back("(app)/(home)/library");
+         }}
+         message={"Bạn chắc chắn muốn xóa bộ câu hỏi này?"}
+       />
 
-         <Overlay
-            onPress={closeBottomSheet}
-            visible={showBottomSheetMoreOptions || showBottomSheetSaveToLibrary || showEmailDialog}
-         ></Overlay>
+       <Overlay
+         onPress={closeBottomSheet}
+         visible={
+           showBottomSheetMoreOptions ||
+           showBottomSheetSaveToLibrary ||
+           showEmailDialog
+         }
+       ></Overlay>
 
-         {/* Bottom Sheet */}
-         <BottomSheet
-            visible={showBottomSheetMoreOptions}
-            onClose={closeBottomSheet}
-         >
-            <Button
-               text={"Chỉnh sửa"}
-               otherStyles={"m-2 flex-row"}
-               icon={<Entypo name="edit" size={16} color="white" />}
-            ></Button>
-            <Button
-               text={"Xóa"}
-               otherStyles={"m-2 flex-row"}
-               icon={<MaterialIcons name="delete" size={16} color="white" />}
-               onPress={() => {
-                  setShowConfirmDialog(true);
-               }}
-            ></Button>
-            <Button
-               text={"Chia sẻ bài kiểm tra"}
-               otherStyles={"m-2 flex-row"}
-               icon={<AntDesign name="sharealt" size={16} color="white" />}
-            ></Button>
-            <Button
-               text={"Lưu vào bộ sưu tập"}
-               otherStyles={"m-2 flex-row"}
-               icon={<Entypo name="save" size={16} color="white" />}
-               onPress={() => {
-                  closeBottomSheet();
-                  openBottomSheetSaveToLibrary();
-               }}
-            ></Button>
-         </BottomSheet>
+       {/* BottomSheet lưu vào bộ sưu tập */}
+       <BottomSheet
+         visible={showBottomSheetSaveToLibrary}
+         onClose={closeBottomSheet}
+       >
+         <View className="m-2">
+           <Text className="flex text-center text-[18px] text-gray">
+             Lưu vào bộ sưu tập
+           </Text>
+           <View className="w-full h-[1px] bg-gray my-2"></View>
 
-         {/* Bottom Sheet */}
-         <BottomSheet
-            visible={showBottomSheetMoreOptions}
-            onClose={closeBottomSheet}
-         >
-            <Button
-               text={"Chỉnh sửa"}
-               otherStyles={"m-2 flex-row p-4"}
-               icon={<Entypo name="edit" size={16} color="white" />}
-            ></Button>
-            <Button
-               text={"Xóa"}
-               otherStyles={"m-2 flex-row p-4"}
-               icon={<MaterialIcons name="delete" size={16} color="white" />}
-               onPress={() => {
-                  setShowConfirmDialog(true);
-               }}
-            ></Button>
-            <Button
-               text={"Chia sẻ bài kiểm tra"}
-               otherStyles={"m-2 flex-row p-4"}
-               icon={<AntDesign name="sharealt" size={16} color="white" />}
-               onPress={() => {
-                  // closeBottomSheet();
-                  setShowEmailDialog(true);
-                  setShowBottomSheetMoreOptions(false);
-                  setShowBottomSheetSaveToLibrary(false);
-               }}
-            ></Button>
-            <Button
-               text={"Lưu vào bộ sưu tập"}
-               otherStyles={"m-2 flex-row p-4"}
-               icon={<Entypo name="save" size={16} color="white" />}
-               onPress={() => {
-                  closeBottomSheet();
-                  openBottomSheetSaveToLibrary();
-               }}
-            ></Button>
-         </BottomSheet>
-
-         <View className="w-full">
-            <View>
+           <View className="w-full">
+             <View>
                {collections.length > 0 &&
-                  collections.map((collection) => {
-                     return (
-                        <View key={collection.key} className="flex-row mb-2">
-                           <Checkbox
-                              isChecked={collection.quizzes.some(
-                                 (quiz_id) => quiz_id === id
-                              )}
-                              onToggle={() => {
-                                 if (
-                                    collection.quizzes.some((quiz_id) => quiz_id === id)
-                                 ) {
-                                    deleteQuizInCollection(collection.key);
-                                 } else {
-                                    addQuizToCollection(collection.key);
-                                 }
-                              }}
-                           />
-                           <Text>{collection.value}</Text>
-                        </View>
-                     );
-                  })}
-            </View>
+                 collections.map((collection) => {
+                   return (
+                     <View key={collection.key} className="flex-row mb-2">
+                       <Checkbox
+                         isChecked={collection.quizzes.some(
+                           (quiz_id) => quiz_id === id
+                         )}
+                         onToggle={() => {
+                           if (
+                             collection.quizzes.some(
+                               (quiz_id) => quiz_id === id
+                             )
+                           ) {
+                             deleteQuizInCollection(collection.key);
+                           } else {
+                             addQuizToCollection(collection.key);
+                           }
+                         }}
+                       />
+                       <Text>{collection.value}</Text>
+                     </View>
+                   );
+                 })}
+             </View>
+           </View>
          </View>
+       </BottomSheet>
 
-         <ScrollView>
-            <View className="flex mb-4 mx-4">
-               <View className="w-full rounded-xl mt-4 flex-col">
-                  <View className="w-full rounded-xl flex-row mb-3">
-                     <CardQuiz
-                        type="vertical"
-                        routerPath="(quiz)/overview"
-                        params={{ id: id }}
-                        quiz={{
-                           quiz_name: quizName,
-                           quiz_thumb: quizThumbnail,
-                           quiz_description: quizDescription,
-                           quiz_status: quizStatus
-                        }}
-                     />
-                  </View>
-               </View>
-            </View>
+       {/* Bottom Sheet */}
+       <BottomSheet
+         visible={showBottomSheetMoreOptions}
+         onClose={closeBottomSheet}
+       >
+         <Button
+           text={"Chỉnh sửa"}
+           otherStyles={"m-2 flex-row p-4"}
+           icon={<Entypo name="edit" size={16} color="white" />}
+         />
+         <Button
+           text={"Xóa"}
+           otherStyles={"m-2 flex-row p-4"}
+           icon={<MaterialIcons name="delete" size={16} color="white" />}
+           onPress={() => {
+             setShowConfirmDialog(true);
+           }}
+         />
+         <Button
+           text={"Chia sẻ bài kiểm tra"}
+           otherStyles={"m-2 flex-row p-4"}
+           icon={<AntDesign name="sharealt" size={16} color="white" />}
+           onPress={() => {
+             // closeBottomSheet();
+             setShowEmailDialog(true);
+             setShowBottomSheetMoreOptions(false);
+             setShowBottomSheetSaveToLibrary(false);
+           }}
+         />
+         <Button
+           text={"Giao bài tập"}
+           otherStyles={"m-2 flex-row p-4"}
+           icon={<Entypo name="home" size={16} color="white" />}
+           onPress={() => {
+             setShowAssignModal(true);
+             closeBottomSheet();
+           }}
+         />
+         <Button
+           text={"Lưu vào bộ sưu tập"}
+           otherStyles={"m-2 flex-row p-4"}
+           icon={<Entypo name="save" size={16} color="white" />}
+           onPress={() => {
+             closeBottomSheet();
+             openBottomSheetSaveToLibrary();
+           }}
+         />
+       </BottomSheet>
 
-            <View className="w-full h-[1px] bg-gray"></View>
+       <View className="w-full">
+         
+       </View>
 
-            <View>
-               <Text className="text-gray mt-4 text-right p-4">
-                  {quizTurn} người đã tham gia
-               </Text>
-            </View>
-
-            <View className="flex m-4 ">
-               {/* Quiz Questions */}
-               {questionFetching ? (
-                  <Text>Loading</Text>
-               ) : (
-                  <View className="mt-2 ">
-                     {currentQuizQuestion.length > 0 &&
-                        currentQuizQuestion.map((question, index) => {
-                           return (
-                              <QuestionOverview
-                                 key={index}
-                                 question={question}
-                                 index={index}
-                              />
-                           );
-                        })}
-                  </View>
-               )}
-            </View>
-         </ScrollView>
+       <ScrollView>
+         <View className="flex mb-4 mx-4">
+           <View className="w-full rounded-xl mt-4 flex-col">
+             <View className="w-full rounded-xl flex-row mb-3">
+               <CardQuiz
+                 type="vertical"
+                 routerPath="(quiz)/overview"
+                 params={{ id: id }}
+                 quiz={{
+                   quiz_name: quizName,
+                   quiz_thumb: quizThumbnail,
+                   quiz_description: quizDescription,
+                   quiz_status: quizStatus,
+                 }}
+               />
+             </View>
+           </View>
+         </View>
 
          <View className="w-full h-[1px] bg-gray"></View>
-         <View className="p-2 flex justify-center">
-            <Button
-               text={"Bắt đầu Quiz"}
-               otherStyles={"p-4"}
-               textStyles={"text-center"}
-            ></Button>
+
+         <View>
+           <Text className="text-gray mt-4 text-right p-4">
+             {quizTurn} người đã tham gia
+           </Text>
          </View>
 
-      </Wrapper >
+         <View className="flex m-4 ">
+           {/* Quiz Questions */}
+           {questionFetching ? (
+             <Text>Loading</Text>
+           ) : (
+             <View className="mt-2 ">
+               {currentQuizQuestion.length > 0 &&
+                 currentQuizQuestion.map((question, index) => {
+                   return (
+                     <QuestionOverview
+                       key={index}
+                       question={question}
+                       index={index}
+                     />
+                   );
+                 })}
+             </View>
+           )}
+         </View>
+       </ScrollView>
+
+       <View className="w-full h-[1px] bg-gray"></View>
+       <View className="p-2 flex justify-center">
+         <Button
+           text={"Bắt đầu Quiz"}
+           otherStyles={"p-4"}
+           textStyles={"text-center"}
+         ></Button>
+       </View>
+
+       <AssignQuizModal
+         visible={showAssignModal}
+         onClose={() => setShowAssignModal(false)}
+         onAssign={handleAssignQuiz}
+       />
+     </Wrapper>
    );
 };
 

@@ -1,7 +1,7 @@
 "use strict";
 
 const dev = {
-  API_URL: "http://192.168.1.18:3000/api",
+  API_URL: "http://172.20.10.9:8000/api",
 
   API_VERSION: {
     V1: "/v1",
@@ -18,6 +18,7 @@ const dev = {
     REFRESH_TOKEN: "/auth/refresh-token",
     PROFILE: "/user/profile",
     PROFILE_EDIT: "/user/profile",
+    RE_UPLOAD: "/user/profile/verification/re-upload",
     USER_NOTIFICATION: "/user/notifications",
     PROFILE_EDIT_AVATAR: "/user/profile/avatar",
     PROFILE_TEACHER_IMAGES: "/user/profile/verification/images",
@@ -55,6 +56,8 @@ const dev = {
     QUIZ_FILTER: "/quizzes/filter",
     QUIZ_GENERATE_GEMINI: "/quizzes/gemini/generate/prompt",
     QUIZ_UPDATE: "/quizzes/update",
+    QUIZ_SEARCH: "/quizzes/search",
+    GET_ALL_QUIZZES_SHARED: "/quizzes/get-all-quizzes-shared",
 
     // Results
     RESULT_SAVE_QUESTION: "/result/save-question",
@@ -86,10 +89,11 @@ const dev = {
     CLASSROOM_UPLOAD: "/classroom/upload",
     CLASSROOM_GET_EXCEL_TEMPLATE: "/classroom/get-templates/template_excel",
     CLASSROOM_ADD_STUDENT: "/classroom/add-student",
+    CLASSROOM_ADD_QUIZ: "/classroom/add-quiz",
     CLASSROOM_REMOVE_STUDENT: "/classroom/rm-student",
 
     //email
-    CHECK_EMAIL: "/user/check-email",
+    CHECK_EMAIL: "/user/share-quiz",
   },
 };
 

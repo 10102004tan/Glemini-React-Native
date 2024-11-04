@@ -23,8 +23,7 @@ const CardQuiz = ({ quiz, type = 'horizontal', routerPath = '', params = {} }) =
                className="w-full"
                onPress={() => {
                   router.push({
-                     pathname:
-                        routerPath,
+                     pathname: routerPath,
                      params: params,
                   });
                }}
@@ -77,9 +76,8 @@ const CardQuiz = ({ quiz, type = 'horizontal', routerPath = '', params = {} }) =
          <TouchableOpacity
             className="w-full"
             onPress={() => {
-               router.push({
-                  pathname:
-                     routerPath,
+               router.replace({
+                  pathname: routerPath,
                   params: params,
                });
             }}

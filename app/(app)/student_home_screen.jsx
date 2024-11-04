@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useState, useEffect, useCallback, useContext} from 'react';
 import { View, Text, TouchableOpacity, Dimensions, Image, ScrollView } from 'react-native';
 import Wrapper from '@/components/customs/Wrapper';
 import Carousel from 'react-native-reanimated-carousel';
@@ -11,6 +11,8 @@ import { useNavigation } from '@react-navigation/native';
 import QuizModal from '@/components/modals/QuizModal';
 import LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
+import NotificationIcon from "@/components/customs/NotificationIcon";
+import {AuthContext} from "@/contexts/AuthContext";
 
 const StudentHomeScreen = () => {
 	const navigation = useNavigation();
@@ -22,6 +24,7 @@ const StudentHomeScreen = () => {
 	const [selectedQuiz, setSelectedQuiz] = useState(null);
 	const width = Dimensions.get('window').width;
 	const carouselHeight = width * 2 / 3;
+	const {numberOfUnreadNoti} = useContext(AuthContext);
 
 
 	useEffect(() => {
@@ -45,16 +48,18 @@ const StudentHomeScreen = () => {
 
 	const handleNavigateToQuiz = () => {
 		setModalVisible(false);
-		navigation.push('(play)/single', { quiz: selectedQuiz });
+		navigation.push('(play)/single', { quizId: selectedQuiz._id });
 	};
 
 	return (
-		<Wrapper>
+		<View className='flex-1 pt-10'>
 			<ScrollView
 				showsVerticalScrollIndicator={false}
 				className='mb-20'>
+				<View className={"flex-row justify-end"}>
+					<NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti} color={"black"}/>
+				</View>
 				<View className={bannerQuizzes.length > 0 ? `flex h-[${carouselHeight}px]` : `hidden`}>
-
 					<Carousel
 						loop
 						width={width}
@@ -116,7 +121,7 @@ const StudentHomeScreen = () => {
 				<View className='px-4 pt-4 flex gap-2'>
 					{filterQuizzes?.length > 0 ? (
 						filterQuizzes.map((quiz) => (
-							<TouchableOpacity key={quiz._id} onPress={() => handlePressQuizItem(quiz)}>
+							<TouchableOpacity key={quiz._id} onPress={() => handlePressQuizItem(quiz._id)}>
 								<QuizItem quiz={quiz} />
 							</TouchableOpacity>
 						))
@@ -142,7 +147,7 @@ const StudentHomeScreen = () => {
 				onStartQuiz={handleNavigateToQuiz}
 				quiz={selectedQuiz}
 			/>
-		</Wrapper>
+		</View>
 	);
 };
 

@@ -1,220 +1,311 @@
 {
-    "signIn":{
-        "title": "Đăng nhập",
-        "email": "Email",
-        "password": "Mật khẩu",
-        "login": "Đăng nhập",
-        "forgot": "Quên mật khẩu?",
-        "signUp": "Đăng ký tại đây",
-        "notHaveAccount":"Chưa có tài khoản?",
-        "error": "Email hoặc mật khẩu không hợp lệ",
-        "startNow":"Bắt đầu thôi",
-        "welcome":"Chào mừng đến với ứng dụng Glemini",
-        "forgetPassword":"Quên mật khẩu",
-        "success":"Đăng nhập thành công"
-    },
-    "signUp":{
-        "title": "Tạo tài khoản mới",
-        "email": "Email",
-        "password": "Mật khẩu",
-        "confirmPassword": "Xác nhận mật khẩu",
-        "signUp": "Tạo tài khoản",
-        "haveAccount":"Đã có tài khoản?",
-        "signInNow":"Đăng nhập ngay",
-        "startNow":"Bắt đầu thôi",
-        "fullname":"Họ và tên",
-        "welcome":"Welcome to Glemini App",
-        "choice":{
-            "student":"Học sinh",
-            "teacher":"Giáo viên",
-            "studentDescription":"Tham gia các hoạt động lớp học vui nhộn",
-            "teacherDescription":"Quản lý các bài kiểm tra, lớp học và kết quả",
-            "title":"Chọn loại tài khoản"
-        },
-        "card":"Ảnh thẻ",
-        "cardID":"CCCD",
-        "documentConfirm":"Giấy tờ xác nhận",
-        "cardDescription":"Ảnh thẻ hoặc CCCD",
-        "documentDescription":"Ảnh giấy tờ xác nhận",
-        "cardIdDescription":"Ảnh thẻ hoặc CCCD",
-        "descForCard": "Vui lòng cung cấp ảnh thẻ rõ nét",
-        "descForCardID": "Vui lòng chụp CCCD ở nơi có ánh sáng tốt",
-        "descForDocument": "Vui lòng cung cấp ảnh giấy tờ xác nhận rõ ràng"
-    },
-    "resetPassword":{
-        "title":"Đặt lại mật khẩu",
-        "email":"Email",
-        "send":"Gửi",
-        "back":"Quay lại",
-        "success":"Đặt lại mật khẩu thành công",
-        "error":"Email không tồn tại",
-        "notification":"Thông báo",
-        "password": "Mật khẩu mới",
-        "confirmPassword": "Xác nhận mật khẩu mới",
-        "submit": "Xác nhận",
-        "haveAccount": "Đã có tài khoản?",
-        "notHaveAccount": "Chưa có tài khoản?",
-        "backToSignIn": "Quay lại đăng nhập",
-        "changeEmail": "Thay đổi email",
-        "resendCode": "Gửi lại mã xác nhận",
-        "notReceiveCode": "Không nhận được mã xác nhận?"
-    },
-    "error":{
-        "emailInvalid":"Email không hợp lệ",
-        "passwordInvalid":"Mật khẩu phải có ít nhất 8 ký tự",
-        "confirmPassword":"Mật khẩu xác nhận không khớp",
-        "passwordNotMatch": "Mật khẩu không khớp",
-        "fullnameInvalid":"Họ và tên không hợp lệ",
-        "emailRequired":"Email là bắt buộc",
-        "notification":"Thông báo",
-        "emailExist":"Email đã tồn tại",
-        "passwordRequired":"Mật khẩu là bắt buộc",
-        "confirmPasswordRequired":"Xác nhận mật khẩu là bắt buộc",
-        "fullnameRequired":"Họ và tên là bắt buộc",
-        "cardRequired":"Ảnh thẻ là bắt buộc",
-        "cardIDRequired":"CCCD là bắt buộc",
-        "documentConfirmRequired":"Giấy tờ xác nhận là bắt buộc",
-        "nameNotIncludeChar":"Họ và tên không được chứa ký tự đặc biệt",
-        "title": "Lỗi",
-        "imageRequired":"Ảnh là bắt buộc"
-    },
-    "success":{
-        "signUp":"Đăng ký thành công",
-        "title":"Thành công"
-    },
-    "language":{
-        "title":"Chọn ngôn ngữ",
-        "english":"Tiếng Anh",
-        "vietnamese":"Tiếng Việt",
-        "japanese":"Tiếng Nhật",
-        "changeLanguage":"Thay đổi ngôn ngữ",
-        "edit":"Chỉnh sửa ngay"
-    },
-    "logout":{
-        "title":"Đăng xuất",
-        "message":"Bạn có chắc chắn muốn đăng xuất không?",
-        "cancel":"Hủy",
-        "logout":"Đăng xuất"
-    },
-    "forgetPassword":{
-        "title":"Quên mật khẩu",
-        "email":"Email",
-        "send":"Gửi"
-    },
-    "play": {
-        "single": {
-            "buttonQuit": "Kết thúc",
-            "score": "Điểm",
-            "questionCouter": "Câu hỏi số:",
-            "buttonConfirm": "Xác nhận",
-            "incorrect": "Sai rồi!!!",
-            "errorTitle": "Cảnh báo",
-            "errorText": "Vui lòng chọn đáp án!"
-        }
-    },
-    "result": {
-        "single": {
-            "buttonQuit": "Kết thúc",
-            "buttonReplay": "Chơi lại",
-            "buttonPlayNewQuiz": "Tìm bộ mới",
-            "score": "Điểm số",
-            "totalQuestions": "Tổng số câu hỏi",
-            "correct": "Chính xác",
-            "incorrect": "Không chính xác",
-            "textResult": "Tỉ lệ kết quả",
-            "textDesc": "Luyện tập",
-            "buttonReview": "Xem lại"
-        },
-        "review": {
-            "title": "Xem lại Câu trả lời",
-            "text_question": "Câu hỏi",
-            "indexQuestion": "Câu hỏi số",
-            "explanation": "Giải thích: ",
-            "textExplanation": "Không có giải thích ở đây!",
-            "btnNext": "Trước",
-            "btnPrev": "Sau",
-            "point": "điểm",
-            "userAnswer": "Đáp án của bạn: "
-        }
-    },
-    "student_homepage": {
-        "explore": "Khám phá",
-        "categoryAll": "Tất cả",
-        "author": "Tác giả:",
-        "turnPlay": "Lượt chơi:",
-        "btnThuThach": "Thử thách bạn",
-        "btnLuyenTap": "Luyện tập",
-        "desc": "Mô tả:",
-        "textDesc": "Không có mô tả ở đây!"
-    },
-    "profile":{
-        "title":"Thông tin tài khoản",
-        "info": "Thông tin cá nhân",
-        "fullname":"Họ và tên",
-        "email":"Email",
-        "phone":"Số điện thoại",
-        "address":"Địa chỉ",
-        "password":"Mật khẩu",
-        "oldPassword":"Mật khẩu cũ",
-        "newPassword":"Mật khẩu mới",
-        "confirmPassword":"Xác nhận mật khẩu",
-        "school":"Trường học",
-        "editNow":"Chinh sửa ngay",
-        "save":"Lưu",
-        "edit":"Sửa",
-        "infoAuth": "Thông tin Xác thực"
-    },
-    "settings":{
-        "title":"Cài đặt",
-        "language":"Ngôn ngữ"
-    },
-    "home":{
-        "title":"Trang chủ"
-    },
-    "search":{
-        "title":"Tìm kiếm"
-    },
-    "classes":{
-        "title":"Lớp học"
-    },
-    "account":{
-        "title":"Tài khoản",
-        "buttonEdit": "Chỉnh sửa"
-    },
-    "report":{
-        "title":"Báo cáo"
-    },
-    "status": {
-        "title": "Trạng thái",
-        "active": "Đã kích hoạt",
-        "pedding": "Chờ xác nhận",
-        "reject": "Từ chối"
-    },
-    "library":{
-        "title":"Thư viện"
-    },
-    "lockFeature":{
-        "title":"Bạn chưa có quyền truy cập chức năng này",
-        "desc":"Xem trạng thái hồ sơ của bạn",
-        "button":"Tại đây"
-    },
-    "classroom": {
-        "title": "Lớp học",
-        "teacher": {
-            "btnAddClass": "Tạo lớp học mới",
-            "titleBts": "Nhập thông tin lớp học mới",
-            "fieldSchool": "Tên trường",
-            "placeholderFieldSchool": "Chọn tên trường ...",
-            "fieldSubject": "Tên môn học",
-            "placeholderFieldSubject": "Chọn môn học ...",
-            "fieldClassroom": "Tên lớp",
-            "placeholderFieldClassroom": "Nhập tên lớp ...",
-            "btnSave": "Tạo mới",
-            "btnCancel": "Hủy",
-            "btnEdit": "Chỉnh sửa",
-            "titleBtsAddStudent": "Thêm danh sách học sinh"
-
-        },
-        "student": {}
-    }
+   "signIn": {
+      "title": "Đăng nhập",
+      "email": "Email",
+      "password": "Mật khẩu",
+      "login": "Đăng nhập",
+      "forgot": "Quên mật khẩu?",
+      "signUp": "Đăng ký tại đây",
+      "notHaveAccount": "Chưa có tài khoản?",
+      "error": "Email hoặc mật khẩu không hợp lệ",
+      "startNow": "Bắt đầu thôi",
+      "welcome": "Chào mừng đến với ứng dụng Glemini",
+      "forgetPassword": "Quên mật khẩu",
+      "success": "Đăng nhập thành công"
+   },
+   "signUp": {
+      "title": "Tạo tài khoản mới",
+      "email": "Email",
+      "password": "Mật khẩu",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "signUp": "Tạo tài khoản",
+      "haveAccount": "Đã có tài khoản?",
+      "signInNow": "Đăng nhập ngay",
+      "startNow": "Bắt đầu thôi",
+      "fullname": "Họ và tên",
+      "welcome": "Welcome to Glemini App",
+      "choice": {
+         "student": "Học sinh",
+         "teacher": "Giáo viên",
+         "studentDescription": "Tham gia các hoạt động lớp học vui nhộn",
+         "teacherDescription": "Quản lý các bài kiểm tra, lớp học và kết quả",
+         "title": "Chọn loại tài khoản"
+      },
+      "card": "Ảnh thẻ",
+      "cardID": "CCCD",
+      "documentConfirm": "Giấy tờ xác nhận",
+      "cardDescription": "Ảnh thẻ hoặc CCCD",
+      "documentDescription": "Ảnh giấy tờ xác nhận",
+      "cardIdDescription": "Ảnh thẻ hoặc CCCD",
+      "descForCard": "Vui lòng cung cấp ảnh thẻ rõ nét",
+      "descForCardID": "Vui lòng chụp CCCD ở nơi có ánh sáng tốt",
+      "descForDocument": "Vui lòng cung cấp ảnh giấy tờ xác nhận rõ ràng"
+   },
+   "resetPassword": {
+      "title": "Đặt lại mật khẩu",
+      "email": "Email",
+      "send": "Gửi",
+      "back": "Quay lại",
+      "success": "Đặt lại mật khẩu thành công",
+      "error": "Email không tồn tại",
+      "notification": "Thông báo",
+      "password": "Mật khẩu mới",
+      "confirmPassword": "Xác nhận mật khẩu mới",
+      "submit": "Xác nhận",
+      "haveAccount": "Đã có tài khoản?",
+      "notHaveAccount": "Chưa có tài khoản?",
+      "backToSignIn": "Quay lại đăng nhập",
+      "changeEmail": "Thay đổi email",
+      "resendCode": "Gửi lại mã xác nhận",
+      "notReceiveCode": "Không nhận được mã xác nhận?"
+   },
+   "error": {
+      "emailInvalid": "Email không hợp lệ",
+      "passwordInvalid": "Mật khẩu phải có ít nhất 8 ký tự",
+      "confirmPassword": "Mật khẩu xác nhận không khớp",
+      "passwordNotMatch": "Mật khẩu không khớp",
+      "fullnameInvalid": "Họ và tên không hợp lệ",
+      "emailRequired": "Email là bắt buộc",
+      "notification": "Thông báo",
+      "emailExist": "Email đã tồn tại",
+      "passwordRequired": "Mật khẩu là bắt buộc",
+      "confirmPasswordRequired": "Xác nhận mật khẩu là bắt buộc",
+      "fullnameRequired": "Họ và tên là bắt buộc",
+      "cardRequired": "Ảnh thẻ là bắt buộc",
+      "cardIDRequired": "CCCD là bắt buộc",
+      "documentConfirmRequired": "Giấy tờ xác nhận là bắt buộc",
+      "nameNotIncludeChar": "Họ và tên không được chứa ký tự đặc biệt",
+      "title": "Lỗi",
+      "imageRequired": "Ảnh là bắt buộc"
+   },
+   "success": {
+      "signUp": "Đăng ký thành công",
+      "title": "Thành công"
+   },
+   "language": {
+      "title": "Chọn ngôn ngữ",
+      "english": "Tiếng Anh",
+      "vietnamese": "Tiếng Việt",
+      "japanese": "Tiếng Nhật",
+      "changeLanguage": "Thay đổi ngôn ngữ",
+      "edit": "Chỉnh sửa ngay"
+   },
+   "logout": {
+      "title": "Đăng xuất",
+      "message": "Bạn có chắc chắn muốn đăng xuất không?",
+      "cancel": "Hủy",
+      "logout": "Đăng xuất"
+   },
+   "forgetPassword": {
+      "title": "Quên mật khẩu",
+      "email": "Email",
+      "send": "Gửi"
+   },
+   "play": {
+      "single": {
+         "buttonQuit": "Kết thúc",
+         "score": "Điểm",
+         "questionCouter": "Câu hỏi số:",
+         "buttonConfirm": "Xác nhận",
+         "incorrect": "Sai rồi!!!",
+         "errorTitle": "Cảnh báo",
+         "errorText": "Vui lòng chọn đáp án!"
+      }
+   },
+   "result": {
+      "single": {
+         "buttonQuit": "Kết thúc",
+         "buttonReplay": "Chơi lại",
+         "buttonPlayNewQuiz": "Tìm bộ mới",
+         "score": "Điểm số",
+         "totalQuestions": "Tổng số câu hỏi",
+         "correct": "Chính xác",
+         "incorrect": "Không chính xác",
+         "textResult": "Tỉ lệ kết quả",
+         "textDesc": "Luyện tập",
+         "buttonReview": "Xem lại"
+      },
+      "review": {
+         "title": "Xem lại Câu trả lời",
+         "text_question": "Câu hỏi",
+         "indexQuestion": "Câu hỏi số",
+         "explanation": "Giải thích: ",
+         "textExplanation": "Không có giải thích ở đây!",
+         "btnNext": "Trước",
+         "btnPrev": "Sau",
+         "point": "điểm",
+         "userAnswer": "Đáp án của bạn: "
+      }
+   },
+   "student_homepage": {
+      "explore": "Khám phá",
+      "categoryAll": "Tất cả",
+      "author": "Tác giả:",
+      "turnPlay": "Lượt chơi:",
+      "btnThuThach": "Thử thách bạn",
+      "btnLuyenTap": "Luyện tập",
+      "desc": "Mô tả:",
+      "textDesc": "Không có mô tả ở đây!"
+   },
+   "teacher_homepage": {
+      "searchInputPlaceholder": "Tạo một bài kiểm tra hoặc một bài học",
+      "createQuizButtonTitle": "Tạo bộ câu hỏi",
+      "myLibraryButtonTitle": "Thư viện của tôi",
+      "reportButtonTitle": "Báo cáo",
+      "createQuizWithAi": "Tạo bộ câu hỏi với AI",
+      "createFromImage": "Tạo từ ảnh",
+      "createFromText": "Tạo từ văn bản",
+      "uploadTemplate": "Tải lên mẫu",
+      "createWithHand": "Tạo bằng tay"
+   },
+   "create_title_quiz_screen": {
+      "quizName": "Tên bài kiểm tra",
+      "quizNameRequest": "Hãy cho chúng tôi biết tên bài kiểm tra của bạn",
+      "quizDescription": "Mô tả bài kiểm tra",
+      "prompt": "Yêu cầu",
+      "promptRequest": "Hãy cho chúng tôi biết yêu cầu của bạn",
+      "quizThumbnailUploadTitle": "Tải lên một file ảnh mà bạn muốn tạo bộ câu hỏi từ nội dung của nó",
+      "startCreateQuiz": "Bắt đầu tạo bộ câu hỏi"
+   },
+   "overview_quiz_screen": {
+      "detail": "Chi tiết",
+      "quizName": "Tên bài kiểm tra",
+      "quizDescription": "Mô tả bài kiểm tra",
+      "questionType": "Loại câu hỏi",
+      "second": "giây",
+      "point": "điểm",
+      "edit": "Chỉnh sửa",
+      "viewExplain": "Xem giải thích",
+      "explanation": "Giải thích",
+      "quizSubject": "Lĩnh vực, Môn học",
+      "viewMode": "Chế độ xem",
+      "notification": "Thông báo",
+      "confirmDelete": "Bạn có chắc chắn muốn xóa bài kiểm tra này không?",
+      "cancel": "Hủy",
+      "delete": "Xóa",
+      "confirm": "Xác nhận",
+      "btnSaveDetail": "Lưu",
+      "editQuestionTitle": "Chỉnh sửa câu hỏi",
+      "addImageTitle": "Thêm ảnh",
+      "btnAddQuestion": "Thêm câu hỏi",
+      "alertMessageQuizDescription": "Mô tả bộ quiz không được quá 200 ký tự",
+      "alertMessageQuizName": "Tên bộ quiz không được quá 100 ký tự",
+      "alertNetwork": "Lỗi mạng, vui lòng kiểm tra kết nối và thử lại",
+      "chooseQuestionType": "Chọn loại câu hỏi",
+      "evaluation": "Đánh giá",
+      "mutipleChoice": "Nhiều lựa chọn",
+      "fillInBlank": "Điền từ",
+      "blank": "Tự luận",
+      "logical": "Tư duy"
+   },
+   "edit_quiz_screen": {
+      "title": "Chỉnh sửa câu hỏi",
+      "second": "giây",
+      "point": "điểm",
+      "mutipleChoice": "Nhiều lựa chọn",
+      "addExplain": "Thêm giải thích",
+      "addAnswer": "Thêm phương án",
+      "deleteQuestion": "Xóa câu hỏi này",
+      "saveQuestion": "Lưu câu hỏi",
+      "createQuestion": "Tạo câu hỏi",
+      "save": "Lưu",
+      "markCorrectAnswer": "Đánh dấu đáp án đúng",
+      "unmarkCorrectAnswer": "Bỏ đánh dấu đáp án đúng",
+      "deleteAnswer": "Xóa phương án này",
+      "chooseTime": "Chọn thời gian",
+      "choosePoint": "Chọn điểm",
+      "questionContent": "Nội dung câu hỏi của bạn"
+   },
+   "subjects": {
+      "math": "Toán",
+      "literature": "Ngữ văn",
+      "physics": "Vật lý",
+      "chemistry": "Hóa học",
+      "biology": "Sinh học",
+      "history": "Lịch sử",
+      "geography": "Địa lý",
+      "english": "Tiếng Anh",
+      "it": "Tin học",
+      "physical": "Thể dục",
+      "music": "Âm nhạc",
+      "art": "Mỹ thuật",
+      "civic_education": "GDTC",
+      "foreign_language": "Ngoại ngữ",
+      "subject": "Môn học",
+      "field": "Lĩnh vực",
+      "chooseSubject": "Chọn môn học",
+      "chooseField": "Chọn lĩnh vực",
+      "other": "Khác",
+      "published": "Công khai",
+      "unpublished": "Riêng tư"
+   },
+   "profile": {
+      "title": "Thông tin tài khoản",
+      "info": "Thông tin cá nhân",
+      "fullname": "Họ và tên",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "address": "Địa chỉ",
+      "password": "Mật khẩu",
+      "oldPassword": "Mật khẩu cũ",
+      "newPassword": "Mật khẩu mới",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "school": "Trường học",
+      "editNow": "Chinh sửa ngay",
+      "save": "Lưu",
+      "edit": "Sửa",
+      "infoAuth": "Thông tin Xác thực"
+   },
+   "settings": {
+      "title": "Cài đặt",
+      "language": "Ngôn ngữ"
+   },
+   "home": {
+      "title": "Trang chủ"
+   },
+   "search": {
+      "title": "Tìm kiếm"
+   },
+   "classes": {
+      "title": "Lớp học"
+   },
+   "account": {
+      "title": "Tài khoản",
+      "buttonEdit": "Chỉnh sửa"
+   },
+   "report": {
+      "title": "Báo cáo"
+   },
+   "status": {
+      "title": "Trạng thái",
+      "active": "Đã kích hoạt",
+      "pedding": "Chờ xác nhận",
+      "reject": "Từ chối"
+   },
+   "library": {
+      "title": "Thư viện"
+   },
+   "lockFeature": {
+      "title": "Bạn chưa có quyền truy cập chức năng này",
+      "desc": "Xem trạng thái hồ sơ của bạn",
+      "button": "Tại đây"
+   },
+   "classroom": {
+      "title": "Lớp học",
+      "teacher": {
+         "btnAddClass": "Tạo lớp học mới",
+         "titleBts": "Nhập thông tin lớp học mới",
+         "fieldSchool": "Tên trường",
+         "placeholderFieldSchool": "Chọn tên trường ...",
+         "fieldSubject": "Tên môn học",
+         "placeholderFieldSubject": "Chọn môn học ...",
+         "fieldClassroom": "Tên lớp",
+         "placeholderFieldClassroom": "Nhập tên lớp ...",
+         "btnSave": "Tạo mới",
+         "btnCancel": "Hủy",
+         "btnEdit": "Chỉnh sửa",
+         "titleBtsAddStudent": "Thêm danh sách học sinh"
+      },
+      "student": {}
+   }
 }

@@ -2,11 +2,10 @@ import { View, Text, FlatList, Pressable, TextInput} from 'react-native';
 import React, {useCallback, useContext, useState} from 'react';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import ClassroomCard from '@/components/customs/ClassroomCard';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, router } from 'expo-router';
 const StudentView = () => {
     const { classrooms, fetchClassrooms } = useClassroomProvider();
 	const [searchQuery, setSearchQuery] = useState('');
-	
 	useFocusEffect(
         useCallback(() => {
             fetchClassrooms();
@@ -15,6 +14,12 @@ const StudentView = () => {
 	const filteredClassrooms = classrooms.filter(classroom =>
         classroom.class_name.toLowerCase().includes(searchQuery.toLowerCase())
     );
+    const handleNavigateToDetail = (classroomId) => {
+        router.push({
+            pathname: '(classroom)/student_detail',
+            params: { classroomId },
+        });
+    };
 	return (
 		<View className='flex-1 bg-slate-50'>
 			{/* Bộ tìm kiếm */}

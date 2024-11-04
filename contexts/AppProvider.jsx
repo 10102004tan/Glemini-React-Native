@@ -42,7 +42,7 @@ const AppProvider = ({ children }) => {
             setLanguage(key);
          }
       });
-      console.log("AppProvider");
+      // console.log("AppProvider");
    }, []);
 
    // Hàm xử lý chuyển đổi ngôn ngữ

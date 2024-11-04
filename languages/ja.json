@@ -1,201 +1,293 @@
 {
-    "signIn": {
-        "title": "サインイン",
-        "email": "メール",
-        "password": "パスワード",
-        "login": "サインイン",
-        "forgot": "パスワードを忘れた場合",
-        "signUp": "サインアップ",
-        "notHaveAccount": "アカウントをお持ちでない場合",
-        "error": "無効なメールアドレスまたはパスワード",
-        "startNow": "今すぐ始める",
-        "welcome": "当社のアプリへようこそ",
-        "forgetPassword": "パスワードを忘れた場合",
-        "success": "サインインに成功しました"
-    },
-    "signUp": {
-        "title": "サインアップ",
-        "email": "メール",
-        "password": "パスワード",
-        "confirmPassword": "パスワードを確認",
-        "signInNow": "今すぐサインイン",
-        "signUp": "アカウントを作成",
-        "haveAccount": "すでにアカウントをお持ちですか？",
-        "fullname": "フルネーム",
-        "startNow": "今すぐ始める",
-        "welcome": "当社のアプリへようこそ",
-        "choice": {
-            "student": "学生",
-            "teacher": "先生",
-            "studentDescription": "楽しい教室活動に参加する",
-            "teacherDescription": "クイズ、教室、結果を管理する",
-            "title": "アカウントタイプを選択"
-        },
-        "success": "サインアップに成功しました",
-        "card": "カード画像",
-        "cardID": "IDカード",
-        "documentConfirm": "文書確認",
-        "cardDescription": "カード画像またはIDカード",
-        "documentDescription": "文書確認",
-        "cardIdDescription": "カード画像またはIDカード",
-        "descForCard": "はっきりとしたカード画像を提供してください",
-        "descForCardID": "明るい場所でCCCDを撮影してください",
-        "descForDocument": "はっきりとした文書確認画像を提供してください"
-    },
-    "error": {
-        "notification": "通知",
-        "emailInvalid": "無効なメールアドレス",
-        "passwordInvalid": "パスワードは少なくとも8文字である必要があります",
-        "confirmPassword": "パスワードの確認が一致しません",
-        "fullnameInvalid": "無効なフルネーム",
-        "emailRequired": "メールアドレスが必要です",
-        "emailExist": "メールアドレスは既に存在します",
-        "passwordRequired": "パスワードが必要です",
-        "confirmPasswordRequired": "パスワードの確認が必要です",
-        "passwordNotMatch": "パスワードが一致しません",
-        "fullnameRequired": "フルネームが必要です",
-        "cardRequired": "カード画像が必要です",
-        "cardIDRequired": "IDカードが必要です",
-        "documentConfirmRequired": "文書確認が必要です",
-        "nameNotIncludeChar": "フルネームに特殊文字を含めることはできません",
-        "title": "エラー",
-        "imageRequired": "画像が必要です"
-    },
-    "success": {
-        "signUp": "サインアップに成功しました",
-        "title": "成功"
-    },
-    "language": {
-        "title": "言語を選択",
-        "english": "英語",
-        "vietnamese": "ベトナム語",
-        "japanese": "日本語",
-        "changeLanguage": "言語を変更",
-        "edit": "今すぐ編集"
-    },
-    "logout": {
-        "title": "ログアウト",
-        "logout": "ログアウト",
-        "notification": "通知",
-        "logoutSuccess": "ログアウトしました"
-    },
-    "forgetPassword": {
-        "title": "パスワードを忘れた場合",
-        "email": "メール",
-        "send": "送信"
-    },
-    "play": {
-        "single": {
-            "buttonQuit": "離れる",
-            "score": "得点",
-            "questionCouter": "もんだいばんごう:",
-            "buttonConfirm": "見定める",
-            "incorrect": "不可!!!",
-            "errorTitle": "ちゅうい",
-            "errorText": "こたえをえらんでください！"
-        }
-    },
-    "result": {
-        "single": {
-            "buttonQuit": "離れる",
-            "buttonReplay": "もういちど",
-            "buttonPlayNewQuiz": "あたらしいクイズ",
-            "score": "得点",
-            "totalQuestions": "しつもんすう",
-            "correct": "せいかい",
-            "incorrect": "まちがい",
-            "textResult": "けっか",
-            "textDesc": "れんしゅう",
-            "buttonReview": "見直す"
-        },
-        "review": {
-            "title": "回答を確認",
-            "text_question": "質問",
-            "indexQuestion": "質問番号",
-            "explanation": "説明: ",
-            "textExplanation": "ここに説明はありません!",
-            "btnNext": "次へ",
-            "btnPrev": "前へ",
-            "point": "得点",
-            "userAnswer": "質問番号"
-        }
-    },
-    "resetPassword":{
-        "title":"パスワードをリセット",
-        "email":"メール",
-        "send":"送信",
-        "back":"戻る",
-        "success":"パスワードをリセットしました",
-        "error":"メールアドレスが無効です",
-        "notification":"通知",
-        "password": "新しいパスワード",
-        "confirmPassword": "パスワードを確認",
-        "submit": "提出",
-        "haveAccount": "すでにアカウントをお持ちですか？",
-        "notHaveAccount": "アカウントをお持ちでない場合",
-        "backToSignIn": "サインインに戻る",
-        "changeEmail": "メールアドレスを変更",
-        "resendCode": "コードを再送信",
-        "notReceiveCode": "受信していない場合"
-    },
-    "student_homepage": {
-        "explore": "探検する",
-        "categoryAll": "全て",
-        "author": "著者:",
-        "turnPlay": "プレイターン",
-        "btnThuThach": "自分に挑戦",
-        "btnLuyenTap": "練習",
-        "desc": "説明:",
-        "textDesc": "ここに説明はありません!"
-    },
-    "profile":{
-        "title":"プロフィール",
-        "fullname":"フルネーム",
-        "info": "個人情報",
-        "email":"メール",
-        "phone":"電話",
-        "address":"住所",
-        "password":"パスワード",
-        "oldPassword":"古いパスワード",
-        "newPassword":"新しいパスワード",
-        "confirmPassword":"パスワードを確認",
-        "school":"学校",
-        "editNow":"今すぐ編集",
-        "save":"セーブ",
-        "edit":"編集",
-        "infoAuth": "認証情報"
-    },
-    "settings": {
-        "title": "設定"
-    },
-    "home": {
-        "title": "ホーム"
-    },
-    "search": {
-        "title": "検索"
-    },
-    "classes": {
-        "title": "クラス"
-    },
-    "account": {
-        "title": "アカウント",
-        "buttonEdit": "編集"
-    },
-    "report": {
-        "title": "レポート"
-    },
-    "status": {
-        "title": "ステータス",
-        "active": "アクティブ",
-        "pedding": "保留中",
-        "reject": "拒否"
-    },
-    "library": {
-        "title": "ライブラリ"
-    },
-    "lockFeature": {
-        "title": "機能をロック",
-        "desc": "この機能はロックされています。",
-        "button": "アップグレード"
-    }
+   "signIn": {
+      "title": "サインイン",
+      "email": "メール",
+      "password": "パスワード",
+      "login": "サインイン",
+      "forgot": "パスワードを忘れた場合",
+      "signUp": "サインアップ",
+      "notHaveAccount": "アカウントをお持ちでない場合",
+      "error": "無効なメールアドレスまたはパスワード",
+      "startNow": "今すぐ始める",
+      "welcome": "当社のアプリへようこそ",
+      "forgetPassword": "パスワードを忘れた場合",
+      "success": "サインインに成功しました"
+   },
+   "signUp": {
+      "title": "サインアップ",
+      "email": "メール",
+      "password": "パスワード",
+      "confirmPassword": "パスワードを確認",
+      "signInNow": "今すぐサインイン",
+      "signUp": "アカウントを作成",
+      "haveAccount": "すでにアカウントをお持ちですか？",
+      "fullname": "フルネーム",
+      "startNow": "今すぐ始める",
+      "welcome": "当社のアプリへようこそ",
+      "choice": {
+         "student": "学生",
+         "teacher": "先生",
+         "studentDescription": "楽しい教室活動に参加する",
+         "teacherDescription": "クイズ、教室、結果を管理する",
+         "title": "アカウントタイプを選択"
+      },
+      "success": "サインアップに成功しました",
+      "card": "カード画像",
+      "cardID": "IDカード",
+      "documentConfirm": "文書確認",
+      "cardDescription": "カード画像またはIDカード",
+      "documentDescription": "文書確認",
+      "cardIdDescription": "カード画像またはIDカード",
+      "descForCard": "はっきりとしたカード画像を提供してください",
+      "descForCardID": "明るい場所でCCCDを撮影してください",
+      "descForDocument": "はっきりとした文書確認画像を提供してください"
+   },
+   "error": {
+      "notification": "通知",
+      "emailInvalid": "無効なメールアドレス",
+      "passwordInvalid": "パスワードは少なくとも8文字である必要があります",
+      "confirmPassword": "パスワードの確認が一致しません",
+      "fullnameInvalid": "無効なフルネーム",
+      "emailRequired": "メールアドレスが必要です",
+      "emailExist": "メールアドレスは既に存在します",
+      "passwordRequired": "パスワードが必要です",
+      "confirmPasswordRequired": "パスワードの確認が必要です",
+      "passwordNotMatch": "パスワードが一致しません",
+      "fullnameRequired": "フルネームが必要です",
+      "cardRequired": "カード画像が必要です",
+      "cardIDRequired": "IDカードが必要です",
+      "documentConfirmRequired": "文書確認が必要です",
+      "nameNotIncludeChar": "フルネームに特殊文字を含めることはできません",
+      "title": "エラー",
+      "imageRequired": "画像が必要です"
+   },
+   "success": {
+      "signUp": "サインアップに成功しました",
+      "title": "成功"
+   },
+   "language": {
+      "title": "言語を選択",
+      "english": "英語",
+      "vietnamese": "ベトナム語",
+      "japanese": "日本語",
+      "changeLanguage": "言語を変更",
+      "edit": "今すぐ編集"
+   },
+   "logout": {
+      "title": "ログアウト",
+      "logout": "ログアウト",
+      "notification": "通知",
+      "logoutSuccess": "ログアウトしました"
+   },
+   "forgetPassword": {
+      "title": "パスワードを忘れた場合",
+      "email": "メール",
+      "send": "送信"
+   },
+   "play": {
+      "single": {
+         "buttonQuit": "離れる",
+         "score": "得点",
+         "questionCouter": "もんだいばんごう:",
+         "buttonConfirm": "見定める",
+         "incorrect": "不可!!!",
+         "errorTitle": "ちゅうい",
+         "errorText": "こたえをえらんでください！"
+      }
+   },
+   "result": {
+      "single": {
+         "buttonQuit": "離れる",
+         "buttonReplay": "もういちど",
+         "buttonPlayNewQuiz": "あたらしいクイズ",
+         "score": "得点",
+         "totalQuestions": "しつもんすう",
+         "correct": "せいかい",
+         "incorrect": "まちがい",
+         "textResult": "けっか",
+         "textDesc": "れんしゅう",
+         "buttonReview": "見直す"
+      },
+      "review": {
+         "title": "回答を確認",
+         "text_question": "質問",
+         "indexQuestion": "質問番号",
+         "explanation": "説明: ",
+         "textExplanation": "ここに説明はありません!",
+         "btnNext": "次へ",
+         "btnPrev": "前へ",
+         "point": "得点",
+         "userAnswer": "質問番号"
+      }
+   },
+   "resetPassword": {
+      "title": "パスワードをリセット",
+      "email": "メール",
+      "send": "送信",
+      "back": "戻る",
+      "success": "パスワードをリセットしました",
+      "error": "メールアドレスが無効です",
+      "notification": "通知",
+      "password": "新しいパスワード",
+      "confirmPassword": "パスワードを確認",
+      "submit": "提出",
+      "haveAccount": "すでにアカウントをお持ちですか？",
+      "notHaveAccount": "アカウントをお持ちでない場合",
+      "backToSignIn": "サインインに戻る",
+      "changeEmail": "メールアドレスを変更",
+      "resendCode": "コードを再送信",
+      "notReceiveCode": "受信していない場合"
+   },
+   "student_homepage": {
+      "explore": "探検する",
+      "categoryAll": "全て",
+      "author": "著者:",
+      "turnPlay": "プレイターン",
+      "btnThuThach": "自分に挑戦",
+      "btnLuyenTap": "練習",
+      "desc": "説明:",
+      "textDesc": "ここに説明はありません!"
+   },
+   "teacher_homepage": {
+      "searchInputPlaceholder": "クイズまたはレッスンを作成",
+      "createQuizButtonTitle": "クイズを作成",
+      "myLibraryButtonTitle": "マイライブラリ",
+      "reportButtonTitle": "レポート",
+      "createQuizWithAi": "AIでクイズを作成",
+      "createFromImage": "画像から作成",
+      "createFromText": "テキストから作成",
+      "uploadTemplate": "テンプレートをアップロード",
+      "createWithHand": "手動で作成"
+   },
+   "overview_quiz_screen": {
+      "detail": "詳細",
+      "quizName": "テスト名",
+      "quizDescription": "テストの説明",
+      "questionType": "質問の種類",
+      "second": "秒",
+      "point": "ポイント",
+      "edit": "編集",
+      "viewExplain": "説明を見る",
+      "quizSubject": "分野、科目",
+      "viewMode": "表示モード",
+      "notification": "通知",
+      "confirmDelete": "このテストを削除してもよろしいですか？",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "confirm": "確認",
+      "btnSaveDetail": "保存",
+      "editQuestionTitle": "質問を編集",
+      "addImageTitle": "画像を追加",
+      "btnAddQuestion": "質問を追加",
+      "alertMessageQuizDescription": "クイズの説明は200文字を超えてはいけません",
+      "alertMessageQuizName": "クイズ名は100文字を超えてはいけません",
+      "alertNetwork": "ネットワークエラー、接続を確認してもう一度お試しください",
+      "explanation": "説明",
+      "chooseQuestionType": "質問の種類を選択",
+      "evaluation": "評価",
+      "mutipleChoice": "複数選択",
+      "fillInBlank": "空欄を埋める",
+      "blank": "記述",
+      "logical": "論理"
+   },
+   "subjects": {
+      "math": "数学",
+      "literature": "文学",
+      "physics": "物理",
+      "chemistry": "化学",
+      "biology": "生物",
+      "history": "歴史",
+      "geography": "地理",
+      "english": "英語",
+      "it": "情報技術",
+      "physical": "体育",
+      "music": "音楽",
+      "art": "美術",
+      "civic_education": "公民教育",
+      "foreign_language": "外国語",
+      "subject": "科目",
+      "field": "分野",
+      "chooseSubject": "科目を選択",
+      "chooseField": "分野を選択",
+      "other": "その他",
+      "published": "公開",
+      "unpublished": "プライベート"
+   },
+   "edit_quiz_screen": {
+      "title": "質問を編集",
+      "second": "秒",
+      "point": "ポイント",
+      "mutipleChoice": "複数選択",
+      "addExplain": "説明を追加",
+      "addAnswer": "回答を追加",
+      "deleteQuestion": "この質問を削除",
+      "saveQuestion": "質問を保存",
+      "createQuestion": "質問を作成",
+      "save": "保存",
+      "markCorrectAnswer": "正解をマークする",
+      "unmarkCorrectAnswer": "正解をマーク解除する",
+      "deleteAnswer": "この回答を削除",
+      "chooseTime": "時間を選択",
+      "choosePoint": "ポイントを選択",
+      "questionContent": "質問内容"
+   },
+   "create_title_quiz_screen": {
+      "quizName": "テスト名",
+      "quizNameRequest": "テストの名前を教えてください",
+      "quizDescription": "テストの説明",
+      "prompt": "プロンプト",
+      "promptRequest": "プロンプトを教えてください",
+      "quizThumbnailUploadTitle": "内容から質問を作成する画像ファイルをアップロードしてください",
+      "startCreateQuiz": "テスト作成を開始"
+   },
+   "profile": {
+      "title": "プロフィール",
+      "fullname": "フルネーム",
+      "info": "個人情報",
+      "email": "メール",
+      "phone": "電話",
+      "address": "住所",
+      "password": "パスワード",
+      "oldPassword": "古いパスワード",
+      "newPassword": "新しいパスワード",
+      "confirmPassword": "パスワードを確認",
+      "school": "学校",
+      "editNow": "今すぐ編集",
+      "save": "セーブ",
+      "edit": "編集",
+      "infoAuth": "認証情報"
+   },
+   "settings": {
+      "title": "設定"
+   },
+   "home": {
+      "title": "ホーム"
+   },
+   "search": {
+      "title": "検索"
+   },
+   "classes": {
+      "title": "クラス"
+   },
+   "account": {
+      "title": "アカウント",
+      "buttonEdit": "編集"
+   },
+   "report": {
+      "title": "レポート"
+   },
+   "status": {
+      "title": "ステータス",
+      "active": "アクティブ",
+      "pedding": "保留中",
+      "reject": "拒否"
+   },
+   "library": {
+      "title": "ライブラリ"
+   },
+   "lockFeature": {
+      "title": "機能をロック",
+      "desc": "この機能はロックされています。",
+      "button": "アップグレード"
+   }
 }
