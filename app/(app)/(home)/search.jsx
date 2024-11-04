@@ -21,7 +21,10 @@ export default function SearchScreen() {
     const [dataSubject, setDataSubject] = useState([]);
     const {subjects} = useSubjectProvider();
     const [filter, setFilter] = useState({
-        quiz_on:0
+        quiz_on:0,
+        sort:0,
+        subjectIds:[],
+        key:""
     });
 
     const dataQuizOn = [
@@ -76,11 +79,16 @@ export default function SearchScreen() {
 
     const onSearch = async () => {
         // Call API
-        fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_SEARCH}?key=${key}`)
+        fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_SEARCH}`,{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify(filter)
+        })
             .then(res => res.json())
             .then(data => {
                 if (data.statusCode === 200) {
-                    // console.log(data.metadata);
                     setQuizList(data.metadata);
                 }
             })
@@ -100,7 +108,9 @@ export default function SearchScreen() {
     return (
         <View className={"px-3 pt-2 bg-white pb-[150px]"}>
             <View className={"flex-row items-center mb-3"}>
-                <TextInput onBlur={onSearch} onChangeText={setKey} value={key}
+                <TextInput onBlur={onSearch} onChangeText={()=>{
+                    setFilter({...filter,key:key})
+                }} value={filter.key}
                            className={"p-2 mr-2 rounded bg-white border flex-1"} placeholder={"Search"}/>
                 <AntDesign onPress={onOpen} name={"filter"} size={30}/>
             </View>
@@ -132,14 +142,6 @@ export default function SearchScreen() {
                     {/*data quiz on*/}
                     <Text className={"mb-2 px-1 font-semibold"}>Trạng thái</Text>
                     <SelectList search={false}  setSelected={()=>{}} data={dataStatus} defaultOption={dataStatus[0]} isFixV2={true} arrowicon={<AntDesign name="down" size={12} color={"black"}/>}/>
-                </View>
-
-                <View className={"mb-3"}>
-                    <Text className={"mb-4 px-1 font-semibold"}>Thời gian</Text>
-                    <View className="flex-row mt-2 gap-2">
-                       <DatePickerCustom/>
-                        <DatePickerCustom/>
-                    </View>
                 </View>
                 <View className={"mb-3"}>
                     <Text className={"mb-2 px-1 font-semibold"}>Chủ đề</Text>
