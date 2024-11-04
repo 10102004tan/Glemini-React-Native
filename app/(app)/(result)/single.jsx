@@ -6,50 +6,23 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useAppProvider } from '@/contexts/AppProvider';
-import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
 import { Audio } from 'expo-av';
 import { router } from 'expo-router';
 import Toast from 'react-native-toast-message-custom';
+import { useResultProvider } from '@/contexts/ResultProvider';
 
-const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleRestart, quizId }) => {
-
+const ResultSingle = ({ quizId, correctCount, wrongCount, score, totalQuestions, handleRestart, exerciseId }) => {
+	
+	const {fetchResultData, result} = useResultProvider()
 	const navigation = useNavigation()
 	const { i18n } = useAppProvider()
 	const { userData } = useAuthContext()
 	const correctPercentage = (correctCount / totalQuestions) * 100;
 	const wrongPercentage = (wrongCount / totalQuestions) * 100;
-	const [resultData, setResultData] = useState([])
 	const [sound, setSound] = useState(null)
 
 	useEffect(() => {
-		const fetchResultData = async () => {
-			try {
-				const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_REVIEW, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'x-client-id': userData._id,
-						authorization: userData.accessToken,
-					},
-					body: JSON.stringify({
-						quiz_id: quizId,
-						user_id: userData._id,
-						// Bổ sung ID_EXECIRCE sau
-					}),
-				});
-
-				const data = await res.json();
-				setResultData(data.metadata);
-			} catch (error) {
-				Toast.show({
-					type: 'warn',
-					text1: 'Đang lấy kết quả',
-					visibilityTime: 1000,
-					autoHide: true,
-				})
-			}
-		};
-		fetchResultData();
+		fetchResultData(quizId, exerciseId);
 	}, [userData]);
 
 
@@ -247,7 +220,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 				<Button
 					text={i18n.t('result.single.buttonReview')}
 					onPress={() => {
-						navigation.push('(result)/review', { resultData });
+						navigation.push('(result)/review', { result });
 					}}
 					type="fill"
 					otherStyles={'bg-[#435362] p-2'}
