@@ -1,4 +1,3 @@
-import { View, Text } from 'react-native';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useAuthContext } from './AuthContext';
@@ -48,8 +47,6 @@ const ResultProvider = ({ children }) => {
 			});
 
 			const data = await res.json();
-			console.log(data.metadata);
-			
 			setResult(data.metadata);
 		} catch (error) {
 			Toast.show({
@@ -100,7 +97,8 @@ const ResultProvider = ({ children }) => {
 			results,
 			fetchResults,
 			fetchResultData,
-			result
+			result,
+			completed
 		}}>
 			{children}
 		</ResultContext.Provider>

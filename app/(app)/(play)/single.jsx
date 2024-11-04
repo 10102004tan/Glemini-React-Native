@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, useWindowDimensions, ScrollView } from 'react-native';
 import Button from '../../../components/customs/Button';
 import ResultSingle from '../(result)/single';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useAppProvider } from '@/contexts/AppProvider';
 import Toast from 'react-native-toast-message-custom';
-import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
 import RenderHTML from 'react-native-render-html';
 import { Audio } from 'expo-av';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import { useResultProvider } from '@/contexts/ResultProvider';
 
@@ -32,11 +31,24 @@ const SinglePlay = () => {
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [sound, setSound] = useState(null);
 	const { questions, fetchQuestions, saveQuestionResult } = useQuestionProvider()
-	const { completed } = useResultProvider()
+	const { completed, fetchResultData, result } = useResultProvider()
+
+	useFocusEffect(
+		useCallback(() => {
+			fetchResultData(quizId, exerciseId);
+		}, [exerciseId])
+	)
 
 	useEffect(() => {
 		fetchQuestions(quizId);
-	}, [quizId]);
+		if (result) {
+			if (questions?.length === result.result_questions?.length) {
+				setCurrentQuestionIndex(0)
+			} else {
+				setCurrentQuestionIndex(result.result_questions?.length)
+			}
+		}
+	}, [quizId, result]);
 
 
 	const playSound = async (isCorrectAnswer) => {
@@ -87,7 +99,6 @@ const SinglePlay = () => {
 
 		const currentQuestion = questions[currentQuestionIndex];
 		const correctAnswerIds = currentQuestion.correct_answer_ids.map(answer => answer._id);
-		// console.log(selectedAnswers, correctAnswerIds);
 
 		let isAnswerCorrect;
 
@@ -139,7 +150,7 @@ const SinglePlay = () => {
 				setIsCompleted(true);
 				completed(exerciseId, quizId);
 			}
-		}, 1500);
+		}, 2000);
 	};
 
 	const handleRestart = () => {
