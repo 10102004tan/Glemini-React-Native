@@ -518,7 +518,6 @@ const Library = () => {
           <Animated.View
             style={{
               transform: [{ translateX: translateValue }],
-              width: "33,33%",
               height: 2,
               backgroundColor: "#1C2833",
               borderRadius: 10,
