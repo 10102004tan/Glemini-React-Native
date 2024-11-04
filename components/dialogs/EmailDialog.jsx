@@ -21,7 +21,7 @@ const EmailDialog = ({ visible, onClose, onSend, quiz_id }) => {
   // Hàm kiểm tra email tồn tại
   const shareQuizToTeacher = async (user_email) => {
     const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.CHECK_EMAIL}`,
+      `${API_URL}${API_VERSION.V1}${END_POINTS.SHARE_QUIZ}`,
       {
         method: "POST",
         headers: {
