@@ -7,6 +7,8 @@ import {
   Image,
   ScrollView,
   FlatList,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import Wrapper from "@/components/customs/Wrapper";
@@ -29,8 +31,15 @@ import {
 import LockFeature from "@/components/customs/LockFeature";
 import CardQuiz from "@/components/customs/CardQuiz";
 import { Dimensions } from "react-native";
+import QuizzesSharedEmpty from "@/components/customs/QuizzesSharedEmpty";
 
 const Library = () => {
+  //biến loadmore
+  // const [page, setPage] = useState(0);
+  // const limit = 5;
+  // const [hasMoreQuizzes, setHasMoreQuizzes] = useState(true);
+  // const [quizMessageQuizShared, setQuizMessageQuizShared] = useState("");
+
   //biến name của bộ sưu tập
   const [nameCollection, setNameCollection] = useState("");
   const [collections, setCollections] = useState([]);
@@ -107,7 +116,8 @@ const Library = () => {
   const [listNameCollection, setListNameCollection] = useState([]);
 
   // lấy list thông tin của quiz, thông tin name, description, status,...
-  const { quizzes, setQuizzes } = useQuizProvider();
+  const { quizzes, fetchQuizzes, quizFetching, quizMessage, setQuizzes } =
+    useQuizProvider();
 
   const [sharedQuizzes, setSharedQuizzes] = useState([]);
 
@@ -128,10 +138,46 @@ const Library = () => {
       }
     );
     const data = await response.json();
-    console.log(data);
     if (data.statusCode === 200) {
       setSharedQuizzes(data.metadata);
     }
+  };
+
+  // hàm xóa quiz đã chia sẻ
+  const removeQuizShared = async (quiz_id) => {
+    const response = await fetch(
+      `${API_URL}${API_VERSION.V1}${END_POINTS.REMOVE_QUIZ_SHARED}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-client-id": userData._id,
+          authorization: userData.accessToken,
+        },
+        body: JSON.stringify({
+          user_id: userData._id,
+          quiz_id: quiz_id,
+        }),
+      }
+    );
+    const data = await response.json();
+    if (data.statusCode === 200) {
+      setSharedQuizzes(sharedQuizzes.filter((quiz) => quiz._id !== quiz_id));
+    }
+  };
+  const handleDeleteQuizShared = (quiz_id) => {
+    Alert.alert(
+      "Xác nhận xóa",
+      "Bạn có chắc chắn muốn xóa quiz được chia sẻ này không?",
+      [
+        { text: "Hủy", style: "cancel" },
+        {
+          text: "Xóa",
+          onPress: () => removeQuizShared(quiz_id),
+          style: "destructive",
+        },
+      ]
+    );
   };
 
   useEffect(() => {
@@ -142,7 +188,6 @@ const Library = () => {
     }
   }, [activeTab]);
 
-  // BottomSheet
   // Bộ sưu tập
   const OpenBottomSheet = () => {
     setIsHiddenNavigationBar(true);
@@ -512,13 +557,12 @@ const Library = () => {
             </Text>
           </TouchableOpacity>
         </View>
-
         {/* Đường phân cách dưới tab */}
         <View>
           <Animated.View
             style={{
               transform: [{ translateX: translateValue }],
-              width: "33,33%",
+              width: "33%",
               height: 2,
               backgroundColor: "#1C2833",
               borderRadius: 10,
@@ -526,7 +570,6 @@ const Library = () => {
           />
           <View className="bg-primary h-[1px]"></View>
         </View>
-
         {/* Nội dung dựa trên tab được chọn */}
         {activeTab === "library" && (
           <View className="">
@@ -561,29 +604,43 @@ const Library = () => {
                 />
               </View>
             </View>
-
-            <FlatList
-              contentContainerStyle={{ padding: 12 }}
-              key={(quiz) => quiz._id}
-              style={{ marginBottom: 200 }}
-              data={quizzes}
-              keyExtractor={(quiz) => quiz._id}
-              renderItem={({ item: quiz }) => {
-                return (
-                  <CardQuiz
-                    quiz={quiz}
-                    type="horizontal"
-                    routerPath="(quiz)/detail_quiz"
-                    params={{
-                      id: quiz._id,
-                    }}
-                  />
-                );
-              }}
-            ></FlatList>
+            <View className="border-t border-b border-gray mb-[350px]">
+              <FlatList
+                contentContainerStyle={{ padding: 12 }}
+                key={(quiz) => quiz._id}
+                data={quizzes}
+                keyExtractor={(quiz) => quiz._id}
+                renderItem={({ item: quiz }) => {
+                  return (
+                    <CardQuiz
+                      quiz={quiz}
+                      type="horizontal"
+                      routerPath="(quiz)/detail_quiz"
+                      params={{
+                        id: quiz._id,
+                      }}
+                    />
+                  );
+                }}
+                onEndReached={() => {
+                  if (!quizFetching) {
+                    fetchQuizzes();
+                  }
+                }}
+                onEndReachedThreshold={1}
+                ListFooterComponent={
+                  quizFetching ? (
+                    <ActivityIndicator />
+                  ) : (
+                    <Text className="text-center text-red-700 text-lg font-bold border rounded-lg mt-2 p-2">
+                      {quizMessage}
+                    </Text>
+                  )
+                }
+              ></FlatList>
+            </View>
           </View>
         )}
-
         {activeTab === "collection" && (
           <View className="p-3">
             {/* Danh sách các bộ sưu tập */}
@@ -617,7 +674,6 @@ const Library = () => {
             </ScrollView>
           </View>
         )}
-
         {activeTab === "shared" && (
           <View className="p-3">
             <FlatList
@@ -629,6 +685,8 @@ const Library = () => {
               renderItem={({ item: quiz }) => {
                 return (
                   <CardQuiz
+                    handleDelete={() => handleDeleteQuizShared(quiz._id)}
+                    isDelete={true}
                     quiz={quiz}
                     type="horizontal"
                     routerPath="(quiz)/detail_quiz"
