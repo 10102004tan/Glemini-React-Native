@@ -36,7 +36,7 @@ const SinglePlay = () => {
 	useFocusEffect(
 		useCallback(() => {
 			fetchResultData(quizId, exerciseId);
-		}, [exerciseId])
+		}, [exerciseId, quizId])
 	)
 
 	useEffect(() => {
@@ -47,6 +47,8 @@ const SinglePlay = () => {
 			} else {
 				setCurrentQuestionIndex(result.result_questions?.length)
 			}
+		} else {
+			setCurrentQuestionIndex(0)
 		}
 	}, [quizId, result]);
 
