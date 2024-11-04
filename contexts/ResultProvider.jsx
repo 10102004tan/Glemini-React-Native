@@ -7,6 +7,7 @@ const ResultContext = createContext();
 
 const ResultProvider = ({ children }) => {
 	const [results, setResults] = useState([]);
+	const [result, setResult] = useState([]);
 	const { userData } = useAuthContext();
 	// Lấy dữ liệu từ API
 	const fetchResults = async () => {
@@ -30,6 +31,63 @@ const ResultProvider = ({ children }) => {
 		}
 	};
 
+	const fetchResultData = async (quizId, exerciseId) => {
+		try {
+			const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_REVIEW, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({
+					quiz_id: quizId,
+					user_id: userData._id,
+					exercise_id: exerciseId
+				}),
+			});
+
+			const data = await res.json();
+			console.log(data.metadata);
+			
+			setResult(data.metadata);
+		} catch (error) {
+			Toast.show({
+				type: 'warn',
+				text1: 'Đang lấy kết quả',
+				visibilityTime: 1000,
+				autoHide: true,
+			})
+		}
+	};
+
+	const completed = async (exerciseId, quizId) => {
+		try {
+			await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({
+					exercise_id: exerciseId,
+					user_id: userData._id,
+					quiz_id: quizId,
+					status: 'completed',
+				}),
+			});
+		} catch (error) {
+			Toast.show({
+				type: 'error',
+				text1: 'Lỗi khi cập nhật trạng thái hoàn thành.',
+				text2: { error },
+				visibilityTime: 1000,
+				autoHide: true,
+			});
+		}
+	};
+
 	useEffect(() => {
 		if (userData) {
 			fetchResults();
@@ -40,7 +98,9 @@ const ResultProvider = ({ children }) => {
 	return (
 		<ResultContext.Provider value={{
 			results,
-			fetchResults
+			fetchResults,
+			fetchResultData,
+			result
 		}}>
 			{children}
 		</ResultContext.Provider>

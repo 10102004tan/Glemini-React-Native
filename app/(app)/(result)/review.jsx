@@ -10,7 +10,7 @@ import QuestionResultItem from '@/components/customs/QuestionResultItem';
 const ResultReview = () => {
 	const navigation = useNavigation();
 	const route = useRoute();
-	const { resultData } = route.params;
+	const { result } = route.params;
 	const { i18n } = useAppProvider();
 	
 	// Trạng thái để lưu chỉ số câu hỏi được chọn và trạng thái hiển thị của Modal
@@ -27,10 +27,10 @@ const ResultReview = () => {
 		setSelectedIndex(null);
 	};
 
-	const currentQuestion = resultData.result_questions[selectedIndex];
+	const currentQuestion = result.result_questions[selectedIndex];
 
 	const goToNextQuestion = () => {
-		if (selectedIndex < resultData.result_questions.length - 1) {
+		if (selectedIndex < result.result_questions.length - 1) {
 			setSelectedIndex(prevIndex => prevIndex + 1);
 		}
 	};
@@ -57,7 +57,7 @@ const ResultReview = () => {
 				<Text className='text-2xl text-slate-800 font-semibold text-center'>{i18n.t('result.review.title')}</Text>
 			</View>
 			<ScrollView className='py-4' showsVerticalScrollIndicator={false}>
-				{resultData.result_questions.map((question, index) => (
+				{result.result_questions.map((question, index) => (
 					<TouchableOpacity key={index} onPress={() => openModal(index)}>
 						<QuestionResultItem question={question} />
 					</TouchableOpacity>
@@ -142,9 +142,9 @@ const ResultReview = () => {
 									onPress={goToNextQuestion}
 									loading={false}
 									type="fill"
-									otherStyles={`bg-pink-600 rounded-lg px-4 ${selectedIndex === resultData.result_questions.length - 1 ? 'opacity-50' : ''}`}
+									otherStyles={`bg-pink-600 rounded-lg px-4 ${selectedIndex === result.result_questions.length - 1 ? 'opacity-50' : ''}`}
 									textStyles={'text-base font-pregular'}
-									disabled={selectedIndex === resultData.result_questions.length - 1}
+									disabled={selectedIndex === result.result_questions.length - 1}
 								/>
 							</View>
 
