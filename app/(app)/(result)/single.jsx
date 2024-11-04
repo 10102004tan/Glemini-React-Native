@@ -9,14 +9,15 @@ import { useAppProvider } from '@/contexts/AppProvider';
 import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
 import { Audio } from 'expo-av';
 import { router } from 'expo-router';
+import Toast from 'react-native-toast-message-custom';
 
 const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleRestart, quizId }) => {
 
 	const navigation = useNavigation()
 	const { i18n } = useAppProvider()
-	const {userData} = useAuthContext()
+	const { userData } = useAuthContext()
 	const correctPercentage = (correctCount / totalQuestions) * 100;
-    const wrongPercentage = (wrongCount / totalQuestions) * 100;
+	const wrongPercentage = (wrongCount / totalQuestions) * 100;
 	const [resultData, setResultData] = useState([])
 	const [sound, setSound] = useState(null)
 
@@ -32,21 +33,26 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 					},
 					body: JSON.stringify({
 						quiz_id: quizId,
-						user_id:  userData._id,
+						user_id: userData._id,
 						// Bổ sung ID_EXECIRCE sau
 					}),
 				});
-			
+
 				const data = await res.json();
 				setResultData(data.metadata);
 			} catch (error) {
-				console.error('Lỗi khi lấy câu hỏi:', error);
+				Toast.show({
+					type: 'warn',
+					text1: 'Đang lấy kết quả',
+					visibilityTime: 1000,
+					autoHide: true,
+				})
 			}
 		};
 		fetchResultData();
 	}, [userData]);
-	
-	
+
+
 	const playCompletedSound = async () => {
 		try {
 			const { sound } = await Audio.Sound.createAsync(
@@ -68,7 +74,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 			}
 		};
 	}, []);
-	
+
 
 	return (
 		<View className="flex-1 bg-[#1C2833] px-5 pb-4 pt-10">
@@ -162,7 +168,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 						{i18n.t('result.single.correct')}: {correctPercentage.toFixed(0)}%
 					</Text>
 					<Text className="text-red-500 font-semibold">
-					{i18n.t('result.single.incorrect')}: {wrongPercentage.toFixed(0)}%
+						{i18n.t('result.single.incorrect')}: {wrongPercentage.toFixed(0)}%
 					</Text>
 				</View>
 			</View>
@@ -179,14 +185,14 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 						<Icon
 							name="ribbon-outline"
 							size={25}
-							className="text-white"
+							color={'white'}
 						/>
 					</View>
 				</View>
 				<View className="flex-row p-3 mt-5 rounded-lg bg-[#435362] justify-between items-center">
 					<View className="flex-col">
 						<Text className="text-sm text-slate-200">
-						{i18n.t('result.single.totalQuestions')}
+							{i18n.t('result.single.totalQuestions')}
 						</Text>
 						<Text className="text-xl text-slate-100 font-semibold">
 							{totalQuestions}
@@ -196,7 +202,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 						<Icon
 							name="help-circle-outline"
 							size={25}
-							className="text-white"
+							color={'white'}
 						/>
 					</View>
 				</View>
@@ -214,14 +220,14 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 						<Icon2
 							name="checkbox-marked-outline"
 							size={40}
-							className="text-green-500"
+							color={'green'}
 						/>
 					</View>
 				</View>
 				<View className="flex-row p-3 mt-5 rounded-lg bg-[#435362] justify-between items-center">
 					<View className="flex-col">
 						<Text className="text-sm text-slate-200">
-						{i18n.t('result.single.incorrect')}
+							{i18n.t('result.single.incorrect')}
 						</Text>
 						<Text className="text-xl text-slate-100 font-semibold">
 							{wrongCount}
@@ -231,7 +237,7 @@ const ResultSingle = ({ correctCount, wrongCount, score, totalQuestions, handleR
 						<Icon2
 							name="close-box-outline"
 							size={40}
-							className="text-red-500"
+							color={'red'}
 						/>
 					</View>
 				</View>

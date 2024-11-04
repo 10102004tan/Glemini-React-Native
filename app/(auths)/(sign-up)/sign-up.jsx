@@ -9,7 +9,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { AuthContext } from '@/contexts/AuthContext';
 import {debounce, validateEmail, validateFullname, validatePassword} from '@/utils';
 import { useAppProvider } from '@/contexts/AppProvider';
-import Toast from 'react-native-toast-message';
+import Toast from 'react-native-toast-message-custom';
 import CustomButton from "@/components/customs/CustomButton";
 import * as Notifications from "expo-notifications";
 import {registerForPushNotificationsAsync} from "@/helpers/notification";

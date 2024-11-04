@@ -51,7 +51,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="libraly"
         options={{
-          title: i18n.t("library.title"),
+          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "library-sharp" : "library-outline"}
@@ -94,6 +94,26 @@ export default function TabLayout() {
           ),
           tabBarButton: (props) => {
             if (user_type === "student") {
+              return null;
+            } else {
+              return <TouchableOpacity {...props} />;
+            }
+          },
+        }}
+      />
+
+<Tabs.Screen
+        name="activity"
+        options={{
+          title: 'Hoạt động',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "analytics-sharp" : "analytics-outline"}
+              color={color}
+            />
+          ),
+          tabBarButton: (props) => {
+            if (user_type === "teacher") {
               return null;
             } else {
               return <TouchableOpacity {...props} />;

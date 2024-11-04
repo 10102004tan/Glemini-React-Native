@@ -9,7 +9,7 @@ import { useAppProvider } from '@/contexts/AppProvider';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import { useSubjectProvider } from '@/contexts/SubjectProvider';
 import { SelectList } from 'react-native-dropdown-select-list';
-import Toast from 'react-native-toast-message';
+import Toast from 'react-native-toast-message-custom';
 import ClassroomCard from '@/components/customs/ClassroomCard';
 import { Pressable } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -37,6 +37,8 @@ const TeacherView = () => {
                 type: 'warn',
                 text1: `${i18n.t('play.single.errorTitle')}`,
                 text2: `Nhập đầy đủ!`,
+                visibilityTime: 1000,
+                autoHide: true,
             });
             return;
         }
@@ -49,8 +51,8 @@ const TeacherView = () => {
         };
 
         await createClassroom(classData);
-        await fetchClassrooms(); 
-        handleCloseBts(); // Close the bottom sheet after creating a class
+        await fetchClassrooms();
+        handleCloseBts();
     };
 
     const handleNavigateToDetail = (classroomId) => {
@@ -83,7 +85,7 @@ const TeacherView = () => {
                 otherStyles='mx-auto my-5 bg-[#fab1a0]'
                 textStyles='text-base text-black'
                 text={i18n.t('classroom.teacher.btnAddClass')}
-                icon={<Icon className='text-lg' name='add-circle-outline' />}
+                icon={<Icon className='text-lg' name='add-circle-outline' size={18} />}
             />
 
             <FlatList

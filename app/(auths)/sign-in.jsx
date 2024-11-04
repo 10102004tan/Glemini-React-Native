@@ -6,7 +6,7 @@ import { Link } from 'expo-router';
 import { AuthContext } from '@/contexts/AuthContext';
 import { validateEmail, validatePassword } from '@/utils';
 import { useAppProvider } from '@/contexts/AppProvider';
-import Toast from 'react-native-toast-message';
+import Toast from 'react-native-toast-message-custom';
 import CustomButton from "@/components/customs/CustomButton";
 
 const TIME_SHOW_TOAST = 1000;
