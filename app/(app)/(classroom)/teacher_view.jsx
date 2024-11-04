@@ -37,6 +37,8 @@ const TeacherView = () => {
                 type: 'warn',
                 text1: `${i18n.t('play.single.errorTitle')}`,
                 text2: `Nhập đầy đủ!`,
+                visibilityTime: 1000,
+                autoHide: true,
             });
             return;
         }
@@ -49,7 +51,7 @@ const TeacherView = () => {
         };
 
         await createClassroom(classData);
-        await fetchClassrooms(); 
+        await fetchClassrooms();
         handleCloseBts();
     };
 

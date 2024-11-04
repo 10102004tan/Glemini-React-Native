@@ -45,7 +45,9 @@ const TeacherDetail = () => {
             fetchClassroom(classroomId);
             Toast.show({
                 type: 'success',
-                text1: 'Xóa thành công!'
+                text1: 'Xóa thành công!',
+                visibilityTime: 1000,
+                autoHide: true,
             });
         }
         setModalVisible(false);
@@ -59,6 +61,8 @@ const TeacherDetail = () => {
                 type: 'warn',
                 text1: `${i18n.t('play.single.errorTitle')}`,
                 text2: email ? `"${email}" không hợp lệ. 🤨` : `Vui lòng nhập Email 🤨`,
+                visibilityTime: 1000,
+                autoHide: true,
             });
             return;
         }
@@ -68,13 +72,17 @@ const TeacherDetail = () => {
             setShowBottomSheet(0);
             Toast.show({
                 type: 'success',
-                text1: 'Thêm mới thành công!'
+                text1: 'Thêm mới thành công!',
+                visibilityTime: 1000,
+                autoHide: true,
             });
         } catch (error) {
             Toast.show({
                 type: 'error',
                 text1: 'Error adding student',
                 text2: error.message,
+                visibilityTime: 1000,
+                autoHide: true,
             });
         }
     };
@@ -97,7 +105,7 @@ const TeacherDetail = () => {
                             : duration.asDays() >= 1
                             ? `${Math.floor(duration.asDays())} ngày nữa`
                             : duration.asHours() >= 1
-                            ? `${Math.floor(duration.asHours())} giờ nữa`
+                            ? `${Math.floor(duration.asHours() + 1)} giờ nữa`
                             : `${Math.floor(duration.asMinutes())} phút nữa`;
     
                         return (
@@ -106,7 +114,7 @@ const TeacherDetail = () => {
                                     <View className='flex-row items-center justify-between'>
                                         <View className='flex items-start gap-2'>
                                             <Text className='text-base font-semibold'>{item.name}</Text>
-                                            <Text className='text-base text-red-500 '>
+                                            <Text className={`text-base ${new Date(item.date_end) > Date.now() ? 'text-green-500' :'text-red-500'} `}>
                                                 {timeRemaining}
                                             </Text>
                                         </View>

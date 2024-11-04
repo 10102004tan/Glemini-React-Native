@@ -59,10 +59,12 @@ const dev = {
     QUIZ_SEARCH: "/quizzes/search",
     GET_ALL_QUIZZES_SHARED: "/quizzes/get-all-quizzes-shared",
 
-    // Results
-    RESULT_SAVE_QUESTION: "/result/save-question",
-    RESULT_COMPLETED: "/result/complete-quiz",
-    RESULT_REVIEW: "/result/review",
+		// Results
+		RESULT_STUDENT: '/result/student',
+		RESULT_TEACHER: '/result/teacher',
+		RESULT_SAVE_QUESTION: '/result/save-question',
+		RESULT_COMPLETED: '/result/complete-quiz',
+		RESULT_REVIEW: '/result/review',
 
     // Subjects
     SUBJECTS: "/subjects",
@@ -92,9 +94,12 @@ const dev = {
     CLASSROOM_ADD_QUIZ: "/classroom/add-quiz",
     CLASSROOM_REMOVE_STUDENT: "/classroom/rm-student",
 
-    //email
-    CHECK_EMAIL: "/user/share-quiz",
-  },
+		//email
+		CHECK_EMAIL: '/user/check-email',
+
+		// room
+		ROOM_CREATE: '/room/create'
+	},
 };
 
 const prod = {

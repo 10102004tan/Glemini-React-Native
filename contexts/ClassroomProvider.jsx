@@ -32,11 +32,11 @@ const ClassroomProvider = ({ children }) => {
         }
     };
 
-	const fetchClassrooms = async () => {
+    const fetchClassrooms = async () => {
         const path = userData.user_type === 'teacher' ?
-        `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_GET_BY_TEACHER}`:
-        `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_GET_BY_STUDENT}`
-		const response = await fetch(
+            `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_GET_BY_TEACHER}` :
+            `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_GET_BY_STUDENT}`
+        const response = await fetch(
             path,
             {
                 method: 'POST',
@@ -45,7 +45,7 @@ const ClassroomProvider = ({ children }) => {
                     'x-client-id': userData._id,
                     authorization: userData.accessToken,
                 },
-				body: JSON.stringify({user_id: userData._id})
+                body: JSON.stringify({ user_id: userData._id })
             }
         );
 
@@ -54,12 +54,12 @@ const ClassroomProvider = ({ children }) => {
         if (data.statusCode === 200) {
             setClassrooms(data.metadata);
         } else {
-			setClassrooms([])
-		}
-	}
+            setClassrooms([])
+        }
+    }
 
     const fetchClassroom = async (classroomId) => {
-		const response = await fetch (
+        const response = await fetch(
             `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_INFO}`,
             {
                 method: 'POST',
@@ -68,7 +68,7 @@ const ClassroomProvider = ({ children }) => {
                     'x-client-id': userData._id,
                     authorization: userData.accessToken,
                 },
-				body: JSON.stringify({_id: classroomId})
+                body: JSON.stringify({ _id: classroomId })
             }
         );
 
@@ -77,9 +77,9 @@ const ClassroomProvider = ({ children }) => {
         if (data.statusCode === 200) {
             setClassroom(data.metadata);
         } else {
-			setClassroom([])
-		}
-	}
+            setClassroom([])
+        }
+    }
 
     // Hàm tạo lớp học
     const createClassroom = async (classData) => {
@@ -153,7 +153,7 @@ const ClassroomProvider = ({ children }) => {
                     },
                     body: JSON.stringify(
                         {
-                            classroomId: classroomId, 
+                            classroomId: classroomId,
                             user_email: studentEmail
                         }
                     )
@@ -186,9 +186,9 @@ const ClassroomProvider = ({ children }) => {
                     body: JSON.stringify(
                         {
                             name: name,
-                            classroomId: classroomId, 
-                            quizId: quizId, 
-                            start: start, 
+                            classroomId: classroomId,
+                            quizId: quizId,
+                            start: start,
                             deadline: deadline
                         }
                     )
@@ -199,20 +199,26 @@ const ClassroomProvider = ({ children }) => {
 
             if (data.statusCode === 200) {
                 Toast.show({
-                   type: 'success',
-                   text1: "Giao bài tập thành công."
-               });
-             } else {
+                    type: 'success',
+                    text1: "Giao bài tập thành công.",
+                    visibilityTime: 1000,
+                    autoHide: true,
+                });
+            } else {
                 Toast.show({
-                   type: 'error',
-                   text1: "Giao bài tập thất bại."
-               });
-             }
+                    type: 'error',
+                    text1: "Giao bài tập thất bại.",
+                    visibilityTime: 1000,
+                    autoHide: true,
+                });
+            }
         } catch (error) {
             Toast.show({
                 type: 'error',
                 text1: 'Lỗi',
-                text2: `${error}`
+                text2: `${error}`,
+                visibilityTime: 1000,
+                autoHide: true,
             });
         }
     };
@@ -220,18 +226,18 @@ const ClassroomProvider = ({ children }) => {
     useEffect(() => {
         if (userData) {
             fetchSchools();
-			fetchClassrooms();
+            fetchClassrooms();
         }
     }, [userData]);
 
     return (
-        <ClassroomContext.Provider value={{ 
-            schools, 
-            classrooms, 
+        <ClassroomContext.Provider value={{
+            schools,
+            classrooms,
             createClassroom,
             setClassrooms,
-            fetchClassroom, 
-            fetchClassrooms, 
+            fetchClassroom,
+            fetchClassrooms,
             classroom,
             removeStudent,
             addStudent,

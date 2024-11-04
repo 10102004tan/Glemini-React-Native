@@ -389,9 +389,7 @@ const detailquizz = () => {
          />
        </BottomSheet>
 
-       <View className="w-full">
-         
-       </View>
+       
 
        <ScrollView>
          <View className="flex mb-4 mx-4">

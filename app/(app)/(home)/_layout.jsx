@@ -51,7 +51,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="libraly"
         options={{
-          title: i18n.t("library.title"),
+          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "library-sharp" : "library-outline"}
@@ -105,7 +105,7 @@ export default function TabLayout() {
 <Tabs.Screen
         name="activity"
         options={{
-          title: 'Hoạt đông',
+          title: 'Hoạt động',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "analytics-sharp" : "analytics-outline"}
