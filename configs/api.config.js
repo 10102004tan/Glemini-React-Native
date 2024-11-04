@@ -1,13 +1,13 @@
 "use strict";
 
 const dev = {
-  API_URL: "http://192.168.1.119:8000/api",
+	API_URL: 'http://192.168.247.116:3000/api',
+	API_VERSION: {
+		V1: '/v1',
+	},
+	END_POINTS: {
+		SERVER: '/working',
 
-  API_VERSION: {
-    V1: "/v1",
-  },
-  END_POINTS: {
-    SERVER: "/working",
 
     // Authentication
     LOGIN: "/auth/login",

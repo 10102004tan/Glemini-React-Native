@@ -46,6 +46,35 @@ const QuestionProvider = ({ children }) => {
    const [questions, setQuestions] = useState([]);
    const { userData } = useAuthContext();
 
+   const fetchQuestions = async (quizId) => {
+      setQuestions([])
+		try {
+			const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.GET_QUIZ_QUESTIONS, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({
+					quiz_id: quizId,
+				}),
+			});
+
+
+			const data = await res.json();
+			setQuestions(data.metadata);
+		} catch (error) {
+			Toast.show({
+				type: 'error',
+				text1: 'Lỗi khi lấy câu hỏi',
+				text2: { error },
+				visibilityTime: 1000,
+				autoHide: true,
+			});
+		}
+	};
+
    // Lấy nội dung câu hỏi từ file template docx
    const getQuestionFromTemplateFile = async (questionData, quizId) => {
       setQuestions([]); // Reset mảng câu hỏi
@@ -445,6 +474,26 @@ const QuestionProvider = ({ children }) => {
       }
    };
 
+   // Lưu kết quả mỗi câu
+   const saveQuestionResult = async (exerciseId, quizId, questionId, answerId, correct, score) => {
+		await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_SAVE_QUESTION, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'x-client-id': userData._id,
+				authorization: userData.accessToken,
+			},
+			body: JSON.stringify({
+				exercise_id: exerciseId,
+				user_id: userData._id,
+				quiz_id: quizId,
+				question_id: questionId,
+				answer: answerId,
+				correct,
+				score,
+			}),
+		});
+	};
    return (
       <QuestionContext.Provider
          value={{
@@ -472,6 +521,8 @@ const QuestionProvider = ({ children }) => {
             deleteQuestion,
             isChangeData,
             setIsChangeData,
+            fetchQuestions,
+            saveQuestionResult
          }}
       >
          {children}
