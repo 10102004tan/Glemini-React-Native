@@ -65,6 +65,7 @@ const dev = {
 		RESULT_SAVE_QUESTION: '/result/save-question',
 		RESULT_COMPLETED: '/result/complete-quiz',
 		RESULT_REVIEW: '/result/review',
+		RESULT_REPORT: '/result/reports',
 
     // Subjects
     SUBJECTS: "/subjects",

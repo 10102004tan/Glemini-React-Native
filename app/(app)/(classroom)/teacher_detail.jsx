@@ -92,6 +92,7 @@ const TeacherDetail = () => {
         <View className='p-5'>
             {classroom.exercises?.length > 0 ? (
                 <FlatList
+                    showsVerticalScrollIndicator={false}
                     data={classroom.exercises}
                     keyExtractor={(exercise) => exercise._id}
                     renderItem={({ item }) => {
@@ -145,6 +146,7 @@ const TeacherDetail = () => {
         <View className='p-5'>
             {classroom.students?.length > 0 ? (
                 <FlatList
+                    showsVerticalScrollIndicator={false}
                     data={classroom.students}
                     keyExtractor={(student) => student._id}
                     renderItem={({ item }) => (

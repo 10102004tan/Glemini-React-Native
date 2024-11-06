@@ -1,15 +1,15 @@
 import { Redirect, Stack } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
-import { Alert, Text, TouchableOpacity } from 'react-native';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { useGlobalSearchParams } from 'expo-router';
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
 import AppProvider, { useAppProvider } from '@/contexts/AppProvider';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import SpinningIcon from '@/components/loadings/SpinningIcon';
 import Toast from 'react-native-toast-message-custom';
+import LottieView from 'lottie-react-native';
 
 export default function AppRootLayout() {
    const { userData, isLoading, fetchStatus, setTeacherStatus, setNotification } =
@@ -60,7 +60,14 @@ export default function AppRootLayout() {
    }, [userData]);
 
    if (isLoading) {
-      return <Text>Loading...</Text>;
+      return <View className='flex-1 items-center justify-center'>
+      <LottieView
+          source={require('@/assets/jsons/splash.json')}
+          autoPlay
+          loop
+          style={{ width: 250, height: 250 }}
+      />
+  </View>;
    }
 
    if (!userData) {
