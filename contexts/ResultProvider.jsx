@@ -10,8 +10,11 @@ const ResultProvider = ({ children }) => {
 	const { userData } = useAuthContext();
 	// Lấy dữ liệu từ API
 	const fetchResults = async () => {
+		const path = userData.user_type === 'teacher' ?
+            `${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_REPORT}` :
+            `${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_STUDENT}`
 		const response = await fetch(
-			`${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_STUDENT}`,
+			path,
 			{
 				method: 'POST',
 				headers: {

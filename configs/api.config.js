@@ -60,12 +60,13 @@ const dev = {
     GET_ALL_QUIZZES_SHARED: "/quizzes/get-all-quizzes-shared",
     REMOVE_QUIZ_SHARED: "/quizzes/remove-quiz-shared",
 
-    // Results
-    RESULT_STUDENT: "/result/student",
-    RESULT_TEACHER: "/result/teacher",
-    RESULT_SAVE_QUESTION: "/result/save-question",
-    RESULT_COMPLETED: "/result/complete-quiz",
-    RESULT_REVIEW: "/result/review",
+		// Results
+		RESULT_STUDENT: '/result/student',
+		RESULT_TEACHER: '/result/teacher',
+		RESULT_SAVE_QUESTION: '/result/save-question',
+		RESULT_COMPLETED: '/result/complete-quiz',
+		RESULT_REVIEW: '/result/review',
+		RESULT_REPORT: '/result/reports',
 
     // Subjects
     SUBJECTS: "/subjects",

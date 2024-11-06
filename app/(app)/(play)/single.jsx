@@ -36,7 +36,7 @@ const SinglePlay = () => {
 	useFocusEffect(
 		useCallback(() => {
 			fetchResultData(quizId, exerciseId);
-		}, [exerciseId])
+		}, [exerciseId, quizId])
 	)
 
 	useEffect(() => {
@@ -47,6 +47,8 @@ const SinglePlay = () => {
 			} else {
 				setCurrentQuestionIndex(result.result_questions?.length)
 			}
+		} else {
+			setCurrentQuestionIndex(0)
 		}
 	}, [quizId, result]);
 
@@ -205,23 +207,12 @@ const SinglePlay = () => {
 					</Text>
 
 					<ScrollView
-						style={{ maxHeight: 100 }}
+						className='h-32'
 						showsVerticalScrollIndicator={false}
 					>
-						<RenderHTML
-							defaultViewProps={{}}
-							defaultTextProps={{
-								style: {
-									color: 'white',
-									fontSize: 25,
-									fontWeight: '700',
-								},
-							}}
-							contentWidth={width}
-							source={{
-								html: questions[currentQuestionIndex]?.question_excerpt || ''
-							}}
-						/>
+						<Text className='text-2xl font-bold text-white'>
+						{questions[currentQuestionIndex]?.question_excerpt || ''}
+						</Text>
 					</ScrollView>
 				</View>
 

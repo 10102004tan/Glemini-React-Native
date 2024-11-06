@@ -36,10 +36,11 @@ const StudentDetail = () => {
     };
 
     return (
-        <View className='p-6 bg-slate-50 min-h-full'>
+        <View className='p-4 bg-white mb-10'>
             <Text className='text-xl font-semibold mb-3 text-gray-800'>Bài tập được giao</Text>
             {classroom?.exercises?.length > 0 ? (
                 <FlatList
+                    showsVerticalScrollIndicator={false}
                     data={classroom.exercises}
                     keyExtractor={(quiz) => quiz._id}
                     renderItem={({ item }) => {
@@ -67,7 +68,7 @@ const StudentDetail = () => {
                                     }
                                 }}
                             >
-                                <View className={`bg-white mb-4 rounded-lg shadow-lg shadow-slate-500/40 ${isExpired ? 'opacity-50' : ''}`}>
+                                <View className={`bg-slate-200/50 mb-4 rounded-lg shadow-lg ${isExpired ? 'opacity-50' : ''}`}>
                                     <View className='flex-row items-center gap-4'>
                                         <Image 
                                             source={item.quiz_id?.quiz_thumb ? {uri: item.quiz_id?.quiz_thumb} : Images.banner1}
