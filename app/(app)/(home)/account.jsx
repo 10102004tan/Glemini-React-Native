@@ -1,5 +1,5 @@
 import {Entypo, FontAwesome} from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import {useContext, useEffect, useRef, useState} from "react";
 import {Alert, FlatList, Image, Pressable, Text, View} from "react-native";
 import { AuthContext } from "@/contexts/AuthContext";
@@ -54,6 +54,7 @@ export default function AccountScreen() {
                 onOpen();
                 break;
             case SHARE_QUIZ_TO_TEACHER:
+                router.push("/(app)/(quiz)/detail_quiz");
                 break;
             case SHARE_QUIZ_TO_CLASSROOM:
                 break;
