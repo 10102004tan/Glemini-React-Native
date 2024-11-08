@@ -66,6 +66,7 @@ const dev = {
 		RESULT_SAVE_QUESTION: '/result/save-question',
 		RESULT_COMPLETED: '/result/complete-quiz',
 		RESULT_REVIEW: '/result/review',
+		RESULT_OVERVIEW: '/result/overview',
 		RESULT_REPORT: '/result/reports',
 
     // Subjects
@@ -102,6 +103,10 @@ const dev = {
 
     // room
     ROOM_CREATE: "/room/create",
+    ROOM_REPORT: "/room/report",
+
+     // exercise
+    EXERCISE_REPORT: "/exercise/report",
   },
 };
 

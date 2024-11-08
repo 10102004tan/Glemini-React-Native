@@ -251,6 +251,20 @@ export default function AppRootLayout() {
          />
 
          <Stack.Screen
+            name="(report)/detail_report"
+            options={{
+               headerTitle: 'Chi tiết báo cáo',
+            }}
+         />
+
+         <Stack.Screen
+            name="(report)/overview_report"
+            options={{
+               headerShown: false,
+            }}
+         />
+
+         <Stack.Screen
             name="(collection)/detail_collection"
             options={{
                headerTitle: 'Quay lại bộ sưu tập',

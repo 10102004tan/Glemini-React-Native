@@ -1,9 +1,10 @@
 import { useCallback, useContext } from "react";
-import { View, Text, TextInput, ScrollView, TouchableOpacity } from "react-native";
-import { useFocusEffect } from "expo-router";
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Pressable } from "react-native";
+import { router, useFocusEffect } from "expo-router";
 import { useResultProvider } from "@/contexts/ResultProvider";
 import { AuthContext } from "@/contexts/AuthContext";
 import LockFeature from "@/components/customs/LockFeature";
+import { Feather } from "@expo/vector-icons";
 
 export default function ReportScreen() {
     const { teacherStatus } = useContext(AuthContext);
@@ -21,7 +22,7 @@ export default function ReportScreen() {
 
     return (
         <View className="flex-1 bg-white mb-20">
-            <View className="px-4 py-2">
+            <View className="px-4 py-2 shadow-lg">
                 <View className="flex-row items-center bg-gray-100 p-2 rounded-md mb-4">
                     <TextInput
                         placeholder="Tìm kiếm"
@@ -44,27 +45,38 @@ export default function ReportScreen() {
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 className="px-4">
-                {results.map((result, index) => (
-                    <View
-                        key={index}
-                        className="flex-row items-center justify-between p-4 bg-red-500/30 rounded-md shadow mb-4"
-                    >
-                        <View className="flex-row items-center">
-                            <Text className="bg-black text-white px-2 py-1 rounded-md mr-4">Trực tiếp</Text>
-                            <View>
-                                <Text className="font-bold text-lg">{result.title}</Text>
-                                <Text className="text-gray-500">Completed {result.date}</Text>
-                                <Text className="text-gray-500">
-                                    <Text className="font-bold">{result.participants}</Text> người tham gia
-                                </Text>
+                {results.map((result) => (
+                    <Pressable onPress={() => { router.push(
+                        {
+                            pathname: '(report)/detail_report', 
+                            params: { reportId: result.id, type: result.type }
+                        })
+                    }} key={result.id}>
+                        <View className="flex-row items-center justify-betwee bg-transparent rounded-md mb-2"
+                        >
+                            <View className='flex-row w-full'>
+                                <View className='w-1/3 flex items-center justify-center px-5'>
+                                    <Text className='text-white p-3 bg-black rounded-md w-full text-center'>{result.type === 'room' ? 'Trực tiếp' : 'Bài tập'}</Text>
+                                </View>
+                                <View className='w-2/3 h-auto flex-row items-center py-5 border-b-[1px] border-slate-300'>
+                                    <View className='w-4/5'>
+                                        <Text className="text-slate-500 text-base font-bold">{result.identifier}</Text>
+                                        <Text className="text-slate-500">{result.class_name || result.description}</Text>
+                                        <View className="flex-row items-center">
+                                            <Feather name="users" size={16} color={'gray'} />
+                                            <Text className='ml-2 text-slate-500'>
+                                                {result.results?.length} người tham gia
+
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <View className='w-1/5 flex items-center'>
+                                        <Text className='bg-red-500/50 text-red-500 px-1 py-2 rounded-md font-bold'>100%</Text>
+                                    </View>
+                                </View>
                             </View>
                         </View>
-                        <Text
-                            className={`text-white px-3 py-1 rounded-md ${result.score < 50 ? 'bg-red-500' : 'bg-green-500'}`}
-                        >
-                            {result.score}%
-                        </Text>
-                    </View>
+                    </Pressable>
                 ))}
             </ScrollView>
         </View>
