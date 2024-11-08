@@ -7,6 +7,8 @@ const ResultContext = createContext();
 const ResultProvider = ({ children }) => {
 	const [results, setResults] = useState([]);
 	const [result, setResult] = useState([]);
+	const [reportData, setReportData] = useState([]);
+	const [overViewData, setOverviewData] = useState([]);
 	const { userData } = useAuthContext();
 	// Lấy dữ liệu từ API
 	const fetchResults = async () => {
@@ -61,6 +63,30 @@ const ResultProvider = ({ children }) => {
 		}
 	};
 
+	const fetchOverViewData = async (id) => {
+		try {
+			const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_OVERVIEW, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({id}),
+			});
+
+			const data = await res.json();
+			setOverviewData(data.metadata);
+		} catch (error) {
+			Toast.show({
+				type: 'warn',
+				text1: 'Đang lấy kết quả',
+				visibilityTime: 1000,
+				autoHide: true,
+			})
+		}
+	};
+
 	const completed = async (exerciseId, quizId) => {
 		try {
 			await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
@@ -88,6 +114,33 @@ const ResultProvider = ({ children }) => {
 		}
 	};
 
+	const fetchReportDetail = async (id, type) => {
+		const path = type === 'room' ? API_URL + API_VERSION.V1 + END_POINTS.ROOM_REPORT : API_URL + API_VERSION.V1 + END_POINTS.EXERCISE_REPORT ;
+		try {
+			const res = await fetch( path , {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-client-id': userData._id,
+					authorization: userData.accessToken,
+				},
+				body: JSON.stringify({
+					id: id
+				}),
+			});
+
+			const data = await res.json();
+			setReportData(data.metadata);
+		} catch (error) {
+			Toast.show({
+				type: 'warn',
+				text1: 'Đang lấy kết quả',
+				visibilityTime: 1000,
+				autoHide: true,
+			})
+		}
+	};
+
 	useEffect(() => {
 		if (userData) {
 			fetchResults();
@@ -101,7 +154,11 @@ const ResultProvider = ({ children }) => {
 			fetchResults,
 			fetchResultData,
 			result,
-			completed
+			completed,
+			reportData,
+			fetchReportDetail,
+			overViewData,
+			fetchOverViewData
 		}}>
 			{children}
 		</ResultContext.Provider>
