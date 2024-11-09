@@ -142,7 +142,7 @@ const QuizzOverViewScreen = () => {
 
    // Lấy thông tin của quiz hiện tại
    const fetchQuiz = async () => {
-      console.log("CALL FETCH QUIZ")
+      // console.log("CALL FETCH QUIZ")
       setQuizFetching(true);
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`,

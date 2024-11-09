@@ -1,11 +1,12 @@
 'use strict';
 
 const dev = {
-	API_URL: 'http://192.168.2.179:3000/api',
+	API_URL: 'http://192.168.1.8:3000/api',
 
 	API_VERSION: {
 		V1: '/v1',
 	},
+
 	END_POINTS: {
 		SERVER: '/working',
 
@@ -91,11 +92,18 @@ const dev = {
 		CLASSROOM_ADD_QUIZ: '/classroom/add-quiz',
 		CLASSROOM_REMOVE_STUDENT: '/classroom/rm-student',
 
-		//email
+		// Email
 		CHECK_EMAIL: '/user/check-email',
 
-		// room
-		ROOM_CREATE: '/room/create'
+		// Room
+		ROOM_CREATE: '/room/create',
+		ROOM_LIST: '/room/list',
+		ROOM_DETAIL: '/room/detail',
+
+		// Use for realtime play
+		ROOM_GET_RESULTS: '/result/get-results',
+		ROOM_UPDATE_RESULT: '/result/update-result',
+		ROOM_UPDATE_STATUS: '/room/update',
 	},
 };
 

@@ -1,4 +1,4 @@
-import { Redirect, Stack } from 'expo-router';
+import { Redirect, router, Stack } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import { Alert, Text, TouchableOpacity } from 'react-native';
@@ -10,6 +10,9 @@ import { useQuizProvider } from '@/contexts/QuizProvider';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import SpinningIcon from '@/components/loadings/SpinningIcon';
 import Toast from 'react-native-toast-message-custom';
+import Button from '@/components/customs/Button';
+import { useRoomProvider } from '@/contexts/RoomProvider';
+import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 
 export default function AppRootLayout() {
    const { userData, isLoading, fetchStatus, setTeacherStatus, setNotification } =
@@ -22,6 +25,8 @@ export default function AppRootLayout() {
       openBottomSheetSaveToLibrary,
       closeBottomSheet,
    } = useAppProvider();
+
+   const { currentRoom } = useRoomProvider();
 
    useEffect(() => {
       if (userData) {
@@ -66,13 +71,13 @@ export default function AppRootLayout() {
                headerShown: false
             }}
          />
+
          <Stack.Screen
             name="profile"
             options={{
                headerTitle: i18n.t('profile.title'),
             }}
          />
-
 
          <Stack.Screen
             name="change-password"
@@ -106,6 +111,40 @@ export default function AppRootLayout() {
             name="(quiz)/list"
             options={{
                headerTitle: 'Danh sách các quiz',
+            }}
+         />
+
+         <Stack.Screen
+            name="(play)/realtime"
+            options={{
+               headerShown: false,
+            }}
+         />
+
+         <Stack.Screen
+            name='(teacher)/teacher_room_wait'
+            options={{
+               headerShown: false,
+               headerTitle: '',
+               headerRight: () => {
+
+               }
+            }}
+         />
+
+
+         <Stack.Screen
+            name='(teacher)/teacher_room_wait_result'
+            options={{
+               headerShown: false,
+               headerBackVisible: false,
+               headerStyle: {
+                  backgroundColor: '#1C2833',
+               },
+               headerTitle: '',
+               headerRight: () => {
+
+               }
             }}
          />
 

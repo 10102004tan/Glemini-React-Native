@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuthContext } from './AuthContext';
 import { API_URL, API_VERSION, END_POINTS } from '../configs/api.config';
-import { router } from 'expo-router';
 
 const QuizContext = createContext();
 

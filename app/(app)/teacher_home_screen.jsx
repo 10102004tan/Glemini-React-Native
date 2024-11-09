@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableWithoutFeedback, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import Wrapper from '../../components/customs/Wrapper';
 import { Images } from '../../constants';
@@ -16,14 +16,49 @@ import QuizzCreateAction from '../../components/customs/QuizCreateAction';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import NotificationIcon from "@/components/customs/NotificationIcon";
 import socket from '@/utils/socket';
+import Button from '@/components/customs/Button';
+import { useRoomProvider } from '@/contexts/RoomProvider';
+import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 
 
 const TeacherHomeScreen = () => {
-   const { teacherStatus, userData: { user_fullname, user_avatar, user_email }, numberOfUnreadNoti } = useContext(AuthContext);
+   const { teacherStatus, userData: { user_fullname, user_avatar, user_email, _id, accessToken }, numberOfUnreadNoti } = useContext(AuthContext);
+
    const { setIsHiddenNavigationBar } = useAppProvider();
    const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
    const { setActionQuizType } = useQuizProvider();
    const router = useRouter();
+   const [roomCode, setRoomCode] = useState('');
+   const { currentRoom, setCurrentRoom } = useRoomProvider();
+   const [recentCreatedRooms, setRecentCreatedRooms] = useState([]);
+
+   useEffect(() => {
+      const fetchRecentCreatedRooms = async () => {
+         const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_LIST}`, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+               'x-client-id': _id,
+               authorization: accessToken,
+            },
+            body: JSON.stringify({
+               user_created_id: _id,
+            }),
+         });
+         const data = await response.json();
+         if (data.statusCode === 200) {
+            setRecentCreatedRooms(data.metadata);
+         } else {
+            alert('Lỗi khi lấy danh sách phòng chơi');
+         }
+      }
+
+      if (userData) {
+         fetchRecentCreatedRooms();
+      }
+   }, [userData])
+
+
    const handleCreateQuiz = () => {
       setIsHiddenNavigationBar(true);
       setVisibleBottomSheet(true);
@@ -39,7 +74,6 @@ const TeacherHomeScreen = () => {
    const [users, setUsers] = useState([]);
 
    useEffect(() => {
-      console.log("LOOP")
       socket.on('joinRoom', (data) => {
          console.log(data)
          // alert('Join room success');
@@ -206,12 +240,53 @@ const TeacherHomeScreen = () => {
                />
             </View>
          </View>
+         <View className="mt-5 p-4">
+            {/* Dùng để test chức năng tham gia chơi realtime */}
+            <Text className="text-lg uppercase font-semibold text-center mb-4">
+               Tham gia vào một phòng chơi
+            </Text>
+            <Field placeholder="Mã phòng" wrapperStyles="mb-3" value={roomCode} onChange={(text) => {
+               setRoomCode(text);
+            }} />
 
-         {/* list user */}
-         {users.length > 0 && users.map((user, index) => (
-            <Text key={index}>{user.user_fullname}</Text>
-         ))}
+            <Button text='JOIN' otherStyles='p-4' onPress={() => {
+               // T7HtmU
+               socket.emit('joinRoom', { roomCode, user: userData });
+               setCurrentRoom(roomCode);
+               router.replace({
+                  pathname: '/(app)/(teacher)/teacher_room_wait',
+                  params: { roomCode: roomCode }
+               });
+            }} />
 
+            <Text className="text-lg uppercase font-semibold text-center my-4">
+               Các phòng chơi đã tạo gần đây
+            </Text>
+            <ScrollView className="max-h-[200px]"
+               showsVerticalScrollIndicator={false}
+            >
+               {
+                  recentCreatedRooms.length > 0 && recentCreatedRooms.map((room, index) => (
+                     <TouchableOpacity key={room._id} className="p-4"
+                        onPress={() => {
+                           setCurrentRoom(room.room_code);
+                           socket.emit('joinRoom', { roomCode: room.room_code, user: userData });
+                           router.push({
+                              pathname: '/(app)/(teacher)/teacher_room_wait',
+                              params: { roomCode: room.room_code }
+                           });
+                        }}
+                     >
+                        <Text>
+                           {room.room_code}
+                        </Text>
+                     </TouchableOpacity>
+                  ))
+               }
+            </ScrollView>
+
+
+         </View>
       </Wrapper>
    );
 };

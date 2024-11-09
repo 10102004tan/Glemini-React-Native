@@ -1,24 +1,19 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text } from "react-native";
 import React, { useState, useEffect } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Wrapper from "@/components/customs/Wrapper";
 import Entypo from "@expo/vector-icons/Entypo";
 import Button from "../../../components/customs/Button.jsx";
-import AppProvider, { useAppProvider } from "@/contexts/AppProvider";
+import { useAppProvider } from "@/contexts/AppProvider";
 import BottomSheet from "@/components/customs/BottomSheet";
 import Overlay from "@/components/customs/Overlay";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import {
-   MultipleSelectList,
-   SelectList,
-} from "react-native-dropdown-select-list";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { router, useGlobalSearchParams } from "expo-router";
 import { useQuizProvider } from "@/contexts/QuizProvider";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config.js";
 import QuestionOverview from "@/components/customs/QuestionOverview";
 import { ScrollView } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import ConfirmDialog from "@/components/dialogs/ConfirmDialog.jsx";
 import { collectionData } from "@/utils/index.js";
 import Checkbox from "@/components/customs/Checkbox.jsx";
@@ -26,7 +21,6 @@ import CardQuiz from "@/components/customs/CardQuiz.jsx";
 import EmailDialog from "@/components/dialogs/EmailDialog.jsx";
 import { useClassroomProvider } from "@/contexts/ClassroomProvider.jsx";
 import AssignQuizModal from "@/components/modals/AssignQuizModal.jsx";
-import Toast from "react-native-toast-message-custom";
 import RoomWaitingModal from "@/components/modals/RoomWaitingModal.jsx";
 import { useRoomProvider } from "@/contexts/RoomProvider.jsx";
 
@@ -48,7 +42,7 @@ const detailquizz = () => {
    // Lấy dữ liệu name, description, thumb đưa vào ô thông tin
    const { quizzes, setQuizzes } = useQuizProvider();
    const { addQuizToClassroom } = useClassroomProvider()
-   const {createRoom} = useRoomProvider()
+   const { createRoom } = useRoomProvider()
    const { deleteQuiz, questionFetching, setQuestionFetching } =
       useQuizProvider();
 
@@ -90,6 +84,7 @@ const detailquizz = () => {
    const handleCreateRoom = async (items) => {
       await createRoom(items.roomCode, quizId, userData._id, items.userMax, items.description)
    };
+
 
    // Lấy thông tin của quiz hiện tại
    const fetchQuiz = async () => {
@@ -266,6 +261,7 @@ const detailquizz = () => {
       { key: 7, value: "CD21TT01" },
       { key: 8, value: "CD22TT11" },
    ];
+
 
    return (
       <Wrapper>
@@ -460,15 +456,15 @@ const detailquizz = () => {
          </ScrollView>
 
          <View className="w-full h-[1px] bg-gray"></View>
-         <View className="p-2 flex-row justify-around">
+         <View className="p-2 flex-row justify-between">
             <Button
                text={"Thi thử"}
-               otherStyles={"p-4"}
+               otherStyles={"p-4 w-1/2 justify-center"}
                textStyles={"text-center"}
             />
             <Button
                text={"Tạo phòng"}
-               otherStyles={"p-4"}
+               otherStyles={"p-4 flex-1 ml-2 justify-center"}
                textStyles={"text-center"}
                onPress={() => {
                   setShowRoomWaitingModal(true);
