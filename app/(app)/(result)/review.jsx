@@ -8,9 +8,12 @@ import { useGlobalSearchParams, useRouter } from 'expo-router';
 
 const ResultReview = () => {
    const router = useRouter();
-   const { resultData } = useGlobalSearchParams();
-   const result = JSON.parse(resultData);
+   const { result } = useGlobalSearchParams();
+   console.log(result)
+   const resultData = JSON.parse(result);
    const { i18n } = useAppProvider();
+
+
 
    // Trạng thái để lưu chỉ số câu hỏi được chọn và trạng thái hiển thị của Modal
    const [selectedIndex, setSelectedIndex] = useState(null);
@@ -26,10 +29,10 @@ const ResultReview = () => {
       setSelectedIndex(null);
    };
 
-   const currentQuestion = result.result_questions[selectedIndex];
+   const currentQuestion = resultData.result_questions[selectedIndex];
 
    const goToNextQuestion = () => {
-      if (selectedIndex < result.result_questions.length - 1) {
+      if (selectedIndex < resultData.result_questions.length - 1) {
          setSelectedIndex(prevIndex => prevIndex + 1);
       }
    };
@@ -58,7 +61,7 @@ const ResultReview = () => {
             <Text className='text-2xl text-slate-800 font-semibold text-center'>{i18n.t('result.review.title')}</Text>
          </View>
          <ScrollView className='py-4' showsVerticalScrollIndicator={false}>
-            {result.result_questions.map((question, index) => (
+            {resultData && resultData.result_questions.map((question, index) => (
                <TouchableOpacity key={index} onPress={() => openModal(index)}>
                   <QuestionResultItem question={question} />
                </TouchableOpacity>
@@ -96,7 +99,7 @@ const ResultReview = () => {
                            {currentQuestion.question_id.question_excerpt}
                         </Text>
 
-                        {currentQuestion.question_id.question_answer_ids.map((answer, ansIndex) => {
+                        {currentQuestion && currentQuestion.question_id.question_answer_ids.map((answer, ansIndex) => {
                            const isUserAnswer = currentQuestion.answer.some(userAns => userAns._id === answer._id);
                            const isCorrectAnswer = currentQuestion.question_id.correct_answer_ids.includes(answer._id);
 
@@ -114,7 +117,7 @@ const ResultReview = () => {
                      {!currentQuestion.correct && (
                         <View className='mt-4'>
                            <Text className='text-base text-slate-600 font-pregular'>
-                              {i18n.t('result.review.userAnswer')}: {currentQuestion.answer.map(userAns => userAns.text).join(', ') || i18n.t('result.review.noAnswer')}
+                              {i18n.t('result.review.userAnswer')}: {currentQuestion && currentQuestion.answer.map(userAns => userAns.text).join(', ') || i18n.t('result.review.noAnswer')}
                            </Text>
                         </View>
                      )}
@@ -127,7 +130,7 @@ const ResultReview = () => {
                         </Text>
                      </View>
 
-                     <View className='flex-row justify-around pt-5'>
+                     <View className="mt-4 flex flex-row items-center justify-center">
                         <Button
                            text={i18n.t('result.review.btnNext')}
                            onPress={goToPreviousQuestion}
@@ -143,17 +146,17 @@ const ResultReview = () => {
                            onPress={goToNextQuestion}
                            loading={false}
                            type="fill"
-                           otherStyles={`bg-pink-600 rounded-lg px-4 ${selectedIndex === result.result_questions.length - 1 ? 'opacity-50' : ''}`}
+                           otherStyles={`bg-pink-600 rounded-lg px-4  ml-3 ${resultData && selectedIndex === resultData.result_questions.length - 1 ? 'opacity-50' : ''}`}
                            textStyles={'text-base font-pregular'}
-                           disabled={selectedIndex === result.result_questions.length - 1}
+                           disabled={selectedIndex === resultData.result_questions.length - 1}
                         />
                      </View>
-
                   </View>
-               </View>
-            </Modal>
+
+               </View >
+            </Modal >
          )}
-      </View>
+      </View >
    );
 };
 

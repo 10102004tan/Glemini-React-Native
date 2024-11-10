@@ -159,7 +159,7 @@ const TeacherRoomWaitScreen = () => {
          socket.emit('startRoom', { roomCode: roomCode });
          router.replace({
             pathname: '/(teacher)/teacher_room_wait_result',
-            params: { roomCode: roomCode, users: JSON.stringify(joinedUsers), quizId: roomData.quiz_id }
+            params: { roomCode: roomCode, users: JSON.stringify(joinedUsers), quizId: roomData.quiz_id, roomTime: roomData.room_time }
          })
       }
 
@@ -187,6 +187,7 @@ const TeacherRoomWaitScreen = () => {
       const data = await response.json();
       if (data.statusCode === 200) {
          // Gửi một event lên server để bắt đầu phòng học
+         console.log(roomData)
          setRoomData(data.metadata);
       }
       else {

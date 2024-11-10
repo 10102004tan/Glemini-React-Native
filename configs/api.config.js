@@ -58,11 +58,17 @@ const dev = {
 		QUIZ_GENERATE_GEMINI: '/quizzes/gemini/generate/prompt',
 		QUIZ_UPDATE: '/quizzes/update',
 		QUIZ_SEARCH: '/quizzes/search',
+		GET_ALL_QUIZZES_SHARED: '/quizzes/get-all-quizzes-shared',
+		REMOVE_QUIZ_SHARED: '/quizzes/remove-quiz-shared',
 
 		// Results
+		RESULT_STUDENT: '/result/student',
+		RESULT_TEACHER: '/result/teacher',
 		RESULT_SAVE_QUESTION: '/result/save-question',
 		RESULT_COMPLETED: '/result/complete-quiz',
 		RESULT_REVIEW: '/result/review',
+		RESULT_OVERVIEW: '/result/overview',
+		RESULT_REPORT: '/result/reports',
 
 		// Subjects
 		SUBJECTS: '/subjects',
@@ -104,6 +110,17 @@ const dev = {
 		ROOM_GET_RESULTS: '/result/get-results',
 		ROOM_UPDATE_RESULT: '/result/update-result',
 		ROOM_UPDATE_STATUS: '/room/update',
+
+		//user
+		// CHECK_EMAIL: '/user/check-email',
+		SHARE_QUIZ: '/user/share-quiz',
+
+		// room
+		ROOM_CREATE: '/room/create',
+		ROOM_REPORT: '/room/report',
+
+		// exercise
+		EXERCISE_REPORT: '/exercise/report',
 	},
 };
 

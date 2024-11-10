@@ -20,7 +20,7 @@ const TeacherRoomWaitResultScreen = () => {
    const [questionBoardTransform] = useState(new Animated.Value(screenWidth));
    const { getQuestionsByQuizId } = useQuestionProvider();
 
-   const { quizId, users, roomCode } = useGlobalSearchParams();
+   const { quizId, users, roomCode, roomTime } = useGlobalSearchParams();
    const joinedUsers = JSON.parse(users) // Parse JSON string back to array
    const [questions, setQuestions] = useState([]);
    const { userData } = useAuthContext();
@@ -28,7 +28,7 @@ const TeacherRoomWaitResultScreen = () => {
    const [accuracy, setAccuracy] = useState(0);
    const animatedWidthGreen = useRef(new Animated.Value(50)).current;
    const animatedWidthRed = useRef(new Animated.Value(50)).current;
-
+   const [roomTimer, setRoomTimer] = useState(0); // đơn vị phút
    const router = useRouter();
 
    useEffect(() => {
@@ -56,7 +56,6 @@ const TeacherRoomWaitResultScreen = () => {
       inputRange: [0, 100],
       outputRange: ['100%', '0%'],
    });
-
 
    // Call API to get questions by quizId
    useEffect(() => {
@@ -109,7 +108,6 @@ const TeacherRoomWaitResultScreen = () => {
       };
    }, []);
 
-
    useEffect(() => {
       Animated.timing(translateValue, {
          toValue: tabResult === 'rankboard' ? 0 : (screenWidth * 90 / 100) / 2,
@@ -132,10 +130,56 @@ const TeacherRoomWaitResultScreen = () => {
       }).start();
    }, [tabResult])
 
+   useEffect(() => {
+      console.log(roomTimer)
+      const interval = setInterval(() => {
+         if (roomTimer < roomTime * 60) {
+            setRoomTimer(prev => prev + 1);
+         } else {
+            clearInterval(interval);
+            Alert.alert('Thông báo', 'Hết thời gian làm bài', [
+               {
+                  text: 'Thoát',
+                  onPress: async () => {
+                     const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_UPDATE_STATUS}`, {
+                        method: 'POST',
+                        headers: {
+                           'Content-Type': 'application/json',
+                           'x-client-id': userData._id,
+                           authorization: userData.accessToken,
+                        },
+                        body: JSON.stringify({
+                           room_code: roomCode,
+                           status: 'completed',
+                        }),
+                     })
+                     const data = await response.json();
+                     // console.log(data)
+                     if (data.statusCode === 200) {
+                        socket.emit('endQuiz', { roomCode: roomCode, user: userData });
+                        router.replace({
+                           pathname: '/(app)/(home)',
+                           params: {}
+                        }) // Redirect to home
+                     }
+                  }
+               }
+            ])
+         }
+      }, 1000);
+
+      return () => {
+         clearInterval(interval);
+      }
+   }, [roomTimer])
+
    return (
       <Wrapper>
          <View className="flex-1 p-4 bg-primary">
-            <View className="flex items-end justify-end flex-row mb-4 mt-[40px]">
+            <View className="flex items-center justify-between flex-row mb-4 mt-[40px]">
+               <Text className="text-white font-semibold text-lg">
+                  Thời gian còn lại: {Math.round((roomTime * 60 - roomTimer) / 60)} phút
+               </Text>
                <Button text='Kết thúc' otherStyles='p-3 bg-red-500' onPress={() => {
                   Alert.alert('Thông báo', 'Bạn có chắc chắn muốn thoát phòng?', [
                      {

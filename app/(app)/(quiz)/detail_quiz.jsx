@@ -8,6 +8,10 @@ import { useAppProvider } from "@/contexts/AppProvider";
 import BottomSheet from "@/components/customs/BottomSheet";
 import Overlay from "@/components/customs/Overlay";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import {
+   MultipleSelectList,
+   SelectList,
+} from "react-native-dropdown-select-list";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { router, useGlobalSearchParams } from "expo-router";
 import { useQuizProvider } from "@/contexts/QuizProvider";
@@ -24,6 +28,7 @@ import AssignQuizModal from "@/components/modals/AssignQuizModal.jsx";
 import RoomWaitingModal from "@/components/modals/RoomWaitingModal.jsx";
 import { useRoomProvider } from "@/contexts/RoomProvider.jsx";
 
+import Toast from "react-native-toast-message-custom";
 
 const detailquizz = () => {
    // biến cho dialog email
@@ -48,7 +53,6 @@ const detailquizz = () => {
 
    const { id } = useGlobalSearchParams();
 
-
    const { userData } = useAuthContext();
    const [quizId, setQuizId] = useState("");
    // Save init state
@@ -63,6 +67,7 @@ const detailquizz = () => {
    //selectlist
    const [selectedSchool, setSelectedSchool] = useState("");
    const [selectedClass, setSelectedClass] = useState("");
+   const [roomWatingModal, setShowRoomWaitingModal] = useState(false);
 
    // bottom sheet
    const {
@@ -75,11 +80,17 @@ const detailquizz = () => {
    } = useAppProvider();
 
    const [showAssignModal, setShowAssignModal] = useState(false);
-   const [showRoomWaitingModal, setShowRoomWaitingModal] = useState(false);
 
    const handleAssignQuiz = async (items) => {
-      await addQuizToClassroom(items.assignmentName, items.selectedClass, quizId, items.startDate, items.deadline)
+      await addQuizToClassroom(
+         items.assignmentName,
+         items.selectedClass,
+         quizId,
+         items.startDate,
+         items.deadline
+      );
    };
+
 
    const handleCreateRoom = async (items) => {
       await createRoom(items.roomCode, quizId, userData._id, items.userMax, items.description)
@@ -216,7 +227,7 @@ const detailquizz = () => {
          }
       );
       const data = await response.json();
-      // console.log(data);
+      console.log(data);
       if (data.statusCode === 200) {
          setCollections(collectionData(data.metadata));
          console.log(collectionData(data.metadata));
@@ -263,9 +274,11 @@ const detailquizz = () => {
    ];
 
 
+
    return (
       <Wrapper>
          <EmailDialog
+            quiz_id={id}
             onSend={() => {
                console.log("Send email");
             }}
@@ -293,41 +306,51 @@ const detailquizz = () => {
 
          <Overlay
             onPress={closeBottomSheet}
-            visible={showBottomSheetMoreOptions || showBottomSheetSaveToLibrary || showEmailDialog}
+            visible={
+               showBottomSheetMoreOptions ||
+               showBottomSheetSaveToLibrary ||
+               showEmailDialog
+            }
          ></Overlay>
 
-         {/* Bottom Sheet */}
+         {/* BottomSheet lưu vào bộ sưu tập */}
          <BottomSheet
-            visible={showBottomSheetMoreOptions}
+            visible={showBottomSheetSaveToLibrary}
             onClose={closeBottomSheet}
          >
-            <Button
-               text={"Chỉnh sửa"}
-               otherStyles={"m-2 flex-row"}
-               icon={<Entypo name="edit" size={16} color="white" />}
-            ></Button>
-            <Button
-               text={"Xóa"}
-               otherStyles={"m-2 flex-row"}
-               icon={<MaterialIcons name="delete" size={16} color="white" />}
-               onPress={() => {
-                  setShowConfirmDialog(true);
-               }}
-            ></Button>
-            <Button
-               text={"Chia sẻ bài kiểm tra"}
-               otherStyles={"m-2 flex-row"}
-               icon={<AntDesign name="sharealt" size={16} color="white" />}
-            ></Button>
-            <Button
-               text={"Lưu vào bộ sưu tập"}
-               otherStyles={"m-2 flex-row"}
-               icon={<Entypo name="save" size={16} color="white" />}
-               onPress={() => {
-                  closeBottomSheet();
-                  openBottomSheetSaveToLibrary();
-               }}
-            ></Button>
+            <View className="m-2">
+               <Text className="flex text-center text-[18px] text-gray">
+                  Lưu vào bộ sưu tập
+               </Text>
+               <View className="w-full h-[1px] bg-gray my-2"></View>
+
+               <View className="w-full">
+                  <View>
+                     {collections.length > 0 &&
+                        collections.map((collection) => {
+                           return (
+                              <View key={collection.key} className="flex-row mb-2">
+                                 <Checkbox
+                                    isChecked={collection.quizzes.some(
+                                       (quiz_id) => quiz_id === id
+                                    )}
+                                    onToggle={() => {
+                                       if (
+                                          collection.quizzes.some((quiz_id) => quiz_id === id)
+                                       ) {
+                                          deleteQuizInCollection(collection.key);
+                                       } else {
+                                          addQuizToCollection(collection.key);
+                                       }
+                                    }}
+                                 />
+                                 <Text>{collection.value}</Text>
+                              </View>
+                           );
+                        })}
+                  </View>
+               </View>
+            </View>
          </BottomSheet>
 
          {/* Bottom Sheet */}
@@ -366,8 +389,7 @@ const detailquizz = () => {
                onPress={() => {
                   setShowAssignModal(true);
                   closeBottomSheet();
-               }
-               }
+               }}
             />
             <Button
                text={"Lưu vào bộ sưu tập"}
@@ -379,33 +401,6 @@ const detailquizz = () => {
                }}
             />
          </BottomSheet>
-
-         <View className="w-full">
-            <View>
-               {collections.length > 0 &&
-                  collections.map((collection) => {
-                     return (
-                        <View key={collection.key} className="flex-row mb-2">
-                           <Checkbox
-                              isChecked={collection.quizzes.some(
-                                 (quiz_id) => quiz_id === id
-                              )}
-                              onToggle={() => {
-                                 if (
-                                    collection.quizzes.some((quiz_id) => quiz_id === id)
-                                 ) {
-                                    deleteQuizInCollection(collection.key);
-                                 } else {
-                                    addQuizToCollection(collection.key);
-                                 }
-                              }}
-                           />
-                           <Text>{collection.value}</Text>
-                        </View>
-                     );
-                  })}
-            </View>
-         </View>
 
          <ScrollView>
             <View className="flex mb-4 mx-4">
@@ -419,7 +414,7 @@ const detailquizz = () => {
                            quiz_name: quizName,
                            quiz_thumb: quizThumbnail,
                            quiz_description: quizDescription,
-                           quiz_status: quizStatus
+                           quiz_status: quizStatus,
                         }}
                      />
                   </View>
@@ -474,18 +469,11 @@ const detailquizz = () => {
             />
          </View>
 
-         <RoomWaitingModal
-            visible={showRoomWaitingModal}
-            onClose={() => setShowRoomWaitingModal(false)}
-            onSubmit={handleCreateRoom}
-         />
-
          <AssignQuizModal
             visible={showAssignModal}
             onClose={() => setShowAssignModal(false)}
             onAssign={handleAssignQuiz}
          />
-
       </Wrapper >
    );
 };

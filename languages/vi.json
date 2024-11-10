@@ -103,7 +103,7 @@
    },
    "play": {
       "single": {
-         "buttonQuit": "Kết thúc",
+         "buttonQuit": "Thoát ngay",
          "score": "Điểm",
          "questionCouter": "Câu hỏi số:",
          "buttonConfirm": "Xác nhận",

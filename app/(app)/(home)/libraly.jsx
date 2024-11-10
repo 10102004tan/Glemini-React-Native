@@ -7,49 +7,56 @@ import {
    Image,
    ScrollView,
    FlatList,
-} from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
-import Wrapper from '@/components/customs/Wrapper';
-import { AntDesign, Ionicons } from '@expo/vector-icons';
-import Button from '@/components/customs/Button';
-import { useAppProvider } from '@/contexts/AppProvider';
-import BottomSheet from '@/components/customs/BottomSheet';
-import Overlay from '@/components/customs/Overlay';
-import { useQuizProvider } from '@/contexts/QuizProvider';
-import { router, useGlobalSearchParams } from 'expo-router';
-import { AuthContext, useAuthContext } from '@/contexts/AuthContext';
-import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { useSubjectProvider } from '@/contexts/SubjectProvider';
-import { convertSubjectData } from '@/utils';
+   ActivityIndicator,
+   Alert,
+} from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import Wrapper from "@/components/customs/Wrapper";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import Button from "@/components/customs/Button";
+import { useAppProvider } from "@/contexts/AppProvider";
+import BottomSheet from "@/components/customs/BottomSheet";
+import Overlay from "@/components/customs/Overlay";
+import { useQuizProvider } from "@/contexts/QuizProvider";
+import { router, useGlobalSearchParams } from "expo-router";
+import { AuthContext, useAuthContext } from "@/contexts/AuthContext";
+import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useSubjectProvider } from "@/contexts/SubjectProvider";
+import { convertSubjectData } from "@/utils";
 import {
    MultipleSelectList,
    SelectList,
-} from 'react-native-dropdown-select-list';
-import LockFeature from '@/components/customs/LockFeature';
-import CardQuiz from '@/components/customs/CardQuiz';
-import { Dimensions } from 'react-native';
-
+} from "react-native-dropdown-select-list";
+import LockFeature from "@/components/customs/LockFeature";
+import CardQuiz from "@/components/customs/CardQuiz";
+import { Dimensions } from "react-native";
+import QuizzesSharedEmpty from "@/components/customs/QuizzesSharedEmpty";
 
 const Library = () => {
+   //biến loadmore
+   // const [page, setPage] = useState(0);
+   // const limit = 5;
+   // const [hasMoreQuizzes, setHasMoreQuizzes] = useState(true);
+   // const [quizMessageQuizShared, setQuizMessageQuizShared] = useState("");
+
    //biến name của bộ sưu tập
-   const [nameCollection, setNameCollection] = useState('');
+   const [nameCollection, setNameCollection] = useState("");
    const [collections, setCollections] = useState([]);
    const { userData, processAccessTokenExpired } = useAuthContext();
    const { teacherStatus } = useContext(AuthContext);
    // biến search
-   const [search, setSearch] = useState('');
-   const screenWidth = Dimensions.get('window').width;
-
+   const [search, setSearch] = useState("");
+   const screenWidth = Dimensions.get("window").width;
 
    // biến lưu trạng thái status
-   const [status, setStatus] = useState('');
+   const [status, setStatus] = useState("");
    const data = [
-      { key: 'published', value: 'Công khai', data_selected: 'published' },
+      { key: "published", value: "Công khai", data_selected: "published" },
       {
-         key: 'unpublished',
-         value: 'Chỉ mình tôi',
-         data_selected: 'unpublished',
+         key: "unpublished",
+         value: "Chỉ mình tôi",
+         data_selected: "unpublished",
       },
    ];
    // Lấy dữ liệu môn học
@@ -58,8 +65,7 @@ const Library = () => {
    const [subject, setSubject] = useState([]);
 
    // biến để set thời gian
-   const [isStartDatePickerVisible, setStartDatePickerVisible] =
-      useState(false);
+   const [isStartDatePickerVisible, setStartDatePickerVisible] = useState(false);
    const [isEndDatePickerVisible, setEndDatePickerVisible] = useState(false);
    const [startDate, setStartDate] = useState(null);
    const [endDate, setEndDate] = useState(null);
@@ -67,33 +73,33 @@ const Library = () => {
    // Hiển thị và ẩn DatePicker
    const showStartDatePicker = () => setStartDatePickerVisible(true);
    const hideStartDatePicker = () => setStartDatePickerVisible(false);
+
    const showEndDatePicker = () => setEndDatePickerVisible(true);
    const hideEndDatePicker = () => setEndDatePickerVisible(false);
 
    // Xử lý chọn ngày
    const handleConfirmStartDate = (date) => {
       if (endDate && date > endDate) {
-         alert('Ngày bắt đầu không thể lớn hơn ngày kết thúc');
+         alert("Ngày bắt đầu không thể lớn hơn ngày kết thúc");
       } else {
          setStartDate(date);
-         console.log('Ngày bắt đầu:', date);
+         console.log("Ngày bắt đầu:", date);
       }
       hideStartDatePicker();
    };
 
    const handleConfirmEndDate = (date) => {
       if (startDate && date < startDate) {
-         alert('Ngày kết thúc không thể nhỏ hơn ngày bắt đầu');
+         alert("Ngày kết thúc không thể nhỏ hơn ngày bắt đầu");
       } else {
          setEndDate(date);
-         console.log('Ngày kết thúc:', date);
+         console.log("Ngày kết thúc:", date);
       }
       hideEndDatePicker();
    };
 
    //biến của bottomsheet
-   const { isHiddenNavigationBar, setIsHiddenNavigationBar } =
-      useAppProvider();
+   const { isHiddenNavigationBar, setIsHiddenNavigationBar } = useAppProvider();
    const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
    const [visibleCreateNewBottomSheet, setVisibleCreateNewBottomSheet] =
       useState(false);
@@ -102,23 +108,86 @@ const Library = () => {
       useState(false);
 
    // Tên bộ sưu tập
-   const [newCollectionName, setNewCollectionName] = useState('');
+   const [newCollectionName, setNewCollectionName] = useState("");
    // tab hiện tại: 'library' hoặc 'collection'
-   const [activeTab, setActiveTab] = useState('library');
+   const [activeTab, setActiveTab] = useState("library");
    // di chuyển dòng bôi đen
    const [translateValue] = useState(new Animated.Value(0));
    const [listNameCollection, setListNameCollection] = useState([]);
 
    // lấy list thông tin của quiz, thông tin name, description, status,...
-   const { quizzes, setQuizzes } = useQuizProvider();
+   const { quizzes, fetchQuizzes, quizFetching, quizMessage, setQuizzes } =
+      useQuizProvider();
+
+   const [sharedQuizzes, setSharedQuizzes] = useState([]);
+
+   //hàm fetch api lấy tất cả các quiz đã được chia sẻ
+   const getAllQuizzesShared = async () => {
+      const response = await fetch(
+         `${API_URL}${API_VERSION.V1}${END_POINTS.GET_ALL_QUIZZES_SHARED}`,
+         {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json",
+               "x-client-id": userData._id,
+               authorization: userData.accessToken,
+            },
+            body: JSON.stringify({
+               user_id: userData._id,
+            }),
+         }
+      );
+      const data = await response.json();
+      if (data.statusCode === 200) {
+         setSharedQuizzes(data.metadata);
+      }
+   };
+
+   // hàm xóa quiz đã chia sẻ
+   const removeQuizShared = async (quiz_id) => {
+      const response = await fetch(
+         `${API_URL}${API_VERSION.V1}${END_POINTS.REMOVE_QUIZ_SHARED}`,
+         {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json",
+               "x-client-id": userData._id,
+               authorization: userData.accessToken,
+            },
+            body: JSON.stringify({
+               user_id: userData._id,
+               quiz_id: quiz_id,
+            }),
+         }
+      );
+      const data = await response.json();
+      if (data.statusCode === 200) {
+         setSharedQuizzes(sharedQuizzes.filter((quiz) => quiz._id !== quiz_id));
+      }
+   };
+   const handleDeleteQuizShared = (quiz_id) => {
+      Alert.alert(
+         "Xác nhận xóa",
+         "Bạn có chắc chắn muốn xóa quiz được chia sẻ này không?",
+         [
+            { text: "Hủy", style: "cancel" },
+            {
+               text: "Xóa",
+               onPress: () => removeQuizShared(quiz_id),
+               style: "destructive",
+            },
+         ]
+      );
+   };
 
    useEffect(() => {
       if (activeTab === "collection") {
          getAllCollections();
+      } else if (activeTab === "shared") {
+         getAllQuizzesShared();
       }
    }, [activeTab]);
 
-   // BottomSheet
    // Bộ sưu tập
    const OpenBottomSheet = () => {
       setIsHiddenNavigationBar(true);
@@ -147,7 +216,12 @@ const Library = () => {
 
       // Di chuyển dòng bôi đen dựa trên tab
       Animated.timing(translateValue, {
-         toValue: tab === 'library' ? 0 : screenWidth / 2, // Giá trị tương ứng với vị trí của từng tab
+         toValue:
+            tab === "library"
+               ? 0
+               : tab === "collection"
+                  ? screenWidth / 3
+                  : (2 * screenWidth) / 3,
          duration: 300,
          useNativeDriver: true,
       }).start();
@@ -157,10 +231,10 @@ const Library = () => {
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_FILTER}`,
          {
-            method: 'POST',
+            method: "POST",
             headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
+               "Content-Type": "application/json",
+               "x-client-id": userData._id,
                authorization: userData.accessToken,
             },
             body: JSON.stringify({
@@ -178,7 +252,7 @@ const Library = () => {
       if (data.statusCode === 200) {
          setQuizzes(data.metadata);
       } else {
-         if (data.statusCode === 401 && data.message === 'expired') {
+         if (data.statusCode === 401 && data.message === "expired") {
             processAccessTokenExpired();
          }
 
@@ -191,16 +265,16 @@ const Library = () => {
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_FILTER}`,
          {
-            method: 'POST',
+            method: "POST",
             headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
+               "Content-Type": "application/json",
+               "x-client-id": userData._id,
                authorization: userData.accessToken,
             },
             body: JSON.stringify({
                user_id: userData._id,
-               quiz_name: '',
-               quiz_status: '',
+               quiz_name: "",
+               quiz_status: "",
                quiz_subjects: [],
                start_filter_date: null,
                end_filter_date: null,
@@ -211,7 +285,7 @@ const Library = () => {
       if (data.statusCode === 200) {
          setQuizzes(data.metadata);
       } else {
-         if (data.statusCode === 401 && data.message === 'expired') {
+         if (data.statusCode === 401 && data.message === "expired") {
             processAccessTokenExpired();
          }
          setQuizzes([]);
@@ -234,10 +308,10 @@ const Library = () => {
          const response = await fetch(
             `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_CREATE}`,
             {
-               method: 'POST',
+               method: "POST",
                headers: {
-                  'Content-Type': 'application/json',
-                  'x-client-id': userData._id,
+                  "Content-Type": "application/json",
+                  "x-client-id": userData._id,
                   authorization: userData.accessToken,
                },
                body: JSON.stringify({
@@ -251,12 +325,12 @@ const Library = () => {
          if (data.statusCode === 200) {
             setCollections([...collections, data.metadata]);
          } else {
-            if (data.statusCode === 401 && data.message === 'expired') {
+            if (data.statusCode === 401 && data.message === "expired") {
                processAccessTokenExpired();
             }
          }
       } else {
-         alert('Đã tồn tại tên !!!');
+         alert("Đã tồn tại tên !!!");
       }
    };
 
@@ -265,10 +339,10 @@ const Library = () => {
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_GETALL}`,
          {
-            method: 'POST',
+            method: "POST",
             headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
+               "Content-Type": "application/json",
+               "x-client-id": userData._id,
                authorization: userData.accessToken,
             },
             body: JSON.stringify({
@@ -281,13 +355,13 @@ const Library = () => {
       if (data.statusCode === 200) {
          setCollections(data.metadata);
       } else {
-         if (data.statusCode === 401 && data.message === 'expired') {
+         if (data.statusCode === 401 && data.message === "expired") {
             processAccessTokenExpired();
          }
       }
    };
 
-   if (teacherStatus === 'pedding' || teacherStatus === 'rejected') {
+   if (teacherStatus === "pedding" || teacherStatus === "rejected") {
       return <LockFeature />;
    }
 
@@ -314,7 +388,7 @@ const Library = () => {
                      otherStyles="w-1/6 flex item-center justify-center "
                      onPress={() => {
                         handleCloseBottomSheet();
-                        router.push('/(app)/(quiz)/create_title');
+                        router.push("/(app)/(quiz)/create_title");
                      }}
                   />
                   <Text className="flex justify-center items-center ml-2 font-bold text-[17px]">
@@ -322,8 +396,8 @@ const Library = () => {
                   </Text>
                </View>
                <Text className="text-gray">
-                  Sử dụng các loại câu hỏi tương tác hoặc chọn câu hỏi
-                  hiện có từ Thư viện Quizizz{' '}
+                  Sử dụng các loại câu hỏi tương tác hoặc chọn câu hỏi hiện có từ Thư
+                  viện Quizizz{" "}
                </Text>
             </View>
          </BottomSheet>
@@ -354,7 +428,7 @@ const Library = () => {
                   textStyles="text-white text-center"
                   onPress={() => {
                      createCollection(); // Tạo bộ sưu tập
-                     setNameCollection(''); // Đặt lại giá trị ô nhập liệu về chuỗi rỗng
+                     setNameCollection(""); // Đặt lại giá trị ô nhập liệu về chuỗi rỗng
                      handleCloseBottomSheet(); // Đóng BottomSheet
                   }}
                />
@@ -384,10 +458,7 @@ const Library = () => {
 
                <View className="flex flex-col ">
                   <View className="mb-4">
-                     <SelectList
-                        setSelected={(val) => setStatus(val)}
-                        data={data}
-                     />
+                     <SelectList setSelected={(val) => setStatus(val)} data={data} />
                   </View>
 
                   <MultipleSelectList
@@ -410,14 +481,10 @@ const Library = () => {
                      <Text className="ml-2 text-gray">
                         {startDate
                            ? startDate.toLocaleDateString()
-                           : 'Thời gian bắt đầu'}
+                           : "Thời gian bắt đầu"}
                      </Text>
                      <View className="mr-1">
-                        <AntDesign
-                           name="caretdown"
-                           size={12}
-                           color="black"
-                        />
+                        <AntDesign name="caretdown" size={12} color="black" />
                      </View>
                   </TouchableOpacity>
 
@@ -433,16 +500,10 @@ const Library = () => {
                         onCancel={hideEndDatePicker}
                      />
                      <Text className="ml-2 text-gray">
-                        {endDate
-                           ? endDate.toLocaleDateString()
-                           : 'Thời gian kết thúc'}
+                        {endDate ? endDate.toLocaleDateString() : "Thời gian kết thúc"}
                      </Text>
                      <View className="mr-1">
-                        <AntDesign
-                           name="caretdown"
-                           size={12}
-                           color="black"
-                        />
+                        <AntDesign name="caretdown" size={12} color="black" />
                      </View>
                   </TouchableOpacity>
                </View>
@@ -459,13 +520,11 @@ const Library = () => {
             {/* Tabs */}
             <View className="flex flex-row justify-around items-center h-[60px] mt-[40px]">
                {/* Tab Thư viện của tôi */}
-               <TouchableOpacity
-                  onPress={() => handleTabChange('library')}
-               >
+               <TouchableOpacity onPress={() => handleTabChange("library")}>
                   <Text
-                     className={`font-normal text-[18px] ${activeTab === 'library'
-                        ? 'text-black font-bold'
-                        : 'text-gray-500'
+                     className={`font-normal text-[18px] ${activeTab === "library"
+                           ? "text-black font-bold"
+                           : "text-gray-500"
                         }`}
                   >
                      Thư viện của tôi
@@ -473,94 +532,120 @@ const Library = () => {
                </TouchableOpacity>
 
                {/* Tab Bộ sưu tập */}
-               <TouchableOpacity
-                  onPress={() => handleTabChange('collection')}
-               >
+               <TouchableOpacity onPress={() => handleTabChange("collection")}>
                   <Text
-                     className={`font-normal text-[18px] ${activeTab === 'collection'
-                        ? 'text-black font-bold'
-                        : 'text-gray-500'
+                     className={`font-normal text-[18px] ${activeTab === "collection"
+                           ? "text-black font-bold"
+                           : "text-gray-500"
                         }`}
                   >
                      Bộ sưu tập
                   </Text>
                </TouchableOpacity>
-            </View>
 
+               <TouchableOpacity onPress={() => handleTabChange("shared")}>
+                  <Text
+                     className={`font-normal text-[18px] ${activeTab === "shared"
+                           ? "text-black font-bold"
+                           : "text-gray-500"
+                        }`}
+                  >
+                     Quizzes đã nhận
+                  </Text>
+               </TouchableOpacity>
+            </View>
             {/* Đường phân cách dưới tab */}
             <View>
                <Animated.View
                   style={{
                      transform: [{ translateX: translateValue }],
-                     width: '50%',
+                     width: "33%",
                      height: 2,
-                     backgroundColor: '#1C2833',
+                     backgroundColor: "#1C2833",
                      borderRadius: 10,
                   }}
                />
                <View className="bg-primary h-[1px]"></View>
             </View>
-
             {/* Nội dung dựa trên tab được chọn */}
-            {activeTab === 'library' ? (
+            {activeTab === "library" && (
                <View className="">
                   {/* Nội dung của Thư viện của tôi */}
 
                   <View className="flex flex-row justify-between items-center p-3">
                      <Button
                         onPress={CreateNewBottomSheet}
-                        text={'Tạo mới'}
+                        text={"Tạo mới"}
                         icon={<AntDesign name="plus" size={16} color="white" />}
-                        otherStyles={'w-1/4 justify-center p-4'}
-                        textStyles={'text-center text-white'}
+                        otherStyles={"w-1/4 justify-center p-4"}
+                        textStyles={"text-center text-white"}
                      />
 
                      <View className="flex-row items-center justify-center">
                         {/* bộ lọc */}
-                        <Button text='Bộ lọc'
-                           icon={<Ionicons
-                              name="options-outline"
-                              size={16}
-                              color="white"
-                           />}
+                        <Button
+                           text="Bộ lọc"
+                           icon={
+                              <Ionicons name="options-outline" size={16} color="white" />
+                           }
                            onPress={FilterBottomSheet}
-                           otherStyles={'bg-primary p-4 rounded-xl'}
+                           otherStyles={"bg-primary p-4 rounded-xl"}
                         />
-                        <Button text='Đặt lại'
-                           icon={<AntDesign
-                              name="closecircleo"
-                              size={16}
-                              color="white"
-                           />}
+                        <Button
+                           text="Đặt lại"
+                           icon={
+                              <AntDesign name="closecircleo" size={16} color="white" />
+                           }
                            onPress={resetFilters}
-                           otherStyles={'bg-primary p-4 rounded-xl ml-2'}
+                           otherStyles={"bg-primary p-4 rounded-xl ml-2"}
                         />
                      </View>
                   </View>
-
-                  <FlatList
-                     contentContainerStyle={{ padding: 12 }}
-                     key={(quiz) => quiz._id}
-                     style={{ marginBottom: 200 }}
-                     data={quizzes}
-                     keyExtractor={(quiz) => quiz._id}
-                     renderItem={({ item: quiz }) => {
-                        return (
-                           <CardQuiz quiz={quiz} type='horizontal' routerPath='(quiz)/detail_quiz' params={{
-                              id: quiz._id,
-                           }} />
-                        );
-                     }}
-                  ></FlatList>
+                  <View className="border-t border-b border-gray mb-[350px]">
+                     <FlatList
+                        contentContainerStyle={{ padding: 12 }}
+                        key={(quiz) => quiz._id}
+                        data={quizzes}
+                        keyExtractor={(quiz) => quiz._id}
+                        renderItem={({ item: quiz }) => {
+                           return (
+                              <CardQuiz
+                                 quiz={quiz}
+                                 type="horizontal"
+                                 routerPath="(quiz)/detail_quiz"
+                                 params={{
+                                    id: quiz._id,
+                                 }}
+                              />
+                           );
+                        }}
+                        onEndReached={() => {
+                           if (!quizFetching) {
+                              fetchQuizzes();
+                           }
+                        }}
+                        onEndReachedThreshold={1}
+                        ListFooterComponent={
+                           quizFetching ? (
+                              <ActivityIndicator />
+                           ) : (
+                              <Text className="text-center text-red-700 text-lg font-bold border rounded-lg mt-2 p-2">
+                                 {quizMessage}
+                              </Text>
+                           )
+                        }
+                     ></FlatList>
+                  </View>
                </View>
-            ) : (
+            )}
+            {activeTab === "collection" && (
                <View className="p-3">
                   {/* Danh sách các bộ sưu tập */}
                   <Button
                      onPress={OpenBottomSheet}
-                     text={'Tạo bộ sưu tập mới'}
-                     otherStyles={'w-1/2 justify-center p-4'}
-                     textStyles={'text-center text-white'}
+                     text={"Tạo bộ sưu tập mới"}
+                     otherStyles={"w-1/2 justify-center p-4"}
+                     textStyles={"text-center text-white"}
                   />
                   <ScrollView className="mb-[180px]">
                      {collections.length > 0 &&
@@ -569,8 +654,7 @@ const Library = () => {
                               key={name._id}
                               onPress={() => {
                                  router.push({
-                                    pathname:
-                                       '/(app)/(collection)/detail_collection',
+                                    pathname: "/(app)/(collection)/detail_collection",
                                     params: { id: name._id },
                                  });
                               }}
@@ -578,17 +662,38 @@ const Library = () => {
                               <View className="flex flex-row items-center justify-between m-4">
                                  <Text>{name.collection_name}</Text>
                                  <TouchableOpacity>
-                                    <AntDesign
-                                       name="right"
-                                       size={18}
-                                       color="black"
-                                    />
+                                    <AntDesign name="right" size={18} color="black" />
                                  </TouchableOpacity>
                               </View>
                               <View className="h-[1px] w-full bg-gray"></View>
                            </TouchableOpacity>
                         ))}
                   </ScrollView>
+               </View>
+            )}
+            {activeTab === "shared" && (
+               <View className="p-3">
+                  <FlatList
+                     contentContainerStyle={{ padding: 12 }}
+                     key={(quiz) => quiz._id}
+                     style={{ marginBottom: 200 }}
+                     data={sharedQuizzes}
+                     keyExtractor={(quiz) => quiz._id}
+                     renderItem={({ item: quiz }) => {
+                        return (
+                           <CardQuiz
+                              handleDelete={() => handleDeleteQuizShared(quiz._id)}
+                              isDelete={true}
+                              quiz={quiz}
+                              type="horizontal"
+                              routerPath="(quiz)/detail_quiz"
+                              params={{
+                                 id: quiz._id,
+                              }}
+                           />
+                        );
+                     }}
+                  ></FlatList>
                </View>
             )}
          </View>

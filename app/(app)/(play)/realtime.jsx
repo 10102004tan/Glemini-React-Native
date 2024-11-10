@@ -89,7 +89,7 @@ const RealtimePlay = () => {
       socket.on('quizEnded', () => {
          setConfirmFn('endquiz')
          setShowConfirmDialog(true);
-         setAlertMessage('Chủ phòng đã kết thúc bài thi, bạn sẽ được chuyển về trang chính')
+         setAlertMessage('Phòng thi đã kết thúc. Bạn sẽ được chuyển tới màn hình kết quả');
       });
 
       socket.on('updateRanking', (users) => {
@@ -113,7 +113,7 @@ const RealtimePlay = () => {
                authorization: userData.accessToken,
             },
             body: JSON.stringify({
-               roomId: roomId,
+               room_id: roomId,
                user_id: userData._id,
                quiz_id: quizId,
                question_id: questionId,
@@ -319,9 +319,10 @@ const RealtimePlay = () => {
             score={score}
             totalQuestions={questions.length}
             handleRestart={handleRestart}
-            roomCode={roomId}
+            roomCode={roomCode}
             rankBoardData={rankData}
             createdUserId={createdUserId}
+            roomId={roomId}
          />
       );
    }
@@ -343,10 +344,8 @@ const RealtimePlay = () => {
                setConfirmFn('close');
                if (confirmFn === 'endquiz') {
                   socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
-                  router.replace({
-                     pathname: '/(app)/(home)',
-                     params: {}
-                  })
+                  completed();
+                  setIsCompleted(true);
                }
             }}
             message={alertMessage}

@@ -10,7 +10,7 @@ import { useRouter } from 'expo-router';
 import RankBoard from '@/components/customs/RankBoard';
 import socket from '@/utils/socket';
 
-const RealtimeResult = ({ correctCount, wrongCount, score, totalQuestions, handleRestart, quizId, roomCode, rankBoardData, createdUserId }) => {
+const RealtimeResult = ({ correctCount, wrongCount, score, totalQuestions, handleRestart, quizId, roomCode, rankBoardData, createdUserId, roomId }) => {
 
    const { i18n } = useAppProvider()
    const { userData } = useAuthContext()
@@ -33,7 +33,7 @@ const RealtimeResult = ({ correctCount, wrongCount, score, totalQuestions, handl
                body: JSON.stringify({
                   quiz_id: quizId,
                   user_id: userData._id,
-                  room_code: roomCode,
+                  room_id: roomId,
                }),
             });
 
@@ -82,7 +82,7 @@ const RealtimeResult = ({ correctCount, wrongCount, score, totalQuestions, handl
                      router.push({
                         pathname: '/(result)/review',
                         params: {
-                           resultData: JSON.stringify(resultData)
+                           result: JSON.stringify(resultData)
                         }
                      })
                   }}

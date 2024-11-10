@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, useWindowDimensions, ScrollView } from 'react-native';
 import Button from '../../../components/customs/Button';
 import ResultSingle from '../(result)/single';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useAppProvider } from '@/contexts/AppProvider';
 import Toast from 'react-native-toast-message-custom';
-import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
 import RenderHTML from 'react-native-render-html';
 import { Audio } from 'expo-av';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useQuestionProvider } from '@/contexts/QuestionProvider';
+import { useResultProvider } from '@/contexts/ResultProvider';
 
 const SinglePlay = () => {
 	const { quizId, exerciseId } = useLocalSearchParams()
@@ -28,83 +29,29 @@ const SinglePlay = () => {
 	const [buttonTextColor, setButtonTextColor] = useState('text-black');
 	const { userData } = useAuthContext();
 	const [isProcessing, setIsProcessing] = useState(false);
-	const [questions, setQuestions] = useState([]);
 	const [sound, setSound] = useState(null);
+	const { questions, fetchQuestions, saveQuestionResult } = useQuestionProvider()
+	const { completed, fetchResultData, result } = useResultProvider()
+
+	useFocusEffect(
+		useCallback(() => {
+			fetchResultData(quizId, exerciseId);
+		}, [exerciseId, quizId])
+	)
 
 	useEffect(() => {
-		const fetchQuestions = async () => {
-			try {
-				const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.GET_QUIZ_QUESTIONS, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'x-client-id': userData._id,
-						authorization: userData.accessToken,
-					},
-					body: JSON.stringify({
-						exercise_id: exerciseId,
-						quiz_id: quizId,
-					}),
-				});
-	
-				
-				const data = await res.json();
-				setQuestions(data.metadata);
-			} catch (error) {
-				Toast.show({
-					type: 'error',
-					text1: 'Lỗi khi lấy câu hỏi',
-					text2: { error}
-				});
+		fetchQuestions(quizId);
+		if (result) {
+			if (questions?.length === result.result_questions?.length) {
+				setCurrentQuestionIndex(0)
+			} else {
+				setCurrentQuestionIndex(result.result_questions?.length)
 			}
-		};
-		fetchQuestions();
-	}, [quizId]);
-
-	const saveQuestionResult = async (questionId, answerId, correct, score) => {
-		await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_SAVE_QUESTION, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'x-client-id': userData._id,
-				authorization: userData.accessToken,
-			},
-			body: JSON.stringify({
-				exercise_id: exerciseId,
-				user_id: userData._id,
-				quiz_id: quizId,
-				question_id: questionId,
-				answer: answerId,
-				correct,
-				score,
-			}),
-		});
-	};
-
-	const completed = async () => {
-		try {
-			await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'x-client-id': userData._id,
-					authorization: userData.accessToken,
-				},
-				body: JSON.stringify({
-					exercise_id: exerciseId,
-					user_id: userData._id,
-					quiz_id: quizId,
-					status: 'completed',
-				}),
-			});
-		} catch (error) {
-			Toast.show({
-                type: 'error',
-                text1: 'Lỗi khi cập nhật trạng thái hoàn thành.',
-				text2: {error}
-            });
+		} else {
+			setCurrentQuestionIndex(0)
 		}
-	};
+	}, [quizId, result]);
+
 
 	const playSound = async (isCorrectAnswer) => {
 		let soundPath = isCorrectAnswer ? require('@/assets/sounds/correct.mp3') : require('@/assets/sounds/incorrect.mp3');
@@ -145,6 +92,8 @@ const SinglePlay = () => {
 				type: 'error',
 				text1: `${i18n.t('play.single.errorTitle')}`,
 				text2: `${i18n.t('play.single.errorText')}`,
+				visibilityTime: 1000,
+				autoHide: true,
 			});
 			setIsProcessing(false);
 			return;
@@ -152,7 +101,6 @@ const SinglePlay = () => {
 
 		const currentQuestion = questions[currentQuestionIndex];
 		const correctAnswerIds = currentQuestion.correct_answer_ids.map(answer => answer._id);
-		// console.log(selectedAnswers, correctAnswerIds);
 
 		let isAnswerCorrect;
 
@@ -181,6 +129,7 @@ const SinglePlay = () => {
 		}
 
 		saveQuestionResult(
+			exerciseId, quizId,
 			currentQuestion._id,
 			selectedAnswers,
 			isAnswerCorrect,
@@ -201,9 +150,9 @@ const SinglePlay = () => {
 				setButtonTextColor('text-black');
 			} else {
 				setIsCompleted(true);
-				completed();
+				completed(exerciseId, quizId);
 			}
-		}, 1500);
+		}, 2000);
 	};
 
 	const handleRestart = () => {
@@ -230,16 +179,17 @@ const SinglePlay = () => {
 				score={score}
 				totalQuestions={questions.length}
 				handleRestart={handleRestart}
+				exerciseId={exerciseId}
 			/>
 		);
 	}
 
 	return (
 		<View className="flex-1">
-			<View className="flex-row justify-between items-center px-5 pt-10 pb-3 bg-black">
+			<View className="flex-row px-5 pt-10 pb-3 bg-black">
 				<Button
 					text={i18n.t('play.single.buttonQuit')}
-					onPress={() => { router.popToTop() }}
+					onPress={() => { router.back() }}
 					loading={false}
 					type="fill"
 					otherStyles={'bg-[#F41D1D]'}
@@ -257,23 +207,12 @@ const SinglePlay = () => {
 					</Text>
 
 					<ScrollView
-						style={{ maxHeight: 100 }}
+						className='h-32'
 						showsVerticalScrollIndicator={false}
 					>
-						<RenderHTML
-							defaultViewProps={{}}
-							defaultTextProps={{
-								style: {
-									color: 'white',
-									fontSize: 25,
-									fontWeight: '700',
-								},
-							}}
-							contentWidth={width}
-							source={{
-								html: questions[currentQuestionIndex]?.question_excerpt || ''
-							}}
-						/>
+						<Text className='text-2xl font-bold text-white'>
+						{questions[currentQuestionIndex]?.question_excerpt || ''}
+						</Text>
 					</ScrollView>
 				</View>
 
