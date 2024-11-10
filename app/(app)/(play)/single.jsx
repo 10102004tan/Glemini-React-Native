@@ -31,9 +31,11 @@ const SinglePlay = () => {
 	const { questions, fetchQuestions, saveQuestionResult } = useQuestionProvider()
 	const { completed, fetchResultData, result } = useResultProvider()
 
-	useEffect(() => {
-		fetchResultData(quizId, exerciseId);
-	}, [exerciseId, quizId])
+	useFocusEffect(
+		useCallback(() => {
+			fetchResultData(quizId, exerciseId);
+		}, [exerciseId, quizId])
+	)
 
 	useEffect(() => {
 		fetchQuestions(quizId);
@@ -204,7 +206,7 @@ const SinglePlay = () => {
 						showsVerticalScrollIndicator={false}
 					>
 						<Text className='text-2xl font-bold text-white'>
-						{questions[currentQuestionIndex]?.question_excerpt || ''}
+							{questions[currentQuestionIndex]?.question_excerpt || ''}
 						</Text>
 					</ScrollView>
 				</View>

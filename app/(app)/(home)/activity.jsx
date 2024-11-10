@@ -1,18 +1,28 @@
-import { Images } from "@/constants";
-import { AuthContext } from "@/contexts/AuthContext";
-import { useResultProvider } from "@/contexts/ResultProvider";
-import { useFocusEffect } from "expo-router";
-import LottieView from "lottie-react-native";
-import React, { useCallback, useState } from "react";
-import { View, Text, Dimensions, FlatList, Image } from "react-native";
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6'
 
+import { Images } from "@/constants";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { useResultProvider } from "@/contexts/ResultProvider";
+import { useFocusEffect, useRouter } from "expo-router";
+import LottieView from "lottie-react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { View, Text, Dimensions, FlatList, Image, Alert } from "react-native";
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+import Button from "@/components/customs/Button";
+import Field from "@/components/customs/Field";
+import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
+import { useRoomProvider } from "@/contexts/RoomProvider";
+import socket from "@/utils/socket";
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 16;
 
 export default function ActivityScreen() {
     const { results, fetchResults } = useResultProvider();
+    const [roomCode, setRoomCode] = useState(null);
+    const [roomTemp, setRoomTemp] = useState(null);
+    const router = useRouter();
+    const { userData } = useAuthContext();
+    const { currentRoom, setCurrentRoom } = useRoomProvider();
 
     useFocusEffect(
         useCallback(() => {
@@ -20,6 +30,47 @@ export default function ActivityScreen() {
             setIndex(0)
         }, [])
     );
+
+    useEffect(() => {
+        console.log("RUNNING")
+        const checkRoom = async () => {
+            const res = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_DETAIL}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-client-id': userData._id,
+                    authorization: userData.accessToken,
+                },
+                body: JSON.stringify({
+                    room_code: roomTemp,
+                }),
+            })
+
+            const notAccepted = ['doing', 'completed', 'deleted'];
+
+            const data = await res.json();
+            console.log(data)
+            if (data.statusCode === 200) {
+                if (notAccepted.includes(data.metadata.status)) {
+                    Alert.alert('Thông báo', 'Không thể tham gia vào phòng chơi lúc này !!!');
+                } else {
+                    setCurrentRoom(data.metadata._id);
+                    socket.emit('joinRoom', { roomCode, user: userData });
+                    router.replace({
+                        pathname: '/(app)/(teacher)/teacher_room_wait',
+                        params: { roomCode: roomTemp }
+                    });
+                }
+                setRoomTemp(null);
+            } else {
+                Alert.alert('Thông báo', 'Mã phòng không tồn tại');
+            }
+        }
+
+        if (roomTemp) {
+            checkRoom()
+        }
+    }, [roomTemp])
 
     const [index, setIndex] = useState(0);
     const [routes] = useState([
@@ -29,6 +80,16 @@ export default function ActivityScreen() {
 
     return (
         <View className="flex-1 mb-20 bg-slate-50">
+            <View className="p-4">
+                <Field placeholder="Mã phòng" wrapperStyles="mb-3" value={roomCode} onChange={(text) => {
+                    setRoomCode(text);
+                }} />
+
+                <Button text='JOIN' otherStyles='p-4' onPress={() => {
+                    setRoomTemp(roomCode);
+                }} />
+            </View>
+
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={SceneMap({
@@ -82,7 +143,7 @@ const ResultCompletedItem = ({ result }) => {
                     bởi: {result.quiz_id?.user_id?.user_fullname}
                 </Text>
 
-                <Text className={`${accuracy < 40 ? 'bg-red-600': accuracy < 70 ? 'bg-yellow-400' : 'bg-green-500' } text-sm mt-4 font-light text-slate-50 rounded-full px-2`}>
+                <Text className={`${accuracy < 40 ? 'bg-red-600' : accuracy < 70 ? 'bg-yellow-400' : 'bg-green-500'} text-sm mt-4 font-light text-slate-50 rounded-full px-2`}>
                     {accuracy.toFixed(0)}% độ chính xác
                 </Text>
             </View>
