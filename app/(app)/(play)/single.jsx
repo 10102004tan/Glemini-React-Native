@@ -38,14 +38,21 @@ const SinglePlay = () => {
 	)
 
 	useEffect(() => {
-		fetchQuestions(quizId);
-		if (result) {
-			const answeredQuestionsCount = result.result_questions?.length || 0;
-			setCurrentQuestionIndex(answeredQuestionsCount < questions?.length ? answeredQuestionsCount : 0);
-		} else {
-			setCurrentQuestionIndex(0);
+		// Ensure questions are fetched before setting the index
+		if (questions && questions.length > 0 && result) {
+		  const answeredQuestionsCount = result.result_questions?.length || 0;
+		  const nextIndex = answeredQuestionsCount < questions.length ? answeredQuestionsCount : 0;
+		  setCurrentQuestionIndex(nextIndex);
 		}
-	}, [quizId, result]);
+	  }, [quizId, result, questions]);
+
+	  useEffect(() => {
+		if (!questions || questions.length === 0) {
+		  fetchQuestions(quizId);
+		}
+	  }, [quizId]);
+	  
+
 
 
 	const playSound = async (isCorrectAnswer) => {

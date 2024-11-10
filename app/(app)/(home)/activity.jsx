@@ -17,7 +17,7 @@ const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 16;
 
 export default function ActivityScreen() {
-    const { results, fetchResults } = useResultProvider();
+    const { results, fetchResultsForStudent } = useResultProvider();
     const [roomCode, setRoomCode] = useState(null);
     const [roomTemp, setRoomTemp] = useState(null);
     const router = useRouter();
@@ -26,7 +26,7 @@ export default function ActivityScreen() {
 
     useFocusEffect(
         useCallback(() => {
-            fetchResults();
+            fetchResultsForStudent();
             setIndex(0)
         }, [])
     );

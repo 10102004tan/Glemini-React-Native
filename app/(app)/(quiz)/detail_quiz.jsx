@@ -474,6 +474,12 @@ const detailquizz = () => {
             onClose={() => setShowAssignModal(false)}
             onAssign={handleAssignQuiz}
          />
+
+         <RoomWaitingModal
+            visible={roomWatingModal}
+            onClose={() => setShowRoomWaitingModal(false)}
+            onSubmit={handleCreateRoom}
+         />
       </Wrapper >
    );
 };
