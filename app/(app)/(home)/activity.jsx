@@ -66,7 +66,7 @@ const ResultCompletedItem = ({ result }) => {
             />
             <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
                 <FontAwesome6 name="chalkboard-user" color='white' />
-                <Text className="text-sm text-slate-50 ml-1">Được giao</Text>
+                <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : 'Công khai'}</Text>
             </View>
             <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
                 <Text className="text-sm text-slate-50 ml-1">{totalQuestions} Qs</Text>

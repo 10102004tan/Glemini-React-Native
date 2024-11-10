@@ -53,6 +53,7 @@ const ResultProvider = ({ children }) => {
 
 			const data = await res.json();
 			setResult(data.metadata);
+			return data.metadata; 
 		} catch (error) {
 			Toast.show({
 				type: 'warn',
@@ -60,6 +61,7 @@ const ResultProvider = ({ children }) => {
 				visibilityTime: 1000,
 				autoHide: true,
 			})
+			return null;
 		}
 	};
 
