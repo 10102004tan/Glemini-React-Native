@@ -11,27 +11,63 @@ const ResultProvider = ({ children }) => {
    const [overViewData, setOverviewData] = useState([]);
    const { userData } = useAuthContext();
    // Lấy dữ liệu từ API
-   const fetchResults = async () => {
-      const path = userData.user_type === 'teacher' ?
-         `${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_REPORT}` :
-         `${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_STUDENT}`
-      const response = await fetch(
-         path,
-         {
-            method: 'POST',
+   // Fetch results for teachers with optional filters
+   const fetchResultsForTeacher = async ( page = 1, sortOrder = "newest", identifier = "", class_name = "", type = "" ) => {
+      const path = `${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_REPORT}`;
+      const requestBody = {
+         userId: userData._id,
+         page,
+         sortOrder,
+         identifier,
+         class_name,
+         type,
+      };
+
+      try {
+         const response = await fetch(path, {
+            method: "POST",
             headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
+               "Content-Type": "application/json",
+               "x-client-id": userData._id,
                authorization: userData.accessToken,
             },
-            body: JSON.stringify({ userId: userData._id }),
+            body: JSON.stringify(requestBody),
+         });
+
+         const data = await response.json();
+
+         if (data.statusCode === 200) {
+            setResults(data.metadata);
+            return data.metadata
          }
-      );
+      } catch (error) {
+         console.error("Failed to fetch results for teacher:", error);
+      }
+   };
 
-      const data = await response.json();
+   // Fetch results for students without filters
+   const fetchResultsForStudent = async () => {
+      const path = `${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_STUDENT}`;
+      const requestBody = { userId: userData._id };
 
-      if (data.statusCode === 200) {
-         setResults(data.metadata);
+      try {
+         const response = await fetch(path, {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json",
+               "x-client-id": userData._id,
+               authorization: userData.accessToken,
+            },
+            body: JSON.stringify(requestBody),
+         });
+
+         const data = await response.json();
+
+         if (data.statusCode === 200) {
+            setResults(data.metadata);
+         }
+      } catch (error) {
+         console.error("Failed to fetch results for student:", error);
       }
    };
 
@@ -52,8 +88,8 @@ const ResultProvider = ({ children }) => {
          });
 
          const data = await res.json();
-         console.log(data)
          setResult(data.metadata);
+         return data.metadata;
       } catch (error) {
          Toast.show({
             type: 'warn',
@@ -61,6 +97,7 @@ const ResultProvider = ({ children }) => {
             visibilityTime: 1000,
             autoHide: true,
          })
+         return null;
       }
    };
 
@@ -142,17 +179,12 @@ const ResultProvider = ({ children }) => {
       }
    };
 
-   useEffect(() => {
-      if (userData) {
-         fetchResults();
-
-      }
-   }, [userData]);
 
    return (
       <ResultContext.Provider value={{
          results,
-         fetchResults,
+         fetchResultsForStudent,
+         fetchResultsForTeacher,
          fetchResultData,
          result,
          completed,

@@ -17,221 +17,221 @@ const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 16;
 
 export default function ActivityScreen() {
-   const { results, fetchResults } = useResultProvider();
-   const [roomCode, setRoomCode] = useState(null);
-   const [roomTemp, setRoomTemp] = useState(null);
-   const router = useRouter();
-   const { userData } = useAuthContext();
-   const { currentRoom, setCurrentRoom } = useRoomProvider();
+    const { results, fetchResultsForStudent } = useResultProvider();
+    const [roomCode, setRoomCode] = useState(null);
+    const [roomTemp, setRoomTemp] = useState(null);
+    const router = useRouter();
+    const { userData } = useAuthContext();
+    const { currentRoom, setCurrentRoom } = useRoomProvider();
 
-   useFocusEffect(
-      useCallback(() => {
-         fetchResults();
-         setIndex(0)
-      }, [])
-   );
+    useFocusEffect(
+        useCallback(() => {
+            fetchResultsForStudent();
+            setIndex(0)
+        }, [])
+    );
 
-   useEffect(() => {
-      console.log("RUNNING")
-      const checkRoom = async () => {
-         const res = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_DETAIL}`, {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
-               authorization: userData.accessToken,
-            },
-            body: JSON.stringify({
-               room_code: roomTemp,
-            }),
-         })
+    useEffect(() => {
+        console.log("RUNNING")
+        const checkRoom = async () => {
+            const res = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_DETAIL}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-client-id': userData._id,
+                    authorization: userData.accessToken,
+                },
+                body: JSON.stringify({
+                    room_code: roomTemp,
+                }),
+            })
 
-         const notAccepted = ['doing', 'completed', 'deleted'];
+            const notAccepted = ['doing', 'completed', 'deleted'];
 
-         const data = await res.json();
-         console.log(data)
-         if (data.statusCode === 200) {
-            if (notAccepted.includes(data.metadata.status)) {
-               Alert.alert('Thông báo', 'Không thể tham gia vào phòng chơi lúc này !!!');
+            const data = await res.json();
+            console.log(data)
+            if (data.statusCode === 200) {
+                if (notAccepted.includes(data.metadata.status)) {
+                    Alert.alert('Thông báo', 'Không thể tham gia vào phòng chơi lúc này !!!');
+                } else {
+                    setCurrentRoom(data.metadata._id);
+                    socket.emit('joinRoom', { roomCode, user: userData });
+                    router.replace({
+                        pathname: '/(app)/(teacher)/teacher_room_wait',
+                        params: { roomCode: roomTemp }
+                    });
+                }
+                setRoomTemp(null);
             } else {
-               setCurrentRoom(data.metadata._id);
-               socket.emit('joinRoom', { roomCode, user: userData });
-               router.replace({
-                  pathname: '/(app)/(teacher)/teacher_room_wait',
-                  params: { roomCode: roomTemp }
-               });
+                Alert.alert('Thông báo', 'Mã phòng không tồn tại');
             }
-            setRoomTemp(null);
-         } else {
-            Alert.alert('Thông báo', 'Mã phòng không tồn tại');
-         }
-      }
+        }
 
-      if (roomTemp) {
-         checkRoom()
-      }
-   }, [roomTemp])
+        if (roomTemp) {
+            checkRoom()
+        }
+    }, [roomTemp])
 
-   const [index, setIndex] = useState(0);
-   const [routes] = useState([
-      { key: 'doing', title: 'Đang thực hiện' },
-      { key: 'completed', title: 'Đã hoàn thành' },
-   ]);
+    const [index, setIndex] = useState(0);
+    const [routes] = useState([
+        { key: 'doing', title: 'Đang thực hiện' },
+        { key: 'completed', title: 'Đã hoàn thành' },
+    ]);
 
-   return (
-      <View className="flex-1 mb-20 bg-slate-50">
-         <View className="p-4">
-            <Field placeholder="Mã phòng" wrapperStyles="mb-3" value={roomCode} onChange={(text) => {
-               setRoomCode(text);
-            }} />
+    return (
+        <View className="flex-1 mb-20 bg-slate-50">
+            <View className="p-4">
+                <Field placeholder="Mã phòng" wrapperStyles="mb-3" value={roomCode} onChange={(text) => {
+                    setRoomCode(text);
+                }} />
 
-            <Button text='JOIN' otherStyles='p-4' onPress={() => {
-               setRoomTemp(roomCode);
-            }} />
-         </View>
+                <Button text='JOIN' otherStyles='p-4' onPress={() => {
+                    setRoomTemp(roomCode);
+                }} />
+            </View>
 
-         <TabView
-            navigationState={{ index, routes }}
-            renderScene={SceneMap({
-               doing: () => <DoingResults results={results.doing} />,
-               completed: () => <CompletedResults results={results.completed} />,
-            })}
-            onIndexChange={setIndex}
-            initialLayout={{ width: Dimensions.get('window').width }}
-            renderTabBar={(props) => (
-               <TabBar
-                  {...props}
-                  className='bg-[#813b3b] text-white'
-                  indicatorStyle={{ backgroundColor: 'white' }}
-               />
-            )}
-         />
-      </View>
-   );
+            <TabView
+                navigationState={{ index, routes }}
+                renderScene={SceneMap({
+                    doing: () => <DoingResults results={results.doing} />,
+                    completed: () => <CompletedResults results={results.completed} />,
+                })}
+                onIndexChange={setIndex}
+                initialLayout={{ width: Dimensions.get('window').width }}
+                renderTabBar={(props) => (
+                    <TabBar
+                        {...props}
+                        className='bg-[#813b3b] text-white'
+                        indicatorStyle={{ backgroundColor: 'white' }}
+                    />
+                )}
+            />
+        </View>
+    );
 }
 
 const ResultCompletedItem = ({ result }) => {
-   // Đếm số câu trả lời đúng
-   const correctCount = result.result_questions.filter(q => q.correct).length;
-   const totalQuestions = result.quiz_id?.questionCount || 0;
+    // Đếm số câu trả lời đúng
+    const correctCount = result.result_questions.filter(q => q.correct).length;
+    const totalQuestions = result.quiz_id?.questionCount || 0;
 
-   // Tính độ chính xác
-   const accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
+    // Tính độ chính xác
+    const accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
 
-   return (
-      <View style={{ width: itemWidth }} className="m-2 bg-slate-200/50 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
-         <Image
-            source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
-            className="w-full h-28"
-            style={{ resizeMode: 'cover' }}
-         />
-         <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
-            <FontAwesome6 name="chalkboard-user" color='white' />
-            <Text className="text-sm text-slate-50 ml-1">Được giao</Text>
-         </View>
-         <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
-            <Text className="text-sm text-slate-50 ml-1">{totalQuestions} Qs</Text>
-         </View>
-         <View className='px-4 py-2'>
-            <Text className="text-base font-pmedium">
-               {result.exercise_id?.name}
-            </Text>
-            <Text className="text-xl font-light">
-               {result.quiz_id?.quiz_name}
-            </Text>
-            <Text className="text-xs font-light">
-               bởi: {result.quiz_id?.user_id?.user_fullname}
-            </Text>
+    return (
+        <View style={{ width: itemWidth }} className="m-2 bg-slate-200/50 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
+            <Image
+                source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
+                className="w-full h-28"
+                style={{ resizeMode: 'cover' }}
+            />
+            <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
+                <FontAwesome6 name="chalkboard-user" color='white' />
+                <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : 'Công khai'}</Text>
+            </View>
+            <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
+                <Text className="text-sm text-slate-50 ml-1">{totalQuestions} Qs</Text>
+            </View>
+            <View className='px-4 py-2'>
+                <Text className="text-base font-pmedium">
+                    {result.exercise_id?.name}
+                </Text>
+                <Text className="text-xl font-light">
+                    {result.quiz_id?.quiz_name}
+                </Text>
+                <Text className="text-xs font-light">
+                    bởi: {result.quiz_id?.user_id?.user_fullname}
+                </Text>
 
-            <Text className={`${accuracy < 40 ? 'bg-red-600' : accuracy < 70 ? 'bg-yellow-400' : 'bg-green-500'} text-sm mt-4 font-light text-slate-50 rounded-full px-2`}>
-               {accuracy.toFixed(0)}% độ chính xác
-            </Text>
-         </View>
-      </View>
-   );
+                <Text className={`${accuracy < 40 ? 'bg-red-600' : accuracy < 70 ? 'bg-yellow-400' : 'bg-green-500'} text-sm mt-4 font-light text-slate-50 rounded-full px-2`}>
+                    {accuracy.toFixed(0)}% độ chính xác
+                </Text>
+            </View>
+        </View>
+    );
 };
 
 const ResultDoingItem = ({ result }) => (
-   <View style={{ width: itemWidth }} className="m-2 bg-slate-200/70 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
-      <Image
-         source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
-         className="w-full h-28"
-         style={{ resizeMode: 'cover' }}
-      />
+    <View style={{ width: itemWidth }} className="m-2 bg-slate-200/70 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
+        <Image
+            source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
+            className="w-full h-28"
+            style={{ resizeMode: 'cover' }}
+        />
 
-      <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
-         <FontAwesome6 name="chalkboard-user" color='white' />
-         <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : 'Công khai'}</Text>
-      </View>
-      <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
-         <Text className="text-sm text-slate-50 ml-1">{result.quiz_id?.questionCount} Qs</Text>
-      </View>
-      <View className='px-4 py-2'>
-         <Text className="text-base font-pmedium">
-            {result.exercise_id?.name}
-         </Text>
-         <Text className="text-xl font-light">
-            {result.quiz_id?.quiz_name}
-         </Text>
-         <Text className="text-xs font-light">
-            bởi: {result.quiz_id?.user_id?.user_fullname}
-         </Text>
+        <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
+            <FontAwesome6 name="chalkboard-user" color='white' />
+            <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : 'Công khai'}</Text>
+        </View>
+        <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
+            <Text className="text-sm text-slate-50 ml-1">{result.quiz_id?.questionCount} Qs</Text>
+        </View>
+        <View className='px-4 py-2'>
+            <Text className="text-base font-pmedium">
+                {result.exercise_id?.name}
+            </Text>
+            <Text className="text-xl font-light">
+                {result.quiz_id?.quiz_name}
+            </Text>
+            <Text className="text-xs font-light">
+                bởi: {result.quiz_id?.user_id?.user_fullname}
+            </Text>
 
-         <Text className="text-sm mt-4 font-light text-center text-slate-50 bg-violet-300 rounded-full px-2">
-            {result.result_questions.length}/{result.quiz_id?.questionCount} câu hỏi
-         </Text>
-      </View>
-   </View>
+            <Text className="text-sm mt-4 font-light text-center text-slate-50 bg-violet-300 rounded-full px-2">
+                {result.result_questions.length}/{result.quiz_id?.questionCount} câu hỏi
+            </Text>
+        </View>
+    </View>
 );
 
 const CompletedResults = ({ results }) => {
-   if (!results.length) {
-      return <View className='h-full flex items-center justify-center'>
-         <LottieView
-            source={require('@/assets/jsons/not-found.json')}
-            autoPlay
-            loop
-            style={{
-               width: 300,
-               height: 300,
-            }}
-         />
-      </View>
-   }
-   return (
-      <FlatList
-         showsVerticalScrollIndicator={false}
-         data={results}
-         renderItem={({ item }) => <ResultCompletedItem result={item} />}
-         keyExtractor={item => item._id}
-         numColumns={2}
-         columnWrapperStyle="flex-row justify-between"
-      />
-   );
+    if (!results.length) {
+        return <View className='h-full flex items-center justify-center'>
+            <LottieView
+                source={require('@/assets/jsons/not-found.json')}
+                autoPlay
+                loop
+                style={{
+                    width: 300,
+                    height: 300,
+                }}
+            />
+        </View>
+    }
+    return (
+        <FlatList
+            showsVerticalScrollIndicator={false}
+            data={results}
+            renderItem={({ item }) => <ResultCompletedItem result={item} />}
+            keyExtractor={item => item._id}
+            numColumns={2}
+            columnWrapperStyle="flex-row justify-between"
+        />
+    );
 };
 
 const DoingResults = ({ results }) => {
-   if (!results.length) {
-      return <View className='h-full flex items-center justify-center'>
-         <LottieView
-            source={require('@/assets/jsons/not-found.json')}
-            autoPlay
-            loop
-            style={{
-               width: 300,
-               height: 300,
-            }}
-         />
-      </View>
-   }
-   return (
-      <FlatList
-         showsVerticalScrollIndicator={false}
-         data={results}
-         renderItem={({ item }) => <ResultDoingItem result={item} />}
-         keyExtractor={item => item._id}
-         numColumns={2}
-         columnWrapperStyle="flex-row justify-between"
-      />
-   );
+    if (!results.length) {
+        return <View className='h-full flex items-center justify-center'>
+            <LottieView
+                source={require('@/assets/jsons/not-found.json')}
+                autoPlay
+                loop
+                style={{
+                    width: 300,
+                    height: 300,
+                }}
+            />
+        </View>
+    }
+    return (
+        <FlatList
+            showsVerticalScrollIndicator={false}
+            data={results}
+            renderItem={({ item }) => <ResultDoingItem result={item} />}
+            keyExtractor={item => item._id}
+            numColumns={2}
+            columnWrapperStyle="flex-row justify-between"
+        />
+    );
 };

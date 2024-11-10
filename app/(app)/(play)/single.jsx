@@ -5,7 +5,6 @@ import ResultSingle from '../(result)/single';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useAppProvider } from '@/contexts/AppProvider';
 import Toast from 'react-native-toast-message-custom';
-import RenderHTML from 'react-native-render-html';
 import { Audio } from 'expo-av';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
@@ -14,7 +13,6 @@ import { useResultProvider } from '@/contexts/ResultProvider';
 const SinglePlay = () => {
 	const { quizId, exerciseId } = useLocalSearchParams()
 	const { i18n } = useAppProvider();
-	const { width } = useWindowDimensions();
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 	const [selectedAnswers, setSelectedAnswers] = useState([]);
 	const [correctCount, setCorrectCount] = useState(0);
@@ -40,17 +38,21 @@ const SinglePlay = () => {
 	)
 
 	useEffect(() => {
-		fetchQuestions(quizId);
-		if (result) {
-			if (questions?.length === result.result_questions?.length) {
-				setCurrentQuestionIndex(0)
-			} else {
-				setCurrentQuestionIndex(result.result_questions?.length)
-			}
-		} else {
-			setCurrentQuestionIndex(0)
+		// Ensure questions are fetched before setting the index
+		if (questions && questions.length > 0 && result) {
+		  const answeredQuestionsCount = result.result_questions?.length || 0;
+		  const nextIndex = answeredQuestionsCount < questions.length ? answeredQuestionsCount : 0;
+		  setCurrentQuestionIndex(nextIndex);
 		}
-	}, [quizId, result]);
+	  }, [quizId, result, questions]);
+
+	  useEffect(() => {
+		if (!questions || questions.length === 0) {
+		  fetchQuestions(quizId);
+		}
+	  }, [quizId]);
+	  
+
 
 
 	const playSound = async (isCorrectAnswer) => {
@@ -211,7 +213,7 @@ const SinglePlay = () => {
 						showsVerticalScrollIndicator={false}
 					>
 						<Text className='text-2xl font-bold text-white'>
-						{questions[currentQuestionIndex]?.question_excerpt || ''}
+							{questions[currentQuestionIndex]?.question_excerpt || ''}
 						</Text>
 					</ScrollView>
 				</View>
