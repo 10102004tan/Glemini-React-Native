@@ -1,15 +1,15 @@
-import { Redirect, Stack } from 'expo-router';
-import React, { useContext, useEffect, useState } from 'react';
+import { Redirect, router, Stack } from 'expo-router';
+import React, { useContext, useEffect } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
-import { Alert, Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useGlobalSearchParams } from 'expo-router';
-import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
-import AppProvider, { useAppProvider } from '@/contexts/AppProvider';
+import { Entypo, Ionicons } from '@expo/vector-icons';
+import { useAppProvider } from '@/contexts/AppProvider';
 import { useQuizProvider } from '@/contexts/QuizProvider';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import SpinningIcon from '@/components/loadings/SpinningIcon';
 import Toast from 'react-native-toast-message-custom';
+import { useRoomProvider } from '@/contexts/RoomProvider';
+import LottieView from 'lottie-react-native';
 
 export default function AppRootLayout() {
    const { userData, isLoading, fetchStatus, setTeacherStatus, setNotification } =
@@ -22,6 +22,8 @@ export default function AppRootLayout() {
       openBottomSheetSaveToLibrary,
       closeBottomSheet,
    } = useAppProvider();
+
+   const { currentRoom } = useRoomProvider();
 
    useEffect(() => {
       if (userData) {
@@ -49,9 +51,9 @@ export default function AppRootLayout() {
          });
 
          socket.on(`${userData._id}`, (noti) => {
-           setNotification((prev) => {
-             return [noti, ...prev];
-           });
+            setNotification((prev) => {
+               return [noti, ...prev];
+            });
          });
 
          // expo push notification
@@ -60,7 +62,14 @@ export default function AppRootLayout() {
    }, [userData]);
 
    if (isLoading) {
-      return <Text>Loading...</Text>;
+      return <View className='flex-1 items-center justify-center'>
+         <LottieView
+            source={require('@/assets/jsons/splash.json')}
+            autoPlay
+            loop
+            style={{ width: 250, height: 250 }}
+         />
+      </View>;
    }
 
    if (!userData) {
@@ -75,13 +84,13 @@ export default function AppRootLayout() {
                headerShown: false
             }}
          />
+
          <Stack.Screen
             name="profile"
             options={{
                headerTitle: i18n.t('profile.title'),
             }}
          />
-
 
          <Stack.Screen
             name="change-password"
@@ -115,6 +124,40 @@ export default function AppRootLayout() {
             name="(quiz)/list"
             options={{
                headerTitle: 'Danh sách các quiz',
+            }}
+         />
+
+         <Stack.Screen
+            name="(play)/realtime"
+            options={{
+               headerShown: false,
+            }}
+         />
+
+         <Stack.Screen
+            name='(teacher)/teacher_room_wait'
+            options={{
+               headerShown: false,
+               headerTitle: '',
+               headerRight: () => {
+
+               }
+            }}
+         />
+
+
+         <Stack.Screen
+            name='(teacher)/teacher_room_wait_result'
+            options={{
+               headerShown: false,
+               headerBackVisible: false,
+               headerStyle: {
+                  backgroundColor: '#1C2833',
+               },
+               headerTitle: '',
+               headerRight: () => {
+
+               }
             }}
          />
 
@@ -238,6 +281,20 @@ export default function AppRootLayout() {
 
          <Stack.Screen
             name="(result)/single"
+            options={{
+               headerShown: false,
+            }}
+         />
+
+         <Stack.Screen
+            name="(report)/detail_report"
+            options={{
+               headerTitle: 'Chi tiết báo cáo',
+            }}
+         />
+
+         <Stack.Screen
+            name="(report)/overview_report"
             options={{
                headerShown: false,
             }}

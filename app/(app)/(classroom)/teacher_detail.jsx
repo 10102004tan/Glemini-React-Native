@@ -19,7 +19,7 @@ const TeacherDetail = () => {
     const [showBottomSheet, setShowBottomSheet] = useState(0);
     const [modalVisible, setModalVisible] = useState(false);
     const [studentToRemove, setStudentToRemove] = useState(null);
-    const { setIsHiddenNavigationBar, i18n } = useAppProvider();
+    const { i18n } = useAppProvider();
     const { classroom, fetchClassroom, removeStudent, addStudent } = useClassroomProvider();
     const [email, setEmail] = useState('');
 
@@ -31,7 +31,6 @@ const TeacherDetail = () => {
 
     const handleCloseBottomSheet = () => {
         setShowBottomSheet(0);
-        setIsHiddenNavigationBar(false);
     };
 
     const confirmDeleteStudent = (studentId) => {
@@ -92,6 +91,7 @@ const TeacherDetail = () => {
         <View className='p-5'>
             {classroom.exercises?.length > 0 ? (
                 <FlatList
+                    showsVerticalScrollIndicator={false}
                     data={classroom.exercises}
                     keyExtractor={(exercise) => exercise._id}
                     renderItem={({ item }) => {
@@ -145,6 +145,7 @@ const TeacherDetail = () => {
         <View className='p-5'>
             {classroom.students?.length > 0 ? (
                 <FlatList
+                    showsVerticalScrollIndicator={false}
                     data={classroom.students}
                     keyExtractor={(student) => student._id}
                     renderItem={({ item }) => (
@@ -197,7 +198,7 @@ const TeacherDetail = () => {
         <View className='flex-1 bg-white'>
             <View className='w-full h-44 bg-red-800 flex justify-center items-center'>
                 <Text className='text-2xl text-white'>{classroom.class_name} - {classroom.subject?.name}</Text>
-                <TouchableOpacity className='bg-white/70 rounded-full p-2 absolute bottom-5 right-5' onPress={() => { setShowBottomSheet(1); setIsHiddenNavigationBar(true); }}>
+                <TouchableOpacity className='bg-white/70 rounded-full p-2 absolute bottom-5 right-5' onPress={() => { setShowBottomSheet(1); }}>
                     <AntDesign name='adduser' size={25} />
                 </TouchableOpacity>
             </View>

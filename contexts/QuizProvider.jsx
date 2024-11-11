@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useAuthContext } from './AuthContext';
-import { API_URL, API_VERSION, END_POINTS } from '../configs/api.config';
-import { router } from 'expo-router';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useAuthContext } from "./AuthContext";
+import { API_URL, API_VERSION, END_POINTS } from "../configs/api.config";
+import { router } from "expo-router";
 
 const QuizContext = createContext();
 
@@ -12,43 +12,65 @@ const QuizProvider = ({ children }) => {
    const [needUpdate, setNeedUpdate] = useState(false);
    const [quizFetching, setQuizFetching] = useState(false);
    const [questionFetching, setQuestionFetching] = useState(false);
-   const [actionQuizType, setActionQuizType] = useState('create');
+   const [actionQuizType, setActionQuizType] = useState("create");
    const [isSave, setIsSave] = useState(false);
    const { userData } = useAuthContext();
+   const [page, setPage] = useState(0);
+   const limit = 5;
+   const [hasMoreQuizzes, setHasMoreQuizzes] = useState(true);
+   const [quizMessage, setQuizMessage] = useState("");
 
    // Get all quizzes of the user
    const fetchQuizzes = async () => {
-      setQuizFetching(true);
-      const response = await fetch(
-         `${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`,
-         {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
-               authorization: userData.accessToken,
-            },
-            body: JSON.stringify({ user_id: userData._id }),
+      if (!quizFetching && hasMoreQuizzes) {
+         // console.log("load");
+         setQuizFetching(true);
+         const response = await fetch(
+            `${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`,
+            {
+               method: "POST",
+               headers: {
+                  "Content-Type": "application/json",
+                  "x-client-id": userData._id,
+                  authorization: userData.accessToken,
+               },
+               body: JSON.stringify({
+                  user_id: userData._id,
+                  skip: page * limit,
+                  limit,
+               }),
+            }
+         );
+         const data = await response.json();
+         // console.log(data);
+         if (data.statusCode === 200) {
+            if (data.metadata.length > 0) {
+               setTimeout(() => {
+                  setQuizzes([...quizzes, ...data.metadata]);
+                  setPage(page + 1);
+               }, 1500);
+            } else {
+               setHasMoreQuizzes(false); // Không còn quiz nào để tải
+               setQuizMessage("Đã hết quizz !!!");
+            }
+         } else {
+            setHasMoreQuizzes(false); // Đặt cờ khi có lỗi xảy ra
+            setQuizMessage("Đã hết quizz !!!");
          }
-      );
-      const data = await response.json();
-      // console.log(data);
-      if (data.statusCode === 200) {
-         setQuizzes(data.metadata);
+         setQuizFetching(false);
       }
-      setQuizFetching(false);
    };
 
    // Get Quiz Published
    const getQuizzesPublished = async (subject_id) => {
-      subject_id = subject_id === 'all' ? '' : subject_id;
+      subject_id = subject_id === "all" ? "" : subject_id;
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`,
          {
-            method: 'POST',
+            method: "POST",
             headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
+               "Content-Type": "application/json",
+               "x-client-id": userData._id,
                authorization: userData.accessToken,
             },
             body: JSON.stringify({ subjectId: subject_id }),
@@ -68,10 +90,10 @@ const QuizProvider = ({ children }) => {
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_BANNER}`,
          {
-            method: 'POST',
+            method: "POST",
             headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
+               "Content-Type": "application/json",
+               "x-client-id": userData._id,
                authorization: userData.accessToken,
             },
          }
@@ -90,10 +112,10 @@ const QuizProvider = ({ children }) => {
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DELETE}`,
          {
-            method: 'POST',
+            method: "POST",
             headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
+               "Content-Type": "application/json",
+               "x-client-id": userData._id,
                authorization: userData.accessToken,
             },
             body: JSON.stringify({ quiz_id: quizId }),
@@ -111,10 +133,10 @@ const QuizProvider = ({ children }) => {
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPDATE}`,
          {
-            method: 'POST',
+            method: "POST",
             headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
+               "Content-Type": "application/json",
+               "x-client-id": userData._id,
                authorization: userData.accessToken,
             },
             body: JSON.stringify(quiz),
@@ -168,6 +190,8 @@ const QuizProvider = ({ children }) => {
             filterQuizzes,
             bannerQuizzes,
             getQuizzesBanner,
+            fetchQuizzes,
+            quizMessage,
          }}
       >
          {children}
