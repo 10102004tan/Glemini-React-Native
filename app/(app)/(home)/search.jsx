@@ -1,37 +1,57 @@
-import {View, Text, TextInput, FlatList, Image, Button, TouchableOpacity, Modal} from "react-native";
-import CustomInput from "@/components/customs/CustomInput";
-import Field from "@/components/customs/Field";
+import {
+    View,
+    Text,
+    TextInput,
+    FlatList,
+    RefreshControl,
+    ActivityIndicator
+} from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import {Modalize} from "react-native-modalize";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {API_VERSION,API_URL,END_POINTS} from "@/configs/api.config";
 import {useAppProvider} from "@/contexts/AppProvider";
-import {SelectList} from "@10102004tan/react-native-select-dropdown-v2";
-import {MultipleSelectList} from "react-native-dropdown-select-list";
+import {SelectList,MultipleSelectList} from "@10102004tan/react-native-select-dropdown-v2";
 import {useSubjectProvider} from "@/contexts/SubjectProvider";
-import moment from "moment";
 import QuizCard from "@/components/customs/QuizCard";
 import QuizEmpty from "@/components/customs/QuizEmpty";
 import QuizModal from "@/components/modals/QuizModal";
-import SkeletonListQuiz from "@/components/customs/SkeletonListQuiz";
-import DropDownMultipleSelect from "@/components/customs/DropDownMultipleSelect";
+import {router} from "expo-router";
+import CustomButton from "@/components/customs/CustomButton";
+import useDebounce from "@/hooks/useDebounce";
 
 export default function SearchScreen() {
     const LIMIT = 10;
     const {setIsHiddenNavigationBar} = useAppProvider();
     const modalizeRef = useRef(null);
-    const [key, setKey] = useState("");
     const [quizList, setQuizList] = useState([]);
     const [dataSubject, setDataSubject] = useState([]);
     const {subjects} = useSubjectProvider();
     const [selectedQuiz, setSelectedQuiz] = useState(null);
     const [isOpenModal, setIsOpenModal] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading,setLoading] = useState(false);
+    const [isRefreshing,setIsRefreshing] = useState(false);
+    const [isFirstLoad,setIsFirstLoad] = useState(true);
+    const [selectedSubject,setSelectedSubject] = useState([]);
+    const defaultFilter = {
+        quiz_on:-1,
+        subjectIds:[],
+        key:"",
+        sortStatus:-1,
+        skip:0,
+        limit:LIMIT
+    };
+
+    /*
+    * sortStatus: 1: cũ nhất, -1: mới nhất
+    *
+    *
+    * */
     const [filter, setFilter] = useState({
         quiz_on:-1,
         subjectIds:[],
         key:"",
-        sortStatus:1,
+        sortStatus:-1,
         skip:0,
         limit:LIMIT
     });
@@ -68,10 +88,28 @@ export default function SearchScreen() {
         },
     ];
 
+
+
     useEffect(() => {
-        onSearch();
+        console.log("FETCH");
+        fetchQuiz();
         convertSubjectToDataKeyValue();
     }, []);
+
+
+
+    useEffect(() => {
+        setFilter((prev)=>{
+            return {
+                ...prev,
+                subjectIds:selectedSubject
+            }
+        });
+        if (!isFirstLoad){
+            debouncedFetchQuiz();
+        }
+
+    }, [filter.quiz_on,filter.sortStatus,selectedSubject,debouncedFetchQuiz]);
 
     const convertSubjectToDataKeyValue = () => {
         if (subjects.length === 0) return;
@@ -84,8 +122,114 @@ export default function SearchScreen() {
         setDataSubject(data);
     }
 
-    const onSearch = async () => {
-        // Call API
+    const onOpen = () => {
+        setIsHiddenNavigationBar(true);
+        modalizeRef.current?.open();
+    };
+
+    const onClose = async () => {
+        setIsHiddenNavigationBar(false);
+    }
+
+
+    const onOpenModal = (item) => {
+        setSelectedQuiz(item);
+        setIsOpenModal(true);
+    }
+
+
+   const fetchQuiz = () =>{
+       // Call API
+       setLoading(true);
+       fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_SEARCH}`,{
+           method:'POST',
+           headers:{
+               'Content-Type':'application/json'
+           },
+           body:JSON.stringify(filter)
+       })
+           .then(res => res.json())
+           .then(data => {
+               if (data.statusCode === 200) {
+                   setQuizList((prev)=>{
+                       return [...prev,...data.metadata]
+                   });
+               }
+               setLoading(false);
+               setIsFirstLoad(false);
+           })
+           .catch(err => {
+               console.error(err);
+               setLoading(false);
+               setIsFirstLoad(false);
+           });
+   }
+
+   const handleLoadMore = () =>{
+        if (!loading && quizList.length >= LIMIT) {
+            setFilter((prev)=>{
+                return {
+                    ...prev,
+                    skip:prev.skip + LIMIT
+                }
+            });
+            fetchQuiz();
+        }
+   }
+
+   const onRefresh = () =>{
+        setIsRefreshing(true);
+        setFilter((prev)=>{
+           const newFilter = {
+                ...prev,
+                skip:0
+           };
+
+            fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_SEARCH}`,{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify(newFilter)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.statusCode === 200) {
+                        setQuizList(data.metadata);
+                    }
+                    setIsRefreshing(false);
+                })
+                .catch(err => {
+                    console.error(err);
+                    setIsRefreshing(false);
+                });
+            return newFilter;
+        });
+
+   }
+
+    const renderFooter = () => {
+        //it will show indicator at the bottom of the list when data is loading otherwise it returns null
+        if (!loading) return null;
+        return (
+            <ActivityIndicator
+                style={{ color: '#000' }}
+            />
+        );
+    };
+
+    const renderItem  = useCallback(({item}) => {
+        return (
+            <QuizCard
+                quiz_thumb={item.quiz_thumb}
+                quiz_name={item.quiz_name}
+                quiz_turn={item.quiz_turn}
+                createdAt={item.createdAt}
+                question_count={item.question_count}
+                onPress={() => onOpenModal(item)}/>
+        )},[]);
+
+    const onSearch = () => {
         fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_SEARCH}`,{
             method:'POST',
             headers:{
@@ -96,43 +240,50 @@ export default function SearchScreen() {
             .then(res => res.json())
             .then(data => {
                 if (data.statusCode === 200) {
-                    setQuizList((prev)=>{
-                        return [...prev,...data.metadata]
-                    });
+                    setQuizList(data.metadata);
                 }
+                setLoading(false);
             })
-            .catch(err => console.error(err));
-    };
-
-    const onOpen = () => {
-        setIsHiddenNavigationBar(true);
-        modalizeRef.current?.open();
-    };
-
-    const onClose = async () => {
-        onSearch();
-        setIsHiddenNavigationBar(false);
-        // modalizeRef.current?.close();
+            .catch(err => {
+                console.error(err);
+                setLoading(false);
+            });
     }
 
-
-    const onOpenModal = (item) => {
-        setSelectedQuiz(item);
-        setIsOpenModal(true);
-    }
-
-    const loadMore = async ()=>{
-        setFilter((prev)=>{
-            return {
-                ...prev,
-                skip:prev.skip+LIMIT
+    const handleNavigateToQuiz = () => {
+        setIsOpenModal(false);
+        router.push({
+            pathname: '/(play)/single',
+            params:{
+                quizId: selectedQuiz._id
             }
-        })
-        await onSearch();
+        });
+    };
+
+    const debouncedFetchQuiz = useDebounce(onRefresh,2000);
+
+    const handleResetFilter = () => {
+        setFilter({
+            quiz_on:-1,
+            subjectIds:[],
+            key:"",
+            sortStatus:-1,
+            skip:0,
+            limit:LIMIT
+        });
+        setSelectedSubject([]);
+    }
+
+    if (isFirstLoad) {
+        return (
+            <View className={"flex-1 justify-center items-center"}>
+                <ActivityIndicator/>
+            </View>
+        )
     }
 
     return (
-        <View className={"px-3 pt-2 bg-white pb-[80px] h-full"}>
+        <View  className={"px-3 pt-2 bg-white pb-[80px] h-full"}>
             <View className={"flex-row items-center mb-3"}>
                 <TextInput value={filter.key} onBlur={onSearch} onChangeText={(val) => {setFilter((prev)=>{
                     return {
@@ -149,20 +300,30 @@ export default function SearchScreen() {
             {
                 quizList.length === 0 ? <QuizEmpty/> :(
                     <FlatList
-                        onEndReached={loadMore} numColumns={2} data={quizList} renderItem={(item) => {
-                        const itemData = item.item;
-                        return (
-                            <QuizCard createdAt={itemData.createdAt} quiz_turn={itemData.quiz_turn} quiz_name={itemData.quiz_name} quiz_thumb={itemData.quiz_thumb} onPress={()=>{onOpenModal(itemData)}}/>
-                        )
-                    }}/>
+                        removeClippedSubviews={true}
+                        keyExtractor={(item, index) => index.toString()}
+                        ListFooterComponent={renderFooter}
+                        onEndReachedThreshold={0.1}
+                        onEndReached={handleLoadMore}
+                        maxToRenderPerBatch={10}
+                        updateCellsBatchingPeriod={50}
+                        initialNumToRender={10}
+                        showsVerticalScrollIndicator={false}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={isRefreshing}
+                                onRefresh={onRefresh}
+                            />
+                        }
+                        numColumns={2} data={quizList} renderItem={renderItem}/>
                 )
             }
 
-            <Modalize onClose={onClose} modalStyle={{zIndex:1000,elevation:10,padding:10}} avoidKeyboardLikeIOS={true}  withHandle={false} scrollViewProps={{showsVerticalScrollIndicator: true}} ref={modalizeRef} snapPoint={300}>
+            <Modalize onClose={onClose} modalStyle={{zIndex:1000,elevation:10,padding:10}} avoidKeyboardLikeIOS={true}  withHandle={false} scrollViewProps={{showsVerticalScrollIndicator: true}} ref={modalizeRef} >
                 <View className={"mb-3"}>
                     {/*data quiz on*/}
                     <Text className={"mb-2 px-1 font-semibold"}>Lượt chơi</Text>
-                    <SelectList onEndReached={()=>{console.log("test")}} defaultOption={dataQuizOn.find(item => item.key === filter.quiz_on)} search={false} save={"key"} setSelected={(val)=>{
+                    <SelectList  defaultOption={dataQuizOn.find(item => item.key === filter.quiz_on)} search={false} save={"key"} setSelected={(val)=>{
                         setFilter((prev)=>{
                             return {
                                 ...prev,
@@ -183,14 +344,20 @@ export default function SearchScreen() {
                 </View>
                 <View className={"mb-3"}>
                     <Text className={"mb-2 px-1 font-semibold"}>Chủ đề</Text>
-                    <DropDownMultipleSelect data={dataSubject}/>
+                    <MultipleSelectList  save="key" data={dataSubject} defaultOption={dataSubject.filter((item)=>filter.subjectIds.includes(item.key))} setSelected={(val)=>{
+                       setSelectedSubject(val);
+                    }} />
                 </View>
+
+            {/*    button*/}
+                <CustomButton className={"flex-1"} title={"Đặt lại"} onPress={handleResetFilter}/>
             </Modalize>
 
             <QuizModal
                 visible={isOpenModal}
                 onClose={() => setIsOpenModal(false)}
                 quiz={selectedQuiz}
+                onStartQuiz={handleNavigateToQuiz}
             />
         </View>
     )

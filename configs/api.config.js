@@ -1,8 +1,7 @@
 'use strict';
 
 const dev = {
-	API_URL: 'http://192.168.247.116:3000/api',
-
+	API_URL: 'http:///192.168.0.8:3000/api',
 	API_VERSION: {
 		V1: '/v1',
 	},
@@ -105,6 +104,7 @@ const dev = {
 		ROOM_CREATE: '/room/create',
 		ROOM_LIST: '/room/list',
 		ROOM_DETAIL: '/room/detail',
+        ROOM_REPORT: '/room/report',
 
 		// Use for realtime play
 		ROOM_GET_RESULTS: '/result/get-results',
@@ -115,9 +115,7 @@ const dev = {
 		// CHECK_EMAIL: '/user/check-email',
 		SHARE_QUIZ: '/user/share-quiz',
 
-		// room
-		ROOM_CREATE: '/room/create',
-		ROOM_REPORT: '/room/report',
+
 
 		// exercise
 		EXERCISE_REPORT: '/exercise/report',

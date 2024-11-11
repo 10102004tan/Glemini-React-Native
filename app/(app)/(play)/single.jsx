@@ -12,6 +12,7 @@ import { useResultProvider } from '@/contexts/ResultProvider';
 
 const SinglePlay = () => {
 	const { quizId, exerciseId } = useLocalSearchParams()
+	console.log(quizId, exerciseId)
 	const { i18n } = useAppProvider();
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 	const [selectedAnswers, setSelectedAnswers] = useState([]);
