@@ -109,6 +109,8 @@ const TeacherRoomWaitScreen = () => {
    // Lắng nghe sự kiện khi bắt đầu phòng chơi
    useEffect(() => {
       socket.on('startQuiz', () => {
+         // Lưu tất cả người dùng đã tham gia vào phòng chơi lên server
+
          if (roomData && userData) {
             // Nếu là sinh viên thì sẽ chuyển hướng tới màn hình làm bài
             router.push(
