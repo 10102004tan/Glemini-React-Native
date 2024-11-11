@@ -40,18 +40,18 @@ const SinglePlay = () => {
 	useEffect(() => {
 		// Ensure questions are fetched before setting the index
 		if (questions && questions.length > 0 && result) {
-		  const answeredQuestionsCount = result.result_questions?.length || 0;
-		  const nextIndex = answeredQuestionsCount < questions.length ? answeredQuestionsCount : 0;
-		  setCurrentQuestionIndex(nextIndex);
+			const answeredQuestionsCount = result.result_questions?.length || 0;
+			const nextIndex = answeredQuestionsCount < questions.length ? answeredQuestionsCount : 0;
+			setCurrentQuestionIndex(nextIndex);
 		}
-	  }, [quizId, result, questions]);
+	}, [quizId, result, questions]);
 
-	  useEffect(() => {
+	useEffect(() => {
 		if (!questions || questions.length === 0) {
-		  fetchQuestions(quizId);
+			fetchQuestions(quizId);
 		}
-	  }, [quizId]);
-	  
+	}, [quizId]);
+
 
 
 

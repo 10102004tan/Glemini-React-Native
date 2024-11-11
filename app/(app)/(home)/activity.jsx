@@ -31,6 +31,8 @@ export default function ActivityScreen() {
         }, [])
     );
 
+    console.log(results);
+    
     useEffect(() => {
         console.log("RUNNING")
         const checkRoom = async () => {
@@ -178,7 +180,7 @@ const ResultDoingItem = ({ result }) => (
             </Text>
 
             <Text className="text-sm mt-4 font-light text-center text-slate-50 bg-violet-300 rounded-full px-2">
-                {result.result_questions.length}/{result.quiz_id?.questionCount} câu hỏi
+                {result.result_questions?.length}/{result.quiz_id?.questionCount} câu hỏi
             </Text>
         </View>
     </View>
