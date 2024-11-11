@@ -12,6 +12,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 
 const SinglePlay = () => {
 	const { quizId, exerciseId } = useLocalSearchParams()
+	console.log(quizId, exerciseId)
 	const { i18n } = useAppProvider();
 	const { width } = useWindowDimensions();
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
