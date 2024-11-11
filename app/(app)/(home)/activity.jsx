@@ -5,7 +5,7 @@ import { useResultProvider } from "@/contexts/ResultProvider";
 import { useFocusEffect, useRouter } from "expo-router";
 import LottieView from "lottie-react-native";
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, Dimensions, FlatList, Image, Alert } from "react-native";
+import { View, Text, Dimensions, FlatList, Image, Alert, Pressable } from "react-native";
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Button from "@/components/customs/Button";
@@ -31,8 +31,6 @@ export default function ActivityScreen() {
         }, [])
     );
 
-    console.log(results);
-    
     useEffect(() => {
         console.log("RUNNING")
         const checkRoom = async () => {
@@ -51,7 +49,6 @@ export default function ActivityScreen() {
             const notAccepted = ['doing', 'completed', 'deleted'];
 
             const data = await res.json();
-            console.log(data)
             if (data.statusCode === 200) {
                 if (notAccepted.includes(data.metadata.status)) {
                     Alert.alert('Thông báo', 'Không thể tham gia vào phòng chơi lúc này !!!');
@@ -95,8 +92,8 @@ export default function ActivityScreen() {
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={SceneMap({
-                    doing: () => <DoingResults results={results.doing} />,
-                    completed: () => <CompletedResults results={results.completed} />,
+                    doing: () => <DoingResults resultsDoing={results.doing} />,
+                    completed: () => <CompletedResults resultsCompleted={results.completed} />,
                 })}
                 onIndexChange={setIndex}
                 initialLayout={{ width: Dimensions.get('window').width }}
@@ -113,11 +110,9 @@ export default function ActivityScreen() {
 }
 
 const ResultCompletedItem = ({ result }) => {
-    // Đếm số câu trả lời đúng
     const correctCount = result.result_questions.filter(q => q.correct).length;
     const totalQuestions = result.quiz_id?.questionCount || 0;
 
-    // Tính độ chính xác
     const accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
 
     return (
@@ -186,8 +181,8 @@ const ResultDoingItem = ({ result }) => (
     </View>
 );
 
-const CompletedResults = ({ results }) => {
-    if (!results.length) {
+const CompletedResults = ({ resultsCompleted }) => {
+    if (!resultsCompleted || resultsCompleted.length === 0) {
         return <View className='h-full flex items-center justify-center'>
             <LottieView
                 source={require('@/assets/jsons/not-found.json')}
@@ -203,8 +198,10 @@ const CompletedResults = ({ results }) => {
     return (
         <FlatList
             showsVerticalScrollIndicator={false}
-            data={results}
-            renderItem={({ item }) => <ResultCompletedItem result={item} />}
+            data={resultsCompleted}
+            renderItem={({ item }) => <Pressable onPress={() => console.log(item._id)}>
+                <ResultCompletedItem result={item} />
+            </Pressable>}
             keyExtractor={item => item._id}
             numColumns={2}
             columnWrapperStyle="flex-row justify-between"
@@ -212,8 +209,8 @@ const CompletedResults = ({ results }) => {
     );
 };
 
-const DoingResults = ({ results }) => {
-    if (!results.length) {
+const DoingResults = ({ resultsDoing }) => {
+    if (!resultsDoing || resultsDoing.length === 0) {
         return <View className='h-full flex items-center justify-center'>
             <LottieView
                 source={require('@/assets/jsons/not-found.json')}
@@ -229,8 +226,10 @@ const DoingResults = ({ results }) => {
     return (
         <FlatList
             showsVerticalScrollIndicator={false}
-            data={results}
-            renderItem={({ item }) => <ResultDoingItem result={item} />}
+            data={resultsDoing}
+            renderItem={({ item }) => <Pressable onPress={() => console.log(item._id)}>
+                <ResultDoingItem result={item} />
+            </Pressable>}
             keyExtractor={item => item._id}
             numColumns={2}
             columnWrapperStyle="flex-row justify-between"

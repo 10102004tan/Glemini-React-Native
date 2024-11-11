@@ -30,7 +30,7 @@ export default function ReportScreen() {
     const handleSearchChange = useCallback(
         debounce((term) => {
             setSearchTerm(term);
-        }, 500),
+        }, 200),
         []
     );
 

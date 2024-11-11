@@ -13,10 +13,12 @@ import LottieView from 'lottie-react-native';
 import { router, useFocusEffect } from 'expo-router';
 import NotificationIcon from "@/components/customs/NotificationIcon";
 import { AuthContext } from "@/contexts/AuthContext";
+import { useResultProvider } from '@/contexts/ResultProvider';
 
 const StudentHomeScreen = () => {
 	const { i18n } = useAppProvider();
 	const { subjects } = useSubjectProvider();
+	const { fetchResultData } = useResultProvider();
 	const { filterQuizzes, getQuizzesPublished, bannerQuizzes, getQuizzesBanner } = useQuizProvider();
 	const [selectedSubject, setSelectedSubject] = useState('all');
 	const [modalVisible, setModalVisible] = useState(false);
@@ -44,13 +46,20 @@ const StudentHomeScreen = () => {
 		setModalVisible(true);
 	};
 
-	const handleNavigateToQuiz = () => {
+	const handleNavigateToQuiz = async () => {
 		setModalVisible(false);
-
-		router.push({
-			pathname: '(play)/single',
-			params: { quizId: selectedQuiz._id }
-		})
+		const fetchedResult = await fetchResultData({quizId: selectedQuiz._id, type : 'publish'});
+		
+		if (fetchedResult) {
+			router.push({
+				pathname: '/(home)/activity',
+			});
+		} else {
+			router.push({
+				pathname: '(play)/single',
+				params: { quizId: selectedQuiz._id, type: 'publish' }
+			})
+		}
 
 	};
 

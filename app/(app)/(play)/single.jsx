@@ -11,7 +11,7 @@ import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import { useResultProvider } from '@/contexts/ResultProvider';
 
 const SinglePlay = () => {
-	const { quizId, exerciseId } = useLocalSearchParams()
+	const { quizId, exerciseId, type } = useLocalSearchParams()
 	const { i18n } = useAppProvider();
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 	const [selectedAnswers, setSelectedAnswers] = useState([]);
@@ -29,16 +29,9 @@ const SinglePlay = () => {
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [sound, setSound] = useState(null);
 	const { questions, fetchQuestions, saveQuestionResult } = useQuestionProvider()
-	const { completed, fetchResultData, result } = useResultProvider()
-
-	useFocusEffect(
-		useCallback(() => {
-			fetchResultData(quizId, exerciseId);
-		}, [exerciseId, quizId])
-	)
+	const { completed, result } = useResultProvider()
 
 	useEffect(() => {
-		// Ensure questions are fetched before setting the index
 		if (questions && questions.length > 0 && result) {
 			const answeredQuestionsCount = result.result_questions?.length || 0;
 			const nextIndex = answeredQuestionsCount < questions.length ? answeredQuestionsCount : 0;
@@ -51,9 +44,6 @@ const SinglePlay = () => {
 			fetchQuestions(quizId);
 		}
 	}, [quizId]);
-
-
-
 
 	const playSound = async (isCorrectAnswer) => {
 		let soundPath = isCorrectAnswer ? require('@/assets/sounds/correct.mp3') : require('@/assets/sounds/incorrect.mp3');
@@ -182,6 +172,7 @@ const SinglePlay = () => {
 				totalQuestions={questions.length}
 				handleRestart={handleRestart}
 				exerciseId={exerciseId}
+				type={type}
 			/>
 		);
 	}

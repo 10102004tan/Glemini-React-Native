@@ -70,7 +70,16 @@ const ResultProvider = ({ children }) => {
       }
    };
 
-   const fetchResultData = async (quizId, exerciseId) => {
+   const fetchResultData = async ({quizId, exerciseId, roomId, type}) => {
+      const query = {
+         quiz_id: quizId,
+         exercise_id: exerciseId || '',
+         room_id: roomId || '',
+         type
+      }
+
+      console.log(query);
+      
       try {
          const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_REVIEW, {
             method: 'POST',
@@ -79,11 +88,7 @@ const ResultProvider = ({ children }) => {
                'x-client-id': userData._id,
                authorization: userData.accessToken,
             },
-            body: JSON.stringify({
-               quiz_id: quizId,
-               user_id: userData._id,
-               exercise_id: exerciseId
-            }),
+            body: JSON.stringify(query),
          });
 
          const data = await res.json();
