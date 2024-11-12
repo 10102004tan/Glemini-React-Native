@@ -2,9 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuthContext } from "./AuthContext";
 import { API_URL, API_VERSION, END_POINTS } from "../configs/api.config";
 import { router } from "expo-router";
-
 const QuizContext = createContext();
-
 const QuizProvider = ({ children }) => {
    const [quizzes, setQuizzes] = useState([]); // By User
    const [filterQuizzes, setFilterQuizzes] = useState([]); // Get Publish
@@ -15,14 +13,11 @@ const QuizProvider = ({ children }) => {
    const [actionQuizType, setActionQuizType] = useState("create");
    const [isSave, setIsSave] = useState(false);
    const { userData } = useAuthContext();
-   const [page, setPage] = useState(0);
-   const limit = 5;
-   const [hasMoreQuizzes, setHasMoreQuizzes] = useState(true);
-   const [quizMessage, setQuizMessage] = useState("");
+   
 
    // Get all quizzes of the user
    const fetchQuizzes = async () => {
-      if (!quizFetching && hasMoreQuizzes) {
+      if (!quizFetching) {
          // console.log("load");
          setQuizFetching(true);
          const response = await fetch(
@@ -36,8 +31,7 @@ const QuizProvider = ({ children }) => {
                },
                body: JSON.stringify({
                   user_id: userData._id,
-                  skip: page * limit,
-                  limit,
+                  
                }),
             }
          );
@@ -45,19 +39,11 @@ const QuizProvider = ({ children }) => {
          // console.log(data);
          if (data.statusCode === 200) {
             if (data.metadata.length > 0) {
-               setTimeout(() => {
-                  setQuizzes([...quizzes, ...data.metadata]);
-                  setPage(page + 1);
-               }, 1500);
-            } else {
-               setHasMoreQuizzes(false); // Không còn quiz nào để tải
-               setQuizMessage("Đã hết quizz !!!");
+               setQuizzes(data.metadata);
             }
-         } else {
-            setHasMoreQuizzes(false); // Đặt cờ khi có lỗi xảy ra
-            setQuizMessage("Đã hết quizz !!!");
          }
          setQuizFetching(false);
+         setNeedUpdate(false);
       }
    };
 

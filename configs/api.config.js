@@ -1,6 +1,14 @@
 'use strict';
 
 const dev = {
+<<<<<<< HEAD
+  API_URL: "http://192.168.1.5:3000/api",
+  API_VERSION: {
+    V1: "/v1",
+  },
+  END_POINTS: {
+    SERVER: "/working",
+=======
 	API_URL: 'http:///10.0.185.165:3000/api',
 	API_VERSION: {
 		V1: '/v1',
@@ -25,6 +33,7 @@ const dev = {
 		CHANGE_PASSWORD: '/auth/change-password',
 		FORGOT_PASSWORD: '/auth/forgot-password',
 		USER_STATUS: '/auth/status',
+>>>>>>> 8f8ce463f407c2f17675eb86877352e92af2581e
 
 		// Notification
 		UPDATE_NOTIFICATION_STATUS: '/notification',
@@ -97,8 +106,9 @@ const dev = {
 		CLASSROOM_ADD_QUIZ: '/classroom/add-quiz',
 		CLASSROOM_REMOVE_STUDENT: '/classroom/rm-student',
 
-		// Email
-		CHECK_EMAIL: '/user/check-email',
+    //user
+    SHARE_QUIZ: "/user/share-quiz",
+    CHECK_EDIT_QUIZ: "/user/check-edit-quiz",
 
 		// Room
 		ROOM_CREATE: '/room/create',
