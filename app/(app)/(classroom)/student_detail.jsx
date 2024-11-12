@@ -6,10 +6,12 @@ import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Images } from '@/constants';
 import Toast from 'react-native-toast-message-custom';
 import moment from 'moment';
+import { useResultProvider } from '@/contexts/ResultProvider';
 
 const StudentDetail = () => {
     const { classroomId } = useLocalSearchParams();
     const { classroom, fetchClassroom } = useClassroomProvider();
+    const { fetchResultData, result } = useResultProvider()
 
     useFocusEffect(
         useCallback(() => {
@@ -17,23 +19,21 @@ const StudentDetail = () => {
         }, [classroomId])
     );
 
-    const startQuiz = (quizId, exerciseId) => {
-        router.push({
-            pathname: '(play)/single',
-            params: { quizId, exerciseId },
-        });
+    const startQuiz = async (quizId, exerciseId) => {
+        const fetchedResult = await fetchResultData(quizId, exerciseId);
+        if (fetchedResult) {
+            router.push({
+                pathname: '/(home)/activity',
+            });
+        } else {
+            router.push({
+                pathname: '(play)/single',
+                params: { quizId, exerciseId },
+            });
+        }
     };
+    
 
-    const showToast = () => {
-        Toast.show({
-            type: 'error',
-            text1: 'Hết hạn làm bài',
-            text2: 'Bạn không thể làm bài này nữa.',
-            position: 'top',
-            visibilityTime: 1000,
-            autoHide: true,
-        });
-    };
 
     return (
         <View className='p-4 bg-white mb-10'>
@@ -45,33 +45,51 @@ const StudentDetail = () => {
                     keyExtractor={(quiz) => quiz._id}
                     renderItem={({ item }) => {
                         const endDate = moment(item.date_end);
+                        const startDate = moment(item.date_start);
                         const now = moment();
                         const duration = moment.duration(endDate.diff(now));
                         const isExpired = duration.asMilliseconds() <= 0;
-    
+                        const isNotStartedYet = startDate.isAfter(now);
+
                         const timeRemaining = isExpired
                             ? 'Đã kết thúc'
                             : duration.asDays() >= 1
-                            ? `${Math.floor(duration.asDays())} ngày nữa`
-                            : duration.asHours() >= 1
-                            ? `${Math.floor(duration.asHours() + 1)} giờ nữa`
-                            : `${Math.floor(duration.asMinutes())} phút nữa`;
-    
+                                ? `${Math.floor(duration.asDays())} ngày nữa`
+                                : duration.asHours() >= 1
+                                    ? `${Math.floor(duration.asHours() + 1)} giờ nữa`
+                                    : `${Math.floor(duration.asMinutes())} phút nữa`;
 
                         return (
-                            <Pressable 
+                            <Pressable
                                 onPress={() => {
-                                    if (!isExpired) {
+                                    if (isExpired) {
+                                        Toast.show({
+                                            type: 'error',
+                                            text1: 'Hết hạn làm bài',
+                                            text2: 'Bạn không thể làm bài này nữa.',
+                                            position: 'top',
+                                            visibilityTime: 1000,
+                                            autoHide: true,
+                                        });
+                                    } else if (isNotStartedYet) {
+                                        Toast.show({
+                                            type: 'warn',
+                                            text1: 'Chưa bắt đầu',
+                                            text2: 'Hiện tại bạn chưa thể làm bài này.',
+                                            position: 'top',
+                                            visibilityTime: 1000,
+                                            autoHide: true,
+                                        });
+                                    }
+                                    else {
                                         startQuiz(item.quiz_id._id, item._id);
-                                    } else {
-                                        showToast();
                                     }
                                 }}
                             >
-                                <View className={`bg-slate-200/50 mb-4 rounded-lg shadow-lg ${isExpired ? 'opacity-50' : ''}`}>
+                                <View className={`bg-slate-200/50 mb-4 rounded-lg shadow-lg ${isExpired || isNotStartedYet ? 'opacity-50' : ''}`}>
                                     <View className='flex-row items-center gap-4'>
-                                        <Image 
-                                            source={item.quiz_id?.quiz_thumb ? {uri: item.quiz_id?.quiz_thumb} : Images.banner1}
+                                        <Image
+                                            source={item.quiz_id?.quiz_thumb ? { uri: item.quiz_id?.quiz_thumb } : Images.banner1}
                                             className='w-24 h-24 rounded-lg shadow-md shadow-black/20'
                                         />
                                         <View>
@@ -84,6 +102,10 @@ const StudentDetail = () => {
                                             {isExpired ? (
                                                 <Text className='text-red-600 mt-2'>
                                                     Hết hạn làm bài
+                                                </Text>
+                                            ) : isNotStartedYet ? (
+                                                <Text className='text-orange-600 mt-2'>
+                                                    Chưa đến thời gian làm bài
                                                 </Text>
                                             ) : (
                                                 <Text className='text-green-600 mt-2'>

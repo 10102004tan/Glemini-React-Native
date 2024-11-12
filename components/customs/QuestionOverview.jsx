@@ -6,7 +6,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import { useRouter } from 'expo-router';
 import { useAppProvider } from '@/contexts/AppProvider';
-const QuestionOverview = ({ quizId = null, question = {}, index = 0 }) => {
+const QuestionOverview = ({ quizId = null, question = {}, index = 0, editable = true }) => {
    const [showExpain, setShowExpain] = useState(false);
    const { width } = useWindowDimensions();
    const { setActionQuizType } = useQuizProvider();
@@ -24,7 +24,7 @@ const QuestionOverview = ({ quizId = null, question = {}, index = 0 }) => {
    );
 
    return (
-      <View className="p-2 rounded-2xl border border-gray mb-2">
+      <View className="p-2 rounded-2xl border border-gray mb-2 bg-white">
          <View className="flex w-full items-center justify-between flex-row">
             <View className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                <Text className="text-white">{index + 1}</Text>
@@ -86,7 +86,7 @@ const QuestionOverview = ({ quizId = null, question = {}, index = 0 }) => {
             })}
          </View>
          <View>
-            <TouchableOpacity
+            {editable && <TouchableOpacity
                className="flex items-center justify-end flex-row"
                onPress={() => {
                   setActionQuizType('edit');
@@ -100,7 +100,7 @@ const QuestionOverview = ({ quizId = null, question = {}, index = 0 }) => {
                }}
             >
                <Text className="text-gray">{i18n.t('overview_quiz_screen.edit')}</Text>
-            </TouchableOpacity>
+            </TouchableOpacity>}
             <TouchableOpacity
                className="flex items-center justify-end flex-row"
                onPress={() => setShowExpain(!showExpain)}

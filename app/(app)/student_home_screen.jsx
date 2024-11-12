@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useContext} from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, Image, ScrollView } from 'react-native';
 import Wrapper from '@/components/customs/Wrapper';
 import Carousel from 'react-native-reanimated-carousel';
@@ -10,12 +10,11 @@ import QuizItem from '@/components/customs/QuizItem';
 import { useNavigation } from '@react-navigation/native';
 import QuizModal from '@/components/modals/QuizModal';
 import LottieView from 'lottie-react-native';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import NotificationIcon from "@/components/customs/NotificationIcon";
-import {AuthContext} from "@/contexts/AuthContext";
+import { AuthContext } from "@/contexts/AuthContext";
 
 const StudentHomeScreen = () => {
-	const navigation = useNavigation();
 	const { i18n } = useAppProvider();
 	const { subjects } = useSubjectProvider();
 	const { filterQuizzes, getQuizzesPublished, bannerQuizzes, getQuizzesBanner } = useQuizProvider();
@@ -24,14 +23,13 @@ const StudentHomeScreen = () => {
 	const [selectedQuiz, setSelectedQuiz] = useState(null);
 	const width = Dimensions.get('window').width;
 	const carouselHeight = width * 2 / 3;
-	const {numberOfUnreadNoti} = useContext(AuthContext);
+	const { numberOfUnreadNoti } = useContext(AuthContext);
 
 
 	useEffect(() => {
 		getQuizzesPublished(selectedSubject);
 
 	}, [selectedSubject])
-
 
 	useFocusEffect(
 		useCallback(() => {
@@ -48,7 +46,12 @@ const StudentHomeScreen = () => {
 
 	const handleNavigateToQuiz = () => {
 		setModalVisible(false);
-		navigation.push('(play)/single', { quizId: selectedQuiz._id });
+
+		router.push({
+			pathname: '(play)/single',
+			params: { quizId: selectedQuiz._id }
+		})
+
 	};
 
 	return (
@@ -57,7 +60,7 @@ const StudentHomeScreen = () => {
 				showsVerticalScrollIndicator={false}
 				className='mb-20'>
 				<View className={"flex-row justify-end"}>
-					<NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti} color={"black"}/>
+					<NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti} color={"black"} />
 				</View>
 				<View className={bannerQuizzes.length > 0 ? `flex h-[${carouselHeight}px]` : `hidden`}>
 					<Carousel
@@ -121,7 +124,7 @@ const StudentHomeScreen = () => {
 				<View className='px-4 pt-4 flex gap-2'>
 					{filterQuizzes?.length > 0 ? (
 						filterQuizzes.map((quiz) => (
-							<TouchableOpacity key={quiz._id} onPress={() => handlePressQuizItem(quiz._id)}>
+							<TouchableOpacity key={quiz._id} onPress={() => handlePressQuizItem(quiz)}>
 								<QuizItem quiz={quiz} />
 							</TouchableOpacity>
 						))
