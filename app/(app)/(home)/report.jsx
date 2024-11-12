@@ -153,7 +153,7 @@ export default function ReportScreen() {
                             setSearchTermMockup(text);
                             handleSearchChange(text);
                         }}
-                        className="w-5/6 p-3 text-slate-700 border-[1px] rounded-lg"
+                        className="flex-1 p-3 text-slate-700 border-[1px] rounded-lg"
                     />
                     <TouchableOpacity
                         className="bg-black p-4 border-[1px] rounded-lg"

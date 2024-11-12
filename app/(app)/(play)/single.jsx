@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, useWindowDimensions, ScrollView } from 'react-native';
+import React, { useEffect, useState, useCallback, useReducer } from 'react';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import Button from '../../../components/customs/Button';
 import ResultSingle from '../(result)/single';
 import { useAuthContext } from '@/contexts/AuthContext';
@@ -10,79 +10,130 @@ import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import { useResultProvider } from '@/contexts/ResultProvider';
 
+// Reducer to manage game state
+const initialState = {
+	currentQuestionIndex: 0,
+	selectedAnswers: [],
+	correctCount: 0,
+	wrongCount: 0,
+	score: 0,
+	isCompleted: false,
+	isCorrect: false,
+	isChosen: false,
+	showCorrectAnswer: false,
+	buttonText: 'Confirm',
+	buttonColor: 'bg-white',
+	buttonTextColor: 'text-black',
+	isProcessing: false,
+};
+
+function gameReducer(state, action) {
+	switch (action.type) {
+		case 'SET_ANSWER':
+			return { ...state, selectedAnswers: action.payload, isChosen: true, buttonColor: 'bg-[#0D70D2]', buttonTextColor: 'text-white' };
+		case 'RESET':
+			return initialState;
+		case 'SUBMIT_CORRECT':
+			return {
+				...state,
+				isCorrect: true,
+				correctCount: state.correctCount + 1,
+				score: state.score + action.payload.points,
+				buttonColor: 'bg-[#4CAF50]',
+				buttonText: `+${action.payload.points}`,
+				showCorrectAnswer: true,
+			};
+		case 'SUBMIT_INCORRECT':
+			return {
+				...state,
+				isCorrect: false,
+				wrongCount: state.wrongCount + 1,
+				buttonColor: 'bg-[#F44336]',
+				buttonText: 'Incorrect',
+				showCorrectAnswer: true,
+			};
+		case 'NEXT_QUESTION':
+			return {
+				...state,
+				currentQuestionIndex: state.currentQuestionIndex + 1,
+				selectedAnswers: [],
+				isChosen: false,
+				showCorrectAnswer: false,
+				buttonText: 'Confirm',
+				buttonColor: 'bg-white',
+				buttonTextColor: 'text-black',
+			};
+		case 'COMPLETE':
+			return { ...state, isCompleted: true };
+		case 'PROCESSING':
+			return { ...state, isProcessing: action.payload };
+		default:
+			return state;
+	}
+}
+
 const SinglePlay = () => {
-	const { quizId, exerciseId, type } = useLocalSearchParams()
+	const { quizId, exerciseId, type } = useLocalSearchParams();
 	const { i18n } = useAppProvider();
-	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-	const [selectedAnswers, setSelectedAnswers] = useState([]);
-	const [correctCount, setCorrectCount] = useState(0);
-	const [wrongCount, setWrongCount] = useState(0);
-	const [score, setScore] = useState(0);
-	const [isCompleted, setIsCompleted] = useState(false);
-	const [isCorrect, setIsCorrect] = useState(false);
-	const [isChosen, setIsChosen] = useState(false);
-	const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
-	const [buttonText, setButtonText] = useState(i18n.t('play.single.buttonConfirm'));
-	const [buttonColor, setButtonColor] = useState('bg-white');
-	const [buttonTextColor, setButtonTextColor] = useState('text-black');
-	const { userData } = useAuthContext();
-	const [isProcessing, setIsProcessing] = useState(false);
+	const { questions, fetchQuestions, saveQuestionResult } = useQuestionProvider();
+	const { result, fetchResultData } = useResultProvider()
+	const { completed } = useResultProvider();
+	const [state, dispatch] = useReducer(gameReducer, initialState);
 	const [sound, setSound] = useState(null);
-	const { questions, fetchQuestions, saveQuestionResult } = useQuestionProvider()
-	const { completed, result } = useResultProvider()
-	
-	useEffect(()=>{
+
+	// console.log('id Baif Tap ' + exerciseId);
+	// console.log('id Quiz ' + quizId);
+	// console.log('type ' + type);
+
+
+	useFocusEffect(
+		useCallback(() => {
+			if (quizId !== 'undefined' && type) {
+			fetchResultData({quizId, exerciseId, type});
+			}
+		}, [exerciseId, quizId, type])
+	)
+
+	useEffect(() => {
 		fetchQuestions(quizId);
-	},[quizId])
-
-	useEffect(() => {
-		console.log(questions);
-		
-		if (questions && questions.length > 0 && result) {
-			const answeredQuestionsCount = result.result_questions?.length || 0;
+						
+	}, [quizId]);
+	
+	useEffect(()=> {
+		const answeredQuestionsCount = result.result_questions?.length;
+			// Nếu tất cả câu hỏi đã được trả lời, đặt index lại thành 0
 			const nextIndex = answeredQuestionsCount < questions.length ? answeredQuestionsCount : 0;
-			setCurrentQuestionIndex(nextIndex);
-			console.log('có kết quả, tiếp tục câu tiếp theo từ: ' + currentQuestionIndex);
-		}
-		console.log('Không có kq, bắt đầu từ: ' + currentQuestionIndex);		
-	}, [quizId, questions, type]);
+			state.currentQuestionIndex = nextIndex
+			console.log(state.currentQuestionIndex);
+	},[result])
 
+	
+	// useEffect(() => {
+	//     if (sound) return () => sound.unloadAsync();
+	// }, [sound]);
 
-	const playSound = async (isCorrectAnswer) => {
-		let soundPath = isCorrectAnswer ? require('@/assets/sounds/correct.mp3') : require('@/assets/sounds/incorrect.mp3');
-		const { sound } = await Audio.Sound.createAsync(soundPath);
-		setSound(sound);
-		await sound.playAsync();
-	};
+	// const playSound = useCallback(async (isCorrectAnswer) => {
+	//     const soundPath = isCorrectAnswer ? require('@/assets/sounds/correct.mp3') : require('@/assets/sounds/incorrect.mp3');
+	//     const { sound } = await Audio.Sound.createAsync(soundPath);
+	//     setSound(sound);
+	//     await sound.playAsync();
+	// }, []);
 
-	useEffect(() => {
-		return sound
-			? () => {
-				sound.unloadAsync();
-			}
-			: undefined;
-	}, [sound]);
+	const handleAnswerPress = useCallback((answerId) => {
+		dispatch({
+			type: 'SET_ANSWER',
+			payload: state.selectedAnswers.includes(answerId)
+				? state.selectedAnswers.filter(id => id !== answerId)
+				: [...state.selectedAnswers, answerId],
+		});
+	}, [state.selectedAnswers]);
 
-	const handleAnswerPress = (answerId) => {
-		if (questions[currentQuestionIndex].question_type === 'single') {
-			setSelectedAnswers([answerId]);
-			setIsChosen(true);
-			setButtonColor('bg-[#0D70D2]');
-			setButtonTextColor('text-white');
-		} else {
-			if (selectedAnswers.includes(answerId)) {
-				setSelectedAnswers(selectedAnswers.filter((id) => id !== answerId));
-			} else {
-				setSelectedAnswers([...selectedAnswers, answerId]);
-			}
-		}
-	};
+	const handleSubmit = useCallback(async () => {
+		if (state.isProcessing) return;
 
-	const handleSubmit = async () => {
-		if (isProcessing) return;
-		setIsProcessing(true);
+		dispatch({ type: 'PROCESSING', payload: true });
 
-		if (selectedAnswers.length === 0) {
+		if (state.selectedAnswers.length === 0) {
 			Toast.show({
 				type: 'error',
 				text1: `${i18n.t('play.single.errorTitle')}`,
@@ -90,88 +141,53 @@ const SinglePlay = () => {
 				visibilityTime: 1000,
 				autoHide: true,
 			});
-			setIsProcessing(false);
+			dispatch({ type: 'PROCESSING', payload: false });
 			return;
 		}
 
-		const currentQuestion = questions[currentQuestionIndex];
+		const currentQuestion = questions[state.currentQuestionIndex];
 		const correctAnswerIds = currentQuestion.correct_answer_ids.map(answer => answer._id);
+		const isAnswerCorrect = state.selectedAnswers.length === correctAnswerIds.length &&
+			state.selectedAnswers.every(answerId => correctAnswerIds.includes(answerId));
 
-		let isAnswerCorrect;
+		// await playSound(isAnswerCorrect);
 
-		if (currentQuestion.question_type === 'single') {
-			isAnswerCorrect = selectedAnswers[0] === correctAnswerIds[0];
-		} else {
-			isAnswerCorrect =
-				selectedAnswers.length === correctAnswerIds.length &&
-				selectedAnswers.every((answerId) => correctAnswerIds.includes(answerId));
-		}
-
-		await playSound(isAnswerCorrect);
-
-		if (isAnswerCorrect) {
-			setIsCorrect(true);
-			setCorrectCount(correctCount + 1);
-			setScore(score + currentQuestion.question_point);
-			setButtonColor('bg-[#4CAF50]');
-			setButtonText(`+${currentQuestion.question_point}`);
-		} else {
-			setIsCorrect(false);
-			setWrongCount(wrongCount + 1);
-			setButtonColor('bg-[#F44336]');
-			setButtonTextColor('text-white')
-			setButtonText(i18n.t('play.single.incorrect'));
-		}
+		dispatch({
+			type: isAnswerCorrect ? 'SUBMIT_CORRECT' : 'SUBMIT_INCORRECT',
+			payload: { points: currentQuestion.question_point },
+		});
 
 		saveQuestionResult(
 			exerciseId, quizId,
 			currentQuestion._id,
-			selectedAnswers,
+			state.selectedAnswers,
 			isAnswerCorrect,
 			currentQuestion.question_point
 		);
 
-		setShowCorrectAnswer(true);
-
 		setTimeout(() => {
-			setIsProcessing(false);
-			if (currentQuestionIndex < questions.length - 1) {
-				setCurrentQuestionIndex(currentQuestionIndex + 1);
-				setSelectedAnswers([]);
-				setIsChosen(false);
-				setShowCorrectAnswer(false);
-				setButtonText(i18n.t('play.single.buttonConfirm'));
-				setButtonColor('bg-white');
-				setButtonTextColor('text-black');
+			dispatch({ type: 'PROCESSING', payload: false });
+			if (state.currentQuestionIndex < questions.length - 1) {
+				dispatch({ type: 'NEXT_QUESTION' });
 			} else {
-				setIsCompleted(true);
+				dispatch({ type: 'COMPLETE' });
 				completed(exerciseId, quizId);
 			}
 		}, 2000);
-	};
+	}, [state, questions, completed, saveQuestionResult, exerciseId, quizId, i18n]);
 
 	const handleRestart = () => {
-		setIsCorrect(false);
-		setCurrentQuestionIndex(0);
-		setCorrectCount(0);
-		setWrongCount(0);
-		setScore(0);
-		setIsCompleted(false);
-		setSelectedAnswers([]);
-		setIsChosen(false);
-		setShowCorrectAnswer(false);
-		setButtonText(i18n.t('play.single.buttonConfirm'));
-		setButtonColor('bg-white');
-		setButtonTextColor('text-black');
+		dispatch({ type: 'RESET' });
 	};
 
-	if (isCompleted) {
+	if (state.isCompleted) {
+
 		return (
 			<ResultSingle
 				quizId={quizId}
-				correctCount={correctCount}
-				wrongCount={wrongCount}
-				score={score}
+				correctCount={state.correctCount}
+				wrongCount={state.wrongCount}
+				score={state.score}
 				totalQuestions={questions.length}
 				handleRestart={handleRestart}
 				exerciseId={exerciseId}
@@ -185,83 +201,59 @@ const SinglePlay = () => {
 			<View className="flex-row px-5 pt-10 pb-3 bg-black">
 				<Button
 					text={i18n.t('play.single.buttonQuit')}
-					onPress={() => { router.back() }}
+					onPress={() => { router.back(); }}
 					loading={false}
 					type="fill"
-					otherStyles={'bg-[#F41D1D]'}
-					textStyles={'font-medium text-sm text-white'}
+					otherStyles="bg-[#F41D1D]"
+					textStyles="font-medium text-sm text-white"
 				/>
 			</View>
-
 			<View className="flex-1 bg-[#1C2833] px-5 py-4 justify-between">
 				<Text className="text-lg bg-[#484E54] rounded text-white px-[10px] py-1 font-pregular self-start">
-					{`${i18n.t('play.single.score')}: ${score}`}
+					{`${i18n.t('play.single.score')}: ${state.score}`}
 				</Text>
 				<View className="bg-[#484E54] rounded-lg px-3 py-10">
 					<Text className="text-sm font-pregular text-slate-200 absolute top-2 left-2">
-						{`${i18n.t('play.single.questionCouter')} ` + (currentQuestionIndex + 1) + " / " + questions.length}
+						{`${i18n.t('play.single.questionCouter')} ${state.currentQuestionIndex + 1} / ${questions.length}`}
 					</Text>
-
-					<ScrollView
-						className='h-32'
-						showsVerticalScrollIndicator={false}
-					>
-						<Text className='text-2xl font-bold text-white'>
-							{questions[currentQuestionIndex]?.question_excerpt || ''}
+					<ScrollView className="h-32" showsVerticalScrollIndicator={false}>
+						<Text className="text-2xl font-bold text-white">
+							{questions[state.currentQuestionIndex]?.question_excerpt || ''}
 						</Text>
 					</ScrollView>
 				</View>
-
 				<View>
-					{questions[currentQuestionIndex]?.question_answer_ids.map((answer, index) => {
-						let backgroundColor = '#484E54'; // Màu mặc định
-
-						if (showCorrectAnswer) {
-							if (questions[currentQuestionIndex].question_type === 'single') {
-								if (answer._id === questions[currentQuestionIndex].correct_answer_ids[0]._id) {
-									backgroundColor = '#4CAF50'; // Green - Đúng
-								} else if (answer._id === selectedAnswers[0]) {
-									backgroundColor = '#F44336'; // Red - Sai
-								}
-							} else {
-								if (questions[currentQuestionIndex].correct_answer_ids.map(answer => answer._id).includes(answer._id)) {
-									backgroundColor = '#4CAF50'; // Green - Đúng
-								} else if (selectedAnswers.includes(answer._id)) {
-									backgroundColor = '#F44336'; // Red - Sai
-								}
-							}
-						} else if (selectedAnswers.includes(answer._id)) {
-							backgroundColor = '#0D70D2'; // Màu xanh khi người dùng chọn
+					{questions[state.currentQuestionIndex]?.question_answer_ids.map((answer, index) => {
+						let backgroundColor = '#484E54';
+						if (state.showCorrectAnswer) {
+							const correctIds = questions[state.currentQuestionIndex].correct_answer_ids.map(a => a._id);
+							if (correctIds.includes(answer._id)) backgroundColor = '#4CAF50';
+							else if (state.selectedAnswers.includes(answer._id)) backgroundColor = '#F44336';
+						} else if (state.selectedAnswers.includes(answer._id)) {
+							backgroundColor = '#0D70D2';
 						}
-
 						return (
 							<TouchableOpacity
 								key={index}
 								onPress={() => handleAnswerPress(answer._id)}
+								className='p-6 my-1 rounded-lg'
 								style={{
 									backgroundColor,
-									padding: 10,
-									marginVertical: 5,
-									borderRadius: 5,
 								}}
-								disabled={showCorrectAnswer} // Vô hiệu hóa khi đã hiển thị kết quả
+								disabled={state.showCorrectAnswer}
 							>
-								<Text className="text-white font-pregular text-lg m-4">
-									{answer.text}
-								</Text>
+								<Text className="text-white text-lg font-bold">{answer.text}</Text>
 							</TouchableOpacity>
 						);
 					})}
 				</View>
-
-
 				<Button
-					text={buttonText}
+					text={state.buttonText}
 					onPress={handleSubmit}
 					type="fill"
-					otherStyles={`${buttonColor} p-4`}
-					textStyles={`text-white ${buttonTextColor} mx-auto text-lg`}
-					disabled={!isChosen || showCorrectAnswer}
+					loading={state.isProcessing}
+					otherStyles={`p-5 ${state.buttonColor}`}
+					textStyles={`mx-auto text-lg ${state.buttonTextColor}`}
 				/>
 			</View>
 		</View>
