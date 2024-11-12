@@ -72,11 +72,12 @@ const ResultProvider = ({ children }) => {
 
    const fetchResultData = async ({quizId, exerciseId, roomId, type}) => {
       const query = {
+         user_id: userData._id,
          quiz_id: quizId,
-         exercise_id: exerciseId || '',
-         room_id: roomId || '',
-         type
-      }
+         type,
+         ...(exerciseId && { exercise_id: exerciseId }),
+         ...(roomId && { room_id: roomId })
+      };
 
       console.log(query);
       

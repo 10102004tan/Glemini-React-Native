@@ -21,6 +21,7 @@ const StudentDetail = () => {
 
     const startQuiz = async (quizId, exerciseId) => {
         const fetchedResult = await fetchResultData({quizId, exerciseId, type : 'exercise'});
+        console.log(fetchedResult);
         if (fetchedResult) {
             router.push({
                 pathname: '/(home)/activity',

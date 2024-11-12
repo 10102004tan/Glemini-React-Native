@@ -30,20 +30,23 @@ const SinglePlay = () => {
 	const [sound, setSound] = useState(null);
 	const { questions, fetchQuestions, saveQuestionResult } = useQuestionProvider()
 	const { completed, result } = useResultProvider()
+	
+	useEffect(()=>{
+		fetchQuestions(quizId);
+	},[quizId])
 
 	useEffect(() => {
+		console.log(questions);
+		
 		if (questions && questions.length > 0 && result) {
 			const answeredQuestionsCount = result.result_questions?.length || 0;
 			const nextIndex = answeredQuestionsCount < questions.length ? answeredQuestionsCount : 0;
 			setCurrentQuestionIndex(nextIndex);
+			console.log('có kết quả, tiếp tục câu tiếp theo từ: ' + currentQuestionIndex);
 		}
-	}, [quizId, result, questions]);
+		console.log('Không có kq, bắt đầu từ: ' + currentQuestionIndex);		
+	}, [quizId, questions, type]);
 
-	useEffect(() => {
-		if (!questions || questions.length === 0) {
-			fetchQuestions(quizId);
-		}
-	}, [quizId]);
 
 	const playSound = async (isCorrectAnswer) => {
 		let soundPath = isCorrectAnswer ? require('@/assets/sounds/correct.mp3') : require('@/assets/sounds/incorrect.mp3');
