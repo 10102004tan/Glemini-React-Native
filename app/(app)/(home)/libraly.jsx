@@ -34,8 +34,9 @@ import CardQuiz from "@/components/customs/CardQuiz";
 import { Dimensions } from "react-native";
 import QuizzesSharedEmpty from "@/components/customs/QuizzesSharedEmpty";
 import ConfirmDialog from "@/components/dialogs/ConfirmDialog";
-
+import AntiFlatList from "@/components/customs/AntiFlatList/AntiFlatList";
 const Library = () => {
+
   // const [showCopyDialog, setShowCopyDialog] = useState(false);
   // const [quizToCopy, setQuizToCopy] = useState(null);
 
@@ -89,6 +90,7 @@ const Library = () => {
   const { teacherStatus } = useContext(AuthContext);
   // biến search
   const [search, setSearch] = useState("");
+  const [skip, setSkip] = useState(0);
   const screenWidth = Dimensions.get("window").width;
 
   // biến lưu trạng thái status
@@ -151,6 +153,7 @@ const Library = () => {
 
   // Tên bộ sưu tập
   const [newCollectionName, setNewCollectionName] = useState("");
+  const [isRefreshing, setIsRefreshing] = useState(false);
   // tab hiện tại: 'library' hoặc 'collection'
   const [activeTab, setActiveTab] = useState("library");
   // di chuyển dòng bôi đen
@@ -158,7 +161,7 @@ const Library = () => {
   const [listNameCollection, setListNameCollection] = useState([]);
 
   // lấy list thông tin của quiz, thông tin name, description, status,...
-  const { quizzes, fetchQuizzes, quizFetching, setQuizzes } = useQuizProvider();
+  const { quizzes, fetchQuizzes, quizFetching, setQuizzes, LIMIT } =useQuizProvider();
 
   const [sharedQuizzes, setSharedQuizzes] = useState([]);
 
@@ -406,6 +409,34 @@ const Library = () => {
 
   if (teacherStatus === "pedding" || teacherStatus === "rejected") {
     return <LockFeature />;
+  }
+
+  //
+  const ComponentItem = ({ data }) => {
+    return (
+      <CardQuiz
+        quiz={data}
+        routerPath="(quiz)/detail_quiz"
+        params={{
+          id: data._id,
+        }}
+      />
+    );
+  };
+
+  const handleLoadMore = () => {
+      console.log("loadmore::",skip);
+      fetchQuizzes({skip: (skip + LIMIT)}).then((res) => {
+         setSkip(skip + LIMIT);
+      });
+  };
+
+  const handleRefresh = () => {
+   setIsRefreshing(true);
+      fetchQuizzes({ skip: 0 }).then((res) => {
+         setSkip(0);
+         setIsRefreshing(false);
+      });
   }
 
   return (
@@ -658,31 +689,20 @@ const Library = () => {
                 />
               </View>
             </View>
-            <View className="border-t border-b border-gray mb-[350px]">
-              <FlatList
-                // refreshControl={
-                //   <RefreshControl
-                //     isRefreshing={quizFetching}
-                //     onRefresh={fetchQuizzes}
-                //   />
-                // }
-                contentContainerStyle={{ padding: 12 }}
-                key={(quiz) => quiz._id}
+            <View style={{
+               height: "80%",
+               padding: 12,
+            }}>
+              <AntiFlatList
+
+               colSpan={2}
+                isRefreshing={isRefreshing}
+                componentItem={ComponentItem}
+                loading={quizFetching}
+                handleLoadMore={handleLoadMore}
                 data={quizzes}
-                keyExtractor={(quiz) => quiz._id}
-                renderItem={({ item: quiz }) => {
-                  return (
-                    <CardQuiz
-                      quiz={quiz}
-                      type="horizontal"
-                      routerPath="(quiz)/detail_quiz"
-                      params={{
-                        id: quiz._id,
-                      }}
-                    />
-                  );
-                }}
-              ></FlatList>
+                handleRefresh={handleRefresh}
+              />
             </View>
           </View>
         )}
@@ -722,7 +742,8 @@ const Library = () => {
         {activeTab === "shared" && (
           <View className="p-3">
             <FlatList
-              contentContainerStyle={{ padding: 12 }}
+            numColumns={2}
+              contentContainerStyle={{ padding: 2 }}
               key={(quiz) => quiz._id}
               style={{ marginBottom: 200 }}
               data={sharedQuizzes}
@@ -733,7 +754,6 @@ const Library = () => {
                     handleDelete={() => handleDeleteQuizShared(quiz._id)}
                     isDelete={true}
                     quiz={quiz}
-                    type="horizontal"
                     routerPath="(quiz)/detail_quiz"
                     params={{
                       id: quiz._id,
