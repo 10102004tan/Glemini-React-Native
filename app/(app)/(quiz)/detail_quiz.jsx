@@ -29,10 +29,10 @@ import AssignQuizModal from "@/components/modals/AssignQuizModal.jsx";
 import Toast from "react-native-toast-message-custom";
 
 const detailquizz = () => {
+  const [isEdit, setIsEdit] = useState(false);
+
   // biến cho dialog email
   const [showEmailDialog, setShowEmailDialog] = useState(false);
-  // tạo biến để lưu quiz vào bộ sưu tập
-  const [addNameToCollection, setAddNameToCollection] = useState("");
 
   // biến để chọn các collection trong bottomsheet
   const [selectedCollection, setSelectedCollection] = useState("");
@@ -241,30 +241,11 @@ const detailquizz = () => {
     }
   }, [id]);
 
-  //Dropdown
-  const nameSchool = [
-    { key: 1, value: "trường Cao Đẳng Công Nghệ Thủ Đức" },
-    { key: 2, value: "trường Cao Đẳng Cao Thắng" },
-    { key: 3, value: "trường Cao Đẳng Công Nghệ TPHCM" },
-    { key: 4, value: "trường Cao Đẳng FPT" },
-    { key: 5, value: "trường Cao Đẳng Công Thương" },
-    { key: 6, value: "trường Cao Đẳng Du Lịch" },
-  ];
-
-  const nameClass = [
-    { key: 1, value: "CD15TT05" },
-    { key: 2, value: "CD16TT12" },
-    { key: 3, value: "CD17TT14" },
-    { key: 4, value: "CD18TT02" },
-    { key: 5, value: "CD19TT15" },
-    { key: 6, value: "CD20TT09" },
-    { key: 7, value: "CD21TT01" },
-    { key: 8, value: "CD22TT11" },
-  ];
-
   return (
     <Wrapper>
       <EmailDialog
+        isEdit={isEdit}
+        setIsEdit={setIsEdit}
         quiz_id={id}
         onSend={() => {
           console.log("Send email");
@@ -341,53 +322,50 @@ const detailquizz = () => {
       </BottomSheet>
 
       {/* Bottom Sheet */}
-      <BottomSheet
-        visible={showBottomSheetMoreOptions}
-        onClose={closeBottomSheet}
-      >
-        <Button
-          text={"Chỉnh sửa"}
-          otherStyles={"m-2 flex-row p-4"}
-          icon={<Entypo name="edit" size={16} color="white" />}
-        />
-        <Button
-          text={"Xóa"}
-          otherStyles={"m-2 flex-row p-4"}
-          icon={<MaterialIcons name="delete" size={16} color="white" />}
-          onPress={() => {
-            setShowConfirmDialog(true);
-          }}
-        />
-        <Button
-          text={"Chia sẻ bài kiểm tra"}
-          otherStyles={"m-2 flex-row p-4"}
-          icon={<AntDesign name="sharealt" size={16} color="white" />}
-          onPress={() => {
-            // closeBottomSheet();
-            setShowEmailDialog(true);
-            setShowBottomSheetMoreOptions(false);
-            setShowBottomSheetSaveToLibrary(false);
-          }}
-        />
-        <Button
-          text={"Giao bài tập"}
-          otherStyles={"m-2 flex-row p-4"}
-          icon={<Entypo name="home" size={16} color="white" />}
-          onPress={() => {
-            setShowAssignModal(true);
-            closeBottomSheet();
-          }}
-        />
-        <Button
-          text={"Lưu vào bộ sưu tập"}
-          otherStyles={"m-2 flex-row p-4"}
-          icon={<Entypo name="save" size={16} color="white" />}
-          onPress={() => {
-            closeBottomSheet();
-            openBottomSheetSaveToLibrary();
-          }}
-        />
-      </BottomSheet>
+      {isEdit && (
+        <BottomSheet
+          visible={showBottomSheetMoreOptions}
+          onClose={closeBottomSheet}
+        >
+          <Button
+            text={"Xóa"}
+            otherStyles={"m-2 flex-row p-4"}
+            icon={<MaterialIcons name="delete" size={16} color="white" />}
+            onPress={() => {
+              setShowConfirmDialog(true);
+            }}
+          />
+          <Button
+            text={"Chia sẻ bài kiểm tra"}
+            otherStyles={"m-2 flex-row p-4"}
+            icon={<AntDesign name="sharealt" size={16} color="white" />}
+            onPress={() => {
+              // closeBottomSheet();
+              setShowEmailDialog(true);
+              setShowBottomSheetMoreOptions(false);
+              setShowBottomSheetSaveToLibrary(false);
+            }}
+          />
+          <Button
+            text={"Giao bài tập"}
+            otherStyles={"m-2 flex-row p-4"}
+            icon={<Entypo name="home" size={16} color="white" />}
+            onPress={() => {
+              setShowAssignModal(true);
+              closeBottomSheet();
+            }}
+          />
+          <Button
+            text={"Lưu vào bộ sưu tập"}
+            otherStyles={"m-2 flex-row p-4"}
+            icon={<Entypo name="save" size={16} color="white" />}
+            onPress={() => {
+              closeBottomSheet();
+              openBottomSheetSaveToLibrary();
+            }}
+          />
+        </BottomSheet>
+      )}
 
       <ScrollView>
         <View className="flex mb-4 mx-4">

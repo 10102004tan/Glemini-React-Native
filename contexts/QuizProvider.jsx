@@ -15,15 +15,10 @@ const QuizProvider = ({ children }) => {
   const [actionQuizType, setActionQuizType] = useState("create");
   const [isSave, setIsSave] = useState(false);
   const { userData } = useAuthContext();
-  const [page, setPage] = useState(0);
-  const limit = 5;
-  const [hasMoreQuizzes, setHasMoreQuizzes] = useState(true);
-  const [quizMessage, setQuizMessage] = useState("");
 
   // Get all quizzes of the user
   const fetchQuizzes = async () => {
-    if (!quizFetching && hasMoreQuizzes) {
-      // console.log("load");
+    if (!quizFetching) {
       setQuizFetching(true);
       const response = await fetch(
         `${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`,
@@ -36,8 +31,6 @@ const QuizProvider = ({ children }) => {
           },
           body: JSON.stringify({
             user_id: userData._id,
-            skip: page * limit,
-            limit,
           }),
         }
       );
@@ -45,19 +38,11 @@ const QuizProvider = ({ children }) => {
       // console.log(data);
       if (data.statusCode === 200) {
         if (data.metadata.length > 0) {
-          setTimeout(() => {
-            setQuizzes([...quizzes, ...data.metadata]);
-            setPage(page + 1);
-          }, 1500);
-        } else {
-          setHasMoreQuizzes(false); // Không còn quiz nào để tải
-          setQuizMessage("Đã hết quizz !!!");
+          setQuizzes(data.metadata);
+          setQuizFetching(false);
+          setNeedUpdate(false);
         }
-      } else {
-        setHasMoreQuizzes(false); // Đặt cờ khi có lỗi xảy ra
-        setQuizMessage("Đã hết quizz !!!");
       }
-      setQuizFetching(false);
     }
   };
 
@@ -158,7 +143,6 @@ const QuizProvider = ({ children }) => {
   useEffect(() => {
     if (needUpdate) {
       fetchQuizzes();
-      setNeedUpdate(false);
     }
   }, [needUpdate]);
 
@@ -191,7 +175,6 @@ const QuizProvider = ({ children }) => {
         bannerQuizzes,
         getQuizzesBanner,
         fetchQuizzes,
-        quizMessage,
       }}
     >
       {children}

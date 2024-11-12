@@ -1,13 +1,12 @@
 "use strict";
 
 const dev = {
-	API_URL: 'http://192.168.247.116:3000/api',
-	API_VERSION: {
-		V1: '/v1',
-	},
-	END_POINTS: {
-		SERVER: '/working',
-
+  API_URL: "http://192.168.1.5:3000/api",
+  API_VERSION: {
+    V1: "/v1",
+  },
+  END_POINTS: {
+    SERVER: "/working",
 
     // Authentication
     LOGIN: "/auth/login",
@@ -60,13 +59,13 @@ const dev = {
     GET_ALL_QUIZZES_SHARED: "/quizzes/get-all-quizzes-shared",
     REMOVE_QUIZ_SHARED: "/quizzes/remove-quiz-shared",
 
-		// Results
-		RESULT_STUDENT: '/result/student',
-		RESULT_TEACHER: '/result/teacher',
-		RESULT_SAVE_QUESTION: '/result/save-question',
-		RESULT_COMPLETED: '/result/complete-quiz',
-		RESULT_REVIEW: '/result/review',
-		RESULT_REPORT: '/result/reports',
+    // Results
+    RESULT_STUDENT: "/result/student",
+    RESULT_TEACHER: "/result/teacher",
+    RESULT_SAVE_QUESTION: "/result/save-question",
+    RESULT_COMPLETED: "/result/complete-quiz",
+    RESULT_REVIEW: "/result/review",
+    RESULT_REPORT: "/result/reports",
 
     // Subjects
     SUBJECTS: "/subjects",
@@ -97,8 +96,8 @@ const dev = {
     CLASSROOM_REMOVE_STUDENT: "/classroom/rm-student",
 
     //user
-    // CHECK_EMAIL: '/user/check-email',
     SHARE_QUIZ: "/user/share-quiz",
+    CHECK_EDIT_QUIZ: "/user/check-edit-quiz",
 
     // room
     ROOM_CREATE: "/room/create",

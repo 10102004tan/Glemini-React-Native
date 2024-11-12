@@ -9,6 +9,7 @@ import {
   FlatList,
   ActivityIndicator,
   Alert,
+  RefreshControl,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import Wrapper from "@/components/customs/Wrapper";
@@ -32,13 +33,54 @@ import LockFeature from "@/components/customs/LockFeature";
 import CardQuiz from "@/components/customs/CardQuiz";
 import { Dimensions } from "react-native";
 import QuizzesSharedEmpty from "@/components/customs/QuizzesSharedEmpty";
+import ConfirmDialog from "@/components/dialogs/ConfirmDialog";
 
 const Library = () => {
-  //biến loadmore
-  // const [page, setPage] = useState(0);
-  // const limit = 5;
-  // const [hasMoreQuizzes, setHasMoreQuizzes] = useState(true);
-  // const [quizMessageQuizShared, setQuizMessageQuizShared] = useState("");
+  // const [showCopyDialog, setShowCopyDialog] = useState(false);
+  // const [quizToCopy, setQuizToCopy] = useState(null);
+
+  // const handleQuizPress = (quiz) => {
+  //   if (!quiz.isEdit) {
+  //     // Kiểm tra quyền chỉnh sửa
+  //     setQuizToCopy(quiz); // Lưu quiz cần sao chép
+  //     setShowCopyDialog(true); // Hiển thị dialog
+  //   } else {
+  //     // Nếu có quyền chỉnh sửa, mở trang chi tiết quiz như bình thường
+  //     router.push(`(quiz)/detail_quiz?id=${quiz._id}`);
+  //   }
+  // };
+  // const copyQuizToLibrary = async (quiz) => {
+  //   const response = await fetch(
+  //     `${API_URL}${API_VERSION.V1}${END_POINTS.CREATE_QUIZ}`, // Endpoint tạo quiz mới
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "x-client-id": userData._id,
+  //         authorization: userData.accessToken,
+  //       },
+  //       body: JSON.stringify({
+  //         quiz_name: quiz.quiz_name,
+  //         quiz_description: quiz.quiz_description,
+  //         quiz_thumb: quiz.quiz_thumb,
+  //         quiz_subjects: quiz.quiz_subjects,
+  //         quiz_questions: quiz.quiz_questions,
+  //         quiz_status: quiz.quiz_status,
+  //       }),
+  //     }
+  //   );
+  //   const data = await response.json();
+  //   if (data.statusCode === 200) {
+  //     // Thông báo quiz đã được sao chép thành công
+  //     Toast.show({
+  //       type: "success",
+  //       text1: "Quiz đã được sao chép vào thư viện của bạn!",
+  //     });
+  //   } else {
+  //     // Thông báo lỗi
+  //     Toast.show({ type: "error", text1: "Không thể sao chép quiz." });
+  //   }
+  // };
 
   //biến name của bộ sưu tập
   const [nameCollection, setNameCollection] = useState("");
@@ -116,8 +158,7 @@ const Library = () => {
   const [listNameCollection, setListNameCollection] = useState([]);
 
   // lấy list thông tin của quiz, thông tin name, description, status,...
-  const { quizzes, fetchQuizzes, quizFetching, quizMessage, setQuizzes } =
-    useQuizProvider();
+  const { quizzes, fetchQuizzes, quizFetching, setQuizzes } = useQuizProvider();
 
   const [sharedQuizzes, setSharedQuizzes] = useState([]);
 
@@ -140,6 +181,8 @@ const Library = () => {
     const data = await response.json();
     if (data.statusCode === 200) {
       setSharedQuizzes(data.metadata);
+    } else {
+      console.log("Không thể lấy ra tất cả quiz được share");
     }
   };
 
@@ -376,6 +419,17 @@ const Library = () => {
         }
       ></Overlay>
 
+      {/* <ConfirmDialog
+        visible={showCopyDialog}
+        title="Sao chép quiz"
+        message="Bạn có muốn sao chép quiz này sang thư viện của tôi?"
+        onCancel={() => setShowCopyDialog(false)}
+        onConfirm={async () => {
+          await copyQuizToLibrary(quizToCopy); // Sao chép quiz vào thư viện
+          setShowCopyDialog(false);
+        }}
+      /> */}
+
       {/* Bottom Sheet của Thư viện của tôi */}
       <BottomSheet
         visible={visibleCreateNewBottomSheet}
@@ -606,6 +660,12 @@ const Library = () => {
             </View>
             <View className="border-t border-b border-gray mb-[350px]">
               <FlatList
+                // refreshControl={
+                //   <RefreshControl
+                //     isRefreshing={quizFetching}
+                //     onRefresh={fetchQuizzes}
+                //   />
+                // }
                 contentContainerStyle={{ padding: 12 }}
                 key={(quiz) => quiz._id}
                 data={quizzes}
@@ -622,21 +682,6 @@ const Library = () => {
                     />
                   );
                 }}
-                onEndReached={() => {
-                  if (!quizFetching) {
-                    fetchQuizzes();
-                  }
-                }}
-                onEndReachedThreshold={1}
-                ListFooterComponent={
-                  quizFetching ? (
-                    <ActivityIndicator />
-                  ) : (
-                    <Text className="text-center text-red-700 text-lg font-bold border rounded-lg mt-2 p-2">
-                      {quizMessage}
-                    </Text>
-                  )
-                }
               ></FlatList>
             </View>
           </View>
@@ -693,6 +738,8 @@ const Library = () => {
                     params={{
                       id: quiz._id,
                     }}
+
+                    // onPress={() => handleQuizPress(quiz)}
                   />
                 );
               }}
