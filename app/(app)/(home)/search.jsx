@@ -14,7 +14,6 @@ import {useAppProvider} from "@/contexts/AppProvider";
 import {SelectList,MultipleSelectList} from "@10102004tan/react-native-select-dropdown-v2";
 import {useSubjectProvider} from "@/contexts/SubjectProvider";
 import QuizCard from "@/components/customs/QuizCard";
-import QuizEmpty from "@/components/customs/QuizEmpty";
 import QuizModal from "@/components/modals/QuizModal";
 import {router} from "expo-router";
 import CustomButton from "@/components/customs/CustomButton";
@@ -242,9 +241,6 @@ export default function SearchScreen() {
             }
         });
     };
-
-    // END FETCH QUIZ api
-
 
     // component item for AntiFlatList
     const ComponentItem = ({data}) => {
