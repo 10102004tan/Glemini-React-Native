@@ -183,7 +183,6 @@ const TeacherHomeScreen = () => {
                      </Text>
                      <Text className="text-white">{user_email}</Text>
                   </View>
-
                </View>
                <NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti} />
             </View>

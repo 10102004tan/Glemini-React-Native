@@ -27,11 +27,11 @@ export const AuthProvider = ({children}) => {
             .catch((error) => setExpoPushToken(`${error}`));
     }, []);
 
+
     // fetch access token from local storage
     const fetchAccessToken = async () => {
         const value = await AsyncStorage.getItem("userData");
         setUserData(JSON.parse(value));
-        console.log(JSON.parse(value));
         setIsLoading(false);
     };
 
@@ -348,6 +348,7 @@ export const AuthProvider = ({children}) => {
     }
 
     const fetchNotification = async ({skip = 0, limit = 11}) => {
+        console.log("test::notif")
         const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`, {
             method: 'POST',
             headers: {

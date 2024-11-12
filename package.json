@@ -62,12 +62,14 @@
     "react-native-dialog": "^9.3.0",
     "react-native-dropdown-select-list": "^2.0.5",
     "react-native-element-dropdown": "^2.12.1",
+    "react-native-fast-image": "^8.6.3",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-loading-spinner-overlay": "^3.0.1",
     "react-native-markdown-display": "^7.0.2",
     "react-native-modal": "^13.0.1",
     "react-native-modal-datetime-picker": "^18.0.0",
     "react-native-modalize": "^2.1.1",
+    "react-native-optimized-flatlist": "^1.0.4",
     "react-native-otp-textinput": "^1.1.6",
     "react-native-pager-view": "^6.3.0",
     "react-native-paper": "^5.12.5",
@@ -86,6 +88,7 @@
     "react-native-web": "~0.19.10",
     "react-native-webview": "13.8.6",
     "reactotron-react-native": "^5.1.9",
+    "recyclerlistview": "^4.2.1",
     "socket.io-client": "^4.8.0"
   },
   "devDependencies": {
