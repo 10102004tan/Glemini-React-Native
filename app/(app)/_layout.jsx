@@ -50,6 +50,8 @@ export default function AppRootLayout() {
             });
          });
 
+
+
          socket.on(`${userData._id}`, (noti) => {
             setNotification((prev) => {
                return [noti, ...prev];

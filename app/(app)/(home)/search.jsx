@@ -4,7 +4,7 @@ import {
     TextInput,
     FlatList,
     RefreshControl,
-    ActivityIndicator
+    ActivityIndicator, Platform
 } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import {Modalize} from "react-native-modalize";
@@ -19,7 +19,14 @@ import QuizModal from "@/components/modals/QuizModal";
 import {router} from "expo-router";
 import CustomButton from "@/components/customs/CustomButton";
 import useDebounce from "@/hooks/useDebounce";
+import ListLoadMore from "@/components/customs/ListLoadMore";
+import LoadMoreFooter from "@/components/customs/LoadMoreFooter";
+import RecycleTestComponent from "@/components/customs/test";
+import AntiFlatList from "@/components/customs/AntiFlatList/AntiFlatList";
+import list from "@/app/(app)/(quiz)/list";
 
+// col span : 4 => full width, 2 => half width
+const COL_SPAN = 2;
 export default function SearchScreen() {
     const LIMIT = 10;
     const {setIsHiddenNavigationBar} = useAppProvider();
@@ -33,20 +40,6 @@ export default function SearchScreen() {
     const [isRefreshing,setIsRefreshing] = useState(false);
     const [isFirstLoad,setIsFirstLoad] = useState(true);
     const [selectedSubject,setSelectedSubject] = useState([]);
-    const defaultFilter = {
-        quiz_on:-1,
-        subjectIds:[],
-        key:"",
-        sortStatus:-1,
-        skip:0,
-        limit:LIMIT
-    };
-
-    /*
-    * sortStatus: 1: cũ nhất, -1: mới nhất
-    *
-    *
-    * */
     const [filter, setFilter] = useState({
         quiz_on:-1,
         subjectIds:[],
@@ -55,7 +48,6 @@ export default function SearchScreen() {
         skip:0,
         limit:LIMIT
     });
-
     const dataQuizOn = [
         {
             key: -1,
@@ -91,12 +83,9 @@ export default function SearchScreen() {
 
 
     useEffect(() => {
-        console.log("FETCH");
         fetchQuiz();
         convertSubjectToDataKeyValue();
     }, []);
-
-
 
     useEffect(() => {
         setFilter((prev)=>{
@@ -111,6 +100,13 @@ export default function SearchScreen() {
 
     }, [filter.quiz_on,filter.sortStatus,selectedSubject,debouncedFetchQuiz]);
 
+    useEffect(() => {
+        if (!isFirstLoad){
+            fetchQuiz();
+        }
+    }, [filter.skip]);
+
+    // utils
     const convertSubjectToDataKeyValue = () => {
         if (subjects.length === 0) return;
         const data = subjects.map((item) => {
@@ -122,22 +118,22 @@ export default function SearchScreen() {
         setDataSubject(data);
     }
 
+
+    // process modal
     const onOpen = () => {
         setIsHiddenNavigationBar(true);
         modalizeRef.current?.open();
     };
-
     const onClose = async () => {
         setIsHiddenNavigationBar(false);
     }
-
-
     const onOpenModal = (item) => {
         setSelectedQuiz(item);
         setIsOpenModal(true);
     }
 
 
+   //  FETCH QUIZ api
    const fetchQuiz = () =>{
        // Call API
        setLoading(true);
@@ -165,7 +161,7 @@ export default function SearchScreen() {
            });
    }
 
-   const handleLoadMore = () =>{
+   const handleLoadMore = async () =>{
         if (!loading && quizList.length >= LIMIT) {
             setFilter((prev)=>{
                 return {
@@ -173,17 +169,38 @@ export default function SearchScreen() {
                     skip:prev.skip + LIMIT
                 }
             });
-            fetchQuiz();
+            console.log("handleLoadMore::",filter.skip);
         }
    }
 
-   const onRefresh = () =>{
+    const handleSearch = () => {
+        fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_SEARCH}`,{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify(filter)
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.statusCode === 200) {
+                    setQuizList(data.metadata);
+                }
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                setLoading(false);
+            });
+    }
+
+    const handleRefresh = () =>{
         setIsRefreshing(true);
         setFilter((prev)=>{
-           const newFilter = {
+            const newFilter = {
                 ...prev,
                 skip:0
-           };
+            };
 
             fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_SEARCH}`,{
                 method:'POST',
@@ -206,61 +223,7 @@ export default function SearchScreen() {
             return newFilter;
         });
 
-   }
-
-    const renderFooter = () => {
-        //it will show indicator at the bottom of the list when data is loading otherwise it returns null
-        if (!loading) return null;
-        return (
-            <ActivityIndicator
-                style={{ color: '#000' }}
-            />
-        );
-    };
-
-    const renderItem  = useCallback(({item}) => {
-        return (
-            <QuizCard
-                quiz_thumb={item.quiz_thumb}
-                quiz_name={item.quiz_name}
-                quiz_turn={item.quiz_turn}
-                createdAt={item.createdAt}
-                question_count={item.question_count}
-                onPress={() => onOpenModal(item)}/>
-        )},[]);
-
-    const onSearch = () => {
-        fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_SEARCH}`,{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify(filter)
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.statusCode === 200) {
-                    setQuizList(data.metadata);
-                }
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error(err);
-                setLoading(false);
-            });
     }
-
-    const handleNavigateToQuiz = () => {
-        setIsOpenModal(false);
-        router.push({
-            pathname: '/(play)/single',
-            params:{
-                quizId: selectedQuiz._id
-            }
-        });
-    };
-
-    const debouncedFetchQuiz = useDebounce(onRefresh,2000);
 
     const handleResetFilter = () => {
         setFilter({
@@ -274,6 +237,40 @@ export default function SearchScreen() {
         setSelectedSubject([]);
     }
 
+    const handleNavigateToQuiz = () => {
+        setIsOpenModal(false);
+        router.push({
+            pathname: '/(play)/single',
+            params:{
+                quizId: selectedQuiz._id
+            }
+        });
+    };
+
+    // END FETCH QUIZ api
+
+
+    // component item for AntiFlatList
+    const ComponentItem = ({data}) => {
+        return <QuizCard
+            quiz_thumb={data.quiz_thumb}
+            quiz_name={data.quiz_name}
+            quiz_turn={data.quiz_turn}
+            createdAt={data.createdAt}
+            question_count={data.question_count}
+            onPress={() => onOpenModal(data)}/>
+    }
+    // end component item for AntiFlatList
+
+
+
+
+
+    // debounced fetch quiz
+    const debouncedFetchQuiz = useDebounce(handleRefresh,2000);
+
+
+    // check loading for first load
     if (isFirstLoad) {
         return (
             <View className={"flex-1 justify-center items-center"}>
@@ -285,7 +282,7 @@ export default function SearchScreen() {
     return (
         <View  className={"px-3 pt-2 bg-white pb-[80px] h-full"}>
             <View className={"flex-row items-center mb-3"}>
-                <TextInput value={filter.key} onBlur={onSearch} onChangeText={(val) => {setFilter((prev)=>{
+                <TextInput value={filter.key} onBlur={handleSearch} onChangeText={(val) => {setFilter((prev)=>{
                     return {
                         ...prev,
                         key:val,
@@ -296,28 +293,8 @@ export default function SearchScreen() {
                 <AntDesign onPress={onOpen} name={"filter"} size={30}/>
             </View>
 
-            {/*check empty list*/}
-            {
-                quizList.length === 0 ? <QuizEmpty/> :(
-                    <FlatList
-                        removeClippedSubviews={true}
-                        keyExtractor={(item, index) => index.toString()}
-                        ListFooterComponent={renderFooter}
-                        onEndReachedThreshold={0.1}
-                        onEndReached={handleLoadMore}
-                        maxToRenderPerBatch={10}
-                        updateCellsBatchingPeriod={50}
-                        initialNumToRender={10}
-                        showsVerticalScrollIndicator={false}
-                        refreshControl={
-                            <RefreshControl
-                                refreshing={isRefreshing}
-                                onRefresh={onRefresh}
-                            />
-                        }
-                        numColumns={2} data={quizList} renderItem={renderItem}/>
-                )
-            }
+            {/*<RecycleTestComponent/>*/}
+            <AntiFlatList colSpan={COL_SPAN} handleRefresh={handleRefresh} isRefreshing={isRefreshing} componentItem={ComponentItem} handleLoadMore={handleLoadMore} loading={loading} data={quizList}/>
 
             <Modalize onClose={onClose} modalStyle={{zIndex:1000,elevation:10,padding:10}} avoidKeyboardLikeIOS={true}  withHandle={false} scrollViewProps={{showsVerticalScrollIndicator: true}} ref={modalizeRef} >
                 <View className={"mb-3"}>
@@ -352,7 +329,6 @@ export default function SearchScreen() {
             {/*    button*/}
                 <CustomButton className={"flex-1"} title={"Đặt lại"} onPress={handleResetFilter}/>
             </Modalize>
-
             <QuizModal
                 visible={isOpenModal}
                 onClose={() => setIsOpenModal(false)}
