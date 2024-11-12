@@ -2,10 +2,10 @@
 import { Images } from "@/constants";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useResultProvider } from "@/contexts/ResultProvider";
-import { useFocusEffect, useRouter } from "expo-router";
+import { router, useFocusEffect, useRouter } from "expo-router";
 import LottieView from "lottie-react-native";
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, Dimensions, FlatList, Image, Alert } from "react-native";
+import { View, Text, Dimensions, FlatList, Image, Alert, Pressable } from "react-native";
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Button from "@/components/customs/Button";
@@ -27,7 +27,6 @@ export default function ActivityScreen() {
     useFocusEffect(
         useCallback(() => {
             fetchResultsForStudent();
-            setIndex(0)
         }, [])
     );
 
@@ -49,7 +48,6 @@ export default function ActivityScreen() {
             const notAccepted = ['doing', 'completed', 'deleted'];
 
             const data = await res.json();
-            console.log(data)
             if (data.statusCode === 200) {
                 if (notAccepted.includes(data.metadata.status)) {
                     Alert.alert('Thông báo', 'Không thể tham gia vào phòng chơi lúc này !!!');
@@ -93,8 +91,8 @@ export default function ActivityScreen() {
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={SceneMap({
-                    doing: () => <DoingResults results={results.doing} />,
-                    completed: () => <CompletedResults results={results.completed} />,
+                    doing: () => <DoingResults resultsDoing={results.doing} />,
+                    completed: () => <CompletedResults resultsCompleted={results.completed} />,
                 })}
                 onIndexChange={setIndex}
                 initialLayout={{ width: Dimensions.get('window').width }}
@@ -111,11 +109,9 @@ export default function ActivityScreen() {
 }
 
 const ResultCompletedItem = ({ result }) => {
-    // Đếm số câu trả lời đúng
     const correctCount = result.result_questions.filter(q => q.correct).length;
     const totalQuestions = result.quiz_id?.questionCount || 0;
 
-    // Tính độ chính xác
     const accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
 
     return (
@@ -127,14 +123,15 @@ const ResultCompletedItem = ({ result }) => {
             />
             <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
                 <FontAwesome6 name="chalkboard-user" color='white' />
-                <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : 'Công khai'}</Text>
+                <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : result.room_id ? 'Phòng' : 'Công khai'}</Text>
+
             </View>
             <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
                 <Text className="text-sm text-slate-50 ml-1">{totalQuestions} Qs</Text>
             </View>
             <View className='px-4 py-2'>
                 <Text className="text-base font-pmedium">
-                    {result.exercise_id?.name}
+                    {result.exercise_id?.name || result.room_id?.room_code}
                 </Text>
                 <Text className="text-xl font-light">
                     {result.quiz_id?.quiz_name}
@@ -161,7 +158,7 @@ const ResultDoingItem = ({ result }) => (
 
         <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
             <FontAwesome6 name="chalkboard-user" color='white' />
-            <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : 'Công khai'}</Text>
+            <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : result.room_id ? 'Phòng' : 'Công khai'}</Text>
         </View>
         <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
             <Text className="text-sm text-slate-50 ml-1">{result.quiz_id?.questionCount} Qs</Text>
@@ -178,14 +175,14 @@ const ResultDoingItem = ({ result }) => (
             </Text>
 
             <Text className="text-sm mt-4 font-light text-center text-slate-50 bg-violet-300 rounded-full px-2">
-                {result.result_questions.length}/{result.quiz_id?.questionCount} câu hỏi
+                {result.result_questions?.length}/{result.quiz_id?.questionCount} câu hỏi
             </Text>
         </View>
     </View>
 );
 
-const CompletedResults = ({ results }) => {
-    if (!results.length) {
+const CompletedResults = ({ resultsCompleted }) => {
+    if (!resultsCompleted || resultsCompleted.length === 0) {
         return <View className='h-full flex items-center justify-center'>
             <LottieView
                 source={require('@/assets/jsons/not-found.json')}
@@ -201,8 +198,17 @@ const CompletedResults = ({ results }) => {
     return (
         <FlatList
             showsVerticalScrollIndicator={false}
-            data={results}
-            renderItem={({ item }) => <ResultCompletedItem result={item} />}
+            data={resultsCompleted}
+            renderItem={({ item }) => (
+                <Pressable onPress={() => {
+                    router.push({
+                        pathname: '(report)/overview_report',
+                        params: { resultId: item._id },
+                    });
+                }}>
+                    <ResultCompletedItem result={item} />
+                </Pressable>
+            )}
             keyExtractor={item => item._id}
             numColumns={2}
             columnWrapperStyle="flex-row justify-between"
@@ -210,8 +216,9 @@ const CompletedResults = ({ results }) => {
     );
 };
 
-const DoingResults = ({ results }) => {
-    if (!results.length) {
+const DoingResults = ({ resultsDoing }) => {
+
+    if (!resultsDoing || resultsDoing.length === 0) {
         return <View className='h-full flex items-center justify-center'>
             <LottieView
                 source={require('@/assets/jsons/not-found.json')}
@@ -224,11 +231,30 @@ const DoingResults = ({ results }) => {
             />
         </View>
     }
+
     return (
         <FlatList
             showsVerticalScrollIndicator={false}
-            data={results}
-            renderItem={({ item }) => <ResultDoingItem result={item} />}
+            data={resultsDoing}
+            renderItem={({ item }) => (
+                <Pressable onPress={() => {
+                    Alert.alert(
+                        "Tiếp tục thực hiện?",
+                        "Bạn có muốn tiếp tục bài kiểm tra này?",
+                        [
+                            { text: "Hủy", style: "cancel" },
+                            { text: "Tiếp tục", onPress: () => {
+                                router.push({
+                                    pathname: '(play)/single',
+                                    params: { quizId, exerciseId, type: 'exercise' },
+                                });
+                            }},
+                        ]
+                    );
+                }}>
+                    <ResultDoingItem result={item} />
+                </Pressable>
+            )}
             keyExtractor={item => item._id}
             numColumns={2}
             columnWrapperStyle="flex-row justify-between"

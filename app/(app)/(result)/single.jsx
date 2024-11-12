@@ -10,7 +10,7 @@ import { Audio } from 'expo-av';
 import { useRouter } from 'expo-router';
 import { useResultProvider } from '@/contexts/ResultProvider';
 
-const ResultSingle = ({ quizId, correctCount, wrongCount, score, totalQuestions, handleRestart, exerciseId }) => {
+const ResultSingle = ({ quizId, correctCount, wrongCount, score, totalQuestions, handleRestart, exerciseId, type }) => {
 
    const { fetchResultData, result } = useResultProvider()
    // const navigation = useNavigation()
@@ -22,8 +22,8 @@ const ResultSingle = ({ quizId, correctCount, wrongCount, score, totalQuestions,
    const router = useRouter();
 
    useEffect(() => {
-      fetchResultData(quizId, exerciseId);
-   }, [userData]);
+      fetchResultData({quizId, exerciseId, type});
+   }, [quizId, exerciseId, type]);
 
 
    const playCompletedSound = async () => {

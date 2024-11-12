@@ -11,8 +11,7 @@ import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import { useResultProvider } from '@/contexts/ResultProvider';
 
 const SinglePlay = () => {
-	const { quizId, exerciseId } = useLocalSearchParams()
-	console.log(quizId, exerciseId)
+	const { quizId, exerciseId, type } = useLocalSearchParams()
 	const { i18n } = useAppProvider();
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 	const [selectedAnswers, setSelectedAnswers] = useState([]);
@@ -30,30 +29,23 @@ const SinglePlay = () => {
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [sound, setSound] = useState(null);
 	const { questions, fetchQuestions, saveQuestionResult } = useQuestionProvider()
-	const { completed, fetchResultData, result } = useResultProvider()
-
-	useFocusEffect(
-		useCallback(() => {
-			fetchResultData(quizId, exerciseId);
-		}, [exerciseId, quizId])
-	)
+	const { completed, result } = useResultProvider()
+	
+	useEffect(()=>{
+		fetchQuestions(quizId);
+	},[quizId])
 
 	useEffect(() => {
-		// Ensure questions are fetched before setting the index
+		console.log(questions);
+		
 		if (questions && questions.length > 0 && result) {
-		  const answeredQuestionsCount = result.result_questions?.length || 0;
-		  const nextIndex = answeredQuestionsCount < questions.length ? answeredQuestionsCount : 0;
-		  setCurrentQuestionIndex(nextIndex);
+			const answeredQuestionsCount = result.result_questions?.length || 0;
+			const nextIndex = answeredQuestionsCount < questions.length ? answeredQuestionsCount : 0;
+			setCurrentQuestionIndex(nextIndex);
+			console.log('có kết quả, tiếp tục câu tiếp theo từ: ' + currentQuestionIndex);
 		}
-	  }, [quizId, result, questions]);
-
-	  useEffect(() => {
-		if (!questions || questions.length === 0) {
-		  fetchQuestions(quizId);
-		}
-	  }, [quizId]);
-	  
-
+		console.log('Không có kq, bắt đầu từ: ' + currentQuestionIndex);		
+	}, [quizId, questions, type]);
 
 
 	const playSound = async (isCorrectAnswer) => {
@@ -183,6 +175,7 @@ const SinglePlay = () => {
 				totalQuestions={questions.length}
 				handleRestart={handleRestart}
 				exerciseId={exerciseId}
+				type={type}
 			/>
 		);
 	}

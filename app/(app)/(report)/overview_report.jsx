@@ -14,6 +14,7 @@ export default function DetailReport() {
     }, [resultId]);
 
     if (!overViewData) return null;
+
     const correctCount = overViewData.result_questions?.filter(q => q.correct)?.length;
     const incorrectCount = overViewData.result_questions?.length - correctCount;
 
@@ -35,10 +36,13 @@ export default function DetailReport() {
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 className='flex-1 p-5' >
+                {
+                    overViewData.result_questions && overViewData.result_questions?.length > 0 &&
                 <View className="flex-row h-6 rounded-full overflow-hidden mb-2">
-                    {/* <View style={{ flex: correctCount / overViewData.result_questions?.length }} className="bg-green-500" />
-                    <View style={{ flex: incorrectCount / overViewData.result_questions?.length }} className="bg-red-500" /> */}
+                    <View style={{ flex: correctCount / overViewData.result_questions?.length }} className="bg-green-500" />
+                    <View style={{ flex: incorrectCount / overViewData.result_questions?.length }} className="bg-red-500" />
                 </View>
+                }
 
                 <View className="flex-row justify-between mb-2">
                     <Text className="text-green-500 font-bold p-1 bg-green-500/20">{`${correctCount} đúng`}</Text>
