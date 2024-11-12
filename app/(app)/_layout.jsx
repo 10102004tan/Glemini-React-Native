@@ -43,23 +43,6 @@ export default function AppRootLayout() {
             }
          );
 
-         socket.on(`notification${userData._id}`, (noti) => {
-            console.log(`TEST`, noti);
-            setNotification((prev) => {
-               return [noti, ...prev];
-            });
-         });
-
-
-
-         socket.on(`${userData._id}`, (noti) => {
-            setNotification((prev) => {
-               return [noti, ...prev];
-            });
-         });
-
-         // expo push notification
-
       }
    }, [userData]);
 

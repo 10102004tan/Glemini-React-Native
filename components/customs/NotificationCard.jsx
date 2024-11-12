@@ -9,7 +9,7 @@ import {SYSTEM_NEW_FEATURE,SYSTEM_MAINTENANCE,ROOM_REALTIME,SHARE_QUIZ_TO_CLASSR
 export default function NotificationCard({type,status,content = "", time, options = {},onPress}) {
     if (type === SYSTEM_MAINTENANCE) {
         return (
-            <TouchableOpacity onPress={onPress}>
+            <TouchableOpacity className={"h-full"} onPress={onPress}>
                 <View className={`px-3 py-4 flex-row justify-between mb-4 rounded shadow-2xl`}
                       style={{flex: 1, borderWidth: 1, borderColor: "000"}}>
                     <View className={"flex gap-3 flex-row"}>
@@ -31,7 +31,7 @@ export default function NotificationCard({type,status,content = "", time, option
         )
     } else if (type === SYSTEM_NEW_FEATURE) {
         return (
-            <TouchableOpacity onPress={onPress}>
+            <TouchableOpacity  onPress={onPress}>
                 <View className={`px-3 py-4 flex-row justify-between mb-4 rounded shadow-2xl}`}
                       style={{flex: 1, borderWidth: 1, borderColor: "000"}}>
                     <View className={"flex gap-3 flex-row"}>

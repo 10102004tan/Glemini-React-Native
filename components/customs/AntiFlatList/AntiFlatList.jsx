@@ -3,6 +3,8 @@ import {View, Text, Dimensions, RefreshControl} from "react-native";
 import {RecyclerListView, DataProvider, LayoutProvider, GridLayoutProvider} from "recyclerlistview";
 import LayoutProviderCustom from "./LayoutProvider";
 import LoadMoreFooter from "@/components/customs/LoadMoreFooter";
+import QuizEmpty from "@/components/customs/QuizEmpty";
+import NotificationEmpty from "@/components/customs/NotificationEmpty";
 
 
 export default class AntiFlatList extends React.Component {
@@ -11,9 +13,9 @@ export default class AntiFlatList extends React.Component {
         this.state = {
             dataProvider: new DataProvider((r1, r2) => {
                 return r1 !== r2;
-            }).cloneWithRows(this.props.data),
-            loading: this.props.loading,
-            refreshing: this.props.isRefreshing,
+            }).cloneWithRows(this.props.data) || [],
+            loading: this.props.loading || false,
+            refreshing: this.props.isRefreshing || false,
         };
 
         this._layoutProvider = new LayoutProviderCustom(this.props.colSpan);
@@ -43,6 +45,9 @@ export default class AntiFlatList extends React.Component {
     }
 
     _rowRenderer(type, data) {
+        if (!this.props.componentItem) {
+            return <View><Text>ComponentItem is required</Text></View>;
+        }
         const ComponentItem = this.props.componentItem;
         return <ComponentItem data={data} />;
     }
@@ -67,13 +72,20 @@ export default class AntiFlatList extends React.Component {
 
 
     render() {
-        return <RecyclerListView
-            scrollViewProps={{
-                refreshControl: (
-                    <RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh} />
-                )
-            }}
-            onEndReachedThreshold={0.5} renderFooter={this._renderFooter} onEndReached={this._onEndReached} layoutProvider={this._layoutProvider} dataProvider={this.state.dataProvider} rowRenderer={this._rowRenderer} />;
+
+        // empty data
+        if (this.state.dataProvider.getSize() === 0) return <NotificationEmpty/>;
+
+        return (
+            <RecyclerListView
+                style={{ minHeight: 1, minWidth: 1 }}
+                scrollViewProps={{
+                    refreshControl: (
+                        <RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh} />
+                    )
+                }}
+                onEndReachedThreshold={0.5} renderFooter={this._renderFooter} onEndReached={this._onEndReached} layoutProvider={this._layoutProvider} dataProvider={this.state.dataProvider} rowRenderer={this._rowRenderer} />
+        )
     }
 }
 
