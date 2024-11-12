@@ -203,7 +203,7 @@ const TeacherHomeScreen = () => {
                />
                <PressAction
                   onPress={() => {
-                     router.push('/(app)/(teacher)/teacher_room_wait_result');
+                     router.push('/(app)/(home)/libraly');
                   }}
                   title={'Thư viện của tôi'}
                   icon={

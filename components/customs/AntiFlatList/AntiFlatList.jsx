@@ -3,6 +3,7 @@ import {View, Text, Dimensions, RefreshControl} from "react-native";
 import {RecyclerListView, DataProvider, LayoutProvider, GridLayoutProvider} from "recyclerlistview";
 import LayoutProviderCustom from "./LayoutProvider";
 import LoadMoreFooter from "@/components/customs/LoadMoreFooter";
+import { min } from "moment";
 
 
 export default class AntiFlatList extends React.Component {
@@ -43,6 +44,9 @@ export default class AntiFlatList extends React.Component {
     }
 
     _rowRenderer(type, data) {
+        if (!this.props.componentItem){
+            return <View style={{height: 1, width: 1}} />;
+        }
         const ComponentItem = this.props.componentItem;
         return <ComponentItem data={data} />;
     }
@@ -68,6 +72,9 @@ export default class AntiFlatList extends React.Component {
 
     render() {
         return <RecyclerListView
+            style={{
+            minHeight:1,minWidth:1
+            }}
             scrollViewProps={{
                 refreshControl: (
                     <RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh} />
