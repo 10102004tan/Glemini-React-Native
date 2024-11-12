@@ -20,6 +20,8 @@ const StudentDetail = () => {
     );
 
     const startQuiz = async (quizId, exerciseId) => {
+        // console.log({quizId, exerciseId, type : 'exercise'});
+        
         const fetchedResult = await fetchResultData({quizId, exerciseId, type : 'exercise'});
         console.log(fetchedResult);
         if (fetchedResult) {

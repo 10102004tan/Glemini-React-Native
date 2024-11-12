@@ -13,7 +13,6 @@ import { useResultProvider } from '@/contexts/ResultProvider';
 const ResultSingle = ({ quizId, correctCount, wrongCount, score, totalQuestions, handleRestart, exerciseId, type }) => {
 
    const { fetchResultData, result } = useResultProvider()
-   // const navigation = useNavigation()
    const { i18n } = useAppProvider()
    const { userData } = useAuthContext()
    const correctPercentage = (correctCount / totalQuestions) * 100;
@@ -76,7 +75,7 @@ const ResultSingle = ({ quizId, correctCount, wrongCount, score, totalQuestions,
             <Button
                text={i18n.t('result.single.buttonPlayNewQuiz')}
                onPress={() => {
-                  router.push('search')
+                  router.push('/(home)/search')
                }}
                type="fill"
                otherStyles={
