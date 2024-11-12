@@ -19,11 +19,7 @@ import QuizModal from "@/components/modals/QuizModal";
 import {router} from "expo-router";
 import CustomButton from "@/components/customs/CustomButton";
 import useDebounce from "@/hooks/useDebounce";
-import ListLoadMore from "@/components/customs/ListLoadMore";
-import LoadMoreFooter from "@/components/customs/LoadMoreFooter";
-import RecycleTestComponent from "@/components/customs/test";
 import AntiFlatList from "@/components/customs/AntiFlatList/AntiFlatList";
-import list from "@/app/(app)/(quiz)/list";
 
 // col span : 4 => full width, 2 => half width
 const COL_SPAN = 2;

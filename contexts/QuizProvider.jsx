@@ -177,7 +177,7 @@ const QuizProvider = ({ children }) => {
             bannerQuizzes,
             getQuizzesBanner,
             fetchQuizzes,
-            quizMessage,
+            
          }}
       >
          {children}
