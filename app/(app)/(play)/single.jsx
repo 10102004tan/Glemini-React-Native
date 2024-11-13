@@ -67,6 +67,11 @@ function gameReducer(state, action) {
 			return { ...state, isCompleted: true };
 		case 'PROCESSING':
 			return { ...state, isProcessing: action.payload };
+		case 'SET_CURRENT_QUESTION_INDEX':
+			return {
+				...state,
+				currentQuestionIndex: action.payload,
+			};
 		default:
 			return state;
 	}
@@ -81,33 +86,36 @@ const SinglePlay = () => {
 	const [state, dispatch] = useReducer(gameReducer, initialState);
 	const [sound, setSound] = useState(null);
 
-	// console.log('id Baif Tap ' + exerciseId);
-	// console.log('id Quiz ' + quizId);
-	// console.log('type ' + type);
 
 
 	useFocusEffect(
 		useCallback(() => {
-			if (quizId !== 'undefined' && type) {
-			fetchResultData({quizId, exerciseId, type});
+			if (quizId !== 'undefined' && type && exerciseId !== 'undefined') {
+				// Fetch result data only if exerciseId is defined
+				fetchResultData({ quizId, exerciseId, type });
+			} else if (quizId !== 'undefined' && type) {
+				// Handle the case where only quizId and type are defined, but not exerciseId
+				fetchResultData({ quizId, type });
 			}
 		}, [exerciseId, quizId, type])
-	)
+	);
+	
 
 	useEffect(() => {
 		fetchQuestions(quizId);
-						
-	}, [quizId]);
-	
-	useEffect(()=> {
-		const answeredQuestionsCount = result.result_questions?.length;
-			// Nếu tất cả câu hỏi đã được trả lời, đặt index lại thành 0
-			const nextIndex = answeredQuestionsCount < questions.length ? answeredQuestionsCount : 0;
-			state.currentQuestionIndex = nextIndex
-			console.log(state.currentQuestionIndex);
-	},[result])
 
+	}, [quizId]);
+
+	useEffect(() => {
+		if (result) {
+			const answeredQuestionsCount = result.result_questions?.length || 0;
+			const nextIndex = answeredQuestionsCount < questions.length ? answeredQuestionsCount : 0;
+			dispatch({ type: 'SET_CURRENT_QUESTION_INDEX', payload: nextIndex });
+		}
+	}, [result, questions]);
 	
+
+
 	// useEffect(() => {
 	//     if (sound) return () => sound.unloadAsync();
 	// }, [sound]);
