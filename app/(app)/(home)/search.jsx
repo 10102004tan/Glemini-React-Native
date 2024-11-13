@@ -164,7 +164,6 @@ export default function SearchScreen() {
                     skip:prev.skip + LIMIT
                 }
             });
-            console.log("handleLoadMore::",filter.skip);
         }
    }
 
@@ -242,9 +241,6 @@ export default function SearchScreen() {
         });
     };
 
-    // END FETCH QUIZ api
-
-
     // component item for AntiFlatList
     const ComponentItem = ({data}) => {
         return <QuizCard
@@ -253,6 +249,8 @@ export default function SearchScreen() {
             quiz_turn={data.quiz_turn}
             createdAt={data.createdAt}
             question_count={data.question_count}
+            user_avatar={data.user_avatar}
+            user_fullname={data.user_fullname}
             onPress={() => onOpenModal(data)}/>
     }
     // end component item for AntiFlatList
@@ -275,7 +273,7 @@ export default function SearchScreen() {
     }
 
     return (
-        <View  className={"px-3 pt-2 bg-white pb-[80px] h-full"}>
+        <View  className={"px-3 pt-2 pb-[80px] h-full"}>
             <View className={"flex-row items-center mb-3"}>
                 <TextInput value={filter.key} onBlur={handleSearch} onChangeText={(val) => {setFilter((prev)=>{
                     return {

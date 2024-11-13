@@ -9,6 +9,7 @@ import {registerForPushNotificationsAsync} from "@/helpers/notification";
 import socket from "@/utils/socket";
 import {useAppProvider} from "@/contexts/AppProvider";
 
+const LIMIT_NOTIFICATION = 8;
 export const AuthContext = createContext();
 export const AuthProvider = ({children}) => {
     const [isLoading, setIsLoading] = useState(true);
@@ -17,7 +18,8 @@ export const AuthProvider = ({children}) => {
     const [expoPushToken, setExpoPushToken] = useState(null);
     const [notification, setNotification] = useState([]);
     const [numberOfUnreadNoti, setNumberOfUnreadNoti] = useState(0);
-    const [skip, setSkip] = useState(0);
+    const [skipNotification, setSkipNotification] = useState(0);
+
     const {socket} = useAppProvider();
 
     useEffect(() => {
@@ -33,35 +35,35 @@ export const AuthProvider = ({children}) => {
 
     // fix bug notification
     useEffect(() => {
-        if (userData){
-            fetchNotification({skip:0}).then(() => {
-            });
-
+        if (userData) {
+            fetchNotification({skip:skipNotification,limit:LIMIT_NOTIFICATION});
             // socket
-            // socket.emit('init', userData._id);
             socket.emit('init', userData._id);
-
-            // socket notification
-            socket.on('notification', (noti) => {
-                setNotification((prev) => {
-                    return [noti, ...prev];
-                });
-                setNumberOfUnreadNoti((prev) => {
-                    return prev + 1;
-                });
-            });
-
-            socket.on("connect", () => {
-                console.log("Socket connected");
-                socket.emit('init', userData._id);
-            });
-
-            socket.on("disconnect", () => {
-                console.log("Socket disconnected");
-            });
-
         }
-    }, [userData]);
+    }, [userData,skipNotification]);
+
+
+    useEffect(() => {
+        // socket notification
+        socket.on('notification', (noti) => {
+            setNotification((prev) => {
+                return [noti, ...prev];
+            });
+            setNumberOfUnreadNoti((prev) => {
+                return prev + 1;
+            });
+        });
+
+        socket.on("connect", () => {
+            console.log("Socket connected");
+            socket.emit('init', userData._id);
+        });
+
+        socket.on("disconnect", () => {
+            console.log("Socket disconnected");
+        });
+
+    }, []);
 
     // fetch access token from local storage
     const fetchAccessToken = async () => {
@@ -150,7 +152,7 @@ export const AuthProvider = ({children}) => {
             setTeacherStatus(null);
             setNotification([]);
             setNumberOfUnreadNoti(0);
-            setSkip(0);
+            setSkipNotification(0);
         } else {
             if (data.message === "expired") {
                 await processAccessTokenExpired();
@@ -160,7 +162,7 @@ export const AuthProvider = ({children}) => {
                 setTeacherStatus(null);
                 setNotification([]);
                 setNumberOfUnreadNoti(0);
-                setSkip(0);
+                setSkipNotification(0);
             }
         }
     };
@@ -412,7 +414,6 @@ export const AuthProvider = ({children}) => {
      * @returns {Promise<number>}
      */
     const fetchNotification = async ({skip=0,limit=10}) => {
-        console.log("test::notif")
         const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`, {
             method: 'POST',
             headers: {
@@ -426,17 +427,19 @@ export const AuthProvider = ({children}) => {
         if (data.statusCode === 200) {
             const {totalUnread, listNoti} = data.metadata;
             setNumberOfUnreadNoti(totalUnread);
-            if (listNoti.length === 11) {
-                listNoti.pop();
+            if (listNoti.length === 0) return;
+            if (skip === 0) {
+                setNotification(listNoti);
+            }else{
                 setNotification((prev) => {
                     return [...prev, ...listNoti];
                 });
-            } else if (listNoti.length < 11) {
-                setNotification((prev) => {
-                    return [...prev, ...listNoti];
-                });
-                return -1;
             }
+        }
+        else{
+            setSkipNotification((prev) => {
+                return prev - 10;
+            });
         }
     }
 
@@ -484,8 +487,8 @@ export const AuthProvider = ({children}) => {
                 updateNotificationStatus,
                 numberOfUnreadNoti,
                 setNumberOfUnreadNoti,
-                skip,
-                setSkip
+                skipNotification,
+                setSkipNotification,
             }}
         >
             {children}

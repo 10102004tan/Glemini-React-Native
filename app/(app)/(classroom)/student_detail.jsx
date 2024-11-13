@@ -11,7 +11,7 @@ import { useResultProvider } from '@/contexts/ResultProvider';
 const StudentDetail = () => {
     const { classroomId } = useLocalSearchParams();
     const { classroom, fetchClassroom } = useClassroomProvider();
-    const { fetchResultData, result } = useResultProvider()
+    const { fetchResultData } = useResultProvider()
 
     useFocusEffect(
         useCallback(() => {
@@ -20,7 +20,10 @@ const StudentDetail = () => {
     );
 
     const startQuiz = async (quizId, exerciseId) => {
-        const fetchedResult = await fetchResultData(quizId, exerciseId);
+        // console.log({quizId, exerciseId, type : 'exercise'});
+        
+        const fetchedResult = await fetchResultData({quizId, exerciseId, type : 'exercise'});
+        console.log(fetchedResult);
         if (fetchedResult) {
             router.push({
                 pathname: '/(home)/activity',
@@ -28,11 +31,11 @@ const StudentDetail = () => {
         } else {
             router.push({
                 pathname: '(play)/single',
-                params: { quizId, exerciseId },
+                params: { quizId, exerciseId, type: 'exercise' },
             });
         }
     };
-    
+
 
 
     return (
