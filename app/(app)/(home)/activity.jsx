@@ -246,7 +246,7 @@ const DoingResults = ({ resultsDoing }) => {
                             { text: "Tiếp tục", onPress: () => {
                                 router.push({
                                     pathname: '(play)/single',
-                                    params: { quizId: item.quiz_id._id, exerciseId: item.exercies_id, type: item.type },
+                                    params: { quizId: item.quiz_id._id, exerciseId: item.exercise_id._id, type: item.type },
                                 });
                             }},
                         ]
