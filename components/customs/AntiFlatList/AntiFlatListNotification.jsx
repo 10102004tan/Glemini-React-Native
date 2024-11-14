@@ -5,10 +5,12 @@ import LayoutProviderCustom from "./LayoutProvider";
 import LoadMoreFooter from "@/components/customs/LoadMoreFooter";
 import QuizEmpty from "@/components/customs/QuizEmpty";
 import NotificationEmpty from "@/components/customs/NotificationEmpty";
+import QuizItem from "@/components/customs/QuizItem";
 
 
 
-export default class AntiFlatList extends React.Component {
+
+export default class AntiFlatListNotification extends React.Component {
     constructor(args) {
         super(args);
         this.state = {
@@ -19,7 +21,39 @@ export default class AntiFlatList extends React.Component {
             refreshing: this.props.isRefreshing || false,
         };
 
-        this._layoutProvider = new LayoutProviderCustom(this.props.colSpan);
+        this._layoutProvider = new LayoutProvider(index => {
+            return this.state.dataProvider.getDataForIndex(index).noti_type;
+        }, (type, dim) => {
+            switch (type) {
+                case "ROOM-001":
+                    dim.width = Dimensions.get("window").width;
+                    dim.height = 200;
+                    break;
+                case "SYS-001":
+                    dim.width = Dimensions.get("window").width;
+                    dim.height = 100;
+                    break;
+                case "SYS-002":
+                    dim.width = Dimensions.get("window").width;
+                    dim.height = 100;
+                    break;
+                case "SHARE-001":
+                    dim.width = Dimensions.get("window").width;
+                    dim.height = 150;
+                    break;
+                case "SHARE-002":
+                    dim.width = Dimensions.get("window").width;
+                    dim.height = 100;
+                    break;
+                case "CLASSROOM-001":
+                    dim.width = Dimensions.get("window").width;
+                    dim.height = 100;
+                    break;
+                default:
+                    dim.width = 0;
+                    dim.height = 0;
+            }
+        });
 
         this._rowRenderer = this._rowRenderer.bind(this);
 
@@ -46,11 +80,13 @@ export default class AntiFlatList extends React.Component {
     }
 
     _rowRenderer(type, data) {
-        if (!this.props.componentItem) {
-            return <View><Text>ComponentItem is required</Text></View>;
+       //
+        if (!this.props.componentItem){
+            return <View><Text>ComponentItem is required</Text></View>
         }
+
         const ComponentItem = this.props.componentItem;
-        return <ComponentItem data={data} />;
+        return <ComponentItem data={data}/>
     }
 
     _renderFooter = () => {
@@ -79,7 +115,10 @@ export default class AntiFlatList extends React.Component {
 
         return (
             <RecyclerListView
-                style={{ minHeight: 1, minWidth: 1 }}
+                style={{ minWidth: 1,
+                    minHeight: 1,
+                    height: "100%",
+                }}
                 scrollViewProps={{
                     refreshControl: (
                         <RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh} />

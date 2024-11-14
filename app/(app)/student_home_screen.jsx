@@ -65,12 +65,12 @@ const StudentHomeScreen = () => {
 
 	return (
 		<View className='flex-1 pt-10'>
+			<View className={"flex-row justify-end"}>
+				<NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti} color={"black"} />
+			</View>
 			<ScrollView
 				showsVerticalScrollIndicator={false}
 				className='mb-20'>
-				<View className={"flex-row justify-end"}>
-					<NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti} color={"black"} />
-				</View>
 				<View className={bannerQuizzes.length > 0 ? `flex h-[${carouselHeight}px]` : `hidden`}>
 					<Carousel
 						loop
