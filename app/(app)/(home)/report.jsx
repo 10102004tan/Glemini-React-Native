@@ -91,6 +91,7 @@ export default function ReportScreen() {
         setSortOrder("newest");
         setPage(1);
         loadResults(1);
+        setHasMoreData(true);
     };
 
     if (teacherStatus === 'pending' || teacherStatus === 'rejected') {
