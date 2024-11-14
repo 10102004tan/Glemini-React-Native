@@ -5,9 +5,12 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import CustomButton from "@/components/customs/CustomButton";
 import {LinearGradient} from "expo-linear-gradient";
 import {SYSTEM_NEW_FEATURE,SYSTEM_MAINTENANCE,ROOM_REALTIME,SHARE_QUIZ_TO_CLASSROOM,SHARE_QUIZ_TO_TEACHER} from "../../utils/notificationCode";
-
+import {convertMarkdownToText} from "@/utils";
+const COUNT_LENGTH = 30;
 export default function NotificationCard({type,status,content = "", time, options = {},onPress}) {
     if (type === SYSTEM_MAINTENANCE) {
+        const clearMarkdown = convertMarkdownToText(content);
+        const newContent = clearMarkdown.length > COUNT_LENGTH ? clearMarkdown.substring(0, COUNT_LENGTH) + "..." : clearMarkdown;
         return (
             <TouchableOpacity className={"h-full"} onPress={onPress}>
                 <View className={`px-3 py-4 flex-row justify-between mb-4 rounded shadow-2xl`}
@@ -19,7 +22,7 @@ export default function NotificationCard({type,status,content = "", time, option
                         </View>
                         <View className={"max-w-[200px]"}>
                             <Text className={"text-[14px] font-semibold mb-2"}>Glemini System</Text>
-                            <Text className={"text-[12px] text-gray"}>{content}</Text>
+                            <Text className={"text-[12px] text-gray"}>{newContent}</Text>
                         </View>
                     </View>
                     <View>
@@ -30,6 +33,8 @@ export default function NotificationCard({type,status,content = "", time, option
 
         )
     } else if (type === SYSTEM_NEW_FEATURE) {
+        const clearMarkdown = convertMarkdownToText(content);
+        const newContent = clearMarkdown.length > COUNT_LENGTH ? clearMarkdown.substring(0, COUNT_LENGTH) + "..." : clearMarkdown;
         return (
             <TouchableOpacity  className={"h-full"} onPress={onPress}>
                 <View className={`px-3 py-4 flex-row justify-between mb-4 rounded shadow-2xl}`}
@@ -41,7 +46,7 @@ export default function NotificationCard({type,status,content = "", time, option
                         </View>
                         <View className={"max-w-[200px]"}>
                             <Text className={"text-[14px] font-semibold mb-2"}>Glemini System</Text>
-                            <Text className={"text-[12px] text-gray"}>{content}</Text></View>
+                            <Text className={"text-[12px] text-gray"}>{newContent}</Text></View>
                     </View>
                     <View>
                         <Text className={"text-gray text-[10px] mb-2"}>{moment(time).fromNow()}</Text>
@@ -132,9 +137,40 @@ export default function NotificationCard({type,status,content = "", time, option
         return (
             <TouchableOpacity style={{flex:1,borderWidth: 2, borderColor: "#eee",borderRadius:8}} className={"h-full shadow px-1 py-2 mb-4"} onPress={onPress}>
                 <View className={"flex-row gap-2"}>
-                    <Image className={"w-[60px] h-[60px] rounded object-contain"} src={(avatar ? avatar : "https://lh5.googleusercontent.com/lLt4Zbk57a765Y9_muPKLKg-HoWjgGaAT8r30rfvEgIlskak4du77TmkfGB-t6a6SHPebQnGJshYPf77R00yIk1bDt9WuWLhZRjEBLUsODHXt6kxCVDynuyrTiHd2d-Bdg=w1280")}/>
+                    <Image className={"w-[60px] h-[60px] rounded object-contain"} source={require("../../assets/images/google-classroom.png")}/>
                     <View>
-                        <Text>{`Ban da duoc them vao lop ${classroom_name} ...`}</Text>
+                        <Text>{`Bạn đã được tham gia vào lớp ${classroom_name}`}</Text>
+                        <Text className={"text-black text-[10px]"}>{moment(time).fromNow()}</Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+    else if (type === "CLASSROOM-002"){
+        const {classroom_name,classroom_id,exercise_name,exercise_id} = options;
+        return (
+            <TouchableOpacity style={{flex:1,borderWidth: 2, borderColor: "#eee",borderRadius:8}} className={"h-full shadow px-1 py-2 mb-4"} onPress={onPress}>
+                <View className={"flex-row gap-2"}>
+                    <Image className={"w-[60px] h-[60px] rounded object-contain"} source={require("../../assets/images/share-icon.jpg")}/>
+                    <View className={"flex-1"}>
+                        <Text>{`Bạn được giao bài tập ${exercise_name} trong lớp ${classroom_name}`}</Text>
+                        <Text className={"text-black text-[10px]"}>{moment(time).fromNow()}</Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+    else if (type === "SYS-003"){
+        const {logo_status} = options;
+        return (
+            <TouchableOpacity style={{flex:1,borderWidth: 2, borderColor: "#eee",borderRadius:8}} className={"h-full shadow px-1 py-2 mb-4"} onPress={onPress}>
+                <View className={"flex-row gap-2"}>
+                    <View>
+                        <Image className={"w-[60px] h-[60px] rounded object-contain"} src={logo_status}/>
+                        {status ==="unread" && <View className={"w-[10px] absolute top-2 left-3 h-[10px] pb-2 rounded-full bg-red-600 "}></View>}
+                    </View>
+                    <View className={"flex-1"}>
+                        <Text>{content}</Text>
                         <Text className={"text-black text-[10px]"}>{moment(time).fromNow()}</Text>
                     </View>
                 </View>

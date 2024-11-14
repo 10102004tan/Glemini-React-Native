@@ -49,6 +49,14 @@ export default class AntiFlatListNotification extends React.Component {
                     dim.width = Dimensions.get("window").width;
                     dim.height = 100;
                     break;
+                    case "CLASSROOM-002":
+                    dim.width = Dimensions.get("window").width;
+                    dim.height = 100;
+                    break;
+                    case "SYS-003":
+                    dim.width = Dimensions.get("window").width;
+                    dim.height = 100;
+                    break;
                 default:
                     dim.width = 0;
                     dim.height = 0;
