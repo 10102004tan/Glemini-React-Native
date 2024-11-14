@@ -6,13 +6,13 @@ import CustomButton from "@/components/customs/CustomButton";
 import {LinearGradient} from "expo-linear-gradient";
 import {SYSTEM_NEW_FEATURE,SYSTEM_MAINTENANCE,ROOM_REALTIME,SHARE_QUIZ_TO_CLASSROOM,SHARE_QUIZ_TO_TEACHER} from "../../utils/notificationCode";
 import {convertMarkdownToText} from "@/utils";
-const COUNT_LENGTH = 30;
+const COUNT_LENGTH = 25;
 export default function NotificationCard({type,status,content = "", time, options = {},onPress}) {
     if (type === SYSTEM_MAINTENANCE) {
         const clearMarkdown = convertMarkdownToText(content);
         const newContent = clearMarkdown.length > COUNT_LENGTH ? clearMarkdown.substring(0, COUNT_LENGTH) + "..." : clearMarkdown;
         return (
-            <TouchableOpacity className={"h-full"} onPress={onPress}>
+            <TouchableOpacity className={"h-[100px]"} onPress={onPress}>
                 <View className={`px-3 py-4 flex-row justify-between mb-4 rounded shadow-2xl`}
                       style={{flex: 1, borderWidth: 1, borderColor: "000"}}>
                     <View className={"flex gap-3 flex-row"}>
@@ -36,7 +36,7 @@ export default function NotificationCard({type,status,content = "", time, option
         const clearMarkdown = convertMarkdownToText(content);
         const newContent = clearMarkdown.length > COUNT_LENGTH ? clearMarkdown.substring(0, COUNT_LENGTH) + "..." : clearMarkdown;
         return (
-            <TouchableOpacity  className={"h-full"} onPress={onPress}>
+            <TouchableOpacity  className={"h-[100px]"} onPress={onPress}>
                 <View className={`px-3 py-4 flex-row justify-between mb-4 rounded shadow-2xl}`}
                       style={{flex: 1, borderWidth: 1, borderColor: "000"}}>
                     <View className={"flex gap-3 flex-row"}>
@@ -135,9 +135,13 @@ export default function NotificationCard({type,status,content = "", time, option
     else if (type === "CLASSROOM-001"){
         const {avatar,classroom_name,classroom_id} = options;
         return (
-            <TouchableOpacity style={{flex:1,borderWidth: 2, borderColor: "#eee",borderRadius:8}} className={"h-full shadow px-1 py-2 mb-4"} onPress={onPress}>
+            <TouchableOpacity style={{flex:1,borderWidth: 2, borderColor: "#eee",borderRadius:8}} className={"h-[100px] shadow px-1 py-2 mb-4"} onPress={onPress}>
                 <View className={"flex-row gap-2"}>
-                    <Image className={"w-[60px] h-[60px] rounded object-contain"} source={require("../../assets/images/google-classroom.png")}/>
+                    <View>
+                        <Image className={"w-[60px] h-[60px] rounded object-contain"} source={require("../../assets/images/google-classroom.png")}/>
+                        {status ==="unread" && <View className={"w-[10px] absolute top-0 left-1 h-[10px] pb-2 rounded-full bg-red-600 "}></View>}
+                    </View>
+
                     <View>
                         <Text>{`Bạn đã được tham gia vào lớp ${classroom_name}`}</Text>
                         <Text className={"text-black text-[10px]"}>{moment(time).fromNow()}</Text>
@@ -149,9 +153,12 @@ export default function NotificationCard({type,status,content = "", time, option
     else if (type === "CLASSROOM-002"){
         const {classroom_name,classroom_id,exercise_name,exercise_id} = options;
         return (
-            <TouchableOpacity style={{flex:1,borderWidth: 2, borderColor: "#eee",borderRadius:8}} className={"h-full shadow px-1 py-2 mb-4"} onPress={onPress}>
+            <TouchableOpacity style={{flex:1,borderWidth: 2, borderColor: "#eee",borderRadius:8}} className={"h-[100px] shadow px-1 py-2 mb-4"} onPress={onPress}>
                 <View className={"flex-row gap-2"}>
-                    <Image className={"w-[60px] h-[60px] rounded object-contain"} source={require("../../assets/images/share-icon.jpg")}/>
+                    <View>
+                        <Image className={"w-[60px] h-[60px] rounded object-contain"} source={require("../../assets/images/share-icon.jpg")}/>
+                        {status ==="unread" && <View className={"w-[10px] absolute top-2 left-3 h-[10px] pb-2 rounded-full bg-red-600 "}></View>}
+                    </View>
                     <View className={"flex-1"}>
                         <Text>{`Bạn được giao bài tập ${exercise_name} trong lớp ${classroom_name}`}</Text>
                         <Text className={"text-black text-[10px]"}>{moment(time).fromNow()}</Text>
