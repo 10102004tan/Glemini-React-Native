@@ -12,6 +12,7 @@ import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config'
 import * as Clipboard from 'expo-clipboard';
 import { AppState } from 'react-native';
 import { BackHandler } from 'react-native';
+import { useIsFocused } from '@react-navigation/native'
 const TeacherRoomWaitScreen = () => {
    const router = useRouter();
    const [joinedUsers, setJoinedUsers] = useState([]);
@@ -90,12 +91,20 @@ const TeacherRoomWaitScreen = () => {
       };
    }, []);
 
-   // Lắng nghe sự kiện khi người dùng muốn thoát ra
+   const isFocused = useIsFocused();
+
    useEffect(() => {
+      if (!isFocused) return; // Chỉ lắng nghe khi màn hình được hiển thị
+
       const backAction = () => {
          Alert.alert('Cảnh báo', 'Bạn có chắc chắn muốn thoát khỏi phòng chơi không?', [
             { text: 'Hủy', onPress: () => null, style: 'cancel' },
-            { text: 'Thoát', onPress: () => BackHandler.exitApp() },
+            {
+               text: 'Thoát', onPress: () => {
+                  socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
+                  router.back({ pathname: '/(app)/(home)', params: {} })
+               }
+            },
          ]);
          return true; // Chặn hành động mặc định
       };
@@ -105,7 +114,7 @@ const TeacherRoomWaitScreen = () => {
       return () => {
          backHandler.remove();
       };
-   }, []);
+   }, [isFocused]);
 
    // Lắng nghe sự kiện khi bắt đầu phòng chơi
    useEffect(() => {
