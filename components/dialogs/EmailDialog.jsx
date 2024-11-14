@@ -4,10 +4,10 @@ import Button from "@/components/customs/Button";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 import { useAuthContext } from "@/contexts/AuthContext";
 
-const EmailDialog = ({ visible, onClose, quiz_id, isEdit, setIsEdit }) => {
+const EmailDialog = ({ visible, onClose, quiz_id }) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-
+  const [isEdit, setIsEdit] = useState(false);
   const { userData } = useAuthContext();
 
   useEffect(() => {
@@ -90,7 +90,7 @@ const EmailDialog = ({ visible, onClose, quiz_id, isEdit, setIsEdit }) => {
             <View className="flex-row items-center my-2 ml-6">
               <Text>Không</Text>
               <Switch
-                value={isEdit} // Đổi thành isEdit
+                value={isEdit}
                 onValueChange={setIsEdit}
                 thumbColor={isEdit ? "#f15454" : "#f4f3f4"}
                 trackColor={{ false: "#767577", true: "#81b0ff" }}
