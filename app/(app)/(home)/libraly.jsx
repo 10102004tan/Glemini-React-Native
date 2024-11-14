@@ -180,6 +180,7 @@ const Library = () => {
       setSharedQuizzes(sharedQuizzes.filter((quiz) => quiz._id !== quiz_id));
     }
   };
+
   const handleDeleteQuizShared = (quiz_id) => {
     Alert.alert(
       "Xác nhận xóa",
@@ -196,9 +197,7 @@ const Library = () => {
   };
 
   useEffect(() => {
-    if (activeTab === "collection") {
-      getAllCollections();
-    }
+    getAllCollections();
   }, [activeTab]);
 
   // skip useEffect for quizzes shared
