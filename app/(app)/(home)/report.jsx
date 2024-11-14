@@ -90,8 +90,8 @@ export default function ReportScreen() {
         setTypeFilter("");
         setSortOrder("newest");
         setPage(1);
-        loadResults(1);
         setHasMoreData(true);
+        loadResults(1);
     };
 
     if (teacherStatus === 'pending' || teacherStatus === 'rejected') {
