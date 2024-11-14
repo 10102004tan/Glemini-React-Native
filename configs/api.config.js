@@ -116,9 +116,24 @@ const dev = {
 		ROOM_UPDATE_RESULT: '/result/update-result',
 		ROOM_UPDATE_STATUS: '/room/update',
 
-		// exercise
-		EXERCISE_REPORT: '/exercise/report',
-	},
+    //user
+    SHARE_QUIZ: "/user/share-quiz",
+    CHECK_EDIT_QUIZ: "/user/check-edit-quiz",
+
+    // Room
+    ROOM_CREATE: "/room/create",
+    ROOM_LIST: "/room/list",
+    ROOM_DETAIL: "/room/detail",
+    ROOM_REPORT: "/room/report",
+
+    // Use for realtime play
+    ROOM_GET_RESULTS: "/result/get-results",
+    ROOM_UPDATE_RESULT: "/result/update-result",
+    ROOM_UPDATE_STATUS: "/room/update",
+
+    // exercise
+    EXERCISE_REPORT: "/exercise/report",
+  },
 };
 
 const prod = {
