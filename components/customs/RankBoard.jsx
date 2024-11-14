@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Animated, Image, StyleSheet, ScrollView } from 'react-native';
 
-const RankBoard = ({ users = [], visible = false, currentUser = {} }) => {
+const RankBoard = ({ users = [], visible = false, currentUser = {}, createdUser = '' }) => {
    const [opacity] = useState(new Animated.Value(0)); // Điều chỉnh độ mờ
    const [translateY] = useState(new Animated.Value(20)); // Điều chỉnh vị trí Y (có thể dịch chuyển từ dưới lên)
 
@@ -53,20 +53,22 @@ const RankBoard = ({ users = [], visible = false, currentUser = {} }) => {
       >
          <Text className="p-4 bg-green-500 text-white mb-5 rounded-2xl">Bảng xếp hạng</Text>
          <ScrollView className="max-h-[400px]" showsVerticalScrollIndicator={false}>
-            {users.length > 0 &&
-               users.map((user, index) => (
-                  <View
-                     style={styles.rankItem}
-                     key={user._id}
-                     className={`${currentUser && currentUser._id === user._id && 'bg-green-200'} p-2 rounded-2xl`}
-                  >
-                     <Image source={{ uri: user.user_avatar }} style={styles.avatar} />
-                     <View style={styles.rankTextContainer}>
-                        <Text style={styles.rankText}>{index + 1}. {user.user_fullname}</Text>
-                        <Text style={styles.scoreText}>{user.score} points</Text>
+            {users.rank && users.rank.length > 0 &&
+               users.rank.map((rank, index) => {
+                  if (rank.user_id._id !== createdUser) {
+                     return <View
+                        style={styles.rankItem}
+                        key={index}
+                        className={`${currentUser && currentUser._id === rank.user_id._id && 'bg-green-200'} p-2 rounded-2xl`}
+                     >
+                        <Image source={{ uri: rank.user_id.user_avatar }} style={styles.avatar} />
+                        <View style={styles.rankTextContainer}>
+                           <Text style={styles.rankText}>{rank.user_id.user_fullname}</Text>
+                           <Text style={styles.scoreText}>{rank.userScore} Điểm</Text>
+                        </View>
                      </View>
-                  </View>
-               ))}
+                  }
+               })}
          </ScrollView>
       </Animated.View>
    );

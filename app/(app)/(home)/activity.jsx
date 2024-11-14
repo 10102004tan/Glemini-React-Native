@@ -2,10 +2,10 @@
 import { Images } from "@/constants";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useResultProvider } from "@/contexts/ResultProvider";
-import { router, useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import LottieView from "lottie-react-native";
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, Dimensions, FlatList, Image, Alert, Pressable } from "react-native";
+import { View, Text, Dimensions, FlatList, Image, Alert } from "react-native";
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Button from "@/components/customs/Button";
@@ -13,262 +13,320 @@ import Field from "@/components/customs/Field";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 import { useRoomProvider } from "@/contexts/RoomProvider";
 import socket from "@/utils/socket";
-import { truncateDescription } from "@/utils";
+import { Pressable } from "react-native";
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 16;
 
 export default function ActivityScreen() {
-    const { results, fetchResultsForStudent } = useResultProvider();
-    const [roomCode, setRoomCode] = useState(null);
-    const [roomTemp, setRoomTemp] = useState(null);
-    const router = useRouter();
-    const { userData } = useAuthContext();
-    const { currentRoom, setCurrentRoom } = useRoomProvider();
+   const { results, fetchResultsForStudent } = useResultProvider();
+   const [roomCode, setRoomCode] = useState(null);
+   const [roomTemp, setRoomTemp] = useState(null);
+   const { userData } = useAuthContext();
+   const { setCurrentRoom } = useRoomProvider();
+   const router = useRouter();
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchResultsForStudent();
-        }, [])
-    );
+   useFocusEffect(
+      useCallback(() => {
+         fetchResultsForStudent();
+         setIndex(0)
+      }, [])
+   );
 
-    useEffect(() => {
-        console.log("RUNNING")
-        const checkRoom = async () => {
-            const res = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_DETAIL}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-client-id': userData._id,
-                    authorization: userData.accessToken,
-                },
-                body: JSON.stringify({
-                    room_code: roomTemp,
-                }),
-            })
+   useEffect(() => {
+      const checkRoom = async () => {
+         const res = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_DETAIL}`, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+               'x-client-id': userData._id,
+               authorization: userData.accessToken,
+            },
+            body: JSON.stringify({
+               room_code: roomTemp,
+            }),
+         })
 
-            const notAccepted = ['doing', 'completed', 'deleted'];
+         const notAccepted = ['completed', 'deleted'];
 
-            const data = await res.json();
-            if (data.statusCode === 200) {
-                if (notAccepted.includes(data.metadata.status)) {
-                    Alert.alert('Thông báo', 'Không thể tham gia vào phòng chơi lúc này !!!');
-                } else {
-                    setCurrentRoom(data.metadata._id);
-                    socket.emit('joinRoom', { roomCode, user: userData });
-                    router.replace({
-                        pathname: '/(app)/(teacher)/teacher_room_wait',
-                        params: { roomCode: roomTemp }
-                    });
-                }
-                setRoomTemp(null);
+         const data = await res.json();
+         if (data.statusCode === 200) {
+            if (notAccepted.includes(data.metadata.status)) {
+               Alert.alert('Thông báo', 'Không thể tham gia vào phòng chơi lúc này !!!');
+            } else if (data.metadata.status === 'doing') {
+               const res = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_CHECK_USER}`, {
+                  method: 'POST',
+                  headers: {
+                     'Content-Type': 'application/json',
+                     'x-client-id': userData._id,
+                     authorization: userData.accessToken,
+                  },
+                  body: JSON.stringify({
+                     room_code: roomTemp,
+                     user_id: userData._id
+                  }),
+               });
+
+               const dt = await res.json();
+               if (dt.statusCode === 200 && dt.metadata) {
+                  setCurrentRoom(data.metadata._id);
+                  socket.emit('joinRoom', { roomCode, user: userData });
+                  // Người dùng đang chơi bị out, khi join lại chuyển thẳng tới màn hình chơi
+
+                  router.replace({
+                     pathname: '/(play)/realtime',
+                     params:
+                     {
+                        roomCode: data.metadata.room_code, quizId: data.metadata.quiz_id, roomId: data.metadata._id, createdUserId: data.metadata.user_created_id
+                     }
+                  });
+               } else {
+                  Alert.alert('Thông báo', 'Bạn đã hoàn thành phòng chơi này !!!');
+               }
             } else {
-                Alert.alert('Thông báo', 'Mã phòng không tồn tại');
+
+               try {
+                  // Xóa kết quả cũ nếu có
+                  const responseDeleteOldResult = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_RESET}`, {
+                     method: 'POST',
+                     headers: {
+                        'Content-Type': 'application/json',
+                        'x-client-id': userData._id,
+                        authorization: userData.accessToken,
+                     },
+                     body: JSON.stringify({
+                        room_id: data.metadata._id,
+                        user_id: userData._id,
+                     }),
+                  });
+               } catch (error) {
+                  console.log(error)
+               } finally {
+                  setCurrentRoom(data.metadata._id);
+                  socket.emit('joinRoom', { roomCode, user: userData });
+                  router.replace({
+                     pathname: '/(app)/(teacher)/teacher_room_wait',
+                     params: { roomCode: roomTemp }
+                  });
+               }
             }
-        }
+            setRoomTemp(null);
+         } else {
+            Alert.alert('Thông báo', 'Mã phòng không tồn tại');
+         }
+      }
 
-        if (roomTemp) {
-            checkRoom()
-        }
-    }, [roomTemp])
+      if (roomTemp) {
+         checkRoom()
+      }
+   }, [roomTemp])
 
-    const [index, setIndex] = useState(0);
-    const [routes] = useState([
-        { key: 'doing', title: 'Đang thực hiện' },
-        { key: 'completed', title: 'Đã hoàn thành' },
-    ]);
+   const [index, setIndex] = useState(0);
+   const [routes] = useState([
+      { key: 'doing', title: 'Đang thực hiện' },
+      { key: 'completed', title: 'Đã hoàn thành' },
+   ]);
 
-    return (
-        <View className="flex-1 mb-20 bg-slate-50">
-            <View className="p-4">
-                <Field placeholder="Mã phòng" wrapperStyles="mb-3" value={roomCode} onChange={(text) => {
-                    setRoomCode(text);
-                }} />
+   return (
+      <View className="flex-1 mb-20 bg-slate-50">
+         <View className="p-4">
+            <Field placeholder="Mã phòng" wrapperStyles="mb-3" value={roomCode} onChange={(text) => {
+               setRoomCode(text);
+            }} />
 
-                <Button text='JOIN' otherStyles='p-4' onPress={() => {
-                    setRoomTemp(roomCode);
-                }} />
-            </View>
+            <Button text='JOIN' otherStyles='p-4' onPress={() => {
+               setRoomTemp(roomCode);
+            }} />
+         </View>
 
-            <TabView
-                navigationState={{ index, routes }}
-                renderScene={SceneMap({
-                    doing: () => <DoingResults resultsDoing={results.doing} />,
-                    completed: () => <CompletedResults resultsCompleted={results.completed} />,
-                })}
-                onIndexChange={setIndex}
-                initialLayout={{ width: Dimensions.get('window').width }}
-                renderTabBar={(props) => (
-                    <TabBar
-                        {...props}
-                        className='bg-[#813b3b] text-white'
-                        indicatorStyle={{ backgroundColor: 'white' }}
-                    />
-                )}
-            />
-        </View>
-    );
+         <TabView
+            navigationState={{ index, routes }}
+            renderScene={SceneMap({
+               doing: () => <DoingResults results={results.doing} />,
+               completed: () => <CompletedResults results={results.completed} />,
+            })}
+            onIndexChange={setIndex}
+            initialLayout={{ width: Dimensions.get('window').width }}
+            renderTabBar={(props) => (
+               <TabBar
+                  {...props}
+                  className='bg-[#813b3b] text-white'
+                  indicatorStyle={{ backgroundColor: 'white' }}
+               />
+            )}
+         />
+      </View>
+   );
 }
 
 const ResultCompletedItem = ({ result }) => {
-    const correctCount = result.result_questions.filter(q => q.correct).length;
-    const totalQuestions = result.quiz_id?.questionCount || 0;
-
-    const accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
-
-    return (
-        <View style={{ width: itemWidth }} className="m-2 bg-slate-200/50 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
-            <Image
-                source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
-                className="w-full h-28"
-                style={{ resizeMode: 'cover' }}
-            />
-            <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
-                <FontAwesome6 name="chalkboard-user" color='white' />
-                <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : result.room_id ? 'Phòng' : 'Công khai'}</Text>
-
-            </View>
-            <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
-                <Text className="text-sm text-slate-50 ml-1">{totalQuestions} Qs</Text>
-            </View>
-            <View className='px-4 py-2'>
-                <Text className="text-base font-pmedium">
-                    {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
-                </Text>
-                <Text className="text-lg font-light">
-                    {(result.quiz_id?.quiz_name.length > 15 ? result.quiz_id?.quiz_name.substring(0, 15) + "..." : result.quiz_id?.quiz_name)}
-                </Text>
-                <Text className="text-xs font-light">
-                    bởi: {result.quiz_id?.user_id?.user_fullname}
-                </Text>
-
-                <Text className={`${accuracy < 40 ? 'bg-red-600' : accuracy < 70 ? 'bg-yellow-400' : 'bg-green-500'} text-sm mt-4 font-light text-slate-50 rounded-full px-2`}>
-                    {accuracy.toFixed(0)}% độ chính xác
-                </Text>
-            </View>
-        </View>
-    );
-};
-
-const ResultDoingItem = ({ result }) => (
-    <View style={{ width: itemWidth }} className="m-2 bg-slate-200/70 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
-        <Image
+   const correctCount = result.result_questions.filter(q => q.correct).length;
+   const totalQuestions = result.quiz_id?.questionCount || 0;
+   const accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
+   return (
+      <View style={{ width: itemWidth }} className="m-2 bg-slate-200/50 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
+         <Image
             source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
             className="w-full h-28"
             style={{ resizeMode: 'cover' }}
-        />
-
-        <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
+         />
+         <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
             <FontAwesome6 name="chalkboard-user" color='white' />
             <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : result.room_id ? 'Phòng' : 'Công khai'}</Text>
-        </View>
-        <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
-            <Text className="text-sm text-slate-50 ml-1">{result.quiz_id?.questionCount} Qs</Text>
-        </View>
-        <View className='px-4 py-2'>
+
+         </View>
+         <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
+            <Text className="text-sm text-slate-50 ml-1">{totalQuestions} Qs</Text>
+         </View>
+         <View className='px-4 py-2'>
             <Text className="text-base font-pmedium">
-                {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
+               {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
             </Text>
             <Text className="text-lg font-light">
-                {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
+               {(result.quiz_id?.quiz_name.length > 15 ? result.quiz_id?.quiz_name.substring(0, 15) + "..." : result.quiz_id?.quiz_name)}
             </Text>
             <Text className="text-xs font-light">
-                bởi: {result.quiz_id?.user_id?.user_fullname}
+               bởi: {result.quiz_id?.user_id?.user_fullname}
             </Text>
 
-            <Text className="text-sm mt-4 font-light text-center text-slate-50 bg-violet-300 rounded-full px-2">
-                {result.result_questions?.length}/{result.quiz_id?.questionCount} câu hỏi
+            <Text className={`${accuracy < 40 ? 'bg-red-600' : accuracy < 70 ? 'bg-yellow-400' : 'bg-green-500'} text-sm mt-4 font-light text-slate-50 rounded-full px-2`}>
+               {accuracy.toFixed(0)}% độ chính xác
             </Text>
-        </View>
-    </View>
-);
-
-const CompletedResults = ({ resultsCompleted }) => {
-    if (!resultsCompleted || resultsCompleted.length === 0) {
-        return <View className='h-full flex items-center justify-center'>
-            <LottieView
-                source={require('@/assets/jsons/not-found.json')}
-                autoPlay
-                loop
-                style={{
-                    width: 300,
-                    height: 300,
-                }}
-            />
-        </View>
-    }
-    return (
-        <FlatList
-            showsVerticalScrollIndicator={false}
-            data={resultsCompleted}
-            renderItem={({ item }) => (
-                <Pressable onPress={() => {
-                    router.push({
-                        pathname: '(report)/overview_report',
-                        params: { resultId: item._id },
-                    });
-                }}>
-                    <ResultCompletedItem result={item} />
-                </Pressable>
-            )}
-            keyExtractor={item => item._id}
-            numColumns={2}
-            columnWrapperStyle="flex-row justify-between"
-        />
-    );
+         </View>
+      </View>
+   );
 };
 
-const DoingResults = ({ resultsDoing }) => {
+const ResultDoingItem = ({ result }) => {
+   return <View style={{ width: itemWidth }} className="m-2 bg-slate-200/70 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
+      <Image
+         source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
+         className="w-full h-28"
+         style={{ resizeMode: 'cover' }}
+      />
 
-    if (!resultsDoing || resultsDoing.length === 0) {
-        return <View className='h-full flex items-center justify-center'>
-            <LottieView
-                source={require('@/assets/jsons/not-found.json')}
-                autoPlay
-                loop
-                style={{
-                    width: 300,
-                    height: 300,
-                }}
-            />
-        </View>
-    }
+      <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
+         <FontAwesome6 name="chalkboard-user" color='white' />
+         <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : result.room_id ? 'Phòng' : 'Công khai'}</Text>
+      </View>
+      <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
+         <Text className="text-sm text-slate-50 ml-1">{result.quiz_id?.questionCount} Qs</Text>
+      </View>
+      <View className='px-4 py-2'>
+         <Text className="text-base font-pmedium">
+            {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
+         </Text>
+         <Text className="text-lg font-light">
+            {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
+         </Text>
+         <Text className="text-xs font-light">
+            bởi: {result.quiz_id?.user_id?.user_fullname}
+         </Text>
 
-    return (
-        <FlatList
-            showsVerticalScrollIndicator={false}
-            data={resultsDoing}
-            renderItem={({ item }) => (
-                <Pressable onPress={() => {
-                    Alert.alert(
-                        "Tiếp tục thực hiện?",
-                        "Bạn có muốn tiếp tục bài kiểm tra này?",
-                        [
-                            { text: "Hủy", style: "cancel" },
-                            {
-                                text: "Tiếp tục", onPress: () => {
-                                    {
-                                        item.type === 'publish' ?
-                                        router.push({
-                                            pathname: '(play)/single',
-                                            params: { quizId: item.quiz_id._id, type: item.type },
-                                        })
-                                        :
-                                        router.push({
-                                            pathname: '(play)/single',
-                                            params: { quizId: item.quiz_id._id, exerciseId: item.exercise_id._id, type: item.type },
-                                        });
-                                    }
-                                }
-                            },
-                        ]
-                    );
-                }}>
-                    <ResultDoingItem result={item} />
-                </Pressable>
-            )}
-            keyExtractor={item => item._id}
-            numColumns={2}
-            columnWrapperStyle="flex-row justify-between"
-        />
-    );
+         <Text className="text-sm mt-4 font-light text-center text-slate-50 bg-violet-300 rounded-full px-2">
+            {result.result_questions?.length}/{result.quiz_id?.questionCount} câu hỏi
+         </Text>
+      </View>
+   </View>
+}
+
+
+const CompletedResults = ({ results }) => {
+   const router = useRouter();
+
+   if (!results || results.length === 0) {
+      return <View className='h-full flex items-center justify-center'>
+         <LottieView
+            source={require('@/assets/jsons/not-found.json')}
+            autoPlay
+            loop
+            style={{
+               width: 300,
+               height: 300,
+            }}
+         />
+      </View>
+   }
+   return (
+      <FlatList
+         showsVerticalScrollIndicator={false}
+         data={results}
+         renderItem={({ item }) => (
+            <Pressable onPress={() => {
+               router.push({
+                  pathname: '(report)/overview_report',
+                  params: { resultId: item._id },
+               });
+            }}>
+               <ResultCompletedItem result={item} />
+            </Pressable>
+         )}
+         keyExtractor={item => item._id}
+         numColumns={2}
+         columnWrapperStyle="flex-row justify-between"
+      />
+   );
+};
+
+const DoingResults = ({ results }) => {
+   const { userData } = useAuthContext();
+   const router = useRouter();
+   if (!results || results.length === 0) {
+      return <View className='h-full flex items-center justify-center'>
+         <LottieView
+            source={require('@/assets/jsons/not-found.json')}
+            autoPlay
+            loop
+            style={{
+               width: 300,
+               height: 300,
+            }}
+         />
+      </View>
+   }
+
+   return (
+      <FlatList
+         showsVerticalScrollIndicator={false}
+         data={results}
+         renderItem={({ item }) => (
+            <Pressable onPress={() => {
+               Alert.alert(
+                  "Tiếp tục thực hiện?",
+                  "Bạn có muốn tiếp tục bài kiểm tra này?",
+                  [
+                     { text: "Hủy", style: "cancel" },
+                     {
+                        text: "Tiếp tục", onPress: () => {
+
+                           if (item.type === 'publish') {
+                              router.push({
+                                 pathname: '(play)/single',
+                                 params: { quizId: item.quiz_id._id, type: item.type },
+                              })
+                           } else if (item.type === 'exercise') {
+                              router.push({
+                                 pathname: '(play)/single',
+                                 params: { quizId: item.quiz_id._id, exerciseId: item.exercise_id._id, type: item.type }
+                              })
+                           } else if (item.type === 'room') {
+                              socket.emit('joinRoom', { roomCode: item.room_id.room_code, user: userData });
+                              router.push({
+                                 pathname: '(play)/realtime',
+                                 params: { roomCode: item.room_id.room_code, quizId: item.quiz_id._id, roomId: item.room_id._id, createdUserId: item.room_id.user_created_id }
+                              })
+
+                           }
+                        }
+                     },
+                  ]
+               );
+            }}>
+               <ResultDoingItem result={item} />
+            </Pressable>
+         )}
+         keyExtractor={item => item._id}
+         numColumns={2}
+         columnWrapperStyle="flex-row justify-between"
+      />
+   );
 };

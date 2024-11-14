@@ -1,7 +1,4 @@
-"use strict";
-import { io } from "socket.io-client";
-const socket = io.connect("http://10.0.111.48:3000",{
-    transports: ['websocket'],
-});
+'use strict';
+import { io } from 'socket.io-client';
+const socket = io.connect('http://192.168.1.16:3000');
 export default socket;
-
