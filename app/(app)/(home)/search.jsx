@@ -94,17 +94,20 @@ export default function SearchScreen() {
     }, []);
 
     useEffect(() => {
-        setFilter((prev)=>{
-            return {
-                ...prev,
-                subjectIds:selectedSubject
-            }
-        });
         if (!isFirstLoad){
             debouncedFetchQuiz();
         }
 
     }, [filter.quiz_on,filter.sortStatus,selectedSubject,debouncedFetchQuiz]);
+
+    useEffect(() => {
+        if (!isFirstLoad) {
+            setFilter((prev) => ({
+                ...prev,
+                subjectIds: selectedSubject,
+            }));
+        }
+    }, [selectedSubject]);
 
     useEffect(() => {
         if (!isFirstLoad){
@@ -204,9 +207,8 @@ export default function SearchScreen() {
         setFilter((prev)=>{
             const newFilter = {
                 ...prev,
-                skip:0
+                skip:0,
             };
-
             fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_SEARCH}`,{
                 method:'POST',
                 headers:{
@@ -312,7 +314,7 @@ export default function SearchScreen() {
             {/*<RecycleTestComponent/>*/}
             <AntiFlatList colSpan={COL_SPAN} handleRefresh={handleRefresh} isRefreshing={isRefreshing} componentItem={ComponentItem} handleLoadMore={handleLoadMore} loading={loading} data={quizList}/>
 
-            <Modalize onClose={onClose} modalStyle={{zIndex:1000,elevation:10,padding:10}} avoidKeyboardLikeIOS={true}  withHandle={false} scrollViewProps={{showsVerticalScrollIndicator: true}} ref={modalizeRef} >
+            <Modalize snapPoint={600} onClose={onClose} modalStyle={{zIndex:1000,elevation:10,padding:10}} avoidKeyboardLikeIOS={true}  withHandle={false} scrollViewProps={{showsVerticalScrollIndicator: true}} ref={modalizeRef} >
                 <View className={"mb-3"}>
                     {/*data quiz on*/}
                     <Text className={"mb-2 px-1 font-semibold"}>Lượt chơi</Text>
