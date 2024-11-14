@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, Image, ScrollView, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions, Image, ScrollView, FlatList, Pressable } from 'react-native';
 import Wrapper from '@/components/customs/Wrapper';
 import Carousel from 'react-native-reanimated-carousel';
 import { Images } from '@/constants';
@@ -87,7 +87,17 @@ const StudentHomeScreen = () => {
 					{filterQuizzes && filterQuizzes.map(({ subject, quizzes }) => {
 						return (
 							<View key={subject._id} className="mb-4">
-								<Text className="text-xl font-bold mb-2">{subject.name}</Text>
+								<View className='flex-row justify-between mb-1'>
+									<Text className="text-xl font-bold">{subject.name}</Text>
+									<TouchableOpacity onPress={()=> {
+										router.push({
+											pathname: '/(home)/search',
+											params: {subjectId: subject._id}
+										})
+									}}>
+										<Text className="text-base">Xem thêm</Text>
+									</TouchableOpacity>
+								</View>
 								{/* Horizontal ScrollView to display quizzes in rows of two items each */}
 								<ScrollView horizontal showsHorizontalScrollIndicator={false} className='w-full'>
 										{quizzes.map((quiz) => (

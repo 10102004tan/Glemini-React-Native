@@ -69,12 +69,6 @@ const TeacherDetail = () => {
             await addStudent(classroomId, email);
             setEmail('');
             setShowBottomSheet(0);
-            Toast.show({
-                type: 'success',
-                text1: 'Thêm mới thành công!',
-                visibilityTime: 1000,
-                autoHide: true,
-            });
         } catch (error) {
             Toast.show({
                 type: 'error',

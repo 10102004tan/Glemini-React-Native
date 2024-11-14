@@ -163,9 +163,18 @@ const ClassroomProvider = ({ children }) => {
             const data = await response.json();
 
             if (data.statusCode === 200) {
+                Toast.show({
+                    type: 'success',
+                    text1: 'Thêm mới thành công!',
+                    autoHide: true,
+                });
                 fetchClassroom(classroomId)
             } else {
-                console.error('Failed to add student:', data.message);
+                Toast.show({
+                    type: 'error',
+                    text1: data.message,
+                    autoHide: true,
+                })
             }
         } catch (error) {
             console.error('Error add student:', error);
