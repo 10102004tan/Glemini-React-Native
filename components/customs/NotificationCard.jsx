@@ -9,7 +9,7 @@ import {SYSTEM_NEW_FEATURE,SYSTEM_MAINTENANCE,ROOM_REALTIME,SHARE_QUIZ_TO_CLASSR
 export default function NotificationCard({type,status,content = "", time, options = {},onPress}) {
     if (type === SYSTEM_MAINTENANCE) {
         return (
-            <TouchableOpacity onPress={onPress}>
+            <TouchableOpacity className={"h-full"} onPress={onPress}>
                 <View className={`px-3 py-4 flex-row justify-between mb-4 rounded shadow-2xl`}
                       style={{flex: 1, borderWidth: 1, borderColor: "000"}}>
                     <View className={"flex gap-3 flex-row"}>
@@ -31,7 +31,7 @@ export default function NotificationCard({type,status,content = "", time, option
         )
     } else if (type === SYSTEM_NEW_FEATURE) {
         return (
-            <TouchableOpacity onPress={onPress}>
+            <TouchableOpacity  className={"h-full"} onPress={onPress}>
                 <View className={`px-3 py-4 flex-row justify-between mb-4 rounded shadow-2xl}`}
                       style={{flex: 1, borderWidth: 1, borderColor: "000"}}>
                     <View className={"flex gap-3 flex-row"}>
@@ -127,21 +127,19 @@ export default function NotificationCard({type,status,content = "", time, option
 
         )
     }
-
-    return (
-        <View className={"p-3 bg-white flex flex-row gap-2 mb-4 justify-between items-center"}>
-            <View className={"flex gap-3 flex-row"}>
-                <Image className={"border-2 border-gray"}
-                       source={{uri: "https://imageio.forbes.com/specials-images/imageserve/5c76b7d331358e35dd2773a9/0x0.jpg?format=jpg&crop=4401,4401,x0,y0,safe&height=416&width=416&fit=bounds"}}
-                       style={{width: 50, height: 50, borderRadius: 1000, borderWidth: 2, borderColor: "#eee"}}/>
-                <View className={"max-w-[200px]"}>
-                    <Text className={"text-[14px] font-semibold"}>Nguyen Thi A</Text>
-                    <Text className={"text-[12px] text-gray"}>{content}</Text>
-                    <CustomButton color={"#000"} bg={"#fff"} title={"View"} onPress={() => {
-                    }}/>
+    else if (type === "CLASSROOM-001"){
+        const {avatar,classroom_name,classroom_id} = options;
+        return (
+            <TouchableOpacity style={{flex:1,borderWidth: 2, borderColor: "#eee",borderRadius:8}} className={"h-full shadow px-1 py-2 mb-4"} onPress={onPress}>
+                <View className={"flex-row gap-2"}>
+                    <Image className={"w-[60px] h-[60px] rounded object-contain"} src={(avatar ? avatar : "https://lh5.googleusercontent.com/lLt4Zbk57a765Y9_muPKLKg-HoWjgGaAT8r30rfvEgIlskak4du77TmkfGB-t6a6SHPebQnGJshYPf77R00yIk1bDt9WuWLhZRjEBLUsODHXt6kxCVDynuyrTiHd2d-Bdg=w1280")}/>
+                    <View>
+                        <Text>{`Ban da duoc them vao lop ${classroom_name} ...`}</Text>
+                        <Text className={"text-black text-[10px]"}>{moment(time).fromNow()}</Text>
+                    </View>
                 </View>
-            </View>
-            <Text className={"text-gray text-[12px]"}>1m ago</Text>
-        </View>
-    )
+            </TouchableOpacity>
+        )
+    }
+
 }

@@ -14,6 +14,7 @@ const QuizProvider = ({ children }) => {
   const [isSave, setIsSave] = useState(false);
   const { userData } = useAuthContext();
   const LIMIT = 6;
+  const [isEdited, setIsEdited] = useState(false);
 
   // Get all quizzes of the user
   const fetchQuizzes = async ({ skip = 0, limit = LIMIT }) => {
@@ -181,6 +182,8 @@ const QuizProvider = ({ children }) => {
         getQuizzesBanner,
         fetchQuizzes,
         LIMIT,
+        isEdited,
+        setIsEdited,
       }}
     >
       {children}

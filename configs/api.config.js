@@ -1,10 +1,10 @@
-'use strict';
+"use strict";
 
 const dev = {
-	API_URL: 'http:///192.168.247.116:3000/api',
-	API_VERSION: {
-		V1: '/v1',
-	},
+  API_URL: "http://192.168.247.116:3000/api",
+  API_VERSION: {
+    V1: "/v1",
+  },
 
   END_POINTS: {
     SERVER: "/working",
@@ -59,6 +59,7 @@ const dev = {
     QUIZ_SEARCH: "/quizzes/search",
     GET_ALL_QUIZZES_SHARED: "/quizzes/get-all-quizzes-shared",
     REMOVE_QUIZ_SHARED: "/quizzes/remove-quiz-shared",
+    COPY_QUIZ: "/quizzes/copy-quiz",
 
     // Results
     RESULT_STUDENT: "/result/student",
@@ -112,9 +113,6 @@ const dev = {
     ROOM_UPDATE_RESULT: "/result/update-result",
     ROOM_UPDATE_STATUS: "/room/update",
 
-    //user
-    // CHECK_EMAIL: '/user/check-email',
-    SHARE_QUIZ: "/user/share-quiz",
 
     // exercise
     EXERCISE_REPORT: "/exercise/report",
@@ -122,16 +120,16 @@ const dev = {
 };
 
 const prod = {
-	API_VERSION: {
-		V1: '/v1',
-	},
-	API_URL: 'http://localhost:8000/api',
-	END_POINTS: {
-		LOGIN: '/login',
-		REGISTER: '/register',
-		LOGOUT: '/logout',
-		PROFILE: '/profile',
-	},
+  API_VERSION: {
+    V1: "/v1",
+  },
+  API_URL: "http://localhost:8000/api",
+  END_POINTS: {
+    LOGIN: "/login",
+    REGISTER: "/register",
+    LOGOUT: "/logout",
+    PROFILE: "/profile",
+  },
 };
 
 module.exports = dev;
