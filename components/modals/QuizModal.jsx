@@ -10,7 +10,7 @@ const QuizModal = ({
 	visible = false,
 	onClose = () => {},
 	onStartQuiz = () => {},
-	quiz = null,
+	quiz,
 }) => {
 	const { userData } = useAuthContext();
 	const { i18n } = useAppProvider();

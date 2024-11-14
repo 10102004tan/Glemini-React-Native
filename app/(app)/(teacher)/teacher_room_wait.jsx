@@ -109,8 +109,6 @@ const TeacherRoomWaitScreen = () => {
    // Lắng nghe sự kiện khi bắt đầu phòng chơi
    useEffect(() => {
       socket.on('startQuiz', () => {
-         // Lưu tất cả người dùng đã tham gia vào phòng chơi lên server
-
          if (roomData && userData) {
             // Nếu là sinh viên thì sẽ chuyển hướng tới màn hình làm bài
             router.push(
@@ -139,6 +137,14 @@ const TeacherRoomWaitScreen = () => {
    };
 
    const handleStartRoom = async () => {
+      // Kiểm tra xem phòng chơi có đủ người chưa
+      if ((joinedUsers.length - 1) < 1) {
+         Alert.alert('Thông báo', 'Phòng chơi cần ít nhất 2 người để bắt đầu');
+         return;
+      }
+
+      const joinedUsersId = joinedUsers.map((user) => user._id);
+
       // Cập nhật laị trạng thái của phòng chơi
       const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_UPDATE_STATUS}`, {
          method: 'POST',
@@ -151,6 +157,7 @@ const TeacherRoomWaitScreen = () => {
          body: JSON.stringify({
             room_code: roomCode,
             status: 'doing',
+            joined_users: joinedUsersId,
          }),
       });
 

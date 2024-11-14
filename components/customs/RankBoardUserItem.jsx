@@ -6,9 +6,9 @@ const RankBoardUserItem = ({ user, rankIndex, point }) => {
    return (
       <View className="mt-4">
          <View className="flex items-center justify-between flex-row">
-            <View className="w-[30px] flex items-center justify-center h-[30px] rounded-full bg-primary">
+            {/* <View className="w-[30px] flex items-center justify-center h-[30px] rounded-full bg-primary">
                <Text className="text-white">{rankIndex}</Text>
-            </View>
+            </View> */}
             <View className="flex items-center justify-start flex-row flex-1 ml-4">
                <Image className="w-[50px] h-[50px] rounded-full" source={{ uri: user.user_avatar }} />
                <Text className="text-white ml-3">

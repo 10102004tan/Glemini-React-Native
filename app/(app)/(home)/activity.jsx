@@ -17,7 +17,7 @@ const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 16;
 
 export default function ActivityScreen() {
-   const { results, fetchResults } = useResultProvider();
+   const { results, fetchResultsForStudent } = useResultProvider();
    const [roomCode, setRoomCode] = useState(null);
    const [roomTemp, setRoomTemp] = useState(null);
    const router = useRouter();
@@ -26,7 +26,7 @@ export default function ActivityScreen() {
 
    useFocusEffect(
       useCallback(() => {
-         fetchResults();
+         fetchResultsForStudent();
          setIndex(0)
       }, [])
    );
@@ -46,20 +46,69 @@ export default function ActivityScreen() {
             }),
          })
 
-         const notAccepted = ['doing', 'completed', 'deleted'];
+         const notAccepted = ['completed', 'deleted'];
 
          const data = await res.json();
-         console.log(data)
+         // console.log(data)
          if (data.statusCode === 200) {
             if (notAccepted.includes(data.metadata.status)) {
                Alert.alert('Thông báo', 'Không thể tham gia vào phòng chơi lúc này !!!');
-            } else {
-               setCurrentRoom(data.metadata._id);
-               socket.emit('joinRoom', { roomCode, user: userData });
-               router.replace({
-                  pathname: '/(app)/(teacher)/teacher_room_wait',
-                  params: { roomCode: roomTemp }
+            } else if (data.metadata.status === 'doing') {
+               const res = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_CHECK_USER}`, {
+                  method: 'POST',
+                  headers: {
+                     'Content-Type': 'application/json',
+                     'x-client-id': userData._id,
+                     authorization: userData.accessToken,
+                  },
+                  body: JSON.stringify({
+                     room_code: roomTemp,
+                     user_id: userData._id
+                  }),
                });
+
+               const dt = await res.json();
+               if (dt.statusCode === 200 && dt.metadata) {
+                  setCurrentRoom(data.metadata._id);
+                  socket.emit('joinRoom', { roomCode, user: userData });
+                  // Người dùng đang chơi bị out, khi join lại chuyển thẳng tới màn hình chơi
+
+                  router.replace({
+                     pathname: '/(play)/realtime',
+                     params:
+                     {
+                        roomCode: data.metadata.room_code, quizId: data.metadata.quiz_id, roomId: data.metadata._id, roomCode: data.metadata.room_code, createdUserId: data.metadata.user_created_id
+                     }
+                  });
+               } else {
+                  Alert.alert('Thông báo', 'Bạn đã hoàn thành phòng chơi này !!!');
+               }
+            } else {
+
+               try {
+                  // Xóa kết quả cũ nếu có
+                  const responseDeleteOldResult = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_RESET}`, {
+                     method: 'POST',
+                     headers: {
+                        'Content-Type': 'application/json',
+                        'x-client-id': userData._id,
+                        authorization: userData.accessToken,
+                     },
+                     body: JSON.stringify({
+                        room_id: data.metadata._id,
+                        user_id: userData._id,
+                     }),
+                  });
+               } catch (error) {
+                  console.log(error)
+               } finally {
+                  setCurrentRoom(data.metadata._id);
+                  socket.emit('joinRoom', { roomCode, user: userData });
+                  router.replace({
+                     pathname: '/(app)/(teacher)/teacher_room_wait',
+                     params: { roomCode: roomTemp }
+                  });
+               }
             }
             setRoomTemp(null);
          } else {
@@ -127,7 +176,7 @@ const ResultCompletedItem = ({ result }) => {
          />
          <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
             <FontAwesome6 name="chalkboard-user" color='white' />
-            <Text className="text-sm text-slate-50 ml-1">Được giao</Text>
+            <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : 'Công khai'}</Text>
          </View>
          <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
             <Text className="text-sm text-slate-50 ml-1">{totalQuestions} Qs</Text>
@@ -178,14 +227,14 @@ const ResultDoingItem = ({ result }) => (
          </Text>
 
          <Text className="text-sm mt-4 font-light text-center text-slate-50 bg-violet-300 rounded-full px-2">
-            {result.result_questions.length}/{result.quiz_id?.questionCount} câu hỏi
+            {result && result.result_questions.length}/{result.quiz_id?.questionCount} câu hỏi
          </Text>
       </View>
    </View>
 );
 
 const CompletedResults = ({ results }) => {
-   if (!results.length) {
+   if (!results || results.length === 0) {
       return <View className='h-full flex items-center justify-center'>
          <LottieView
             source={require('@/assets/jsons/not-found.json')}
@@ -198,6 +247,7 @@ const CompletedResults = ({ results }) => {
          />
       </View>
    }
+
    return (
       <FlatList
          showsVerticalScrollIndicator={false}
@@ -211,7 +261,7 @@ const CompletedResults = ({ results }) => {
 };
 
 const DoingResults = ({ results }) => {
-   if (!results.length) {
+   if (!results || results.length === 0) {
       return <View className='h-full flex items-center justify-center'>
          <LottieView
             source={require('@/assets/jsons/not-found.json')}
