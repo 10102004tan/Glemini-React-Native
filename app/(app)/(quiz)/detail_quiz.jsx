@@ -64,6 +64,7 @@ const detailquizz = () => {
   const [quizThumbnail, setQuizThumbnail] = useState("");
   const [quizTurn, setQuizTurn] = useState("");
   const [currentQuizQuestion, setCurrentQuizQuestion] = useState([]);
+  const [quiz_user, setQuizUser] = useState(null);
 
   //selectlist
   const [roomWatingModal, setShowRoomWaitingModal] = useState(false);
@@ -125,6 +126,7 @@ const detailquizz = () => {
       setQuizStatus(data.metadata.quiz_status);
       setQuizSubjects(data.metadata.subject_ids);
       setQuizTurn(data.metadata.quiz_turn);
+      setQuizUser(data.metadata.user_id);
 
       const users = data.metadata.shared_user_ids;
 
@@ -381,35 +383,41 @@ const detailquizz = () => {
             setShowConfirmDialog(true);
           }}
         />
-        <Button
-          text={"Chia sẻ bài kiểm tra"}
-          otherStyles={"m-2 flex-row p-4"}
-          icon={<AntDesign name="sharealt" size={16} color="white" />}
-          onPress={() => {
-            // closeBottomSheet();
-            setShowEmailDialog(true);
-            setShowBottomSheetMoreOptions(false);
-            setShowBottomSheetSaveToLibrary(false);
-          }}
-        />
-        <Button
-          text={"Giao bài tập"}
-          otherStyles={"m-2 flex-row p-4"}
-          icon={<Entypo name="home" size={16} color="white" />}
-          onPress={() => {
-            setShowAssignModal(true);
-            closeBottomSheet();
-          }}
-        />
-        <Button
-          text={"Lưu vào bộ sưu tập"}
-          otherStyles={"m-2 flex-row p-4"}
-          icon={<Entypo name="save" size={16} color="white" />}
-          onPress={() => {
-            closeBottomSheet();
-            openBottomSheetSaveToLibrary();
-          }}
-        />
+        {isEdited && quiz_user === userData._id && (
+          <Button
+            text={"Chia sẻ bài kiểm tra"}
+            otherStyles={"m-2 flex-row p-4"}
+            icon={<AntDesign name="sharealt" size={16} color="white" />}
+            onPress={() => {
+              // closeBottomSheet();
+              setShowEmailDialog(true);
+              setShowBottomSheetMoreOptions(false);
+              setShowBottomSheetSaveToLibrary(false);
+            }}
+          />
+        )}
+        {isEdited && quiz_user === userData._id && (
+          <Button
+            text={"Giao bài tập"}
+            otherStyles={"m-2 flex-row p-4"}
+            icon={<Entypo name="home" size={16} color="white" />}
+            onPress={() => {
+              setShowAssignModal(true);
+              closeBottomSheet();
+            }}
+          />
+        )}
+        {isEdited && quiz_user === userData._id && (
+          <Button
+            text={"Lưu vào bộ sưu tập"}
+            otherStyles={"m-2 flex-row p-4"}
+            icon={<Entypo name="save" size={16} color="white" />}
+            onPress={() => {
+              closeBottomSheet();
+              openBottomSheetSaveToLibrary();
+            }}
+          />
+        )}
       </BottomSheet>
 
       <ScrollView>
@@ -431,7 +439,7 @@ const detailquizz = () => {
           </View>
         </View>
 
-        {!isEdited && (
+        {quiz_user !== userData._id && (
           <Button
             text={"Sao chép quiz"}
             otherStyles={"flex-row p-4 w-[50%] justify-center ml-4"}
