@@ -115,6 +115,7 @@ const RealtimePlay = () => {
 
       // Cập nhật bảng xếp hạng của người chơi
       socket.on('updateRanking', (rank) => {
+         console.log(JSON.stringify(rank, null, 2));
          setRankData(sortRankBoardDesc(rank));
       });
 
@@ -133,12 +134,16 @@ const RealtimePlay = () => {
          try {
             const value = await AsyncStorage.getItem("User_" + userData._id + "_Room_" + roomCode + "_Doing");
             const correct = await AsyncStorage.getItem("User_" + userData._id + "_Room_" + roomCode + "_CorrectPercent");
-            if (value !== null && correct !== null) {
+            const wrong = await AsyncStorage.getItem("User_" + userData._id + "_Room_" + roomCode + "_WrongPercent");
+
+            if (value !== null && correct !== null && wrong !== null) {
                await AsyncStorage.removeItem("User_" + userData._id + "_Room_" + roomCode + "_Doing");
                await AsyncStorage.removeItem("User_" + userData._id + "_Room_" + roomCode + "_CorrectPercent");
+               await AsyncStorage.removeItem("User_" + userData._id + "_Room_" + roomCode + "_WrongPercent");
                // Người dùng đã thoát ra khỏi phòng thi và đang làm câu hỏi nào đó
                const data = JSON.parse(value);
                const correctData = JSON.parse(correct);
+               const wrongData = JSON.parse(wrong);
 
                // Cho người dùng tiếp tục làm câu hỏi đó
                const index = questions.findIndex(question => question._id === data);
@@ -166,10 +171,12 @@ const RealtimePlay = () => {
 
                const resData = await response.json();
                if (resData.statusCode === 200) {
-                  currentData = resData.metadata.rank.filter(rank => rank.user_id._id === userData._id);
+                  const currentData = resData.metadata.rank.filter(rank => rank.user_id._id === userData._id);
+                  console.log("correct: " + correctData)
+                  console.log("wrong: " + wrongData)
                   setScore(currentData[0].userScore);
-                  console.log(correctData)
                   setCorrectCount(correctData);
+                  setWrongCount(wrongData);
                }
             }
 
@@ -236,7 +243,7 @@ const RealtimePlay = () => {
    // Hàm xử lý khi người dùng đã hoàn thành bộ câu hỏi
    const completed = async () => {
       try {
-         await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
+         const data = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
             method: 'POST',
             headers: {
                'Content-Type': 'application/json',
@@ -250,8 +257,21 @@ const RealtimePlay = () => {
                status: 'completed',
             }),
          });
-         await AsyncStorage.removeItem("User_" + userData._id + "_Room_" + roomCode + "_Doing");
-         await AsyncStorage.removeItem("User_" + userData._id + "_Room_" + roomCode + "_CorrectPercent");
+
+         const dataRes = await data.json();
+         console.log(dataRes)
+         if (dataRes.statusCode !== 200) {
+            Toast.show({
+               type: 'error',
+               text1: 'Lỗi khi cập nhật trạng thái hoàn thành.',
+               text2: dataRes.message,
+            });
+         } else {
+            setIsCompleted(true);
+            await AsyncStorage.removeItem("User_" + userData._id + "_Room_" + roomCode + "_Doing");
+            await AsyncStorage.removeItem("User_" + userData._id + "_Room_" + roomCode + "_CorrectPercent");
+            await AsyncStorage.removeItem("User_" + userData._id + "_Room_" + roomCode + "_WrongPercent");
+         }
       } catch (error) {
          Toast.show({
             type: 'error',
@@ -342,16 +362,12 @@ const RealtimePlay = () => {
             setButtonText(`+ ${currentQuestion.question_point}`);
          } else {
             setIsCorrect(false);
+
             setWrongCount(wrongCount + 1);
             setButtonColor('bg-[#F44336]');
             setButtonTextColor('text-white')
             setButtonText(i18n.t('play.single.incorrect'));
          }
-
-         // Lưu câu hỏi hiện tại của người dùng đang làm vào local storage
-         // Nếu người dùng có lỡ thoát ra vào lại thì cho phép làm tiếp từ vị trí câu hỏi đó
-         await AsyncStorage.setItem("User_" + userData._id + "_Room_" + roomCode + "_Doing", JSON.stringify(currentQuestion._id));
-         await AsyncStorage.setItem("User_" + userData._id + "_Room_" + roomCode + "_CorrectPercent", JSON.stringify(correctCount));
 
          saveQuestionResult(
             currentQuestion._id,
@@ -359,6 +375,14 @@ const RealtimePlay = () => {
             isAnswerCorrect,
             currentQuestion.question_point
          );
+
+         // Lưu câu hỏi hiện tại của người dùng đang làm vào local storage
+         // Nếu người dùng có lỡ thoát ra vào lại thì cho phép làm tiếp từ vị trí câu hỏi đó
+         await AsyncStorage.setItem("User_" + userData._id + "_Room_" + roomCode + "_Doing", JSON.stringify(currentQuestion._id));
+
+         await AsyncStorage.setItem("User_" + userData._id + "_Room_" + roomCode + "_CorrectPercent", JSON.stringify(correctCount + 1));
+
+         await AsyncStorage.setItem("User_" + userData._id + "_Room_" + roomCode + "_WrongPercent", JSON.stringify(wrongCount + 1));
 
          // emit event to server
          socket.emit('submitAnswer', {
@@ -390,7 +414,6 @@ const RealtimePlay = () => {
                setQuestionTimeCountDown(questions[currentQuestionIndex + 1].question_time);
                // setQuestionTimeCountDown(500);
             } else {
-               setIsCompleted(true);
                completed();
             }
          }, QUESTION_RESET_TIME);

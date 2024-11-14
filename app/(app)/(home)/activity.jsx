@@ -13,6 +13,7 @@ import Field from "@/components/customs/Field";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 import { useRoomProvider } from "@/contexts/RoomProvider";
 import socket from "@/utils/socket";
+import { Pressable } from "react-native";
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 16;
 
@@ -20,9 +21,9 @@ export default function ActivityScreen() {
    const { results, fetchResultsForStudent } = useResultProvider();
    const [roomCode, setRoomCode] = useState(null);
    const [roomTemp, setRoomTemp] = useState(null);
-   const router = useRouter();
    const { userData } = useAuthContext();
-   const { currentRoom, setCurrentRoom } = useRoomProvider();
+   const { setCurrentRoom } = useRoomProvider();
+   const router = useRouter();
 
    useFocusEffect(
       useCallback(() => {
@@ -32,7 +33,6 @@ export default function ActivityScreen() {
    );
 
    useEffect(() => {
-      console.log("RUNNING")
       const checkRoom = async () => {
          const res = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_DETAIL}`, {
             method: 'POST',
@@ -49,7 +49,6 @@ export default function ActivityScreen() {
          const notAccepted = ['completed', 'deleted'];
 
          const data = await res.json();
-         // console.log(data)
          if (data.statusCode === 200) {
             if (notAccepted.includes(data.metadata.status)) {
                Alert.alert('Thông báo', 'Không thể tham gia vào phòng chơi lúc này !!!');
@@ -77,7 +76,7 @@ export default function ActivityScreen() {
                      pathname: '/(play)/realtime',
                      params:
                      {
-                        roomCode: data.metadata.room_code, quizId: data.metadata.quiz_id, roomId: data.metadata._id, roomCode: data.metadata.room_code, createdUserId: data.metadata.user_created_id
+                        roomCode: data.metadata.room_code, quizId: data.metadata.quiz_id, roomId: data.metadata._id, createdUserId: data.metadata.user_created_id
                      }
                   });
                } else {
@@ -160,13 +159,9 @@ export default function ActivityScreen() {
 }
 
 const ResultCompletedItem = ({ result }) => {
-   // Đếm số câu trả lời đúng
    const correctCount = result.result_questions.filter(q => q.correct).length;
    const totalQuestions = result.quiz_id?.questionCount || 0;
-
-   // Tính độ chính xác
    const accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
-
    return (
       <View style={{ width: itemWidth }} className="m-2 bg-slate-200/50 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
          <Image
@@ -176,17 +171,18 @@ const ResultCompletedItem = ({ result }) => {
          />
          <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
             <FontAwesome6 name="chalkboard-user" color='white' />
-            <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : 'Công khai'}</Text>
+            <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : result.room_id ? 'Phòng' : 'Công khai'}</Text>
+
          </View>
          <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
             <Text className="text-sm text-slate-50 ml-1">{totalQuestions} Qs</Text>
          </View>
          <View className='px-4 py-2'>
             <Text className="text-base font-pmedium">
-               {result.exercise_id?.name}
+               {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
             </Text>
-            <Text className="text-xl font-light">
-               {result.quiz_id?.quiz_name}
+            <Text className="text-lg font-light">
+               {(result.quiz_id?.quiz_name.length > 15 ? result.quiz_id?.quiz_name.substring(0, 15) + "..." : result.quiz_id?.quiz_name)}
             </Text>
             <Text className="text-xs font-light">
                bởi: {result.quiz_id?.user_id?.user_fullname}
@@ -200,8 +196,8 @@ const ResultCompletedItem = ({ result }) => {
    );
 };
 
-const ResultDoingItem = ({ result }) => (
-   <View style={{ width: itemWidth }} className="m-2 bg-slate-200/70 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
+const ResultDoingItem = ({ result }) => {
+   return <View style={{ width: itemWidth }} className="m-2 bg-slate-200/70 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
       <Image
          source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
          className="w-full h-28"
@@ -210,30 +206,33 @@ const ResultDoingItem = ({ result }) => (
 
       <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
          <FontAwesome6 name="chalkboard-user" color='white' />
-         <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : 'Công khai'}</Text>
+         <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : result.room_id ? 'Phòng' : 'Công khai'}</Text>
       </View>
       <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
          <Text className="text-sm text-slate-50 ml-1">{result.quiz_id?.questionCount} Qs</Text>
       </View>
       <View className='px-4 py-2'>
          <Text className="text-base font-pmedium">
-            {result.exercise_id?.name}
+            {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
          </Text>
-         <Text className="text-xl font-light">
-            {result.quiz_id?.quiz_name}
+         <Text className="text-lg font-light">
+            {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
          </Text>
          <Text className="text-xs font-light">
             bởi: {result.quiz_id?.user_id?.user_fullname}
          </Text>
 
          <Text className="text-sm mt-4 font-light text-center text-slate-50 bg-violet-300 rounded-full px-2">
-            {result && result.result_questions.length}/{result.quiz_id?.questionCount} câu hỏi
+            {result.result_questions?.length}/{result.quiz_id?.questionCount} câu hỏi
          </Text>
       </View>
    </View>
-);
+}
+
 
 const CompletedResults = ({ results }) => {
+   const router = useRouter();
+
    if (!results || results.length === 0) {
       return <View className='h-full flex items-center justify-center'>
          <LottieView
@@ -247,12 +246,20 @@ const CompletedResults = ({ results }) => {
          />
       </View>
    }
-
    return (
       <FlatList
          showsVerticalScrollIndicator={false}
          data={results}
-         renderItem={({ item }) => <ResultCompletedItem result={item} />}
+         renderItem={({ item }) => (
+            <Pressable onPress={() => {
+               router.push({
+                  pathname: '(report)/overview_report',
+                  params: { resultId: item._id },
+               });
+            }}>
+               <ResultCompletedItem result={item} />
+            </Pressable>
+         )}
          keyExtractor={item => item._id}
          numColumns={2}
          columnWrapperStyle="flex-row justify-between"
@@ -261,6 +268,8 @@ const CompletedResults = ({ results }) => {
 };
 
 const DoingResults = ({ results }) => {
+   const { userData } = useAuthContext();
+   const router = useRouter();
    if (!results || results.length === 0) {
       return <View className='h-full flex items-center justify-center'>
          <LottieView
@@ -274,11 +283,47 @@ const DoingResults = ({ results }) => {
          />
       </View>
    }
+
    return (
       <FlatList
          showsVerticalScrollIndicator={false}
          data={results}
-         renderItem={({ item }) => <ResultDoingItem result={item} />}
+         renderItem={({ item }) => (
+            <Pressable onPress={() => {
+               Alert.alert(
+                  "Tiếp tục thực hiện?",
+                  "Bạn có muốn tiếp tục bài kiểm tra này?",
+                  [
+                     { text: "Hủy", style: "cancel" },
+                     {
+                        text: "Tiếp tục", onPress: () => {
+
+                           if (item.type === 'publish') {
+                              router.push({
+                                 pathname: '(play)/single',
+                                 params: { quizId: item.quiz_id._id, type: item.type },
+                              })
+                           } else if (item.type === 'exercise') {
+                              router.push({
+                                 pathname: '(play)/single',
+                                 params: { quizId: item.quiz_id._id, exerciseId: item.exercise_id._id, type: item.type }
+                              })
+                           } else if (item.type === 'room') {
+                              socket.emit('joinRoom', { roomCode: item.room_id.room_code, user: userData });
+                              router.push({
+                                 pathname: '(play)/realtime',
+                                 params: { roomCode: item.room_id.room_code, quizId: item.quiz_id._id, roomId: item.room_id._id, createdUserId: item.room_id.user_created_id }
+                              })
+
+                           }
+                        }
+                     },
+                  ]
+               );
+            }}>
+               <ResultDoingItem result={item} />
+            </Pressable>
+         )}
          keyExtractor={item => item._id}
          numColumns={2}
          columnWrapperStyle="flex-row justify-between"

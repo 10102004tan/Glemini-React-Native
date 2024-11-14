@@ -6,13 +6,14 @@ import Button from '@/components/customs/Button'
 import Feather from '@expo/vector-icons/Feather';
 import UserJoinedRoomItem from '@/components/customs/UserJoinedRoomItem'
 import socket from '@/utils/socket'
-import { useGlobalSearchParams, router } from 'expo-router'
+import { useGlobalSearchParams, useRouter } from 'expo-router'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config'
 import * as Clipboard from 'expo-clipboard';
 import { AppState } from 'react-native';
 import { BackHandler } from 'react-native';
 const TeacherRoomWaitScreen = () => {
+   const router = useRouter();
    const [joinedUsers, setJoinedUsers] = useState([]);
    const [messages, setMessages] = useState([]);
    const [roomData, setRoomData] = useState(null);
@@ -114,7 +115,7 @@ const TeacherRoomWaitScreen = () => {
             router.push(
                {
                   pathname: '/(play)/realtime',
-                  params: { roomCode, quizId: roomData.quiz_id, roomId: roomData._id, roomCode: roomData.room_code, createdUserId: roomData.user_created_id }
+                  params: { quizId: roomData.quiz_id, roomId: roomData._id, roomCode: roomData.room_code, createdUserId: roomData.user_created_id }
                }
             );
          }
@@ -162,6 +163,7 @@ const TeacherRoomWaitScreen = () => {
       });
 
       const data = await response.json();
+      // console.log(data)
       if (data.statusCode === 200) {
          // Gửi một event lên server để bắt đầu phòng học
 

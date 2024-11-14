@@ -34,6 +34,7 @@ const RealtimeResult = ({ correctCount, wrongCount, score, totalQuestions, handl
                   quiz_id: quizId,
                   user_id: userData._id,
                   room_id: roomId,
+                  type: 'room'
                }),
             });
 
@@ -79,6 +80,7 @@ const RealtimeResult = ({ correctCount, wrongCount, score, totalQuestions, handl
                <Button
                   text={i18n.t('result.single.buttonReview')}
                   onPress={() => {
+                     // console.log(JSON.stringify(resultData, null, 2))
                      router.push({
                         pathname: '/(result)/review',
                         params: {
