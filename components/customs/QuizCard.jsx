@@ -3,6 +3,7 @@ import {Image, Text, TouchableOpacity, View} from "react-native";
 import moment from "moment/moment";
 import React, {memo} from "react";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
+import {Images} from "@/constants";
 
 const QuizCard = memo(({
                            quiz_thumb,
@@ -17,7 +18,11 @@ const QuizCard = memo(({
     <TouchableOpacity className={"flex-1 mx-1 mb-3 shadow px-2 bg-white pb-2 rounded"} onPress={onPress}>
         <View>
             <Image
-                src={(quiz_thumb ? quiz_thumb : "https://elearningindustry.com/wp-content/uploads/2021/10/Shareable-Quizzes-In-Online-Training-7-Reasons.jpg")}
+                source={
+                    quiz_thumb ?
+                         { uri: quiz_thumb }
+                        : Images.banner1
+                }
                 className={"w-full h-[100px] rounded-b-[10px]"} alt={quiz_name}/>
             <Text
                 className={"absolute p-2 rounded bg-white opacity-80 text-[10px] bottom-[5px] right-[5px]"}>{moment(createdAt).fromNow()}</Text>
