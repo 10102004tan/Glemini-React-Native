@@ -135,7 +135,7 @@ const ResultCompletedItem = ({ result }) => {
                     {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
                 </Text>
                 <Text className="text-lg font-light">
-                    {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
+                    {(result.quiz_id?.quiz_name.length > 15 ? result.quiz_id?.quiz_name.substring(0, 15) + "..." : result.quiz_id?.quiz_name)}
                 </Text>
                 <Text className="text-xs font-light">
                     bởi: {result.quiz_id?.user_id?.user_fullname}
@@ -246,10 +246,18 @@ const DoingResults = ({ resultsDoing }) => {
                             { text: "Hủy", style: "cancel" },
                             {
                                 text: "Tiếp tục", onPress: () => {
-                                    router.push({
-                                        pathname: '(play)/single',
-                                        params: { quizId: item.quiz_id._id, exerciseId: item.type === 'publish' ? '' : item.exercise_id._id, type: item.type },
-                                    });
+                                    {
+                                        item.type === 'publish' ?
+                                        router.push({
+                                            pathname: '(play)/single',
+                                            params: { quizId: item.quiz_id._id, type: item.type },
+                                        })
+                                        :
+                                        router.push({
+                                            pathname: '(play)/single',
+                                            params: { quizId: item.quiz_id._id, exerciseId: item.exercise_id._id, type: item.type },
+                                        });
+                                    }
                                 }
                             },
                         ]
