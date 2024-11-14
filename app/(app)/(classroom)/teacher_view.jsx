@@ -54,6 +54,7 @@ const TeacherView = () => {
         await createClassroom(classData);
         await fetchClassrooms();
         handleCloseBts();
+        setClassName('');
     };
 
     const handleNavigateToDetail = (classroomId) => {
