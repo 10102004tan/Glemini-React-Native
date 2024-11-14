@@ -53,8 +53,7 @@ const QuizProvider = ({ children }) => {
   };
 
   // Get Quiz Published
-  const getQuizzesPublished = async (subject_id) => {
-    subject_id = subject_id === "all" ? "" : subject_id;
+  const getQuizzesPublished = async () => {
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`,
       {
@@ -64,7 +63,6 @@ const QuizProvider = ({ children }) => {
           "x-client-id": userData._id,
           authorization: userData.accessToken,
         },
-        body: JSON.stringify({ subjectId: subject_id }),
       }
     );
 
