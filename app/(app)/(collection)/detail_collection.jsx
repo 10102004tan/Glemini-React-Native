@@ -116,7 +116,9 @@ const detail_collection = () => {
     }
   };
 
-  const updateCollectionName = async (collection_id, new_name) => {
+  //fetch api để cập nhật tên mới của collection từ backend server về database của collection
+  const updateCollectionName = async (collection_id, collection_name, quiz_ids) => {
+    console.log("Updating collection name...");
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_UPDATE_NAME}`,
       {
@@ -129,16 +131,19 @@ const detail_collection = () => {
         body: JSON.stringify({
           user_id: userData._id,
           collection_id,
-          new_name,
+          collection_name,
+          quiz_ids,
         }),
       }
     );
     const data = await response.json();
     console.log(data);
     if (data.statusCode === 200) {
-      setCollectionName(new_name); // Cập nhật lại tên bộ sưu tập trên giao diện
-      setEditModalVisible(false); // Đóng modal
+      // Cập nhật lại tên collection sau khi cập nhật thành công
+      setCollectionName(collection_name);
+      setEditModalVisible(false);
     } else {
+      console.log("Error: Could not update collection name");
       Alert.alert("Error", "Không thể cập nhật tên bộ sưu tập.");
     }
   };
@@ -299,6 +304,7 @@ const detail_collection = () => {
                   </View>
                   <View className="flex flex-col ml-4 justify-around">
                     <Text className="text-lg font-bold">{name.quiz_name}</Text>
+
                     <Text className="text-gray-500">
                       {name.quiz_description}
                     </Text>
@@ -308,13 +314,13 @@ const detail_collection = () => {
                         : "Công khai"}
                     </Text>
                   </View>
-                  <TouchableOpacity
-                    className="flex mt-2 ml-[150px] border border-gray rounded-md"
-                    onPress={() => handleDeleteQuiz(name._id)}
-                  >
-                    <MaterialIcons name="delete" size={24} color="black" />
-                  </TouchableOpacity>
                 </View>
+                <TouchableOpacity
+                  className="flex border-gray justify-end mt-2 border rounded-md ml-[70px]"
+                  onPress={() => handleDeleteQuiz(name._id)}
+                >
+                  <MaterialIcons name="delete" size={24} color="black" />
+                </TouchableOpacity>
               </View>
             );
           }}
