@@ -11,9 +11,10 @@ const ClassroomCard = ({ classroom }) => {
             style={{ elevation: 3 }}
         >
             <View>
-                <Text className='font-bold text-lg'>{`${classroom.class_name}`}</Text>
+                <Text className='font-pbold text-lg'>{`${classroom.class_name}`}</Text>
                 {userData.user_type === 'teacher' ? <Text className='font-semibold text-base'>{`${classroom.school?.school_name}`}</Text> : ''}
-                <Text>{`${classroom.students?.length} học sinh`}</Text>
+                {userData.user_type === 'student' ? <Text className='font-pregular text-base'>{`Giáo viên: ${classroom.user_id.user_fullname}`}</Text> : ''}
+                <Text className='font-pregular'>{`${classroom.students?.length} học sinh`}</Text>
             </View>
             <TouchableOpacity className='bg-slate-50 rounded-full p-2'>
                 <Entypo name='dots-three-horizontal' className='text-slate-400' size={20} />

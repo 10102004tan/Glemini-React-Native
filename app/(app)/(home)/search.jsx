@@ -15,20 +15,23 @@ import {SelectList,MultipleSelectList} from "@10102004tan/react-native-select-dr
 import {useSubjectProvider} from "@/contexts/SubjectProvider";
 import QuizCard from "@/components/customs/QuizCard";
 import QuizModal from "@/components/modals/QuizModal";
-import {router} from "expo-router";
+import {router, useLocalSearchParams} from "expo-router";
 import CustomButton from "@/components/customs/CustomButton";
 import useDebounce from "@/hooks/useDebounce";
 import AntiFlatList from "@/components/customs/AntiFlatList/AntiFlatList";
+import { useResultProvider } from "@/contexts/ResultProvider";
 
 // col span : 4 => full width, 2 => half width
 const COL_SPAN = 2;
 export default function SearchScreen() {
     const LIMIT = 10;
+    const {subjectId} = useLocalSearchParams()
     const {setIsHiddenNavigationBar} = useAppProvider();
     const modalizeRef = useRef(null);
     const [quizList, setQuizList] = useState([]);
     const [dataSubject, setDataSubject] = useState([]);
     const {subjects} = useSubjectProvider();
+    const {fetchResultData} = useResultProvider()
     const [selectedQuiz, setSelectedQuiz] = useState(null);
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [loading,setLoading] = useState(false);
@@ -75,7 +78,15 @@ export default function SearchScreen() {
         },
     ];
 
-
+    useEffect(() => {
+        if (subjectId) {
+            setSelectedSubject([subjectId]);
+            setFilter((prev) => ({
+                ...prev,
+                subjectIds: [subjectId],
+            }));
+        }
+    }, [subjectId]);
 
     useEffect(() => {
         fetchQuiz();
@@ -231,14 +242,26 @@ export default function SearchScreen() {
         setSelectedSubject([]);
     }
 
-    const handleNavigateToQuiz = () => {
+    const handleNavigateToQuiz = async () => {
+        // setIsOpenModal(false);
+        // router.push({
+        //     pathname: '/(play)/single',
+        //     params:{
+        //         quizId: selectedQuiz._id
+        //     }
+        // });
         setIsOpenModal(false);
-        router.push({
-            pathname: '/(play)/single',
-            params:{
-                quizId: selectedQuiz._id
-            }
-        });
+		const fetchedResult = await fetchResultData({ quizId: selectedQuiz._id, type: 'publish' });
+		if (fetchedResult) {
+			router.push({
+				pathname: '/(home)/activity',
+			});
+		} else {
+			router.push({
+				pathname: '(play)/single',
+				params: { quizId: selectedQuiz._id, type: 'publish' }
+			});
+		}
     };
 
     // component item for AntiFlatList
