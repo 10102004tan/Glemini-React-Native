@@ -13,6 +13,7 @@ import Field from "@/components/customs/Field";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 import { useRoomProvider } from "@/contexts/RoomProvider";
 import socket from "@/utils/socket";
+import { truncateDescription } from "@/utils";
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 16;
 
@@ -131,10 +132,10 @@ const ResultCompletedItem = ({ result }) => {
             </View>
             <View className='px-4 py-2'>
                 <Text className="text-base font-pmedium">
-                    {result.exercise_id?.name || result.room_id?.room_code}
+                    {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
                 </Text>
-                <Text className="text-xl font-light">
-                    {result.quiz_id?.quiz_name}
+                <Text className="text-lg font-light">
+                    {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
                 </Text>
                 <Text className="text-xs font-light">
                     bởi: {result.quiz_id?.user_id?.user_fullname}
@@ -165,10 +166,10 @@ const ResultDoingItem = ({ result }) => (
         </View>
         <View className='px-4 py-2'>
             <Text className="text-base font-pmedium">
-                {result.exercise_id?.name}
+                {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
             </Text>
-            <Text className="text-xl font-light">
-                {result.quiz_id?.quiz_name}
+            <Text className="text-lg font-light">
+                {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
             </Text>
             <Text className="text-xs font-light">
                 bởi: {result.quiz_id?.user_id?.user_fullname}
@@ -243,12 +244,14 @@ const DoingResults = ({ resultsDoing }) => {
                         "Bạn có muốn tiếp tục bài kiểm tra này?",
                         [
                             { text: "Hủy", style: "cancel" },
-                            { text: "Tiếp tục", onPress: () => {
-                                router.push({
-                                    pathname: '(play)/single',
-                                    params: { quizId: item.quiz_id._id, exerciseId: item.exercise_id._id, type: item.type },
-                                });
-                            }},
+                            {
+                                text: "Tiếp tục", onPress: () => {
+                                    router.push({
+                                        pathname: '(play)/single',
+                                        params: { quizId: item.quiz_id._id, exerciseId: item.type === 'publish' ? '' : item.exercise_id._id, type: item.type },
+                                    });
+                                }
+                            },
                         ]
                     );
                 }}>
