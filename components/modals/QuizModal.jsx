@@ -68,7 +68,7 @@ const QuizModal = ({
 								</Text>
 							</View>
 						</View>
-						<View className="flex flex-row p-2 w-full items-center mx-3 mt-2">
+						<View className="flex flex-row p-2 w-full justify-center">
 							{userData.user_type === 'teacher' ? (userData._id === quiz?.user_id) ? (
 									<TouchableOpacity className={"flex-row p-2 rounded gap-2 items-center bg-green-400"}>
 										<AntDesign name={'edit'} size={16} />
@@ -80,20 +80,8 @@ const QuizModal = ({
 										<Text>Luu</Text>
 									</TouchableOpacity>
 								)
-							 : (
-								<>
-									<Button
-										text={i18n.t(
-											'student_homepage.btnThuThach'
-										)}
-										loading={false}
-										type="fill"
-										otherStyles={'bg-green-500 rounded-lg'}
-										textStyles={'text-base text-black'}
-										onPress={() => {
-											console.log('Thử thách với bạn');
-										}}
-									/>
+							: (
+								<View className='flex-row items-center'>
 									<Button
 										text={i18n.t(
 											'student_homepage.btnLuyenTap'
@@ -104,7 +92,7 @@ const QuizModal = ({
 										textStyles={'text-base text-black'}
 										onPress={onStartQuiz}
 									/>
-								</>
+								</View>
 							)}
 						</View>
 					</View>

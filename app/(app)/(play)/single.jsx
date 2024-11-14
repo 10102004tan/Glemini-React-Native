@@ -86,25 +86,20 @@ const SinglePlay = () => {
 	const [state, dispatch] = useReducer(gameReducer, initialState);
 	const [sound, setSound] = useState(null);
 
-
-
-	useFocusEffect(
-		useCallback(() => {
-			if (quizId !== 'undefined' && type && exerciseId !== 'undefined') {
-				// Fetch result data only if exerciseId is defined
-				fetchResultData({ quizId, exerciseId, type });
-			} else if (quizId !== 'undefined' && type) {
-				// Handle the case where only quizId and type are defined, but not exerciseId
-				fetchResultData({ quizId, type });
-			}
-		}, [exerciseId, quizId, type])
-	);
-	
+	useEffect(() => {
+		if (quizId) {
+			fetchQuestions(quizId)
+		}
+	}, [quizId]);
 
 	useEffect(() => {
-		fetchQuestions(quizId);
-
-	}, [quizId]);
+		if (quizId && type && exerciseId ) {
+			fetchResultData({ quizId, exerciseId, type });
+		} else if (quizId && type) {
+			fetchResultData({ quizId, type });
+		}
+	}, [exerciseId, quizId, type])
+	
 
 	useEffect(() => {
 		if (result) {
@@ -112,10 +107,9 @@ const SinglePlay = () => {
 			const nextIndex = answeredQuestionsCount < questions.length ? answeredQuestionsCount : 0;
 			dispatch({ type: 'SET_CURRENT_QUESTION_INDEX', payload: nextIndex });
 		}
-	}, [result, questions]);
+	}, [result]);
 	
-
-
+	
 	// useEffect(() => {
 	//     if (sound) return () => sound.unloadAsync();
 	// }, [sound]);
@@ -192,14 +186,9 @@ const SinglePlay = () => {
 
 		return (
 			<ResultSingle
-				quizId={quizId}
-				correctCount={state.correctCount}
-				wrongCount={state.wrongCount}
-				score={state.score}
-				totalQuestions={questions.length}
+				resultId={result?._id}
 				handleRestart={handleRestart}
-				exerciseId={exerciseId}
-				type={type}
+				
 			/>
 		);
 	}
@@ -261,7 +250,7 @@ const SinglePlay = () => {
 					type="fill"
 					loading={state.isProcessing}
 					otherStyles={`p-5 ${state.buttonColor}`}
-					textStyles={`mx-auto text-lg ${state.buttonTextColor}`}
+					textStyles={`mx-auto text-lg mx-auto ${state.buttonTextColor}`}
 				/>
 			</View>
 		</View>

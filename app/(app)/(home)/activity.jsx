@@ -178,11 +178,11 @@ const ResultCompletedItem = ({ result }) => {
             <Text className="text-sm text-slate-50 ml-1">{totalQuestions} Qs</Text>
          </View>
          <View className='px-4 py-2'>
-            <Text className="text-base font-pmedium">
+            <Text className="text-sm font-pmedium">
                {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
             </Text>
-            <Text className="text-lg font-light">
-               {(result.quiz_id?.quiz_name.length > 15 ? result.quiz_id?.quiz_name.substring(0, 15) + "..." : result.quiz_id?.quiz_name)}
+            <Text className="text-base font-light">
+               {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
             </Text>
             <Text className="text-xs font-light">
                bởi: {result.quiz_id?.user_id?.user_fullname}
@@ -215,7 +215,7 @@ const ResultDoingItem = ({ result }) => {
          <Text className="text-base font-pmedium">
             {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
          </Text>
-         <Text className="text-lg font-light">
+         <Text className="text-base font-light">
             {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
          </Text>
          <Text className="text-xs font-light">
@@ -301,12 +301,12 @@ const DoingResults = ({ results }) => {
                            if (item.type === 'publish') {
                               router.push({
                                  pathname: '(play)/single',
-                                 params: { quizId: item.quiz_id._id, type: item.type },
+                                 params: { quizId: item.quiz_id?._id, type: item.type }
                               })
                            } else if (item.type === 'exercise') {
                               router.push({
                                  pathname: '(play)/single',
-                                 params: { quizId: item.quiz_id._id, exerciseId: item.exercise_id._id, type: item.type }
+                                 params: { quizId: item.quiz_id?._id, exerciseId: item.exercise_id?._id, type: item.type }
                               })
                            } else if (item.type === 'room') {
                               socket.emit('joinRoom', { roomCode: item.room_id.room_code, user: userData });
