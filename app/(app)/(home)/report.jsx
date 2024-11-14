@@ -61,14 +61,12 @@ export default function ReportScreen() {
 
 
     useEffect(() => {
-        // Reset `page` to 1 and clear data when filters change.
         setPage(1);
         loadResults(1, false); // Reset results rather than appending
     }, [searchTerm, classFilter, sortOrder, typeFilter]);   
 
 
     const handleLoadMore = async () => {
-        // Ensure `loadResults` only loads more if there’s data and not fetching
         if (isFetchingMore || !hasMoreData) return;
     
         setIsFetchingMore(true);
@@ -78,13 +76,11 @@ export default function ReportScreen() {
         setIsFetchingMore(false);
     };
 
-    // Toggle function for sorting order
     const handleSortOrderToggle = () => {
         setSortOrder((prevOrder) => (prevOrder === 'newest' ? 'oldest' : 'newest'));
         setPage(1);
     };
 
-    // Reset Filters
     // Reset Filters
 const handleResetFilters = () => {
     setSearchTermMockup("");

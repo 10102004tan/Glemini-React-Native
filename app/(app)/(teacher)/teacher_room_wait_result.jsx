@@ -12,6 +12,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 import socket from '@/utils/socket';
 import Button from '@/components/customs/Button';
+import { sortRankBoardDesc } from '../../../utils';
 const TeacherRoomWaitResultScreen = () => {
    const [translateValue] = useState(new Animated.Value(0));
    const screenWidth = Dimensions.get('window').width;
@@ -57,6 +58,7 @@ const TeacherRoomWaitResultScreen = () => {
       outputRange: ['100%', '0%'],
    });
 
+
    // Call API to get questions by quizId
    useEffect(() => {
       // console.log(quizId)
@@ -90,14 +92,14 @@ const TeacherRoomWaitResultScreen = () => {
    useEffect(() => {
 
       // Lắng nghe sự kiện 'updateRanking' từ socket
-      socket.on('updateRanking', (users) => {
-         setRankData(users);
+      socket.on('updateRanking', (rank) => {
+         setRankData(sortRankBoardDesc(rank));
       });
 
       // Lắng nghe sự kiện cập nhật lại thanh process
-      socket.on('updateStats', (data) => {
-         console.log(data);
-         setAccuracy(data.accuracy);
+      socket.on('updateStats', (rank) => {
+         // console.log(rank);
+         setAccuracy(Math.round((rank.correct_answer / rank.total_answer * 100)) || 0);
          // setErrorRate(data.errorRate);
       });
 
@@ -131,40 +133,42 @@ const TeacherRoomWaitResultScreen = () => {
    }, [tabResult])
 
    useEffect(() => {
-      console.log(roomTimer)
+      // console.log(roomTimer)
       const interval = setInterval(() => {
-         if (roomTimer < roomTime * 60) {
-            setRoomTimer(prev => prev + 1);
-         } else {
-            clearInterval(interval);
-            Alert.alert('Thông báo', 'Hết thời gian làm bài', [
-               {
-                  text: 'Thoát',
-                  onPress: async () => {
-                     const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_UPDATE_STATUS}`, {
-                        method: 'POST',
-                        headers: {
-                           'Content-Type': 'application/json',
-                           'x-client-id': userData._id,
-                           authorization: userData.accessToken,
-                        },
-                        body: JSON.stringify({
-                           room_code: roomCode,
-                           status: 'completed',
-                        }),
-                     })
-                     const data = await response.json();
-                     // console.log(data)
-                     if (data.statusCode === 200) {
-                        socket.emit('endQuiz', { roomCode: roomCode, user: userData });
-                        router.replace({
-                           pathname: '/(app)/(home)',
-                           params: {}
-                        }) // Redirect to home
+         if (roomTime) {
+            if (roomTimer < roomTime * 60) {
+               setRoomTimer(prev => prev + 1);
+            } else {
+               clearInterval(interval);
+               Alert.alert('Thông báo', 'Hết thời gian làm bài', [
+                  {
+                     text: 'Thoát',
+                     onPress: async () => {
+                        const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_UPDATE_STATUS}`, {
+                           method: 'POST',
+                           headers: {
+                              'Content-Type': 'application/json',
+                              'x-client-id': userData._id,
+                              authorization: userData.accessToken,
+                           },
+                           body: JSON.stringify({
+                              room_code: roomCode,
+                              status: 'completed',
+                           }),
+                        })
+                        const data = await response.json();
+                        // console.log(data)
+                        if (data.statusCode === 200) {
+                           socket.emit('endQuiz', { roomCode: roomCode, user: userData });
+                           router.replace({
+                              pathname: '/(app)/(home)',
+                              params: {}
+                           }) // Redirect to home
+                        }
                      }
                   }
-               }
-            ])
+               ])
+            }
          }
       }, 1000);
 
@@ -283,12 +287,12 @@ const TeacherRoomWaitResultScreen = () => {
                      </Text>
                   </View>
                   {/* Items */}
-                  {userData && rankData.length > 0 &&
-                     rankData.map((user, index) => {
-                        if (userData._id !== user._id) {
+                  {userData && rankData.rank && rankData.rank.length > 0 &&
+                     rankData.rank.map((rank, index) => {
+                        if (userData._id !== rank.user_id._id) {
                            return <RankBoardUserItem
-                              key={user._id}
-                              user={{ user_fullname: user.user_fullname, user_avatar: user.user_avatar }} point={user.score} rankIndex={index} />
+                              key={index}
+                              user={{ user_fullname: rank.user_id.user_fullname, user_avatar: rank.user_id.user_avatar }} point={rank.userScore} rankIndex={index} />
                         }
                      })
                   }

@@ -13,6 +13,7 @@ import Toast from 'react-native-toast-message-custom';
 import ClassroomCard from '@/components/customs/ClassroomCard';
 import { Pressable } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import LottieView from 'lottie-react-native';
 
 const TeacherView = () => {
     const { userData } = useAuthContext();
@@ -53,6 +54,7 @@ const TeacherView = () => {
         await createClassroom(classData);
         await fetchClassrooms();
         handleCloseBts();
+        setClassName('');
     };
 
     const handleNavigateToDetail = (classroomId) => {
@@ -88,16 +90,27 @@ const TeacherView = () => {
                 icon={<Icon className='text-lg' name='add-circle-outline' size={18} />}
             />
 
-            <FlatList
-                data={filteredClassrooms}
-                renderItem={({ item }) => (
-                    <Pressable onPress={() => handleNavigateToDetail(item._id)}>
-                        <ClassroomCard classroom={item} />
-                    </Pressable>
-                )}
-                keyExtractor={(item) => item._id}
-                contentContainerStyle={{ paddingBottom: 16 }}
-            />
+            {filteredClassrooms && filteredClassrooms.length > 0 ?
+                <FlatList
+                    data={filteredClassrooms}
+                    renderItem={({ item }) => (
+                        <Pressable onPress={() => handleNavigateToDetail(item._id)}>
+                            <ClassroomCard classroom={item} />
+                        </Pressable>
+                    )}
+                    keyExtractor={(item) => item._id}
+                    contentContainerStyle={{ paddingBottom: 16 }}
+                /> 
+                : 
+                <View className='flex-1 items-center justify-center'>
+                    <LottieView
+                        source={require('@/assets/jsons/empty.json')}
+                        autoPlay
+                        loop
+                        style={{ width: 250, height: 250 }}
+                    />
+                </View>
+            }
 
             {/* BottomSheet */}
             <Overlay onPress={handleCloseBts} visible={first} />

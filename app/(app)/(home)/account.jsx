@@ -30,7 +30,7 @@ export default function AccountScreen() {
         setNumberOfUnreadNoti,
         setNotification
     } = useContext(AuthContext);
-    const {i18n} = useAppProvider();
+    const {i18n,setIsHiddenNavigationBar} = useAppProvider();
     const modalizeRef = useRef(null);
     const [currentSelected, setCurrentSelected] = useState(null);
 
@@ -57,6 +57,7 @@ export default function AccountScreen() {
 
     const onOpen = () => {
         modalizeRef.current?.open();
+        setIsHiddenNavigationBar(true);
     };
 
     const handleNotification = (item) => {
@@ -127,7 +128,7 @@ export default function AccountScreen() {
                 }}/>
             </View>
 
-            <Modalize onClosed={onClosed} avoidKeyboardLikeIOS={true} children={<View></View>}
+            <Modalize onClose={()=>{setIsHiddenNavigationBar(false);}} onClosed={onClosed} avoidKeyboardLikeIOS={true} children={<View></View>}
                       modalStyle={{padding: 10, marginTop: 30, zIndex: 1000}} ref={modalizeRef}
                       withHandle={false} scrollViewProps={{showsVerticalScrollIndicator: false}}>
                 <Markdown>

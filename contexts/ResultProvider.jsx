@@ -12,7 +12,7 @@ const ResultProvider = ({ children }) => {
    const { userData } = useAuthContext();
    // Lấy dữ liệu từ API
    // Fetch results for teachers with optional filters
-   const fetchResultsForTeacher = async ( page = 1, sortOrder = "newest", identifier = "", class_name = "", type = "" ) => {
+   const fetchResultsForTeacher = async (page = 1, sortOrder = "newest", identifier = "", class_name = "", type = "") => {
       const path = `${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_REPORT}`;
       const requestBody = {
          userId: userData._id,
@@ -35,6 +35,7 @@ const ResultProvider = ({ children }) => {
          });
 
          const data = await response.json();
+         console.log(data)
 
          if (data.statusCode === 200) {
             setResults(data.metadata);
@@ -57,7 +58,7 @@ const ResultProvider = ({ children }) => {
                "x-client-id": userData._id,
                authorization: userData.accessToken,
             },
-            body: JSON.stringify({userId: userData._id}),
+            body: JSON.stringify({ userId: userData._id }),
          });
 
          const data = await response.json();
@@ -70,7 +71,7 @@ const ResultProvider = ({ children }) => {
       }
    };
 
-   const fetchResultData = async ({quizId, exerciseId, roomId, type}) => {
+   const fetchResultData = async ({ quizId, exerciseId, roomId, type }) => {
       const query = {
          user_id: userData._id,
          quiz_id: quizId,
@@ -80,7 +81,7 @@ const ResultProvider = ({ children }) => {
       };
 
       // console.log(query);
-      
+
       try {
          const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_REVIEW, {
             method: 'POST',

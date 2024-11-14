@@ -41,6 +41,7 @@
     "expo-media-library": "~16.0.5",
     "expo-notifications": "~0.28.19",
     "expo-router": "~3.5.24",
+    "expo-screen-orientation": "~7.0.5",
     "expo-secure-store": "^13.0.2",
     "expo-sharing": "^12.0.1",
     "expo-splash-screen": "~0.27.7",
@@ -89,7 +90,8 @@
     "react-native-webview": "13.8.6",
     "reactotron-react-native": "^5.1.9",
     "recyclerlistview": "^4.2.1",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
