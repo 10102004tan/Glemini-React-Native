@@ -90,6 +90,7 @@ export default function ReportScreen() {
         setTypeFilter("");
         setSortOrder("newest");
         setPage(1);
+        setHasMoreData(true);
         loadResults(1);
     };
 

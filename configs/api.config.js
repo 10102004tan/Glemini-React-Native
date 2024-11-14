@@ -113,9 +113,6 @@ const dev = {
     ROOM_UPDATE_RESULT: "/result/update-result",
     ROOM_UPDATE_STATUS: "/room/update",
 
-    //user
-    // CHECK_EMAIL: '/user/check-email',
-    SHARE_QUIZ: "/user/share-quiz",
 
     // exercise
     EXERCISE_REPORT: "/exercise/report",
