@@ -1,11 +1,14 @@
 import React from 'react';
-import { View, Text, Modal, Image } from 'react-native';
+import {View, Text, Modal, Image, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Button from '../customs/Button';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { truncateDescription } from '@/utils';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { Images } from '@/constants';
+import CustomButton from "@/components/customs/CustomButton";
+import {Ionicons} from "@expo/vector-icons";
+import AntDesign from "@expo/vector-icons/AntDesign";
 const QuizModal = ({
 	visible = false,
 	onClose = () => {},
@@ -14,7 +17,6 @@ const QuizModal = ({
 }) => {
 	const { userData } = useAuthContext();
 	const { i18n } = useAppProvider();
-
 	return (
 		<Modal
 			animationType="fade"
@@ -66,19 +68,19 @@ const QuizModal = ({
 								</Text>
 							</View>
 						</View>
-						<View className="flex flex-row p-2 w-full justify-around">
-							{userData.user_type === 'teacher' ? (
-								<Button
-									text="Thử thách bạn"
-									loading={false}
-									type="fill"
-									otherStyles={'bg-green-300 rounded-lg'}
-									textStyles={'text-base text-black'}
-									onPress={() => {
-										console.log('Thử thách với bạn');
-									}}
-								/>
-							) : (
+						<View className="flex flex-row p-2 w-full items-center mx-3 mt-2">
+							{userData.user_type === 'teacher' ? (userData._id === quiz?.user_id) ? (
+									<TouchableOpacity className={"flex-row p-2 rounded gap-2 items-center bg-green-400"}>
+										<AntDesign name={'edit'} size={16} />
+										<Text>Chỉnh sửa</Text>
+									</TouchableOpacity>
+								) : (
+									<TouchableOpacity className={"flex-row p-2 rounded gap-2 items-center bg-green-400"}>
+										<Ionicons name={'bookmark'} size={16} />
+										<Text>Luu</Text>
+									</TouchableOpacity>
+								)
+							 : (
 								<>
 									<Button
 										text={i18n.t(

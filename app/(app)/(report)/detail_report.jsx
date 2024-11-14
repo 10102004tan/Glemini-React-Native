@@ -1,5 +1,5 @@
-import { createRef, useCallback } from "react";
-import { View, Text, Pressable, TouchableOpacity, ScrollView, Image } from "react-native";
+import { createRef, useCallback, useEffect } from "react";
+import { View, Text, Pressable, TouchableOpacity, ScrollView, Image, Alert } from "react-native";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useResultProvider } from "@/contexts/ResultProvider";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -7,6 +7,10 @@ import moment from "moment";
 import LottieView from "lottie-react-native";
 import { Modalize } from "react-native-modalize";
 import { useQuestionProvider } from "@/contexts/QuestionProvider";
+import QuestionOverview from "@/components/customs/QuestionOverview";
+import * as XLSX from 'xlsx';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 export default function DetailReport() {
     const modal = createRef();
@@ -32,9 +36,48 @@ export default function DetailReport() {
         }
     };
 
-    const handleQuestionData = () => {
-        fetchQuestions(reportData.quiz_id._id);
+    const downloadExcel = async () => {
+        if (!reportData.result_ids) return;
+    
+        // Prepare data for Excel
+        const data = reportData.result_ids.map((result) => ({
+            "Họ và tên": result.user_id.user_fullname,
+            "Email": result.user_id.user_email,
+            "Trạng thái": 'Hoàn thành',
+            "Điểm số": result.result_questions.filter(q => q.correct).length + " điểm",
+            "Tổng câu hỏi": result.result_questions.length + " câu",
+        }));
+    
+        // Add Title Row
+        const title = [["Báo cáo Kết quả Quiz"]];
+        const headers = [["Họ và tên", "Email", "Trạng thái", "Điểm số", "Tổng câu hỏi"]];
+    
+        // Combine title, headers, and data into one sheet
+        const sheetData = [...title, [], ...headers, ...data.map(Object.values)];
+    
+        // Create worksheet and workbook
+        const ws = XLSX.utils.aoa_to_sheet(sheetData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Results");
+    
+        // Write the Excel file to the file system
+        const wbout = XLSX.write(wb, { type: "base64", bookType: "xlsx" });
+        const fileUri = `${FileSystem.cacheDirectory}${reportData.name || reportData.room_code}_report.xlsx`;
+    
+        // Save and share
+        try {
+            await FileSystem.writeAsStringAsync(fileUri, wbout, { encoding: FileSystem.EncodingType.Base64 });
+            await Sharing.shareAsync(fileUri);
+        } catch (error) {
+            console.error("Error downloading Excel:", error);
+        }
     };
+    
+    useEffect(() => {
+        if (reportData) {
+            fetchQuestions(reportData.quiz_id?._id);        
+        }
+    }, [reportData])
 
     return (
         <View className="flex-1 bg-slate-50">
@@ -46,7 +89,20 @@ export default function DetailReport() {
                             {getStatus() ? 'Đang diễn ra' : 'Đã kết thúc'}
                         </Text>
                     </View>
-                    <TouchableOpacity onPress={() => console.log(1)}>
+                    <TouchableOpacity onPress={() => {
+                        Alert.alert(
+                            "Tải file báo cáo?",
+                            "Bạn có muốn tiếp tục tải file báo cáo này?",
+                            [
+                                { text: "Hủy", style: "cancel" },
+                                {
+                                    text: "Tiếp tục", onPress: () => {
+                                        downloadExcel()
+                                    }
+                                },
+                            ]
+                        );
+                    }}>
                         <LottieView
                             source={require('@/assets/jsons/download.json')}
                             autoPlay
@@ -61,7 +117,7 @@ export default function DetailReport() {
                         <Text>{moment(reportData.date_end).format("MMMM Do YYYY | h:mm A")}</Text>
                     </View>
                     <TouchableOpacity className='flex-row items-center' onPress={onOpen}>
-                        <Text>Xem quiz</Text>
+                        <Text className='px-1 py-1 bg-green-500/60 rounded-lg'>Xem quiz</Text>
                         <MaterialCommunityIcons name="menu-right" size={30} />
                     </TouchableOpacity>
                 </View>
@@ -71,7 +127,7 @@ export default function DetailReport() {
                 <View className='w-full flex-row items-center justify-around my-1'>
                     <View className='flex-row items-center gap-2'>
                         <View className='w-6 h-6 rounded-full bg-green-500' />
-                        <Text className='text-green-500'>Chính xác</Text>
+                        <Text className='text-green-500'>Chính xác </Text>
                     </View>
                     <View className='flex-row items-center gap-2'>
                         <View className='w-6 h-6 bg-red-500' />
@@ -79,9 +135,12 @@ export default function DetailReport() {
                     </View>
                 </View>
                 <Text className='text-base font-semibold my-1'>Danh sách người dùng đã tham gia</Text>
+                <View className='flex-1'>
+                {
+                    reportData.result_ids && reportData.result_ids.length > 0 ? 
                 <ScrollView
                     showsVerticalScrollIndicator={false}
-                    className="mt-2 mx-4">
+                    className="mx-4">
                     {reportData.result_ids?.map((result) => {
                         const correctCount = result.result_questions.filter(q => q.correct).length;
                         const incorrectCount = result.result_questions.length - correctCount;
@@ -92,8 +151,6 @@ export default function DetailReport() {
                                     pathname: '/(report)/overview_report',
                                     params: {
                                         resultId: result._id,
-                                        quizId: result.quiz_id,
-                                        exerciseId: reportId._id || null
                                     }
                                 });
                             }}>
@@ -111,31 +168,56 @@ export default function DetailReport() {
                         );
                     })}
                 </ScrollView>
+                :
+                <View className='h-full flex items-center justify-center'>
+                            <LottieView
+                                source={require('@/assets/jsons/empty.json')}
+                                autoPlay
+                                loop
+                                style={{
+                                    width: 200,
+                                    height: 200,
+                                }}
+                            />
+                            <Text>Không có học sinh nào tham gia bài tập này</Text>
+                        </View>
+                }
+                </View>
             </View>
             <Modalize
                 ref={modal}
-                snapPoint={200}
-                onOpened={handleQuestionData}
+                snapPoint={500}
                 modalStyle={{ zIndex: 1000, elevation: 10, padding: 10 }}
                 avoidKeyboardLikeIOS={true}
                 withHandle={false}
                 scrollViewProps={{ showsVerticalScrollIndicator: false }}>
                 <View className="p-4">
                     <Text className="text-lg font-bold mb-3">Câu hỏi trong Quiz</Text>
-                    <ScrollView showsVerticalScrollIndicator={false}>
-                        {questions?.length > 0 ? (
-                            questions.map((question, index) => (
-                                <View key={question._id} className="mb-3">
-                                    <Text className="font-semibold">{`Câu ${index + 1}: ${question.question_excerpt}`}</Text>
-                                    {question.question_answer_ids?.map((answer) => (
-                                        <Text key={answer._id} className="ml-4">{answer.text}</Text>
-                                    ))}
-                                </View>
-                            ))
-                        ) : (
-                            <Text>Đang tải câu hỏi...</Text>
-                        )}
-                    </ScrollView>
+                    {questions?.length > 0 ? (
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            {
+                                questions.map((question, index) => (
+                                    <QuestionOverview
+                                        key={index}
+                                        question={question}
+                                        index={index}
+                                    />
+                                ))
+                            }
+                        </ScrollView>
+                    ) : (
+                        <View className='h-full flex items-center justify-center'>
+                            <LottieView
+                                source={require('@/assets/jsons/empty.json')}
+                                autoPlay
+                                loop
+                                style={{
+                                    width: 250,
+                                    height: 250,
+                                }}
+                            />
+                        </View>
+                    )}
                 </View>
             </Modalize>
         </View>
