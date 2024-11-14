@@ -256,7 +256,7 @@ const detail_collection = () => {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity className="ml-2">
+          {/* <TouchableOpacity className="ml-2">
             <View className="w-[80px] rounded-lg bg-slate-400 flex flex-row justify-between p-1">
               <View className="flex justify-center">
                 <FontAwesome name="share" size={14} color="black" />
@@ -264,7 +264,7 @@ const detail_collection = () => {
 
               <Text className="mr-1 flex items-center">Chia sẻ</Text>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity className="ml-2" onPress={handleDeletePress}>
             <View className="w-[60px] rounded-lg bg-slate-400 flex flex-row justify-between p-1">
