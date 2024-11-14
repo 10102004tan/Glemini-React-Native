@@ -19,7 +19,6 @@ const QuizProvider = ({ children }) => {
   // Get all quizzes of the user
   const fetchQuizzes = async ({ skip = 0, limit = LIMIT }) => {
     if (!quizFetching) {
-      // console.log("load");
       setQuizFetching(true);
       const response = await fetch(
         `${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`,

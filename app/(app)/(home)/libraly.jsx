@@ -105,14 +105,15 @@ const Library = () => {
   const [visibleFilterBottomSheet, setVisibleFilterBottomSheet] =
     useState(false);
 
-  // Tên bộ sưu tập
-  const [newCollectionName, setNewCollectionName] = useState("");
-  const [isRefreshing, setIsRefreshing] = useState(false);
   // tab hiện tại: 'library' hoặc 'collection'
   const [activeTab, setActiveTab] = useState("library");
   // di chuyển dòng bôi đen
   const [translateValue] = useState(new Animated.Value(0));
-  const [listNameCollection, setListNameCollection] = useState([]);
+  visibleBottomSheet;
+
+  // biến  refresh
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isRefreshingShared, setIsRefreshingShared] = useState(false);
 
   // lấy list thông tin của quiz, thông tin name, description, status,...
   const { quizzes, fetchQuizzes, quizFetching, setQuizzes, LIMIT } =
@@ -120,28 +121,42 @@ const Library = () => {
 
   const [sharedQuizzes, setSharedQuizzes] = useState([]);
 
+  const [quizLoading, setQuizLoading] = useState(false);
+
   //hàm fetch api lấy tất cả các quiz đã được chia sẻ
-  const getAllQuizzesShared = async () => {
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.GET_ALL_QUIZZES_SHARED}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_id: userData._id,
-        }),
+  const getAllQuizzesShared = async ({ skip = 0, limit = LIMIT }) => {
+    if (!quizLoading) {
+      setQuizLoading(true);
+      const response = await fetch(
+        `${API_URL}${API_VERSION.V1}${END_POINTS.GET_ALL_QUIZZES_SHARED}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-client-id": userData._id,
+            authorization: userData.accessToken,
+          },
+          body: JSON.stringify({
+            user_id: userData._id,
+            skip,
+            limit,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.statusCode === 200) {
+        if (data.metadata.length > 0) {
+          if (skip === 0) {
+            setSharedQuizzes(data.metadata);
+          } else {
+            setSharedQuizzes([...sharedQuizzes, ...data.metadata]);
+          }
+        } else {
+          console.log("Không thể lấy ra tất cả quiz được share");
+        }
+        setQuizLoading(false);
       }
-    );
-    const data = await response.json();
-    if (data.statusCode === 200) {
-      setSharedQuizzes(data.metadata);
-      console.log(data.metadata[0].shared_user_ids);
-    } else {
-      console.log("Không thể lấy ra tất cả quiz được share");
+      setQuizLoading(false);
     }
   };
 
@@ -186,7 +201,7 @@ const Library = () => {
     if (activeTab === "collection") {
       getAllCollections();
     } else if (activeTab === "shared") {
-      getAllQuizzesShared();
+      getAllQuizzesShared({ skip: 0 });
     }
   }, [activeTab]);
 
@@ -380,18 +395,33 @@ const Library = () => {
     );
   };
 
+  // Load more và refresh của thư viện của tôi
   const handleLoadMore = () => {
     console.log("loadmore::", skip);
     fetchQuizzes({ skip: skip + LIMIT }).then((res) => {
       setSkip(skip + LIMIT);
     });
   };
-
   const handleRefresh = () => {
     setIsRefreshing(true);
     fetchQuizzes({ skip: 0 }).then((res) => {
       setSkip(0);
       setIsRefreshing(false);
+    });
+  };
+
+  // Load more và refresh của quizzes đã nhận
+  const handleLoadMoreQuizShared = () => {
+    console.log("loadmore::", skip);
+    getAllQuizzesShared({ skip: skip + LIMIT }).then((res) => {
+      setSkip(skip + LIMIT);
+    });
+  };
+  const handleRefreshQuizShared = () => {
+    setIsRefreshingShared(true);
+    getAllQuizzesShared({ skip: 0 }).then((res) => {
+      setSkip(0);
+      setIsRefreshingShared(false);
     });
   };
 
@@ -685,30 +715,22 @@ const Library = () => {
           </View>
         )}
         {activeTab === "shared" && (
-          <View className="p-3">
-            <FlatList
-              numColumns={2}
-              contentContainerStyle={{ padding: 2 }}
-              key={(quiz) => quiz._id}
-              style={{ marginBottom: 200 }}
+          <View
+            style={{
+              height: "80%",
+              padding: 12,
+            }}
+          >
+            <AntiFlatList
+              colSpan={2}
+              isRefreshing={isRefreshingShared}
+              componentItem={ComponentItem}
+              loading={quizLoading}
+              handleLoadMore={handleLoadMoreQuizShared}
               data={sharedQuizzes}
-              keyExtractor={(quiz) => quiz._id}
-              renderItem={({ item: quiz }) => {
-                return (
-                  <CardQuiz
-                    handleDelete={() => handleDeleteQuizShared(quiz._id)}
-                    isDelete={true}
-                    quiz={quiz}
-                    routerPath="(quiz)/detail_quiz"
-                    params={{
-                      id: quiz._id,
-                    }}
-
-                    // onPress={() => handleQuizPress(quiz)}
-                  />
-                );
-              }}
-            ></FlatList>
+              handleRefresh={handleRefreshQuizShared}
+              handleDelete={() => handleDeleteQuizShared(quiz._id)}
+            />
           </View>
         )}
       </View>
