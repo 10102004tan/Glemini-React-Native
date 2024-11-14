@@ -2,9 +2,10 @@ import { View, Text, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useQuizProvider } from "@/contexts/QuizProvider";
 
 const CardQuiz = ({
-  quiz={},
+  quiz = {},
   type = "horizontal",
   routerPath = "",
   isDelete = false,
@@ -12,9 +13,10 @@ const CardQuiz = ({
   handleDelete,
 }) => {
   const router = useRouter();
+  const { isEdited } = useQuizProvider();
 
   if (type === "horizontal") {
-    const { quiz_thumb, quiz_name, quiz_description, quiz_status,} = quiz;
+    const { quiz_thumb, quiz_name, quiz_description, quiz_status } = quiz;
     return (
       <TouchableOpacity
         onPress={() => {
@@ -65,10 +67,12 @@ const CardQuiz = ({
       <TouchableOpacity
         className="w-full"
         onPress={() => {
-          router.push({
-            pathname: routerPath,
-            params: params,
-          });
+          if (isEdited) {
+            router.push({
+              pathname: routerPath,
+              params: params,
+            });
+          }
         }}
       >
         <View className="flex flex-col">
