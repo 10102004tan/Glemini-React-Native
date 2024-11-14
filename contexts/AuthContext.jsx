@@ -32,6 +32,11 @@ export const AuthProvider = ({children}) => {
             .catch((error) => setExpoPushToken(`${error}`));
     }, []);
 
+    useEffect(() => {
+        if (userData) {
+           fetchStatus();
+        }
+    }, [userData]);
 
     // fix bug notification
     useEffect(() => {
@@ -46,6 +51,13 @@ export const AuthProvider = ({children}) => {
     useEffect(() => {
         // socket notification
         socket.on('notification', (noti) => {
+            const {noti_type} = noti;
+            // check type notification ::: if type is SYS-003 => check teacher status
+            if (noti_type === "SYS-003") {
+                const {noti_options:{teacher_status}} = noti;
+                setTeacherStatus(teacher_status);
+            }
+
             setNotification((prev) => {
                 return [noti, ...prev];
             });
@@ -53,6 +65,7 @@ export const AuthProvider = ({children}) => {
                 return prev + 1;
             });
         });
+
 
         socket.on("connect", () => {
             console.log("Socket connected");
@@ -62,6 +75,7 @@ export const AuthProvider = ({children}) => {
         socket.on("disconnect", () => {
             console.log("Socket disconnected");
         });
+
 
     }, []);
 
