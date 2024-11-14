@@ -1,19 +1,36 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useResultProvider } from "@/contexts/ResultProvider";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import moment from "moment";
+import LottieView from "lottie-react-native";
 
 export default function DetailReport() {
     const { resultId } = useLocalSearchParams();
     const { overViewData, fetchOverViewData } = useResultProvider();
+    const [isFetching, setIsFetching] = useState(true);
 
     useEffect(() => {
-        fetchOverViewData(resultId);
+        setIsFetching(true);
+        fetchOverViewData(resultId).then(() => setIsFetching(false));
     }, [resultId]);
+    
 
-    if (!overViewData) return null;
+    if (isFetching) {
+        return (
+            <View className='flex-1 items-center justify-center'>
+                <LottieView
+                    source={require('@/assets/jsons/splash.json')}
+                    autoPlay
+                    loop
+                    style={{ width: 250, height: 250 }}
+                />
+            </View>
+        );
+    }
+    
+
     const correctCount = overViewData.result_questions?.filter(q => q.correct)?.length;
     const incorrectCount = overViewData.result_questions?.length - correctCount;
 
@@ -35,10 +52,13 @@ export default function DetailReport() {
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 className='flex-1 p-5' >
-                <View className="flex-row h-6 rounded-full overflow-hidden mb-2">
-                    {/* <View style={{ flex: correctCount / overViewData.result_questions?.length }} className="bg-green-500" />
-                    <View style={{ flex: incorrectCount / overViewData.result_questions?.length }} className="bg-red-500" /> */}
-                </View>
+                {
+                    overViewData.result_questions && overViewData.result_questions?.length > 0 &&
+                    <View className="flex-row h-6 rounded-full overflow-hidden mb-2">
+                        <View style={{ flex: correctCount / overViewData.result_questions?.length }} className="bg-green-500" />
+                        <View style={{ flex: incorrectCount / overViewData.result_questions?.length }} className="bg-red-500" />
+                    </View>
+                }
 
                 <View className="flex-row justify-between mb-2">
                     <Text className="text-green-500 font-bold p-1 bg-green-500/20">{`${correctCount} đúng`}</Text>

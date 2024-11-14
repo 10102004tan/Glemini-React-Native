@@ -48,7 +48,6 @@ const ResultProvider = ({ children }) => {
    // Fetch results for students without filters
    const fetchResultsForStudent = async () => {
       const path = `${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_STUDENT}`;
-      const requestBody = { userId: userData._id };
 
       try {
          const response = await fetch(path, {
@@ -58,7 +57,7 @@ const ResultProvider = ({ children }) => {
                "x-client-id": userData._id,
                authorization: userData.accessToken,
             },
-            body: JSON.stringify(requestBody),
+            body: JSON.stringify({userId: userData._id}),
          });
 
          const data = await response.json();
@@ -71,7 +70,17 @@ const ResultProvider = ({ children }) => {
       }
    };
 
-   const fetchResultData = async (quizId, exerciseId) => {
+   const fetchResultData = async ({quizId, exerciseId, roomId, type}) => {
+      const query = {
+         user_id: userData._id,
+         quiz_id: quizId,
+         type,
+         ...(exerciseId && { exercise_id: exerciseId }),
+         ...(roomId && { room_id: roomId })
+      };
+
+      // console.log(query);
+      
       try {
          const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_REVIEW, {
             method: 'POST',
@@ -80,11 +89,7 @@ const ResultProvider = ({ children }) => {
                'x-client-id': userData._id,
                authorization: userData.accessToken,
             },
-            body: JSON.stringify({
-               quiz_id: quizId,
-               user_id: userData._id,
-               exercise_id: exerciseId
-            }),
+            body: JSON.stringify(query),
          });
 
          const data = await res.json();
@@ -178,6 +183,12 @@ const ResultProvider = ({ children }) => {
          })
       }
    };
+
+   useEffect(() => {
+      if (userData) {
+         fetchResultsForStudent();
+      }
+   }, [userData]);
 
 
    return (

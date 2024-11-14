@@ -9,7 +9,6 @@ import { useGlobalSearchParams, useRouter } from 'expo-router';
 const ResultReview = () => {
    const router = useRouter();
    const { result } = useGlobalSearchParams();
-   // console.log(result)
    const resultData = JSON.parse(result);
    const { i18n } = useAppProvider();
 

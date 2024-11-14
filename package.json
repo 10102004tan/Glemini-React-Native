@@ -15,12 +15,12 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@10102004tan/react-native-select-dropdown-v2": "^1.0.8",
+    "@10102004tan/react-native-select-dropdown-v2": "^1.0.9",
     "@expo/vector-icons": "^14.0.4",
     "@gorhom/bottom-sheet": "^4.6.4",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "8.0.1",
-    "@react-native-picker/picker": "2.7.5",
+    "@react-native-picker/picker": "^2.7.5",
     "@react-navigation/native": "^6.0.2",
     "expo": "~51.0.39",
     "expo-application": "~5.9.1",
@@ -63,12 +63,14 @@
     "react-native-dialog": "^9.3.0",
     "react-native-dropdown-select-list": "^2.0.5",
     "react-native-element-dropdown": "^2.12.1",
+    "react-native-fast-image": "^8.6.3",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-loading-spinner-overlay": "^3.0.1",
     "react-native-markdown-display": "^7.0.2",
     "react-native-modal": "^13.0.1",
     "react-native-modal-datetime-picker": "^18.0.0",
     "react-native-modalize": "^2.1.1",
+    "react-native-optimized-flatlist": "^1.0.4",
     "react-native-otp-textinput": "^1.1.6",
     "react-native-pager-view": "^6.3.0",
     "react-native-paper": "^5.12.5",
@@ -87,7 +89,8 @@
     "react-native-web": "~0.19.10",
     "react-native-webview": "13.8.6",
     "reactotron-react-native": "^5.1.9",
-    "socket.io-client": "^4.8.0"
+    "recyclerlistview": "^4.2.1",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -98,7 +101,7 @@
     "jest-expo": "~51.0.3",
     "metro-config": "^0.81.0",
     "react-test-renderer": "18.2.0",
-    "tailwindcss": "^3.3.2",
+    "tailwindcss": "3.3.2",
     "typescript": "~5.3.3"
   },
   "private": true

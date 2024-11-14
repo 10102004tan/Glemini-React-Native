@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Modal } from "react-native";
-import Button from "@/components/customs/Button"; // Điều chỉnh theo đường dẫn đúng
+import { View, Text, TextInput, Modal, Switch } from "react-native";
+import Button from "@/components/customs/Button";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 import { useAuthContext } from "@/contexts/AuthContext";
 
-const EmailDialog = ({ visible, onClose, onSend, quiz_id }) => {
+const EmailDialog = ({ visible, onClose, quiz_id }) => {
   const [email, setEmail] = useState("");
-  const [error, setError] = useState(""); // Trạng thái lưu thông báo lỗi
-
+  const [error, setError] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
   const { userData } = useAuthContext();
 
-  // Khi mở lại dialog, reset email và error
   useEffect(() => {
     if (visible) {
-      setEmail(""); // Đặt lại email về chuỗi rỗng khi dialog mở lại
-      setError(""); // Xóa thông báo lỗi nếu có
+      setEmail("");
+      setError("");
+      if (setIsEdit) {
+        setIsEdit(false);
+      }
     }
   }, [visible]);
 
-  // Hàm kiểm tra email tồn tại
   const shareQuizToTeacher = async (user_email) => {
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.SHARE_QUIZ}`,
@@ -33,15 +34,15 @@ const EmailDialog = ({ visible, onClose, onSend, quiz_id }) => {
           user_id: userData._id,
           email: user_email,
           quiz_id,
+          isEdit,
         }),
       }
     );
     const data = await response.json();
-    // console.log("Email nhập vào:", email);
-    // console.log("Email trong userData:", userData.user_email);
     if (data.statusCode === 200) {
-      alert("share thành công");
+      alert("Share thành công");
     } else {
+      // console.log(data);
       alert(data.message);
     }
   };
@@ -52,17 +53,8 @@ const EmailDialog = ({ visible, onClose, onSend, quiz_id }) => {
     } else if (email === userData.user_email) {
       setError("Bạn không thể gửi quiz cho chính mình");
     } else {
-      setError(""); // Xóa thông báo lỗi nếu email hợp lệ
-      const emailExists = await shareQuizToTeacher(email);
-
-      // if (emailExists) {
-      //   // console.log("Email tồn tại");
-      //   onSend(email); // Chỉ gửi quiz nếu email tồn tại
-      //   setEmail(""); // Reset email
-      //   onClose(); // Đóng dialog
-      // } else {
-      //   setError("Email không tồn tại trong hệ thống");
-      // }
+      setError("");
+      await shareQuizToTeacher(email);
     }
   };
 
@@ -86,15 +78,31 @@ const EmailDialog = ({ visible, onClose, onSend, quiz_id }) => {
             value={email}
             onChangeText={(text) => {
               setEmail(text);
-              setError(""); // Xóa lỗi khi người dùng nhập lại
+              setError("");
             }}
             keyboardType="email-address"
           />
           {error ? <Text className="text-red-500 mb-2">{error}</Text> : null}
+
+          {/* Thêm lựa chọn quyền chỉnh sửa */}
+          <View className="flex-row items-center my-2">
+            <Text className="mr-2">Cho phép chỉnh sửa:</Text>
+            <View className="flex-row items-center my-2 ml-6">
+              <Text>Không</Text>
+              <Switch
+                value={isEdit}
+                onValueChange={setIsEdit}
+                thumbColor={isEdit ? "#f15454" : "#f4f3f4"}
+                trackColor={{ false: "#767577", true: "#81b0ff" }}
+              />
+            </View>
+            <Text>Có</Text>
+          </View>
+
           <View className="flex-row justify-end mt-2">
             <Button
               onPress={() => {
-                setEmail(""); // Đảm bảo reset khi nhấn Hủy
+                setEmail("");
                 onClose();
               }}
               text="Hủy"

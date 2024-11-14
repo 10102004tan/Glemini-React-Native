@@ -11,7 +11,7 @@ import { useResultProvider } from '@/contexts/ResultProvider';
 const StudentDetail = () => {
     const { classroomId } = useLocalSearchParams();
     const { classroom, fetchClassroom } = useClassroomProvider();
-    const { fetchResultData, result } = useResultProvider()
+    const { fetchResultData } = useResultProvider()
 
     useFocusEffect(
         useCallback(() => {
@@ -20,7 +20,10 @@ const StudentDetail = () => {
     );
 
     const startQuiz = async (quizId, exerciseId) => {
-        const fetchedResult = await fetchResultData(quizId, exerciseId);
+        // console.log({quizId, exerciseId, type : 'exercise'});
+
+        const fetchedResult = await fetchResultData({ quizId, exerciseId, type: 'exercise' });
+        console.log(fetchedResult);
         if (fetchedResult) {
             router.push({
                 pathname: '/(home)/activity',
@@ -28,17 +31,17 @@ const StudentDetail = () => {
         } else {
             router.push({
                 pathname: '(play)/single',
-                params: { quizId, exerciseId },
+                params: { quizId, exerciseId, type: 'exercise' },
             });
         }
     };
-    
+
 
 
     return (
-        <View className='p-4 bg-white mb-10'>
+        <View className='p-4 bg-white mb-10 flex-1'>
             <Text className='text-xl font-semibold mb-3 text-gray-800'>Bài tập được giao</Text>
-            {classroom?.exercises?.length > 0 ? (
+            {classroom.exercises && classroom.exercises.length > 0 ?
                 <FlatList
                     showsVerticalScrollIndicator={false}
                     data={classroom.exercises}
@@ -119,16 +122,14 @@ const StudentDetail = () => {
                         );
                     }}
                 />
-            ) : (
-                <View className='flex-1 items-center justify-center'>
+                : <View className='flex-1 items-center justify-center'>
                     <LottieView
                         source={require('@/assets/jsons/not-found.json')}
                         autoPlay
                         loop
                         style={{ width: 250, height: 250 }}
                     />
-                </View>
-            )}
+                </View>}
         </View>
     );
 };

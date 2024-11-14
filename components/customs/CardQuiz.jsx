@@ -2,9 +2,10 @@ import { View, Text, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useQuizProvider } from "@/contexts/QuizProvider";
 
 const CardQuiz = ({
-  quiz,
+  quiz = {},
   type = "horizontal",
   routerPath = "",
   isDelete = false,
@@ -12,64 +13,39 @@ const CardQuiz = ({
   handleDelete,
 }) => {
   const router = useRouter();
+  const { isEdited } = useQuizProvider();
 
   if (type === "horizontal") {
+    const { quiz_thumb, quiz_name, quiz_description, quiz_status } = quiz;
     return (
-      <View
-        className="h-[100px] w-full bg-white rounded-2xl overflow-hidden flex-row mb-3"
-        style={{
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.25,
-          shadowRadius: 3.84,
-          elevation: 5,
+      <TouchableOpacity
+        onPress={() => {
+          router.push({
+            pathname: routerPath,
+            params: params,
+          });
         }}
+        className={
+          "flex-1 mx-1 mb-3 shadow pb-2 border border-gray-200 rounded-xl overflow-hidden"
+        }
       >
-        <TouchableOpacity
-          className="w-full"
-          onPress={() => {
-            router.push({
-              pathname: routerPath,
-              params: params,
-            });
-          }}
-        >
-          <View className="flex flex-row items-center justify-start">
-            <View className="flex justify-center items-center">
-              <Image
-                source={{
-                  uri:
-                    quiz.quiz_thumb ||
-                    "https://elearningindustry.com/wp-content/uploads/2021/10/Shareable-Quizzes-In-Online-Training-7-Reasons.jpg",
-                }}
-                className="w-[100px] h-full rounded-tl-2xl rounded-bl-2xl"
-              ></Image>
-            </View>
-            <View className="flex flex-col items-start justify-start p-4">
-              <Text className="text-lg font-semibold">{quiz.quiz_name}</Text>
-              <Text className="text-gray mb-2 max-w-[360px] overflow-hidden ">
-                {quiz.quiz_description || "Không có mô tả"}
-              </Text>
-              <Text className="text-green-600">
-                {quiz.quiz_status === "unpublished" ? "Riêng tư" : "Công khai"}
-              </Text>
-            </View>
-            <View className="flex-1 justify-end items-end mr-4 mb-12">
-              {isDelete && (
-                <TouchableOpacity
-                  onPress={handleDelete}
-                  className="border border-gray rounded-md"
-                >
-                  <MaterialIcons name="delete" size={24} color="black" />
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-        </TouchableOpacity>
-      </View>
+        <View>
+          <Image
+            src={
+              quiz_thumb
+                ? quiz_thumb
+                : "https://elearningindustry.com/wp-content/uploads/2021/10/Shareable-Quizzes-In-Online-Training-7-Reasons.jpg"
+            }
+            className={"w-full h-[100px] rounded-b-[10px]"}
+            alt={quiz_name}
+          />
+        </View>
+        <View className={"p-2"}>
+          <Text>{quiz_name}</Text>
+          <Text>{quiz_description}</Text>
+          <Text>{quiz_status === "published" ? "Công khai" : "Riêng tư"}</Text>
+        </View>
+      </TouchableOpacity>
     );
   }
 
@@ -91,10 +67,12 @@ const CardQuiz = ({
       <TouchableOpacity
         className="w-full"
         onPress={() => {
-          router.replace({
-            pathname: routerPath,
-            params: params,
-          });
+          if (isEdited) {
+            router.push({
+              pathname: routerPath,
+              params: params,
+            });
+          }
         }}
       >
         <View className="flex flex-col">
@@ -113,9 +91,14 @@ const CardQuiz = ({
             <Text className="text-gray mb-2 max-w-[360px] overflow-hidden ">
               {quiz.quiz_description || "Không có mô tả"}
             </Text>
-            <Text className="text-green-600">
-              {quiz.quiz_status === "unpublished" ? "Riêng tư" : "Công khai"}
-            </Text>
+            <View className="flex-row justify-between">
+              <Text className="text-green-600">
+                {quiz.quiz_status === "unpublished" ? "Riêng tư" : "Công khai"}
+              </Text>
+              <Text className="font-bold text-[15px]">
+                {isEdited ? "" : "Chỉ được xem"}
+              </Text>
+            </View>
           </View>
         </View>
       </TouchableOpacity>

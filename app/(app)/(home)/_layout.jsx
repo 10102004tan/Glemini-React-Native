@@ -1,17 +1,18 @@
-import {Link, Redirect, router, Tabs} from "expo-router";
+import { Link, Redirect, router, Tabs } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
-import {Alert, Text, TouchableOpacity, View} from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { useAppProvider } from "@/contexts/AppProvider";
 import { AuthContext } from "@/contexts/AuthContext";
-import {Ionicons} from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import NotificationIcon from "@/components/customs/NotificationIcon";
 
 export default function TabLayout() {
   const { isHiddenNavigationBar, i18n } = useAppProvider();
   const {
-    userData: { user_type },numberOfUnreadNoti
+    userData: { user_type },
+    numberOfUnreadNoti,
   } = useContext(AuthContext);
   return (
     <Tabs
@@ -24,7 +25,7 @@ export default function TabLayout() {
           left: "5%",
           right: "5%",
           width: "90%",
-            backgroundColor: "#fff",
+          backgroundColor: "#fff",
           shadowOpacity: 0,
           borderTopWidth: 0,
           zIndex: isHiddenNavigationBar ? -1 : 1,
@@ -33,20 +34,19 @@ export default function TabLayout() {
         tabBarShowLabel: false,
       }}
     >
-
       <Tabs.Screen
-        name='index'
-        options={{title:"Home",
-            headerShown: false,
+        name="index"
+        options={{
+          title: "Home",
+          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "home" : "home-outline"}
               color={color}
             />
-          )
+          ),
         }}
       />
-
 
       <Tabs.Screen
         name="libraly"
@@ -81,7 +81,6 @@ export default function TabLayout() {
         }}
       />
 
-
       <Tabs.Screen
         name="report"
         options={{
@@ -102,10 +101,10 @@ export default function TabLayout() {
         }}
       />
 
-<Tabs.Screen
+      <Tabs.Screen
         name="activity"
         options={{
-          title: 'Hoạt động',
+          title: "Hoạt động",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "analytics-sharp" : "analytics-outline"}
@@ -125,10 +124,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="classroom"
         options={{
-          title: i18n.t('classroom.title'),
+          title: i18n.t("classroom.title"),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? 'school' : 'school-outline'}
+              name={focused ? "school" : "school-outline"}
               color={color}
             />
           ),
