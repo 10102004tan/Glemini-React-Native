@@ -6,7 +6,7 @@ import { Link } from 'expo-router';
 import { AuthContext } from '@/contexts/AuthContext';
 import { validateEmail, validatePassword } from '@/utils';
 import { useAppProvider } from '@/contexts/AppProvider';
-import Toast from 'react-native-toast-message';
+import Toast from 'react-native-toast-message-custom';
 import CustomButton from "@/components/customs/CustomButton";
 
 const TIME_SHOW_TOAST = 1000;
@@ -73,13 +73,6 @@ const SignInScreen = () => {
 	const handlerSignIn = async() => {
 		setDisable(true);
 		await signIn({email,password}).then((res)=>{
-			Toast.show({
-				type: 'success',
-				text1: i18n.t('success.title'),
-				text2: i18n.t('signIn.success'),
-				visibilityTime: TIME_SHOW_TOAST,
-				autoHide: true,
-			});
 			setDisable(false);
 		}).catch((err)=>{
 			Toast.show({

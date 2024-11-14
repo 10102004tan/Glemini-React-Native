@@ -1,4 +1,5 @@
 "use strict";
+import markdownToTxt from 'markdown-to-txt';
 
 const validateEmail = (email) => {
   const re = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
@@ -27,6 +28,7 @@ const collectionData = (data) => {
   return data.map((item) => ({
     key: item._id,
     value: item.collection_name,
+    quizzes: item.quizzes,
   }));
 };
 
@@ -60,6 +62,10 @@ const truncateDescription = (description, maxLength) => {
   return truncated + "...";
 };
 
+const convertMarkdownToText = (markdown) => {
+  return markdownToTxt(markdown);
+}
+
 export {
   validateEmail,
   validatePassword,
@@ -68,4 +74,5 @@ export {
   debounce,
   truncateDescription,
   collectionData,
+    convertMarkdownToText
 };
