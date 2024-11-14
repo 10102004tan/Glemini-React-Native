@@ -25,6 +25,26 @@ export default function AppRootLayout() {
 		closeBottomSheet,
 	} = useAppProvider();
 
+	useEffect(() => {
+		if (userData) {
+			fetchStatus();
+			socket.on(
+				'update-status',
+				({ user_id, teacher_status, message, status }) => {
+					if (userData._id === user_id) {
+						setTeacherStatus(teacher_status);
+						Toast.show({
+							type: status,
+							text1: 'Thông báo',
+							text2: message,
+							visibilityTime: 2000,
+						});
+					}
+				}
+			);
+		}
+	}, [userData]);
+
 	if (isLoading) {
 		return <Text>Loading...</Text>;
 	}

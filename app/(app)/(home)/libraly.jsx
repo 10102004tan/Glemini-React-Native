@@ -35,54 +35,8 @@ import { Dimensions } from "react-native";
 import QuizzesSharedEmpty from "@/components/customs/QuizzesSharedEmpty";
 import ConfirmDialog from "@/components/dialogs/ConfirmDialog";
 import AntiFlatList from "@/components/customs/AntiFlatList/AntiFlatList";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 const Library = () => {
-
-  // const [showCopyDialog, setShowCopyDialog] = useState(false);
-  // const [quizToCopy, setQuizToCopy] = useState(null);
-
-  // const handleQuizPress = (quiz) => {
-  //   if (!quiz.isEdit) {
-  //     // Kiểm tra quyền chỉnh sửa
-  //     setQuizToCopy(quiz); // Lưu quiz cần sao chép
-  //     setShowCopyDialog(true); // Hiển thị dialog
-  //   } else {
-  //     // Nếu có quyền chỉnh sửa, mở trang chi tiết quiz như bình thường
-  //     router.push(`(quiz)/detail_quiz?id=${quiz._id}`);
-  //   }
-  // };
-  // const copyQuizToLibrary = async (quiz) => {
-  //   const response = await fetch(
-  //     `${API_URL}${API_VERSION.V1}${END_POINTS.CREATE_QUIZ}`, // Endpoint tạo quiz mới
-  //     {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "x-client-id": userData._id,
-  //         authorization: userData.accessToken,
-  //       },
-  //       body: JSON.stringify({
-  //         quiz_name: quiz.quiz_name,
-  //         quiz_description: quiz.quiz_description,
-  //         quiz_thumb: quiz.quiz_thumb,
-  //         quiz_subjects: quiz.quiz_subjects,
-  //         quiz_questions: quiz.quiz_questions,
-  //         quiz_status: quiz.quiz_status,
-  //       }),
-  //     }
-  //   );
-  //   const data = await response.json();
-  //   if (data.statusCode === 200) {
-  //     // Thông báo quiz đã được sao chép thành công
-  //     Toast.show({
-  //       type: "success",
-  //       text1: "Quiz đã được sao chép vào thư viện của bạn!",
-  //     });
-  //   } else {
-  //     // Thông báo lỗi
-  //     Toast.show({ type: "error", text1: "Không thể sao chép quiz." });
-  //   }
-  // };
-
   //biến name của bộ sưu tập
   const [nameCollection, setNameCollection] = useState("");
   const [collections, setCollections] = useState([]);
@@ -161,7 +115,8 @@ const Library = () => {
   const [listNameCollection, setListNameCollection] = useState([]);
 
   // lấy list thông tin của quiz, thông tin name, description, status,...
-  const { quizzes, fetchQuizzes, quizFetching, setQuizzes, LIMIT } =useQuizProvider();
+  const { quizzes, fetchQuizzes, quizFetching, setQuizzes, LIMIT } =
+    useQuizProvider();
 
   const [sharedQuizzes, setSharedQuizzes] = useState([]);
 
@@ -184,6 +139,7 @@ const Library = () => {
     const data = await response.json();
     if (data.statusCode === 200) {
       setSharedQuizzes(data.metadata);
+      console.log(data.metadata[0].shared_user_ids);
     } else {
       console.log("Không thể lấy ra tất cả quiz được share");
     }
@@ -425,19 +381,19 @@ const Library = () => {
   };
 
   const handleLoadMore = () => {
-      console.log("loadmore::",skip);
-      fetchQuizzes({skip: (skip + LIMIT)}).then((res) => {
-         setSkip(skip + LIMIT);
-      });
+    console.log("loadmore::", skip);
+    fetchQuizzes({ skip: skip + LIMIT }).then((res) => {
+      setSkip(skip + LIMIT);
+    });
   };
 
   const handleRefresh = () => {
-   setIsRefreshing(true);
-      fetchQuizzes({ skip: 0 }).then((res) => {
-         setSkip(0);
-         setIsRefreshing(false);
-      });
-  }
+    setIsRefreshing(true);
+    fetchQuizzes({ skip: 0 }).then((res) => {
+      setSkip(0);
+      setIsRefreshing(false);
+    });
+  };
 
   return (
     <View className="flex-1">
@@ -449,18 +405,6 @@ const Library = () => {
           visibleFilterBottomSheet
         }
       ></Overlay>
-
-      {/* <ConfirmDialog
-        visible={showCopyDialog}
-        title="Sao chép quiz"
-        message="Bạn có muốn sao chép quiz này sang thư viện của tôi?"
-        onCancel={() => setShowCopyDialog(false)}
-        onConfirm={async () => {
-          await copyQuizToLibrary(quizToCopy); // Sao chép quiz vào thư viện
-          setShowCopyDialog(false);
-        }}
-      /> */}
-
       {/* Bottom Sheet của Thư viện của tôi */}
       <BottomSheet
         visible={visibleCreateNewBottomSheet}
@@ -689,13 +633,14 @@ const Library = () => {
                 />
               </View>
             </View>
-            <View style={{
-               height: "80%",
-               padding: 12,
-            }}>
+            <View
+              style={{
+                height: "80%",
+                padding: 12,
+              }}
+            >
               <AntiFlatList
-
-               colSpan={2}
+                colSpan={2}
                 isRefreshing={isRefreshing}
                 componentItem={ComponentItem}
                 loading={quizFetching}
@@ -742,7 +687,7 @@ const Library = () => {
         {activeTab === "shared" && (
           <View className="p-3">
             <FlatList
-            numColumns={2}
+              numColumns={2}
               contentContainerStyle={{ padding: 2 }}
               key={(quiz) => quiz._id}
               style={{ marginBottom: 200 }}

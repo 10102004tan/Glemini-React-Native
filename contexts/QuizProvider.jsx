@@ -14,6 +14,7 @@ const QuizProvider = ({ children }) => {
   const [isSave, setIsSave] = useState(false);
   const { userData } = useAuthContext();
   const LIMIT = 6;
+  const [isEdited, setIsEdited] = useState(false);
 
   // Get all quizzes of the user
   const fetchQuizzes = async ({ skip = 0, limit = LIMIT }) => {
@@ -53,8 +54,7 @@ const QuizProvider = ({ children }) => {
   };
 
   // Get Quiz Published
-  const getQuizzesPublished = async (subject_id) => {
-    subject_id = subject_id === "all" ? "" : subject_id;
+  const getQuizzesPublished = async () => {
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`,
       {
@@ -64,7 +64,6 @@ const QuizProvider = ({ children }) => {
           "x-client-id": userData._id,
           authorization: userData.accessToken,
         },
-        body: JSON.stringify({ subjectId: subject_id }),
       }
     );
 
@@ -183,6 +182,8 @@ const QuizProvider = ({ children }) => {
         getQuizzesBanner,
         fetchQuizzes,
         LIMIT,
+        isEdited,
+        setIsEdited,
       }}
     >
       {children}

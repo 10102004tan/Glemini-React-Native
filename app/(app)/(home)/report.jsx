@@ -61,14 +61,16 @@ export default function ReportScreen() {
 
 
     useEffect(() => {
-        const debouncedLoadResults = debounce(() => loadResults(1), 200);
-        debouncedLoadResults();
-        return () => debouncedLoadResults.cancel();
-    }, [searchTerm, classFilter, sortOrder, typeFilter]);
+        // Reset `page` to 1 and clear data when filters change.
+        setPage(1);
+        loadResults(1, false); // Reset results rather than appending
+    }, [searchTerm, classFilter, sortOrder, typeFilter]);   
 
 
     const handleLoadMore = async () => {
+        // Ensure `loadResults` only loads more if there’s data and not fetching
         if (isFetchingMore || !hasMoreData) return;
+    
         setIsFetchingMore(true);
         const nextPage = page + 1;
         await loadResults(nextPage, true);
@@ -83,15 +85,19 @@ export default function ReportScreen() {
     };
 
     // Reset Filters
-    const handleResetFilters = () => {
-        setSearchTermMockup("");
-        setSearchTerm("");
-        setClassFilter("");
-        setTypeFilter("");
-        setSortOrder("newest");
-        setPage(1);
-        loadResults(1);
-    };
+    // Reset Filters
+const handleResetFilters = () => {
+    setSearchTermMockup("");
+    setSearchTerm("");
+    setClassFilter("");
+    setTypeFilter("");
+    setSortOrder("newest");
+    setPage(1);
+    setHasMoreData(true);
+    
+    loadResults(1).then(() => handleLoadMore());
+};
+
 
     if (teacherStatus === 'pending' || teacherStatus === 'rejected') {
         return <LockFeature />;
