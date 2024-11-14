@@ -91,9 +91,14 @@ const CardQuiz = ({
             <Text className="text-gray mb-2 max-w-[360px] overflow-hidden ">
               {quiz.quiz_description || "Không có mô tả"}
             </Text>
-            <Text className="text-green-600">
-              {quiz.quiz_status === "unpublished" ? "Riêng tư" : "Công khai"}
-            </Text>
+            <View className="flex-row justify-between">
+              <Text className="text-green-600">
+                {quiz.quiz_status === "unpublished" ? "Riêng tư" : "Công khai"}
+              </Text>
+              <Text className="font-bold text-[15px]">
+                {isEdited ? "" : "Chỉ được xem"}
+              </Text>
+            </View>
           </View>
         </View>
       </TouchableOpacity>
