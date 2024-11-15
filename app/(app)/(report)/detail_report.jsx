@@ -77,7 +77,7 @@ export default function DetailReport() {
         if (reportData) {
             fetchQuestions(reportData.quiz_id?._id);        
         }
-    }, [reportData])
+    }, [])
 
     return (
         <View className="flex-1 bg-slate-50">

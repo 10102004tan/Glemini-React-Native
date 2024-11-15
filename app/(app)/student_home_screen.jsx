@@ -14,6 +14,7 @@ import { AuthContext } from "@/contexts/AuthContext";
 import { useResultProvider } from '@/contexts/ResultProvider';
 import { router, useFocusEffect } from 'expo-router';
 import LottieView from 'lottie-react-native';
+import Toast from 'react-native-toast-message-custom';
 
 const StudentHomeScreen = () => {
 	const { i18n } = useAppProvider();
@@ -42,6 +43,10 @@ const StudentHomeScreen = () => {
 		const fetchedResult = await fetchResultData({ quizId: selectedQuiz._id, type: 'publish' });
 
 		if (fetchedResult) {
+			Toast.show({
+				type:'info',
+				text1: 'Bạn đã chơi bộ câu hỏi này.'
+			})
 			router.push({
 				pathname: '/(home)/activity',
 			});

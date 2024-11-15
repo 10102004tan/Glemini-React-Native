@@ -85,35 +85,30 @@ const SinglePlay = () => {
 	const { completed } = useResultProvider();
 	const [state, dispatch] = useReducer(gameReducer, initialState);
 	const [sound, setSound] = useState(null);
-
-
-
-	useFocusEffect(
-		useCallback(() => {
-			if (quizId !== 'undefined' && type && exerciseId !== 'undefined') {
-				// Fetch result data only if exerciseId is defined
-				fetchResultData({ quizId, exerciseId, type });
-			} else if (quizId !== 'undefined' && type) {
-				// Handle the case where only quizId and type are defined, but not exerciseId
-				fetchResultData({ quizId, type });
-			}
-		}, [exerciseId, quizId, type])
-	);
-	
+	const [resultId, setResultId] = useState(null);
 
 	useEffect(() => {
-		fetchQuestions(quizId);
-
+		if (quizId) {
+			fetchQuestions(quizId)
+		}
 	}, [quizId]);
 
 	useEffect(() => {
-		if (result) {
+		if (quizId && type && exerciseId) {
+			fetchResultData({ quizId, exerciseId, type });
+		} else if (quizId && type) {
+			fetchResultData({ quizId, type });
+		}
+	}, [exerciseId, quizId, type])
+
+
+	useEffect(() => {
+		if (result && result._id) {
 			const answeredQuestionsCount = result.result_questions?.length || 0;
 			const nextIndex = answeredQuestionsCount < questions.length ? answeredQuestionsCount : 0;
 			dispatch({ type: 'SET_CURRENT_QUESTION_INDEX', payload: nextIndex });
 		}
-	}, [result, questions]);
-	
+	}, [result]);
 
 
 	// useEffect(() => {
@@ -173,33 +168,35 @@ const SinglePlay = () => {
 			currentQuestion.question_point
 		);
 
-		setTimeout(() => {
+		setTimeout( async () => {
 			dispatch({ type: 'PROCESSING', payload: false });
 			if (state.currentQuestionIndex < questions.length - 1) {
 				dispatch({ type: 'NEXT_QUESTION' });
 			} else {
 				dispatch({ type: 'COMPLETE' });
-				completed(exerciseId, quizId);
+				dispatch({ type: 'COMPLETE' });
+				
+				const completedResult = await completed(exerciseId, quizId);
+
+				if (completedResult && completedResult._id) {
+					setResultId(completedResult._id);
+				}
 			}
 		}, 2000);
 	}, [state, questions, completed, saveQuestionResult, exerciseId, quizId, i18n]);
 
 	const handleRestart = () => {
 		dispatch({ type: 'RESET' });
+		setResultId(null);
 	};
 
-	if (state.isCompleted) {
-
+	if (state.isCompleted && resultId) {
+		console.log('Quiz completed:', state.isCompleted, 'Result ID:', resultId);
 		return (
 			<ResultSingle
-				quizId={quizId}
-				correctCount={state.correctCount}
-				wrongCount={state.wrongCount}
-				score={state.score}
-				totalQuestions={questions.length}
+				resultId={resultId}
 				handleRestart={handleRestart}
-				exerciseId={exerciseId}
-				type={type}
+
 			/>
 		);
 	}
@@ -261,7 +258,7 @@ const SinglePlay = () => {
 					type="fill"
 					loading={state.isProcessing}
 					otherStyles={`p-5 ${state.buttonColor}`}
-					textStyles={`mx-auto text-lg ${state.buttonTextColor}`}
+					textStyles={`mx-auto text-lg mx-auto ${state.buttonTextColor}`}
 				/>
 			</View>
 		</View>
