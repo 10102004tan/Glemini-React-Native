@@ -96,7 +96,7 @@ const StudentHomeScreen = () => {
 								return (
 									<View key={subject._id} className="mb-4">
 										<View className='flex-row justify-between mb-1'>
-											<Text className="text-xl font-bold">{subject.name}</Text>
+											<Text className="text-xl font-bold">{i18n.t(`subjects.${subject.name}`)}</Text>
 											<TouchableOpacity onPress={() => {
 												router.push({
 													pathname: '/(home)/search',

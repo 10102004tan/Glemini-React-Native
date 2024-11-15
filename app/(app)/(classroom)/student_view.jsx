@@ -22,7 +22,7 @@ const StudentView = () => {
         });
     };
     return (
-        <View className='flex-1 bg-slate-50'>
+        <View className='flex-1 bg-slate-50 mb-20'>
             {/* Bộ tìm kiếm */}
             <TextInput
                 value={searchQuery}
