@@ -290,8 +290,8 @@ const detail_collection = () => {
           keyExtractor={(name) => name._id}
           renderItem={({ item: name }) => {
             return (
-              <View className="h-[100px] w-full border rounded-xl flex-row mt-6">
-                <View className="flex flex-row">
+              <View className="h-[100px] w-full border rounded-xl flex-row mt-6 relative">
+                <View className="flex flex-row w-full">
                   <View className="flex justify-center items-center m-2">
                     <Image
                       source={{
@@ -316,7 +316,7 @@ const detail_collection = () => {
                   </View>
                 </View>
                 <TouchableOpacity
-                  className="flex border-gray justify-end mt-2 border rounded-md ml-[70px]"
+                  className=" border rounded-md absolute right-2 bottom-2"
                   onPress={() => handleDeleteQuiz(name._id)}
                 >
                   <MaterialIcons name="delete" size={24} color="black" />
