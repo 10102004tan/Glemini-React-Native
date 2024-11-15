@@ -92,23 +92,23 @@ const ResultSingle = ({ resultId, handleRestart }) => {
          </View>
 
          {/* User Information */}
-         <View className="flex-row p-5 bg-slate-50 mt-5 mx-3 rounded-lg items-center">
+         <View className="flex-row p-5 bg-slate-600 mt-5 mx-3 rounded-lg items-center">
             <Image
                source={{ uri: userData.user_avatar }}
                className="w-20 h-20 rounded-full"
                style={{ resizeMode: 'cover' }}
             />
             <View className="flex ml-5">
-               <Text className="text-lg text-slate-800 font-psemibold">{userData.user_fullname}</Text>
-               <Text className="bg-slate-800 rounded-full text-sm px-2 text-slate-200 mt-1 flex-row items-center">
+               <Text className="text-lg text-slate-50 font-psemibold">{userData.user_fullname}</Text>
+               <Text className="bg-slate-600 rounded-full text-sm px-2 text-slate-50 mt-1 flex-row items-center">
                   <Icon name="person-outline" size={15} color="white" /> {i18n.t('result.single.textDesc')}
                </Text>
             </View>
          </View>
 
          {/* Result Summary and Progress Bar */}
-         <View className="flex p-5 bg-white mt-5 mx-3 rounded-lg">
-            <Text className="text-slate-800 text-base font-pmedium">{i18n.t('result.single.textResult')}</Text>
+         <View className="flex p-5 bg-slate-600 mt-5 mx-3 rounded-lg">
+            <Text className="text-slate-50 text-base font-pmedium">{i18n.t('result.single.textResult')}</Text>
             <View className="flex-row h-5 mt-2 rounded-lg overflow-hidden">
                <View style={{ width: `${correctPercentage}%`, backgroundColor: '#4CAF50' }} />
                <View style={{ width: `${wrongPercentage}%`, backgroundColor: '#F44336' }} />
@@ -170,12 +170,14 @@ const ResultSingle = ({ resultId, handleRestart }) => {
 
 // Component for Detail Boxes
 const DetailBox = ({ label, value, icon, background }) => (
-   <View className={`flex-row p-3 rounded-lg bg-[#435362] items-center justify-between ${background}`}>
+   <View className={`flex-row p-3 rounded-lg bg-slate-600 items-center justify-between `}>
       <View className="flex-col">
          <Text className="text-sm text-slate-300">{label}</Text>
          <Text className="text-slate-200 font-semibold text-lg">{value}</Text>
       </View>
-      {icon}
+      <View className={`p-2 rounded-lg ${background}`}>
+         {icon}
+      </View>
    </View>
 );
 
