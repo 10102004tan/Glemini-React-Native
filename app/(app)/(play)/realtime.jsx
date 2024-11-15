@@ -300,15 +300,15 @@ const RealtimePlay = () => {
    // Hàm cập nhật thời gian đếm ngược cho mỗi câu hỏi
    useEffect(() => {
       let interval = null;
-      if (!isProcessing && !isCompleted) {
+      if (!isProcessing && !isCompleted && !showConfirmDialog) {
          interval = setInterval(() => {
             setQuestionTimeCountDown(prevTime => {
                if (prevTime > 0) {
                   return prevTime - 1;
                } else {
-                  clearInterval(interval); // Clear the interval when countdown reaches 0.
-                  handleSubmit(); // Call `handleSubmit` when the countdown reaches 0.
-                  return 30; // Ensure `questionTimeCountDown` is set to 0 after submitting.
+                  clearInterval(interval);
+                  handleSubmit();
+                  return 30;
                }
             });
          }, 1000);
@@ -465,6 +465,7 @@ const RealtimePlay = () => {
          <RankBoard users={rankData} visible={showRankBoard} currentUser={userData} createdUser={createdUserId} />
 
          <ConfirmDialog
+            disableCancel={true}
             title={"Thông báo"}
             visible={showConfirmDialog}
             onCancel={() => {

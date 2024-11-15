@@ -21,7 +21,7 @@ const TeacherRoomWaitResultScreen = () => {
    const [questionBoardTransform] = useState(new Animated.Value(screenWidth));
    const { getQuestionsByQuizId } = useQuestionProvider();
 
-   const { quizId, users, roomCode, roomTime } = useGlobalSearchParams();
+   const { quizId, users, roomCode, roomTime, createdAt } = useGlobalSearchParams();
    const joinedUsers = JSON.parse(users) // Parse JSON string back to array
    const [questions, setQuestions] = useState([]);
    const { userData } = useAuthContext();
@@ -29,7 +29,8 @@ const TeacherRoomWaitResultScreen = () => {
    const [accuracy, setAccuracy] = useState(0);
    const animatedWidthGreen = useRef(new Animated.Value(50)).current;
    const animatedWidthRed = useRef(new Animated.Value(50)).current;
-   const [roomTimer, setRoomTimer] = useState(0); // đơn vị phút
+   const [minutesLeft, setMinutesLeft] = useState(0); // đơn vị phút
+   const [roomStatus, setRoomStatus] = useState('Phòng vẫn đang mở');
    const router = useRouter();
 
    useEffect(() => {
@@ -57,7 +58,6 @@ const TeacherRoomWaitResultScreen = () => {
       inputRange: [0, 100],
       outputRange: ['100%', '0%'],
    });
-
 
    // Call API to get questions by quizId
    useEffect(() => {
@@ -90,7 +90,6 @@ const TeacherRoomWaitResultScreen = () => {
    }, [quizId])
 
    useEffect(() => {
-
       // Lắng nghe sự kiện 'updateRanking' từ socket
       socket.on('updateRanking', (rank) => {
          setRankData(sortRankBoardDesc(rank));
@@ -132,57 +131,77 @@ const TeacherRoomWaitResultScreen = () => {
       }).start();
    }, [tabResult])
 
-   useEffect(() => {
-      // console.log(roomTimer)
-      const interval = setInterval(() => {
-         if (roomTime) {
-            if (roomTimer < roomTime * 60) {
-               setRoomTimer(prev => prev + 1);
-            } else {
-               clearInterval(interval);
-               Alert.alert('Thông báo', 'Hết thời gian làm bài', [
-                  {
-                     text: 'Thoát',
-                     onPress: async () => {
-                        const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_UPDATE_STATUS}`, {
-                           method: 'POST',
-                           headers: {
-                              'Content-Type': 'application/json',
-                              'x-client-id': userData._id,
-                              authorization: userData.accessToken,
-                           },
-                           body: JSON.stringify({
-                              room_code: roomCode,
-                              status: 'completed',
-                           }),
-                        })
-                        const data = await response.json();
-                        // console.log(data)
-                        if (data.statusCode === 200) {
-                           socket.emit('endQuiz', { roomCode: roomCode, user: userData });
-                           router.replace({
-                              pathname: '/(app)/(home)',
-                              params: {}
-                           }) // Redirect to home
-                        }
-                     }
-                  }
-               ])
-            }
-         }
-      }, 1000);
 
-      return () => {
-         clearInterval(interval);
-      }
-   }, [roomTimer])
+
+   // useEffect(() => {
+   //    const createdAtDate = new Date(createdAt);
+   //    const roomCloseTime = new Date(createdAtDate.getTime() + roomTime * 60 * 1000);
+   //    console.log(createdAtDate)
+   //    console.log(roomCloseTime)
+
+   //    const updateMinutesLeft = () => {
+   //       const currentTime = new Date();
+   //       const timeDifference = roomCloseTime - currentTime;
+   //       const minutesRemaining = Math.max(Math.floor(timeDifference / (1000 * 60)), 0);
+   //       console.log(minutesRemaining)
+   //       setMinutesLeft(minutesRemaining);
+
+   //       if (currentTime >= roomCloseTime) {
+   //          Alert.alert('Thông báo', 'Hết thời gian làm bài', [
+   //             {
+   //                text: 'Thoát',
+   //                onPress: async () => {
+   //                   try {
+   //                      const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_UPDATE_STATUS}`, {
+   //                         method: 'POST',
+   //                         headers: {
+   //                            'Content-Type': 'application/json',
+   //                            'x-client-id': userData._id,
+   //                            authorization: userData.accessToken,
+   //                         },
+   //                         body: JSON.stringify({
+   //                            room_code: roomCode,
+   //                            status: 'completed',
+   //                         }),
+   //                      });
+   //                      const data = await response.json();
+   //                      if (data.statusCode === 200) {
+   //                         socket.emit('endQuiz', { roomCode: roomCode, user: userData });
+   //                         router.replace({
+   //                            pathname: '/(app)/(home)',
+   //                            params: {},
+   //                         });
+   //                      }
+   //                   } catch (error) {
+   //                      console.error('Error updating room status:', error);
+   //                   }
+   //                },
+   //             },
+   //          ]);
+   //          setRoomStatus('Đã quá thời gian, đóng phòng.');
+   //          clearInterval(interval);
+   //       }
+   //    };
+
+   //    // Cập nhật ngay khi component render lần đầu
+   //    updateMinutesLeft();
+
+   //    // Thiết lập interval để kiểm tra và cập nhật mỗi phút
+   //    const interval = setInterval(updateMinutesLeft, 1000 * 60);
+
+   //    // Dọn dẹp khi component bị unmount
+   //    return () => clearInterval(interval);
+   // }, [createdAt, roomTime]);
+
+
+
 
    return (
       <Wrapper>
          <View className="flex-1 p-4 bg-primary">
             <View className="flex items-center justify-between flex-row mb-4 mt-[40px]">
                <Text className="text-white font-semibold text-lg">
-                  Thời gian còn lại: {Math.round((roomTime * 60 - roomTimer) / 60)} phút
+                  {/* Thời gian còn lại: {minutesLeft} phút */}
                </Text>
                <Button text='Kết thúc' otherStyles='p-3 bg-red-500' onPress={() => {
                   Alert.alert('Thông báo', 'Bạn có chắc chắn muốn thoát phòng?', [

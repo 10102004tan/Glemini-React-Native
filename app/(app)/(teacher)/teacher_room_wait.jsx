@@ -13,6 +13,7 @@ import * as Clipboard from 'expo-clipboard';
 import { AppState } from 'react-native';
 import { BackHandler } from 'react-native';
 import { useIsFocused } from '@react-navigation/native'
+import { create } from 'react-test-renderer'
 const TeacherRoomWaitScreen = () => {
    const router = useRouter();
    const [joinedUsers, setJoinedUsers] = useState([]);
@@ -179,7 +180,7 @@ const TeacherRoomWaitScreen = () => {
          socket.emit('startRoom', { roomCode: roomCode });
          router.replace({
             pathname: '/(teacher)/teacher_room_wait_result',
-            params: { roomCode: roomCode, users: JSON.stringify(joinedUsers), quizId: roomData.quiz_id, roomTime: roomData.room_time }
+            params: { roomCode: roomCode, users: JSON.stringify(joinedUsers), quizId: roomData.quiz_id, roomTime: roomData.room_time, createdAt: roomData.createdAt }
          })
       }
 
@@ -257,7 +258,7 @@ const TeacherRoomWaitScreen = () => {
                      {userData && roomData && userData._id === roomData.user_created_id && roomData.status === 'doing' && <Button text='Chuyển tới màn hình theo dõi' onPress={() => {
                         router.replace({
                            pathname: '/(teacher)/teacher_room_wait_result',
-                           params: { roomCode: roomCode, users: JSON.stringify(joinedUsers), quizId: roomData.quiz_id }
+                           params: { roomCode: roomCode, users: JSON.stringify(joinedUsers), quizId: roomData.quiz_id, createdAt: roomData.createdAt }
                         })
                      }} otherStyles='p-3 mt-4 w-full flex items-center justify-center bg-[#A1732A]' textStyles='' />}
 
