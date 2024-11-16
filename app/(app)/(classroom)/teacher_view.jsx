@@ -114,6 +114,7 @@ const TeacherView = () => {
 					source={require('@/assets/jsons/empty.json')}
 					width={250}
 					height={250}
+                    text={'Không có lớp học'}
 				/>
             )}
 
