@@ -13,7 +13,7 @@ import Toast from 'react-native-toast-message-custom';
 import ClassroomCard from '@/components/customs/ClassroomCard';
 import { Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import LottieView from 'lottie-react-native';
+import Lottie from '@/components/loadings/Lottie';
 
 const TeacherView = () => {
     const { userData } = useAuthContext();
@@ -22,7 +22,7 @@ const TeacherView = () => {
     const [selectedSubject, setSelectedSubject] = useState(null);
     const [className, setClassName] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
-    const [refreshing, setRefreshing] = useState(false); // New state for refreshing
+    const [refreshing, setRefreshing] = useState(false);
     const { schools, classrooms, createClassroom, fetchClassrooms } = useClassroomProvider();
     const { subjects } = useSubjectProvider();
     const { setIsHiddenNavigationBar, i18n } = useAppProvider();
@@ -110,14 +110,11 @@ const TeacherView = () => {
                     }
                 />
             ) : (
-                <View className='flex-1 items-center justify-center'>
-                    <LottieView
-                        source={require('@/assets/jsons/empty.json')}
-                        autoPlay
-                        loop
-                        style={{ width: 250, height: 250 }}
-                    />
-                </View>
+                <Lottie
+					source={require('@/assets/jsons/empty.json')}
+					width={250}
+					height={250}
+				/>
             )}
 
             {/* BottomSheet */}
