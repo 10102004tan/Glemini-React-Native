@@ -1,5 +1,5 @@
-import { View, Text, TextInput, FlatList } from 'react-native';
-import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TextInput, FlatList, RefreshControl } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import Button from '@/components/customs/Button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import BottomSheet from '@/components/customs/BottomSheet';
@@ -12,7 +12,7 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import Toast from 'react-native-toast-message-custom';
 import ClassroomCard from '@/components/customs/ClassroomCard';
 import { Pressable } from 'react-native';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 
 const TeacherView = () => {
@@ -22,6 +22,7 @@ const TeacherView = () => {
     const [selectedSubject, setSelectedSubject] = useState(null);
     const [className, setClassName] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+    const [refreshing, setRefreshing] = useState(false); // New state for refreshing
     const { schools, classrooms, createClassroom, fetchClassrooms } = useClassroomProvider();
     const { subjects } = useSubjectProvider();
     const { setIsHiddenNavigationBar, i18n } = useAppProvider();
@@ -61,11 +62,15 @@ const TeacherView = () => {
         navigation.push('(classroom)/teacher_detail', { classroomId });
     };
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchClassrooms();
-        }, [])
-    );
+    useEffect(() => {
+        fetchClassrooms();
+    }, []);
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await fetchClassrooms();
+        setRefreshing(false);
+    };
 
     const filteredClassrooms = classrooms.filter(classroom =>
         classroom.class_name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -90,7 +95,7 @@ const TeacherView = () => {
                 icon={<Icon className='text-lg' name='add-circle-outline' size={18} />}
             />
 
-            {filteredClassrooms && filteredClassrooms.length > 0 ?
+            {filteredClassrooms && filteredClassrooms.length > 0 ? (
                 <FlatList
                     data={filteredClassrooms}
                     renderItem={({ item }) => (
@@ -100,8 +105,11 @@ const TeacherView = () => {
                     )}
                     keyExtractor={(item) => item._id}
                     contentContainerStyle={{ paddingBottom: 16 }}
-                /> 
-                : 
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
+                />
+            ) : (
                 <View className='flex-1 items-center justify-center'>
                     <LottieView
                         source={require('@/assets/jsons/empty.json')}
@@ -110,7 +118,7 @@ const TeacherView = () => {
                         style={{ width: 250, height: 250 }}
                     />
                 </View>
-            }
+            )}
 
             {/* BottomSheet */}
             <Overlay onPress={handleCloseBts} visible={first} />
