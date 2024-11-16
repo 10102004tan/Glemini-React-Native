@@ -79,7 +79,7 @@ const ResultProvider = ({ children }) => {
          ...(roomId && { room_id: roomId })
       };
 
-      console.log(query);
+      // console.log(query);
       
       try {
          const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_REVIEW, {
@@ -150,7 +150,6 @@ const ResultProvider = ({ children }) => {
          const data = await res.json();
          
          if (data.statusCode === 200) {
-            console.log(data.metadata);
             return data.metadata
             
          } else {
