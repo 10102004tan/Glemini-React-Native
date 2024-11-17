@@ -157,7 +157,10 @@ const ResultSingle = ({ resultId, handleRestart }) => {
             <Button
                text={i18n.t('result.single.buttonReview')}
                onPress={() =>
-                  router.push({ pathname: '(result)/review', params: { result: JSON.stringify(overViewData) } })
+                  router.push({ 
+                     pathname: '(result)/review', 
+                     params: { result: JSON.stringify(overViewData) } 
+                  })
                }
                type="fill"
                otherStyles="bg-[#435362] p-2"

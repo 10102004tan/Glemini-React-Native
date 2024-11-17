@@ -99,18 +99,40 @@ const ResultReview = () => {
                         </Text>
 
                         {currentQuestion && currentQuestion.question_id.question_answer_ids.map((answer, ansIndex) => {
-                           const isUserAnswer = currentQuestion.answer.some(userAns => userAns._id === answer._id);
-                           const isCorrectAnswer = currentQuestion.question_id.correct_answer_ids.includes(answer._id);
+  // Kiểm tra xem đây có phải là câu trả lời của người dùng hay không
+  const isUserAnswer = currentQuestion.answer.some(userAns => userAns._id === answer._id);
+  // Kiểm tra xem đây có phải là câu trả lời đúng hay không
+  const isCorrectAnswer = currentQuestion.question_id.correct_answer_ids.some(
+    correctAns => correctAns._id === answer._id
+  );
 
-                           return (
-                              <View key={ansIndex} className='flex-row items-center mb-2'>
-                                 <View className={`w-3 h-3 rounded-full mr-2 ${isCorrectAnswer ? 'bg-green-500' : isUserAnswer ? 'bg-red-500' : 'bg-slate-400/50'}`} />
-                                 <Text className={`text-base ${isCorrectAnswer ? 'text-green-500 font-psemibold' : isUserAnswer ? 'text-red-500 font-pregular' : 'text-slate-400 font-pregular'}`}>
-                                    {answer.text}
-                                 </Text>
-                              </View>
-                           );
-                        })}
+  // Xác định màu sắc dựa trên điều kiện
+  const bulletStyle = isCorrectAnswer && isUserAnswer
+    ? 'bg-yellow-500' // Cả câu trả lời của bạn và câu trả lời đúng
+    : isCorrectAnswer
+    ? 'bg-green-500' // Chỉ là câu trả lời đúng
+    : isUserAnswer
+    ? 'bg-red-500' // Chỉ là câu trả lời của bạn
+    : 'bg-slate-400/50'; // Các câu trả lời khác
+
+  const textStyle = isCorrectAnswer && isUserAnswer
+    ? 'text-yellow-500 font-semibold' // Cả câu trả lời của bạn và câu trả lời đúng
+    : isCorrectAnswer
+    ? 'text-green-500 font-semibold' // Chỉ là câu trả lời đúng
+    : isUserAnswer
+    ? 'text-red-500 font-regular' // Chỉ là câu trả lời của bạn
+    : 'text-slate-400 font-regular'; // Các câu trả lời khác
+
+  return (
+    <View key={ansIndex} className='flex-row items-center mb-2'>
+      <View className={`w-3 h-3 rounded-full mr-2 ${bulletStyle}`} />
+      <Text className={`text-base ${textStyle}`}>
+        {answer.text}
+      </Text>
+    </View>
+  );
+})}
+
                      </View>
 
                      {!currentQuestion.correct && (
