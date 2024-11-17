@@ -32,7 +32,6 @@ export default function ActivityScreen() {
    useFocusEffect(
       useCallback(() => {
          fetchResultsForStudent();
-         setIndex(0)
       }, [])
    );
 
@@ -257,7 +256,7 @@ const ResultDoingItem = ({ result }) => {
             {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
          </Text>
          <Text className="text-xs font-light">
-            hạn: {moment(result.exercise_id.date_end).format('DD/MM/YYYY')}
+            hạn: {moment(result.exercise_id?.date_end).format('DD/MM/YYYY')}
          </Text>
 
          <Text className="text-sm mt-4 font-light text-center text-slate-50 bg-violet-300 rounded-full px-2">
