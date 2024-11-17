@@ -99,8 +99,11 @@ const StudentHomeScreen = () => {
 							data={bannerQuizzes}
 							mode='parallax'
 							scrollAnimationDuration={2500}
-							renderItem={({ item }) => (
+							renderItem={({ item, index }) => (
 								<TouchableOpacity onPress={() => handlePressQuizItem(item)}>
+									<View className='absolute z-10 top-5 left-5 px-3 py-1 rounded bg-blue-500/80'>
+										<Text className='text-xl font-bold text-white'>{index + 1}</Text>
+									</View>
 									<Image
 										source={item.quiz_thumb ? { uri: item.quiz_thumb } : Images.banner1}
 										className="w-full h-full rounded-2xl"
