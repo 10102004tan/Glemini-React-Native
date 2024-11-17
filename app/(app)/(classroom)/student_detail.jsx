@@ -1,12 +1,12 @@
 import { View, Text, FlatList, Pressable, Image } from 'react-native';
 import React, { useCallback } from 'react';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
-import LottieView from 'lottie-react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Images } from '@/constants';
 import Toast from 'react-native-toast-message-custom';
 import moment from 'moment';
 import { useResultProvider } from '@/contexts/ResultProvider';
+import Lottie from '@/components/loadings/Lottie';
 
 const StudentDetail = () => {
     const { classroomId } = useLocalSearchParams();
@@ -39,7 +39,7 @@ const StudentDetail = () => {
 
 
     return (
-        <View className='p-4 bg-white mb-10 flex-1'>
+        <View className='p-4 bg-white flex-1'>
             <Text className='text-xl font-semibold mb-3 text-gray-800'>Bài tập được giao</Text>
             {classroom.exercises && classroom.exercises.length > 0 ?
                 <FlatList
@@ -122,14 +122,12 @@ const StudentDetail = () => {
                         );
                     }}
                 />
-                : <View className='flex-1 items-center justify-center'>
-                    <LottieView
-                        source={require('@/assets/jsons/not-found.json')}
-                        autoPlay
-                        loop
-                        style={{ width: 250, height: 250 }}
-                    />
-                </View>}
+                : <Lottie
+                source={require('@/assets/jsons/empty.json')}
+                width={250}
+                height={250}
+                text={'Chưa có bài tập nào trong lớp này'}
+            />}
         </View>
     );
 };
