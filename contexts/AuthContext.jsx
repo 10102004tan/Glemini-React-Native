@@ -42,11 +42,19 @@ export const AuthProvider = ({children}) => {
     // fix bug notification
     useEffect(() => {
         if (userData) {
+            console.log("reconnect socket");
+            // reconnect socket
+            socket.connect();
             fetchNotification({skip:skipNotification,limit:LIMIT_NOTIFICATION});
-            // socket
             socket.emit('init', userData._id);
         }
-    }, [userData,skipNotification,isRefreshing]);
+    }, [userData,skipNotification]);
+
+    useEffect(() => {
+        if (isRefreshing){
+            fetchNotification({skip:skipNotification,limit:LIMIT_NOTIFICATION});
+        }
+    }, [isRefreshing]);
 
 
     useEffect(() => {
@@ -65,12 +73,6 @@ export const AuthProvider = ({children}) => {
             setNumberOfUnreadNoti((prev) => {
                 return prev + 1;
             });
-        });
-
-
-        socket.on("connect", () => {
-            console.log("Socket connected");
-            socket.emit('init', userData._id);
         });
 
         socket.on("disconnect", () => {
@@ -168,6 +170,9 @@ export const AuthProvider = ({children}) => {
             setNotification([]);
             setNumberOfUnreadNoti(0);
             setSkipNotification(0);
+
+            // disconnect socket
+            socket.disconnect();
         } else {
             if (data.message === "expired") {
                 await processAccessTokenExpired();
@@ -443,7 +448,6 @@ export const AuthProvider = ({children}) => {
             const {totalUnread, listNoti} = data.metadata;
             setNumberOfUnreadNoti(totalUnread);
             setIsRefreshing(false);
-            console.log("isRefreshing",isRefreshing);
             if (listNoti.length === 0) return;
             if (skip === 0) {
                 setNotification(listNoti);

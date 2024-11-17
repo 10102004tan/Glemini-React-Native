@@ -75,7 +75,7 @@ export default class AntiFlatList extends React.Component {
     render() {
 
         // empty data
-        if (this.state.dataProvider.getSize() === 0) return <NotificationEmpty/>;
+        if (this.state.dataProvider.getSize() === 0) return <QuizEmpty/>;
 
         return (
             <RecyclerListView
