@@ -186,7 +186,7 @@ const ResultCompletedItem = ({ result }) => {
             <Text className="text-sm font-pmedium">
                {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
             </Text>
-            <Text className="text-base font-light">
+            <Text className="text-sm font-light">
                {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
             </Text>
             <Text className="text-xs font-light">
