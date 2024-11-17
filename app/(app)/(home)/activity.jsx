@@ -14,6 +14,10 @@ import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 import { useRoomProvider } from "@/contexts/RoomProvider";
 import socket from "@/utils/socket";
 import { Pressable } from "react-native";
+import moment from "moment";
+import Toast from "react-native-toast-message-custom";
+import Lottie from "@/components/loadings/Lottie";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 16;
 
@@ -160,7 +164,7 @@ export default function ActivityScreen() {
 
 const ResultCompletedItem = ({ result }) => {
    const correctCount = result.result_questions.filter(q => q.correct).length;
-   const totalQuestions = result.quiz_id?.questionCount || 0;
+   const totalQuestions = result.result_questions?.length || 0;
    const accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
    return (
       <View style={{ width: itemWidth }} className="m-2 bg-slate-200/50 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
@@ -172,10 +176,12 @@ const ResultCompletedItem = ({ result }) => {
          <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
             <FontAwesome6 name="chalkboard-user" color='white' />
             <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? 'Được giao' : result.room_id ? 'Phòng' : 'Công khai'}</Text>
-
          </View>
          <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
-            <Text className="text-sm text-slate-50 ml-1">{totalQuestions} Qs</Text>
+            <Text className="text-sm text-slate-50 ml-1">{result?.quiz_id?.questionCount} Qs</Text>
+         </View>
+         <View className='absolute top-2 right-2'>
+            {totalQuestions < result.quiz_id?.questionCount ? <MaterialCommunityIcons name="clock-alert" size={25} color="red" /> : ''}
          </View>
          <View className='px-4 py-2'>
             <Text className="text-sm font-pmedium">
@@ -193,6 +199,38 @@ const ResultCompletedItem = ({ result }) => {
             </Text>
          </View>
       </View>
+   );
+};
+
+const CompletedResults = ({ results }) => {
+   const router = useRouter();
+
+   if (!results || results.length === 0) {
+      return <Lottie
+         source={require('@/assets/jsons/empty.json')}
+         width={150}
+         height={150}
+         text={'Danh sách trống'}
+      />
+   }
+   return (
+      <FlatList
+         showsVerticalScrollIndicator={false}
+         data={results}
+         renderItem={({ item }) => (
+            <Pressable onPress={() => {
+               router.push({
+                  pathname: '(report)/overview_report',
+                  params: { resultId: item._id },
+               });
+            }}>
+               <ResultCompletedItem result={item} />
+            </Pressable>
+         )}
+         keyExtractor={item => item._id}
+         numColumns={2}
+         columnWrapperStyle="flex-row justify-between"
+      />
    );
 };
 
@@ -219,7 +257,7 @@ const ResultDoingItem = ({ result }) => {
             {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
          </Text>
          <Text className="text-xs font-light">
-            bởi: {result.quiz_id?.user_id?.user_fullname}
+            hạn: {moment(result.exercise_id.date_end).format('DD/MM/YYYY')}
          </Text>
 
          <Text className="text-sm mt-4 font-light text-center text-slate-50 bg-violet-300 rounded-full px-2">
@@ -229,59 +267,17 @@ const ResultDoingItem = ({ result }) => {
    </View>
 }
 
-
-const CompletedResults = ({ results }) => {
-   const router = useRouter();
-
-   if (!results || results.length === 0) {
-      return <View className='h-full flex items-center justify-center'>
-         <LottieView
-            source={require('@/assets/jsons/not-found.json')}
-            autoPlay
-            loop
-            style={{
-               width: 300,
-               height: 300,
-            }}
-         />
-      </View>
-   }
-   return (
-      <FlatList
-         showsVerticalScrollIndicator={false}
-         data={results}
-         renderItem={({ item }) => (
-            <Pressable onPress={() => {
-               router.push({
-                  pathname: '(report)/overview_report',
-                  params: { resultId: item._id },
-               });
-            }}>
-               <ResultCompletedItem result={item} />
-            </Pressable>
-         )}
-         keyExtractor={item => item._id}
-         numColumns={2}
-         columnWrapperStyle="flex-row justify-between"
-      />
-   );
-};
-
 const DoingResults = ({ results }) => {
    const { userData } = useAuthContext();
    const router = useRouter();
+   const { completed } = useResultProvider()
    if (!results || results.length === 0) {
-      return <View className='h-full flex items-center justify-center'>
-         <LottieView
-            source={require('@/assets/jsons/not-found.json')}
-            autoPlay
-            loop
-            style={{
-               width: 300,
-               height: 300,
-            }}
-         />
-      </View>
+      return <Lottie
+         source={require('@/assets/jsons/empty.json')}
+         width={150}
+         height={150}
+         text={'Danh sách trống'}
+      />
    }
 
    return (
@@ -296,7 +292,7 @@ const DoingResults = ({ results }) => {
                   [
                      { text: "Hủy", style: "cancel" },
                      {
-                        text: "Tiếp tục", onPress: () => {
+                        text: "Tiếp tục", onPress: async () => {
 
                            if (item.type === 'publish') {
                               router.push({
@@ -304,10 +300,26 @@ const DoingResults = ({ results }) => {
                                  params: { quizId: item.quiz_id?._id, type: item.type }
                               })
                            } else if (item.type === 'exercise') {
-                              router.push({
-                                 pathname: '(play)/single',
-                                 params: { quizId: item.quiz_id?._id, exerciseId: item.exercise_id?._id, type: item.type }
-                              })
+                              const now = moment();
+                              const deadline = moment(item.exercise_id?.date_end);
+                              if (now.isBefore(deadline)) {
+                                 router.push({
+                                    pathname: '(play)/single',
+                                    params: { quizId: item.quiz_id?._id, exerciseId: item.exercise_id?._id, type: item.type }
+                                 })
+                              } else {
+                                 Toast.show({
+                                    type: 'info',
+                                    text1: 'Đã quá hạn làm bài!',
+                                    visibilityTime: 2000
+                                 })
+
+                                 const completedResult = await completed(item.exercise_id?._id, item.quiz_id?._id);
+                                 router.push({
+                                    pathname: '(report)/overview_report',
+                                    params: { resultId: completedResult._id },
+                                 });
+                              }
                            } else if (item.type === 'room') {
                               socket.emit('joinRoom', { roomCode: item.room_id.room_code, user: userData });
                               router.push({

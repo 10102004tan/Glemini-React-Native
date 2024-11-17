@@ -36,7 +36,7 @@ export default function DetailReport() {
 
     return (
         <>
-            <View className="pt-10 pb-2 px-3 flex-row items-center bg-red-800 ">
+            <View className="pt-10 pb-2 px-5 flex-row items-center bg-red-800 ">
                 <TouchableOpacity onPress={() => { router.back() }}>
                     <MaterialCommunityIcons name="arrow-left" size={24} color={'white'} />
                 </TouchableOpacity>

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useAuthContext } from '@/contexts/AuthContext';
@@ -10,14 +10,24 @@ import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
-import Wrapper from '@/components/customs/Wrapper';
 import Toast from 'react-native-toast-message-custom';
 
 const UploadExcelScreen = () => {
     const [uploadStatus, setUploadStatus] = useState(null);
+    const [isTemplateExist, setIsTemplateExist] = useState(false);
     const { userData, processAccessTokenExpired } = useAuthContext();
     const router = useRouter();
     const { classroomId } = useGlobalSearchParams();
+    const templateFileUri = `${FileSystem.documentDirectory}template_excel.xlsx`;
+
+    useEffect(() => {
+        const checkTemplateExistence = async () => {
+            const fileInfo = await FileSystem.getInfoAsync(templateFileUri);
+            setIsTemplateExist(fileInfo.exists);
+        };
+
+        checkTemplateExistence();
+    }, []);
 
     const pickExcelDocument = async () => {
         try {
@@ -68,7 +78,7 @@ const UploadExcelScreen = () => {
     const handleUploadSuccess = () => {
         router.back({ refresh: true });
     };
-    
+
     const uploadFile = async (file) => {
         if (!file || !file.uri || !file.name || !file.mimeType) {
             setUploadStatus('Định dạng tệp không hợp lệ.');
@@ -152,8 +162,8 @@ const UploadExcelScreen = () => {
             if (status !== 'granted') {
                 Toast.show({
                     type: 'error',
-                    text1: 'Permission Denied',
-                    text2: 'Cannot access Media Library!',
+                    text1: 'Quyền truy cập thất bại',
+                    text2: 'Không thể truy cập Thư viện!',
                 });
                 return;
             }
@@ -167,6 +177,12 @@ const UploadExcelScreen = () => {
             if (save) {
                 Sharing.openFile(downloadResult.uri);
             }
+            setIsTemplateExist(true);
+            Toast.show({
+                type: 'success',
+                text1: 'Thành công',
+                text2: 'Tải tệp mẫu Excel thành công.',
+            });
         } catch (error) {
             Toast.show({
                 type: 'error',
@@ -174,13 +190,12 @@ const UploadExcelScreen = () => {
                 text2: `${error.message}`,
             });
         }
-
     };
 
     const deleteFile = async (fileUri) => {
         try {
-            // Xóa file
             await FileSystem.deleteAsync(fileUri, { idempotent: true });
+            setIsTemplateExist(false); // Update template existence state
             Toast.show({
                 type: 'success',
                 text1: 'Thành công',
@@ -196,7 +211,7 @@ const UploadExcelScreen = () => {
     };
 
     const clearTemplatedDownload = async () => {
-        await deleteFile(`${FileSystem.documentDirectory}template_excel.xlsx`);
+        await deleteFile(templateFileUri);
     };
 
     return (
@@ -235,16 +250,27 @@ const UploadExcelScreen = () => {
                         </Text>
                         <View className="flex items-center justify-center mt-2 flex-row">
                             <Button
-                                onPress={() => { downloadAndOpenFile() }}
-                                otherStyles="p-3"
+                                onPress={()=>{
+                                    if (!isTemplateExist) {
+                                        downloadAndOpenFile()
+                                    }
+                                }}
+                                otherStyles={`p-3 ${isTemplateExist ? 'opacity-50' : ''}`}
                                 text="Tải xuống mẫu (xlsx)"
                                 icon={<SimpleLineIcons name="docs" size={18} color="white" />}
+                                disabled={isTemplateExist}
                             />
+
                             <Button
-                                onPress={() => { clearTemplatedDownload() }}
-                                otherStyles="p-3 ml-2"
+                                onPress={() => {
+                                    if (isTemplateExist) {
+                                        clearTemplatedDownload();
+                                    }
+                                }}
+                                otherStyles={`p-3 ml-2 ${!isTemplateExist ? 'opacity-50' : ''}`}
                                 text="Xóa tệp mẫu"
                                 icon={<SimpleLineIcons name="trash" size={18} color="white" />}
+                                disabled={!isTemplateExist}
                             />
                         </View>
 

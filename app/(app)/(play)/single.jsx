@@ -2,11 +2,10 @@ import React, { useEffect, useState, useCallback, useReducer } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import Button from '../../../components/customs/Button';
 import ResultSingle from '../(result)/single';
-import { useAuthContext } from '@/contexts/AuthContext';
 import { useAppProvider } from '@/contexts/AppProvider';
 import Toast from 'react-native-toast-message-custom';
 import { Audio } from 'expo-av';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import { useResultProvider } from '@/contexts/ResultProvider';
 
@@ -174,8 +173,6 @@ const SinglePlay = () => {
 				dispatch({ type: 'NEXT_QUESTION' });
 			} else {
 				dispatch({ type: 'COMPLETE' });
-				dispatch({ type: 'COMPLETE' });
-				
 				const completedResult = await completed(exerciseId, quizId);
 
 				if (completedResult && completedResult._id) {
@@ -191,7 +188,6 @@ const SinglePlay = () => {
 	};
 
 	if (state.isCompleted && resultId) {
-		console.log('Quiz completed:', state.isCompleted, 'Result ID:', resultId);
 		return (
 			<ResultSingle
 				resultId={resultId}

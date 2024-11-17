@@ -215,6 +215,9 @@ const TeacherHomeScreen = () => {
                   }
                />
                <PressAction
+               onPress={() => {
+                  router.push('/(app)/(home)/report');
+               }}
                   title={'Báo cáo'}
                   icon={
                      <Ionicons
