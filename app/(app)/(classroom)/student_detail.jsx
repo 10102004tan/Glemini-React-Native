@@ -39,7 +39,7 @@ const StudentDetail = () => {
 
 
     return (
-        <View className='p-4 bg-white mb-20 flex-1'>
+        <View className='p-4 bg-white flex-1'>
             <Text className='text-xl font-semibold mb-3 text-gray-800'>Bài tập được giao</Text>
             {classroom.exercises && classroom.exercises.length > 0 ?
                 <FlatList

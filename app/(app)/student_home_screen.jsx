@@ -117,7 +117,6 @@ const StudentHomeScreen = () => {
 					</View>
 					{
 						filterQuizzes && filterQuizzes.length > 0 ? (
-
 							<View className="px-4 mt-4 flex-1">
 								{/* Display subjects and their quizzes */}
 								{
