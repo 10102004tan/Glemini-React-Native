@@ -19,6 +19,7 @@ export const AuthProvider = ({children}) => {
     const [notification, setNotification] = useState([]);
     const [numberOfUnreadNoti, setNumberOfUnreadNoti] = useState(0);
     const [skipNotification, setSkipNotification] = useState(0);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     const {socket} = useAppProvider();
 
@@ -41,11 +42,19 @@ export const AuthProvider = ({children}) => {
     // fix bug notification
     useEffect(() => {
         if (userData) {
+            console.log("reconnect socket");
+            // reconnect socket
+            socket.connect();
             fetchNotification({skip:skipNotification,limit:LIMIT_NOTIFICATION});
-            // socket
             socket.emit('init', userData._id);
         }
     }, [userData,skipNotification]);
+
+    useEffect(() => {
+        if (isRefreshing){
+            fetchNotification({skip:skipNotification,limit:LIMIT_NOTIFICATION});
+        }
+    }, [isRefreshing]);
 
 
     useEffect(() => {
@@ -64,12 +73,6 @@ export const AuthProvider = ({children}) => {
             setNumberOfUnreadNoti((prev) => {
                 return prev + 1;
             });
-        });
-
-
-        socket.on("connect", () => {
-            console.log("Socket connected");
-            socket.emit('init', userData._id);
         });
 
         socket.on("disconnect", () => {
@@ -167,6 +170,9 @@ export const AuthProvider = ({children}) => {
             setNotification([]);
             setNumberOfUnreadNoti(0);
             setSkipNotification(0);
+
+            // disconnect socket
+            socket.disconnect();
         } else {
             if (data.message === "expired") {
                 await processAccessTokenExpired();
@@ -441,6 +447,7 @@ export const AuthProvider = ({children}) => {
         if (data.statusCode === 200) {
             const {totalUnread, listNoti} = data.metadata;
             setNumberOfUnreadNoti(totalUnread);
+            setIsRefreshing(false);
             if (listNoti.length === 0) return;
             if (skip === 0) {
                 setNotification(listNoti);
@@ -454,6 +461,7 @@ export const AuthProvider = ({children}) => {
             setSkipNotification((prev) => {
                 return prev - 10;
             });
+            setIsRefreshing(false);
         }
     }
 
@@ -503,6 +511,8 @@ export const AuthProvider = ({children}) => {
                 setNumberOfUnreadNoti,
                 skipNotification,
                 setSkipNotification,
+                setIsRefreshing,
+                isRefreshing
             }}
         >
             {children}
