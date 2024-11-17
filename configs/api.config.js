@@ -120,6 +120,7 @@ const dev = {
 		// exercise
 		EXERCISE_REPORT: '/exercise/report',
 	},
+
 };
 
 const prod = {
