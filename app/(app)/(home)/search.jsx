@@ -10,7 +10,7 @@ import {
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Modalize } from "react-native-modalize";
 import React, {
-  useCallback,
+  useCallback, useContext,
   useEffect,
   useMemo,
   useRef,
@@ -30,6 +30,8 @@ import CustomButton from "@/components/customs/CustomButton";
 import useDebounce from "@/hooks/useDebounce";
 import AntiFlatList from "@/components/customs/AntiFlatList/AntiFlatList";
 import { useResultProvider } from "@/contexts/ResultProvider";
+import LockFeature from "@/components/customs/LockFeature";
+import {AuthContext} from "@/contexts/AuthContext";
 
 // col span : 4 => full width, 2 => half width
 const COL_SPAN = 2;
@@ -42,6 +44,7 @@ export default function SearchScreen() {
   const [dataSubject, setDataSubject] = useState([]);
   const { subjects } = useSubjectProvider();
   const { fetchResultData } = useResultProvider();
+  const { teacherStatus } = useContext(AuthContext);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -296,6 +299,10 @@ export default function SearchScreen() {
   // debounced fetch quiz
   const debouncedFetchQuiz = useDebounce(handleRefresh, 2000);
 
+  if (teacherStatus !== 'active' && teacherStatus) {
+    return <LockFeature />;
+  }
+
   // check loading for first load
   if (isFirstLoad) {
     return (
@@ -304,6 +311,8 @@ export default function SearchScreen() {
       </View>
     );
   }
+
+
 
   return (
     <View className={"px-3 pt-2 pb-[80px] h-full"}>
