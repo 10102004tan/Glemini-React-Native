@@ -1,10 +1,11 @@
 'use strict';
 
 const dev = {
-	API_URL: 'http://75.101.204.65:8000/api',
+	API_URL: 'http://192.168.1.16:3000/api',
 	API_VERSION: {
 		V1: '/v1',
 	},
+
 	END_POINTS: {
 		SERVER: '/working',
 
@@ -107,6 +108,7 @@ const dev = {
 		ROOM_LIST: '/room/list',
 		ROOM_DETAIL: '/room/detail',
 		ROOM_ADD_USER: '/room/add-user',
+		ROOM_REMOVE_USER: '/room/remove-user',
 		ROOM_REPORT: '/room/report',
 		ROOM_CHECK_USER: '/room/check-joined',
 

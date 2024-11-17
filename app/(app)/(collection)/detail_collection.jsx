@@ -116,7 +116,9 @@ const detail_collection = () => {
     }
   };
 
-  const updateCollectionName = async (collection_id, new_name) => {
+  //fetch api để cập nhật tên mới của collection từ backend server về database của collection
+  const updateCollectionName = async (collection_id, collection_name, quiz_ids) => {
+    console.log("Updating collection name...");
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_UPDATE_NAME}`,
       {
@@ -129,16 +131,19 @@ const detail_collection = () => {
         body: JSON.stringify({
           user_id: userData._id,
           collection_id,
-          new_name,
+          collection_name,
+          quiz_ids,
         }),
       }
     );
     const data = await response.json();
     console.log(data);
     if (data.statusCode === 200) {
-      setCollectionName(new_name); // Cập nhật lại tên bộ sưu tập trên giao diện
-      setEditModalVisible(false); // Đóng modal
+      // Cập nhật lại tên collection sau khi cập nhật thành công
+      setCollectionName(collection_name);
+      setEditModalVisible(false);
     } else {
+      console.log("Error: Could not update collection name");
       Alert.alert("Error", "Không thể cập nhật tên bộ sưu tập.");
     }
   };
@@ -256,7 +261,7 @@ const detail_collection = () => {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity className="ml-2">
+          {/* <TouchableOpacity className="ml-2">
             <View className="w-[80px] rounded-lg bg-slate-400 flex flex-row justify-between p-1">
               <View className="flex justify-center">
                 <FontAwesome name="share" size={14} color="black" />
@@ -264,7 +269,7 @@ const detail_collection = () => {
 
               <Text className="mr-1 flex items-center">Chia sẻ</Text>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity className="ml-2" onPress={handleDeletePress}>
             <View className="w-[60px] rounded-lg bg-slate-400 flex flex-row justify-between p-1">
@@ -285,8 +290,8 @@ const detail_collection = () => {
           keyExtractor={(name) => name._id}
           renderItem={({ item: name }) => {
             return (
-              <View className="h-[100px] w-full border rounded-xl flex-row mt-6">
-                <View className="flex flex-row">
+              <View className="h-[100px] w-full border rounded-xl flex-row mt-6 relative">
+                <View className="flex flex-row w-full">
                   <View className="flex justify-center items-center m-2">
                     <Image
                       source={{
@@ -299,6 +304,7 @@ const detail_collection = () => {
                   </View>
                   <View className="flex flex-col ml-4 justify-around">
                     <Text className="text-lg font-bold">{name.quiz_name}</Text>
+
                     <Text className="text-gray-500">
                       {name.quiz_description}
                     </Text>
@@ -308,13 +314,13 @@ const detail_collection = () => {
                         : "Công khai"}
                     </Text>
                   </View>
-                  <TouchableOpacity
-                    className="flex mt-2 ml-[150px] border border-gray rounded-md"
-                    onPress={() => handleDeleteQuiz(name._id)}
-                  >
-                    <MaterialIcons name="delete" size={24} color="black" />
-                  </TouchableOpacity>
                 </View>
+                <TouchableOpacity
+                  className=" border rounded-md absolute right-2 bottom-2"
+                  onPress={() => handleDeleteQuiz(name._id)}
+                >
+                  <MaterialIcons name="delete" size={24} color="black" />
+                </TouchableOpacity>
               </View>
             );
           }}

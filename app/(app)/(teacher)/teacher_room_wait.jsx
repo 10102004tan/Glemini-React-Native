@@ -97,13 +97,34 @@ const TeacherRoomWaitScreen = () => {
    useEffect(() => {
       if (!isFocused) return; // Chỉ lắng nghe khi màn hình được hiển thị
 
-      const backAction = () => {
+      const backAction = async () => {
          Alert.alert('Cảnh báo', 'Bạn có chắc chắn muốn thoát khỏi phòng chơi không?', [
             { text: 'Hủy', onPress: () => null, style: 'cancel' },
             {
-               text: 'Thoát', onPress: () => {
-                  socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
-                  router.back({ pathname: '/(app)/(home)', params: {} })
+               text: 'Thoát', onPress: async () => {
+                  const exitRoom = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_REMOVE_USER}`, {
+                     method: 'POST',
+                     headers: {
+                        'Content-Type': 'application/json',
+                        'x-client-id': userData._id,
+                        authorization: userData.accessToken,
+                     },
+                     body: JSON.stringify({
+                        room_code: roomCode,
+                        user_id: userData._id,
+                     }),
+                  });
+
+                  const data = await exitRoom.json();
+                  if (data.statusCode === 200) {
+                     socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
+                     router.replace({
+                        pathname: '/(app)/(home)',
+                        params: {}
+                     })
+                  } else {
+                     Alert.alert('Thông báo', 'Không thể thoát khỏi phòng chơi');
+                  }
                }
             },
          ]);
@@ -122,7 +143,7 @@ const TeacherRoomWaitScreen = () => {
       socket.on('startQuiz', () => {
          if (roomData && userData) {
             // Nếu là sinh viên thì sẽ chuyển hướng tới màn hình làm bài
-            router.push(
+            router.replace(
                {
                   pathname: '/(play)/realtime',
                   params: { quizId: roomData.quiz_id, roomId: roomData._id, roomCode: roomData.room_code, createdUserId: roomData.user_created_id }
@@ -150,7 +171,7 @@ const TeacherRoomWaitScreen = () => {
    const handleStartRoom = async () => {
       // Kiểm tra xem phòng chơi có đủ người chưa
       if ((joinedUsers.length - 1) < 1) {
-         Alert.alert('Thông báo', 'Phòng chơi cần ít nhất 2 người để bắt đầu');
+         Alert.alert('Thông báo', 'Phòng chơi cần ít nhất 1 người tham gia để bắt đầu');
          return;
       }
 
@@ -183,7 +204,6 @@ const TeacherRoomWaitScreen = () => {
             params: { roomCode: roomCode, users: JSON.stringify(joinedUsers), quizId: roomData.quiz_id, roomTime: roomData.room_time, createdAt: roomData.createdAt }
          })
       }
-
       else {
          Alert.alert('Thông báo', 'Không thể bắt đầu phòng chơi');
       }
@@ -228,12 +248,31 @@ const TeacherRoomWaitScreen = () => {
                      },
                      {
                         text: 'Thoát',
-                        onPress: () => {
-                           socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
-                           router.replace({
-                              pathname: '/(app)/(home)',
-                              params: {}
-                           })
+                        onPress: async () => {
+                           const exitRoom = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_REMOVE_USER}`, {
+                              method: 'POST',
+                              headers: {
+                                 'Content-Type': 'application/json',
+                                 'x-client-id': userData._id,
+                                 authorization: userData.accessToken,
+                              },
+                              body: JSON.stringify({
+                                 room_code: roomCode,
+                                 user_id: userData._id,
+                              }),
+                           });
+
+                           const data = await exitRoom.json();
+                           console.log(data)
+                           if (data.statusCode === 200) {
+                              socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
+                              router.replace({
+                                 pathname: '/(app)/(home)',
+                                 params: {}
+                              })
+                           } else {
+                              Alert.alert('Thông báo', 'Không thể thoát khỏi phòng chơi');
+                           }
                         }
                      }
                   ])

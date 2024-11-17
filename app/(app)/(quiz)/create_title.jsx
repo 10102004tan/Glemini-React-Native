@@ -281,7 +281,7 @@ const CreateTitleQuizzScreen = () => {
                )}
             </ScrollView>
          </View>
-         <View className="p-4">
+         <View className="p-4 absolute bottom-0 left-0 right-0">
             <Button
                loading={generating}
                onPress={handleCreateQuizTitle}

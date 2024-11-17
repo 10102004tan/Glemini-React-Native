@@ -495,14 +495,28 @@ const RealtimePlay = () => {
                      },
                      {
                         text: 'Thoát',
-                        onPress: () => {
-                           completed();
-                           setIsCompleted(true);
-                           socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
-                           router.replace({
-                              pathname: '/(app)/(home)',
-                              params: {}
-                           })
+                        onPress: async () => {
+                           const exitRoom = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_REMOVE_USER}`, {
+                              method: 'POST',
+                              headers: {
+                                 'Content-Type': 'application/json',
+                                 'x-client-id': userData._id,
+                                 authorization: userData.accessToken,
+                              },
+                              body: JSON.stringify({
+                                 room_code: roomCode,
+                                 user_id: userData._id,
+                              }),
+                           });
+
+                           const data = await exitRoom.json();
+                           if (data.statusCode === 200) {
+                              completed();
+                              setIsCompleted(true);
+                              socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
+                           } else {
+                              Alert.alert('Thông báo', 'Không thể thoát khỏi phòng chơi');
+                           }
                         }
                      }
                   ])

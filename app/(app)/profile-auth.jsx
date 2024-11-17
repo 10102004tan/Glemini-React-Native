@@ -106,6 +106,7 @@ export default function ProfileAuth(){
                     setTeacherStatus("pedding");
                     setUrls(data.metadata);
                 }
+                console.log("RE_UPLOAD::",data);
                 setIsLoading(false);
             })
             .catch(err =>

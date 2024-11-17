@@ -1,16 +1,16 @@
-import { Redirect, Stack } from 'expo-router';
-import React, { useContext, useEffect, useState } from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
-import { Alert, Text, TouchableOpacity } from 'react-native';
-import { useGlobalSearchParams } from 'expo-router';
-import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
-import ResultReview from './(result)/review';
-import AppProvider, { useAppProvider } from '@/contexts/AppProvider';
-import { useQuizProvider } from '@/contexts/QuizProvider';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import SpinningIcon from '@/components/loadings/SpinningIcon';
-import Toast from 'react-native-toast-message-custom';
+import { Redirect, Stack } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
+import { Alert, Text, TouchableOpacity } from "react-native";
+import { useGlobalSearchParams } from "expo-router";
+import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
+import { View } from "react-native";
+import ResultReview from "./(result)/review";
+import AppProvider, { useAppProvider } from "@/contexts/AppProvider";
+import { useQuizProvider } from "@/contexts/QuizProvider";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import SpinningIcon from "@/components/loadings/SpinningIcon";
+import Toast from "react-native-toast-message-custom";
 import Icon from "react-native-vector-icons/Ionicons";
 
 export default function AppRootLayout() {
@@ -25,13 +25,34 @@ export default function AppRootLayout() {
       closeBottomSheet,
    } = useAppProvider();
 
+   const { isEdited } = useQuizProvider();
+
+   useEffect(() => {
+      if (userData) {
+         fetchStatus();
+         socket.on(
+            "update-status",
+            ({ user_id, teacher_status, message, status }) => {
+               if (userData._id === user_id) {
+                  setTeacherStatus(teacher_status);
+                  Toast.show({
+                     type: status,
+                     text1: "Thông báo",
+                     text2: message,
+                     visibilityTime: 2000,
+                  });
+               }
+            }
+         );
+      }
+   }, [userData]);
 
    if (isLoading) {
       return <Text>Loading...</Text>;
    }
 
    if (!userData) {
-      return <Redirect href={'/(auths)/sign-in'} />;
+      return <Redirect href={"/(auths)/sign-in"} />;
    }
 
    return (
@@ -39,20 +60,20 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(home)"
             options={{
-               headerShown: false
+               headerShown: false,
             }}
          />
          <Stack.Screen
             name="profile"
             options={{
-               headerTitle: i18n.t('profile.title'),
+               headerTitle: i18n.t("profile.title"),
             }}
          />
 
          <Stack.Screen
             name="change-password"
             options={{
-               headerTitle: i18n.t('profile.title'),
+               headerTitle: i18n.t("profile.title"),
             }}
          />
 
@@ -66,60 +87,28 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="profile-auth"
             options={{
-               headerTitle: i18n.t('profile.infoAuth'),
+               headerTitle: i18n.t("profile.infoAuth"),
             }}
          />
 
          <Stack.Screen
             name="settings"
             options={{
-               headerTitle: i18n.t('settings.title'),
+               headerTitle: i18n.t("settings.title"),
             }}
          />
 
          <Stack.Screen
             name="(quiz)/list"
             options={{
-               headerTitle: 'Danh sách các quiz',
-            }}
-         />
-
-         <Stack.Screen
-            name="(play)/realtime"
-            options={{
-               headerShown: false,
-               headerTitle: 'Danh sách các quiz',
-            }}
-         />
-
-         <Stack.Screen
-            name="(result)/realtime"
-            options={{
-               headerShown: false,
-               headerTitle: 'Danh sách các quiz',
-            }}
-         />
-
-         <Stack.Screen
-            name="(teacher)/teacher_room_wait"
-            options={{
-               headerShown: false,
-               headerTitle: 'Danh sách các quiz',
-            }}
-         />
-
-         <Stack.Screen
-            name="(teacher)/teacher_room_wait_result"
-            options={{
-               headerShown: false,
-               headerTitle: 'Danh sách các quiz',
+               headerTitle: "Danh sách các quiz",
             }}
          />
 
          <Stack.Screen
             name="(quiz)/overview"
             options={{
-               headerTitle: 'Chi tiết',
+               headerTitle: "Chi tiết",
                headerRight: () => {
                   return (
                      <TouchableOpacity
@@ -133,11 +122,7 @@ export default function AppRootLayout() {
                         {isSave ? (
                            <SpinningIcon />
                         ) : (
-                           <Ionicons
-                              name="save"
-                              size={20}
-                              color="white"
-                           />
+                           <Ionicons name="save" size={20} color="white" />
                         )}
                         <Text className="ml-2 text-white">Lưu</Text>
                      </TouchableOpacity>
@@ -149,28 +134,24 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(quiz)/demo_create_quiz_by_template"
             options={{
-               headerTitle: 'Tải file câu hỏi',
+               headerTitle: "Tải file câu hỏi",
             }}
          />
 
          <Stack.Screen
             name="(quiz)/detail_quiz"
             options={{
-               headerTitle: 'Quay lại thư viện',
+               headerTitle: "Quay lại thư viện",
                headerRight: () => {
                   return (
                      <View className="flex flex-row items-center justify-between">
-                        <TouchableOpacity
-                           onPress={openBottomSheetMoreOptions}
-                        >
-                           <Entypo
-                              name="dots-three-vertical"
-                              size={24}
-                              color="black"
-                           />
+                        <TouchableOpacity onPress={openBottomSheetMoreOptions}>
+                           <Entypo name="dots-three-vertical" size={24} color="black" />
                         </TouchableOpacity>
                      </View>
                   );
+
+                  return null;
                },
             }}
          />
@@ -178,14 +159,14 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(quiz)/create_title"
             options={{
-               headerTitle: '',
+               headerTitle: "",
             }}
          />
 
          <Stack.Screen
             name="(quiz)/edit_quiz_question"
             options={{
-               headerTitle: '',
+               headerTitle: "",
                headerRight: () => {
                   return (
                      <View className="flex flex-row items-center justify-between">
@@ -215,7 +196,7 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(report)/detail_report"
             options={{
-               headerTitle: 'Chi tiết báo cáo',
+               headerTitle: "Chi tiết báo cáo",
             }}
          />
 
@@ -230,6 +211,31 @@ export default function AppRootLayout() {
             name="(classroom)/teacher_detail"
             options={{
                headerTitle: "Chi tiết lớp học",
+            }}
+         />
+
+
+         <Stack.Screen
+            name="(teacher)/teacher_room_wait"
+            options={{
+               headerShown: false,
+               // headerTitle: "Chi tiết lớp học",
+            }}
+         />
+
+         <Stack.Screen
+            name="(teacher)/teacher_room_wait_result"
+            options={{
+               headerShown: false,
+               // headerTitle: "Chi tiết lớp học",
+            }}
+         />
+
+         <Stack.Screen
+            name="(play)/realtime"
+            options={{
+               headerShown: false,
+               // headerTitle: "Chi tiết lớp học",
             }}
          />
 
@@ -250,7 +256,7 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(collection)/detail_collection"
             options={{
-               headerTitle: 'Quay lại bộ sưu tập',
+               headerTitle: "Quay lại bộ sưu tập",
             }}
          />
       </Stack>

@@ -124,7 +124,7 @@ const Library = () => {
   const [quizLoading, setQuizLoading] = useState(false);
 
   //hàm fetch api lấy tất cả các quiz đã được chia sẻ
-  const getAllQuizzesShared = async ({ skip = 0, limit = LIMIT }) => {
+  const getAllQuizzesShared = async () => {
     if (!quizLoading) {
       setQuizLoading(true);
       const response = await fetch(
@@ -139,24 +139,22 @@ const Library = () => {
           body: JSON.stringify({
             user_id: userData._id,
             skip,
-            limit,
+            limit: LIMIT,
           }),
         }
       );
       const data = await response.json();
       if (data.statusCode === 200) {
-        if (data.metadata.length > 0) {
-          if (skip === 0) {
-            setSharedQuizzes(data.metadata);
-          } else {
-            setSharedQuizzes([...sharedQuizzes, ...data.metadata]);
-          }
+        if (skip === 0) {
+          setSharedQuizzes(data.metadata);
         } else {
-          console.log("Không thể lấy ra tất cả quiz được share");
+          setSharedQuizzes((prev) => [...prev, ...data.metadata]);
         }
         setQuizLoading(false);
+        setIsRefreshingShared(false);
       }
       setQuizLoading(false);
+      setIsRefreshingShared(false);
     }
   };
 
@@ -182,6 +180,7 @@ const Library = () => {
       setSharedQuizzes(sharedQuizzes.filter((quiz) => quiz._id !== quiz_id));
     }
   };
+
   const handleDeleteQuizShared = (quiz_id) => {
     Alert.alert(
       "Xác nhận xóa",
@@ -198,12 +197,13 @@ const Library = () => {
   };
 
   useEffect(() => {
-    if (activeTab === "collection") {
-      getAllCollections();
-    } else if (activeTab === "shared") {
-      getAllQuizzesShared({ skip: 0 });
-    }
+    getAllCollections();
   }, [activeTab]);
+
+  // skip useEffect for quizzes shared
+  useEffect(() => {
+    getAllQuizzesShared();
+  }, [skip]);
 
   // Bộ sưu tập
   const OpenBottomSheet = () => {
@@ -412,17 +412,11 @@ const Library = () => {
 
   // Load more và refresh của quizzes đã nhận
   const handleLoadMoreQuizShared = () => {
-    console.log("loadmore::", skip);
-    getAllQuizzesShared({ skip: skip + LIMIT }).then((res) => {
-      setSkip(skip + LIMIT);
-    });
+    setSkip((prev) => prev + LIMIT);
   };
   const handleRefreshQuizShared = () => {
     setIsRefreshingShared(true);
-    getAllQuizzesShared({ skip: 0 }).then((res) => {
-      setSkip(0);
-      setIsRefreshingShared(false);
-    });
+    setSkip(0);
   };
 
   return (
@@ -634,7 +628,7 @@ const Library = () => {
           <View className="">
             {/* Nội dung của Thư viện của tôi */}
 
-            <View className="flex flex-row justify-between items-center p-3">
+            <View className="flex flex-row justify-between items-center p-3 ml-2">
               <Button
                 onPress={CreateNewBottomSheet}
                 text={"Tạo mới"}
@@ -643,7 +637,7 @@ const Library = () => {
                 textStyles={"text-center text-white"}
               />
 
-              <View className="flex-row items-center justify-center">
+              <View className="flex-row items-center justify-center mr-2">
                 {/* bộ lọc */}
                 <Button
                   text="Bộ lọc"
@@ -653,14 +647,14 @@ const Library = () => {
                   onPress={FilterBottomSheet}
                   otherStyles={"bg-primary p-4 rounded-xl"}
                 />
-                <Button
+                {/* <Button
                   text="Đặt lại"
                   icon={
                     <AntDesign name="closecircleo" size={16} color="white" />
                   }
                   onPress={resetFilters}
                   otherStyles={"bg-primary p-4 rounded-xl ml-2"}
-                />
+                /> */}
               </View>
             </View>
             <View
