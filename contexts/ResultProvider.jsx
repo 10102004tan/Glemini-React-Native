@@ -132,7 +132,7 @@ const ResultProvider = ({ children }) => {
 
    const completed = async (exerciseId, quizId) => {
       try {
-         await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
+         const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
             method: 'POST',
             headers: {
                'Content-Type': 'application/json',
@@ -146,6 +146,16 @@ const ResultProvider = ({ children }) => {
                status: 'completed',
             }),
          });
+
+         const data = await res.json();
+         
+         if (data.statusCode === 200) {
+            return data.metadata
+            
+         } else {
+            return null
+         }
+         
       } catch (error) {
          Toast.show({
             type: 'error',

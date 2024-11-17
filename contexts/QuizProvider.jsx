@@ -13,7 +13,7 @@ const QuizProvider = ({ children }) => {
   const [actionQuizType, setActionQuizType] = useState("create");
   const [isSave, setIsSave] = useState(false);
   const { userData } = useAuthContext();
-  const LIMIT = 6;
+  const LIMIT = 10;
   const [isEdited, setIsEdited] = useState(false);
 
   // Get all quizzes of the user

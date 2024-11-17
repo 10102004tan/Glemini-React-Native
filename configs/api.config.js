@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 const dev = {
-  API_URL: "http://10.0.111.48:3000/api",
+  API_URL: "http://10.0.192.89:3000/api",
   API_VERSION: {
     V1: "/v1",
   },
@@ -69,7 +69,8 @@ const dev = {
     RESULT_REVIEW: "/result/review",
     RESULT_OVERVIEW: "/result/overview",
     RESULT_REPORT: "/result/reports",
-
+    RESULT_RESET: "/result/reset",
+    RESULT_RANK: "/result/rank",
     // Subjects
     SUBJECTS: "/subjects",
 
@@ -106,7 +107,9 @@ const dev = {
     ROOM_CREATE: "/room/create",
     ROOM_LIST: "/room/list",
     ROOM_DETAIL: "/room/detail",
+    ROOM_ADD_USER: "/room/add-user",
     ROOM_REPORT: "/room/report",
+    ROOM_CHECK_USER: "/room/check-joined",
 
     // Use for realtime play
     ROOM_GET_RESULTS: "/result/get-results",
@@ -120,16 +123,16 @@ const dev = {
 };
 
 const prod = {
-  API_VERSION: {
-    V1: "/v1",
-  },
-  API_URL: "http://localhost:8000/api",
-  END_POINTS: {
-    LOGIN: "/login",
-    REGISTER: "/register",
-    LOGOUT: "/logout",
-    PROFILE: "/profile",
-  },
+	API_VERSION: {
+		V1: '/v1',
+	},
+	API_URL: 'http://localhost:8000/api',
+	END_POINTS: {
+		LOGIN: '/login',
+		REGISTER: '/register',
+		LOGOUT: '/logout',
+		PROFILE: '/profile',
+	},
 };
 
 module.exports = dev;

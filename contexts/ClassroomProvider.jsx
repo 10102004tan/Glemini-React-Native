@@ -110,6 +110,44 @@ const ClassroomProvider = ({ children }) => {
         }
     };
 
+    const removeClassroom = async (classroomId) => {
+        try {
+            const response = await fetch(
+                `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_DELETE}/${classroomId}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-client-id': userData._id,
+                        authorization: userData.accessToken,
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.statusCode === 200) {
+                if (data.metadata === true) {
+                    await fetchClassrooms()
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Xóa lớp học thành công',
+                        visibilityTime: 1500
+                    })
+                } else {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Xóa lớp học thất bại',
+                        visibilityTime: 1500
+                    })
+                }
+            } else {
+                console.error('Failed to remove classroom:', data.message);
+            }
+        } catch (error) {
+            console.error('Error removing student:', error);
+        }
+    };
 
     const removeStudent = async (classroomId, studentId) => {
         try {
@@ -250,7 +288,8 @@ const ClassroomProvider = ({ children }) => {
             classroom,
             removeStudent,
             addStudent,
-            addQuizToClassroom
+            addQuizToClassroom,
+            removeClassroom
         }}>
             {children}
         </ClassroomContext.Provider>

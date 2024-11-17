@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableWithoutFeedback, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableWithoutFeedback, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import Wrapper from '../../components/customs/Wrapper';
 import { Images } from '../../constants';
@@ -215,20 +215,10 @@ const TeacherHomeScreen = () => {
                   }
                />
                <PressAction
+               onPress={() => {
+                  router.push('/(app)/(home)/report');
+               }}
                   title={'Báo cáo'}
-                  icon={
-                     <Ionicons
-                        name="analytics-outline"
-                        size={24}
-                        color="black"
-                     />
-                  }
-               />
-               <PressAction
-                  onPress={() => {
-                     router.push('/(app)/(teacher)/teacher_room_wait');
-                  }}
-                  title={'Join'}
                   icon={
                      <Ionicons
                         name="analytics-outline"
@@ -239,50 +229,46 @@ const TeacherHomeScreen = () => {
                />
             </View>
          </View>
-         <View className="mt-5 p-4">
-            {/* Dùng để test chức năng tham gia chơi realtime */}
-            <Text className="text-lg uppercase font-semibold text-center mb-4">
-               Tham gia vào một phòng chơi
-            </Text>
-            <Field placeholder="Mã phòng" wrapperStyles="mb-3" value={roomCode} onChange={(text) => {
-               setRoomCode(text);
-            }} />
-
-            <Button text='JOIN' otherStyles='p-4' onPress={() => {
-               // T7HtmU
-               socket.emit('joinRoom', { roomCode, user: userData });
-               setCurrentRoom(roomCode);
-               router.replace({
-                  pathname: '/(app)/(teacher)/teacher_room_wait',
-                  params: { roomCode: roomCode }
-               });
-            }} />
-
+         <View className="p-4 mb-[100px]">
             <Text className="text-lg uppercase font-semibold text-center my-4">
                Các phòng chơi đã tạo gần đây
             </Text>
-            <ScrollView className="max-h-[200px]"
-               showsVerticalScrollIndicator={false}
-            >
-               {
-                  recentCreatedRooms.length > 0 && recentCreatedRooms.map((room, index) => (
-                     <TouchableOpacity key={room._id} className="p-4"
+            {
+               recentCreatedRooms.length > 0 ? <FlatList
+                  showsVerticalScrollIndicator={false}
+                  data={recentCreatedRooms}
+                  keyExtractor={item => item._id}
+                  renderItem={({ item }) => (
+                     <TouchableOpacity
                         onPress={() => {
-                           setCurrentRoom(room.room_code);
-                           socket.emit('joinRoom', { roomCode: room.room_code, user: userData });
+                           setCurrentRoom(item.room_code);
+                           socket.emit('joinRoom', { roomCode: item.room_code, user: userData });
                            router.push({
                               pathname: '/(app)/(teacher)/teacher_room_wait',
-                              params: { roomCode: room.room_code }
+                              params: { roomCode: item.room_code }
                            });
                         }}
+                        className="flex-1 m-2 rounded-lg"
+                        style={{ maxWidth: '48%' }}
                      >
-                        <Text>
-                           {room.room_code}
-                        </Text>
+                        <View className="">
+                           <Image
+                              source={{ uri: 'https://quizroom.sitehome.app/QuizRoomLogo.png' }}
+                              className="w-full object-cover"
+                              style={{ aspectRatio: 1 }}
+                           />
+                           <View>
+                              <Text className="text-center">Mã phòng: {item.room_code}</Text>
+                           </View>
+                        </View>
                      </TouchableOpacity>
-                  ))
-               }
-            </ScrollView>
+                  )}
+                  numColumns={2}
+                  contentContainerStyle={{ paddingBottom: 300 }} // Đảm bảo các cột được căn đều
+                  columnWrapperStyle={{ justifyContent: 'space-between' }} // Đảm bảo các cột được căn đều
+               />
+                  : <Text className="text-center">Không có phòng chơi nào</Text>
+            }
 
 
          </View>

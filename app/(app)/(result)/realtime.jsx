@@ -34,11 +34,12 @@ const RealtimeResult = ({ correctCount, wrongCount, score, totalQuestions, handl
                   quiz_id: quizId,
                   user_id: userData._id,
                   room_id: roomId,
+                  type: 'room'
                }),
             });
 
             const data = await res.json();
-            console.log(data)
+            // console.log(data)
             setResultData(data.metadata);
          } catch (error) {
             console.error('Lỗi khi lấy câu hỏi:', error);
@@ -79,6 +80,7 @@ const RealtimeResult = ({ correctCount, wrongCount, score, totalQuestions, handl
                <Button
                   text={i18n.t('result.single.buttonReview')}
                   onPress={() => {
+                     // console.log(JSON.stringify(resultData, null, 2))
                      router.push({
                         pathname: '/(result)/review',
                         params: {
@@ -237,17 +239,17 @@ const RealtimeResult = ({ correctCount, wrongCount, score, totalQuestions, handl
             <View className="relative mt-4 bg-[#435362] rounded-xl border border-white">
                <Text className="p-4 bg-green-500 text-white mb-5 rounded-tl-xl rounded-tr-xl ">Bảng xếp hạng</Text>
                <View className="p-4" showsVerticalScrollIndicator={false}>
-                  {rankBoardData.length > 0 &&
-                     rankBoardData.map((user, index) => {
-                        if (user._id !== createdUserId) {
+                  {rankBoardData.rank && rankBoardData.rank.length > 0 &&
+                     rankBoardData.rank.map((rank, index) => {
+                        if (rank.user_id._id !== createdUserId) {
                            return <View
-                              key={user._id}
-                              className={`bg-gray mb-2 ${userData && userData._id === user._id && 'bg-white'} p-2 rounded-2xl flex items-center justify-start flex-row`}
+                              key={index}
+                              className={`bg-gray mb-2 ${userData && userData._id === rank.user_id._id && 'bg-white'} p-2 rounded-2xl flex items-center justify-start flex-row`}
                            >
-                              <Image source={{ uri: user.user_avatar }} className="w-[50px] h-[50px] rounded-full" />
+                              <Image source={{ uri: rank.user_id.user_avatar }} className="w-[50px] h-[50px] rounded-full" />
                               <View className="ml-3">
-                                 <Text className="text-lg font-semibold">{index + 1}. {user.user_fullname}</Text>
-                                 <Text className="text-red-500">Điểm số: {user.score} </Text>
+                                 <Text className="text-lg font-semibold">{rank.user_id.user_fullname}</Text>
+                                 <Text className="text-red-500">Điểm số: {rank.userScore} </Text>
                               </View>
                            </View>
                         }

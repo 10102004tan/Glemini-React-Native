@@ -75,11 +75,11 @@ export default class AntiFlatList extends React.Component {
     render() {
 
         // empty data
-        if (this.state.dataProvider.getSize() === 0) return <NotificationEmpty/>;
+        if (this.state.dataProvider.getSize() === 0) return <QuizEmpty/>;
 
         return (
             <RecyclerListView
-                style={{ minHeight: 1, minWidth: 1 }}
+                style={{ minWidth: 1,height:"100%" }}
                 scrollViewProps={{
                     refreshControl: (
                         <RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh} />

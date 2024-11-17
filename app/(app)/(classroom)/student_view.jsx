@@ -1,17 +1,24 @@
-import { View, Text, FlatList, Pressable, TextInput } from 'react-native';
-import React, { useCallback, useContext, useState } from 'react';
+import { View, Text, FlatList, Pressable, TextInput, RefreshControl } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import ClassroomCard from '@/components/customs/ClassroomCard';
-import { useFocusEffect, router } from 'expo-router';
-import LottieView from 'lottie-react-native';
+import { router } from 'expo-router';
+import Lottie from '@/components/loadings/Lottie';
 const StudentView = () => {
     const { classrooms, fetchClassrooms } = useClassroomProvider();
     const [searchQuery, setSearchQuery] = useState('');
-    useFocusEffect(
-        useCallback(() => {
-            fetchClassrooms();
-        }, [])
-    );
+    const [refreshing, setRefreshing] = useState(false);
+
+    useEffect(() => {
+        fetchClassrooms();
+    }, []);
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await fetchClassrooms();
+        setRefreshing(false);
+    };
+
     const filteredClassrooms = classrooms.filter(classroom =>
         classroom.class_name.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -22,7 +29,7 @@ const StudentView = () => {
         });
     };
     return (
-        <View className='flex-1 bg-slate-50'>
+        <View className='flex-1 bg-slate-50 mb-20'>
             {/* Bộ tìm kiếm */}
             <TextInput
                 value={searchQuery}
@@ -41,17 +48,17 @@ const StudentView = () => {
                     )}
                     keyExtractor={(item) => item._id}
                     contentContainerStyle={{ paddingBottom: 16 }}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
                 /> 
                 : 
-                <View className='flex-1 items-center justify-center'>
-                    <LottieView
-                        source={require('@/assets/jsons/empty.json')}
-                        autoPlay
-                        loop
-                        style={{ width: 250, height: 250 }}
-                    />
-                    <Text className='text-red-500 font-semibold'>Chưa có lớp học nào</Text>
-                </View>
+                <Lottie
+					source={require('@/assets/jsons/empty.json')}
+					width={250}
+					height={250}
+                    text={'Chưa có lớp học nào'}
+				/>
             }
         </View>
 

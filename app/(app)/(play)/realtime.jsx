@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, useWindowDimensions, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, useWindowDimensions, ScrollView, Alert, AppState } from 'react-native';
 import Button from '../../../components/customs/Button';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useAppProvider } from '@/contexts/AppProvider';
@@ -12,9 +12,10 @@ import RealtimeResult from '../(result)/realtime';
 import socket from '@/utils/socket';
 import RankBoard from '@/components/customs/RankBoard';
 import Overlay from '@/components/customs/Overlay';
-import Dialog from "react-native-dialog";
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ScreenOrientation from 'expo-screen-orientation';
+import { sortRankBoardDesc } from '../../../utils';
 const RealtimePlay = () => {
    const { quizId, roomId, roomCode, createdUserId } = useGlobalSearchParams();
    const { i18n } = useAppProvider();
@@ -43,11 +44,13 @@ const RealtimePlay = () => {
    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
    const [confirmFn, setConfirmFn] = useState('close');
    const [alertMessage, setAlertMessage] = useState('');
+   const [loading, setLoading] = useState(true);
 
    const SHOW_RANK_BOARD_TIME = 2000;
    const HIDDEN_RANK_BOARD_TIME = 6000;
    const QUESTION_RESET_TIME = 8000;
 
+   // Lấy câu hỏi của bộ quiz
    useEffect(() => {
       const fetchQuestions = async () => {
          const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.GET_QUIZ_QUESTIONS, {
@@ -85,6 +88,24 @@ const RealtimePlay = () => {
       }
    }, [quizId]);
 
+   // Lắng nghe khi người dùng thoát ra khỏi ứng dụng
+   useEffect(() => {
+      const handleAppStateChange = (nextAppState) => {
+         if (nextAppState === 'background' || nextAppState === 'inactive') {
+            // Gửi sự kiện thoát phòng đến server
+            console.log('User has left the app');
+            socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
+         }
+      };
+
+      const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+      return () => {
+         subscription.remove();
+      };
+   }, []);
+
+   // Lắng nghe sự kiện khi chủ phòng kết thúc  phòng chơi
    useEffect(() => {
       socket.on('quizEnded', () => {
          setConfirmFn('endquiz')
@@ -92,8 +113,10 @@ const RealtimePlay = () => {
          setAlertMessage('Phòng thi đã kết thúc. Bạn sẽ được chuyển tới màn hình kết quả');
       });
 
-      socket.on('updateRanking', (users) => {
-         setRankData(users);
+      // Cập nhật bảng xếp hạng của người chơi
+      socket.on('updateRanking', (rank) => {
+         console.log(JSON.stringify(rank, null, 2));
+         setRankData(sortRankBoardDesc(rank));
       });
 
       return () => {
@@ -102,7 +125,75 @@ const RealtimePlay = () => {
       };
    }, []);
 
+   // Kiểm tra xem người dùng có đang làm giở câu hỏi nào không
+   useEffect(() => {
+      // Lấy dữ liệu từ local storage
 
+      const getData = async () => {
+         setLoading(true);
+         try {
+            const value = await AsyncStorage.getItem("User_" + userData._id + "_Room_" + roomCode + "_Doing");
+            const correct = await AsyncStorage.getItem("User_" + userData._id + "_Room_" + roomCode + "_CorrectPercent");
+            const wrong = await AsyncStorage.getItem("User_" + userData._id + "_Room_" + roomCode + "_WrongPercent");
+
+            if (value !== null && correct !== null && wrong !== null) {
+               await AsyncStorage.removeItem("User_" + userData._id + "_Room_" + roomCode + "_Doing");
+               await AsyncStorage.removeItem("User_" + userData._id + "_Room_" + roomCode + "_CorrectPercent");
+               await AsyncStorage.removeItem("User_" + userData._id + "_Room_" + roomCode + "_WrongPercent");
+               // Người dùng đã thoát ra khỏi phòng thi và đang làm câu hỏi nào đó
+               const data = JSON.parse(value);
+               const correctData = JSON.parse(correct);
+               const wrongData = JSON.parse(wrong);
+
+               // Cho người dùng tiếp tục làm câu hỏi đó
+               const index = questions.findIndex(question => question._id === data);
+
+               if (index > -1) {
+                  setCurrentQuestionIndex(index + 1);
+                  setQuestionTimeCountDown(questions[index + 1].question_time);
+               } else {
+                  setCurrentQuestionIndex(0);
+                  setQuestionTimeCountDown(questions[0].question_time);
+               }
+               const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_RANK}`, {
+                  method: 'POST',
+                  headers: {
+                     'Content-Type': 'application/json',
+                     'x-client-id': userData._id,
+                     authorization: userData.accessToken,
+                  },
+                  body: JSON.stringify({
+                     room_id: roomId,
+                     user_id: userData._id,
+                     quiz_id: quizId,
+                  }),
+               });
+
+               const resData = await response.json();
+               if (resData.statusCode === 200) {
+                  const currentData = resData.metadata.rank.filter(rank => rank.user_id._id === userData._id);
+                  console.log("correct: " + correctData)
+                  console.log("wrong: " + wrongData)
+                  setScore(currentData[0].userScore);
+                  setCorrectCount(correctData);
+                  setWrongCount(wrongData);
+               }
+            }
+
+         } catch (error) {
+            // error reading value
+         } finally {
+            setLoading(false);
+         }
+      }
+
+      if (questions.length > 0) {
+         getData();
+      }
+   }, [questions])
+
+
+   // Hàm xử lý lưu kết quả của người dùng sau khi làm xong câu hỏi
    const saveQuestionResult = async (questionId, answerId, correct, score) => {
       try {
          const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_UPDATE_RESULT}`, {
@@ -132,6 +223,13 @@ const RealtimePlay = () => {
             });
          } else {
             console.log("Save question result successfully")
+            // emit event to server
+            socket.emit('submitAnswer', {
+               roomCode: roomCode,
+               userId: userData._id,
+               quizId: quizId,
+               roomId: roomId,
+            });
          }
       } catch (error) {
          Toast.show({
@@ -142,9 +240,10 @@ const RealtimePlay = () => {
       }
    };
 
+   // Hàm xử lý khi người dùng đã hoàn thành bộ câu hỏi
    const completed = async () => {
       try {
-         await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
+         const data = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
             method: 'POST',
             headers: {
                'Content-Type': 'application/json',
@@ -158,6 +257,21 @@ const RealtimePlay = () => {
                status: 'completed',
             }),
          });
+
+         const dataRes = await data.json();
+         console.log(dataRes)
+         if (dataRes.statusCode !== 200) {
+            Toast.show({
+               type: 'error',
+               text1: 'Lỗi khi cập nhật trạng thái hoàn thành.',
+               text2: dataRes.message,
+            });
+         } else {
+            setIsCompleted(true);
+            await AsyncStorage.removeItem("User_" + userData._id + "_Room_" + roomCode + "_Doing");
+            await AsyncStorage.removeItem("User_" + userData._id + "_Room_" + roomCode + "_CorrectPercent");
+            await AsyncStorage.removeItem("User_" + userData._id + "_Room_" + roomCode + "_WrongPercent");
+         }
       } catch (error) {
          Toast.show({
             type: 'error',
@@ -182,6 +296,8 @@ const RealtimePlay = () => {
          : undefined;
    }, [sound]);
 
+
+   // Hàm cập nhật thời gian đếm ngược cho mỗi câu hỏi
    useEffect(() => {
       let interval = null;
       if (!isProcessing && !isCompleted) {
@@ -203,6 +319,7 @@ const RealtimePlay = () => {
 
 
 
+   // Hàm xử lý khi người dùng vào đáp án trả lời câu hỏi
    const handleAnswerPress = (answerId) => {
       if (questions[currentQuestionIndex].question_type === 'single') {
          setSelectedAnswers([answerId]);
@@ -218,6 +335,7 @@ const RealtimePlay = () => {
       }
    };
 
+   // Hàm sử lý khi người dùng xác nhận câu trả lời
    const handleSubmit = async () => {
       if (!isProcessing) {
          setIsProcessing(true);
@@ -244,19 +362,12 @@ const RealtimePlay = () => {
             setButtonText(`+ ${currentQuestion.question_point}`);
          } else {
             setIsCorrect(false);
+
             setWrongCount(wrongCount + 1);
             setButtonColor('bg-[#F44336]');
             setButtonTextColor('text-white')
             setButtonText(i18n.t('play.single.incorrect'));
          }
-
-         // emit event to server
-         socket.emit('submitAnswer', {
-            roomCode: roomCode,
-            userId: userData._id,
-            point: isAnswerCorrect ? currentQuestion.question_point : 0,
-            isCorrect: isAnswerCorrect,
-         });
 
          saveQuestionResult(
             currentQuestion._id,
@@ -264,6 +375,22 @@ const RealtimePlay = () => {
             isAnswerCorrect,
             currentQuestion.question_point
          );
+
+         // Lưu câu hỏi hiện tại của người dùng đang làm vào local storage
+         // Nếu người dùng có lỡ thoát ra vào lại thì cho phép làm tiếp từ vị trí câu hỏi đó
+         await AsyncStorage.setItem("User_" + userData._id + "_Room_" + roomCode + "_Doing", JSON.stringify(currentQuestion._id));
+
+         await AsyncStorage.setItem("User_" + userData._id + "_Room_" + roomCode + "_CorrectPercent", JSON.stringify(correctCount + 1));
+
+         await AsyncStorage.setItem("User_" + userData._id + "_Room_" + roomCode + "_WrongPercent", JSON.stringify(wrongCount + 1));
+
+         // emit event to server
+         socket.emit('submitAnswer', {
+            roomCode: roomCode,
+            userId: userData._id,
+            quizId: quizId,
+            roomId: roomId,
+         });
 
          setShowCorrectAnswer(true);
          setTimeout(() => {
@@ -287,7 +414,6 @@ const RealtimePlay = () => {
                setQuestionTimeCountDown(questions[currentQuestionIndex + 1].question_time);
                // setQuestionTimeCountDown(500);
             } else {
-               setIsCompleted(true);
                completed();
             }
          }, QUESTION_RESET_TIME);
@@ -310,6 +436,7 @@ const RealtimePlay = () => {
       setQuestionTimeCountDown(-1);
    };
 
+   // Nếu đã hoàn thành thì trả về component kết quả
    if (isCompleted) {
       return (
          <RealtimeResult
@@ -327,10 +454,15 @@ const RealtimePlay = () => {
       );
    }
 
+   // Xử lý khi đang tải dữ liệu
+   if (loading) {
+      return <Text>Loading</Text>
+   }
+
    return (
       <View className="flex-1 relative">
          <Overlay visible={showRankBoard} onPress={() => { }} />
-         <RankBoard users={rankData} visible={showRankBoard} currentUser={userData} />
+         <RankBoard users={rankData} visible={showRankBoard} currentUser={userData} createdUser={createdUserId} />
 
          <ConfirmDialog
             title={"Thông báo"}
@@ -343,8 +475,8 @@ const RealtimePlay = () => {
                setShowConfirmDialog(false);
                setConfirmFn('close');
                if (confirmFn === 'endquiz') {
-                  socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
                   completed();
+                  socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
                   setIsCompleted(true);
                }
             }}
@@ -355,8 +487,24 @@ const RealtimePlay = () => {
             <Button
                text={i18n.t('play.single.buttonQuit')}
                onPress={() => {
-                  socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
-                  router.back()
+                  Alert.alert('Thông báo', 'Bạn có chắc chắn muốn thoát phòng? Kết quả sẽ lưu lại dựa trên số câu hỏi đã hoàn thành', [
+                     {
+                        text: 'Hủy',
+                        onPress: () => { }
+                     },
+                     {
+                        text: 'Thoát',
+                        onPress: () => {
+                           completed();
+                           setIsCompleted(true);
+                           socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
+                           router.replace({
+                              pathname: '/(app)/(home)',
+                              params: {}
+                           })
+                        }
+                     }
+                  ])
                }}
                loading={false}
                type="fill"
