@@ -19,14 +19,14 @@ export default function NotificationScreen() {
         updateNotificationStatus,
         setNumberOfUnreadNoti,
         setNotification,
-        fetchNotification,
-        skipNotification,
         setSkipNotification,
+        setIsRefreshing,
+        isRefreshing
     } = useContext(AuthContext);
     const modalizeRef = useRef(null);
     const [currentSelected, setCurrentSelected] = useState(null);
     const [isLoadMore, setIsLoadMore] = useState(false);
-    const [isRefreshing, setIsRefreshing] = useState(false);
+    // const [isRefreshing, setIsRefreshing] = useState(false);
 
     useEffect(() => {
         if (!currentSelected) return;
@@ -108,7 +108,6 @@ export default function NotificationScreen() {
     const handleRefresh = () => {
         setIsRefreshing(true);
         setSkipNotification(0);
-        setIsRefreshing(false);
     };
 
     return (

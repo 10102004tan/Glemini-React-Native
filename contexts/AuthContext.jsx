@@ -19,6 +19,7 @@ export const AuthProvider = ({children}) => {
     const [notification, setNotification] = useState([]);
     const [numberOfUnreadNoti, setNumberOfUnreadNoti] = useState(0);
     const [skipNotification, setSkipNotification] = useState(0);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     const {socket} = useAppProvider();
 
@@ -45,7 +46,7 @@ export const AuthProvider = ({children}) => {
             // socket
             socket.emit('init', userData._id);
         }
-    }, [userData,skipNotification]);
+    }, [userData,skipNotification,isRefreshing]);
 
 
     useEffect(() => {
@@ -441,6 +442,8 @@ export const AuthProvider = ({children}) => {
         if (data.statusCode === 200) {
             const {totalUnread, listNoti} = data.metadata;
             setNumberOfUnreadNoti(totalUnread);
+            setIsRefreshing(false);
+            console.log("isRefreshing",isRefreshing);
             if (listNoti.length === 0) return;
             if (skip === 0) {
                 setNotification(listNoti);
@@ -454,6 +457,7 @@ export const AuthProvider = ({children}) => {
             setSkipNotification((prev) => {
                 return prev - 10;
             });
+            setIsRefreshing(false);
         }
     }
 
@@ -503,6 +507,8 @@ export const AuthProvider = ({children}) => {
                 setNumberOfUnreadNoti,
                 skipNotification,
                 setSkipNotification,
+                setIsRefreshing,
+                isRefreshing
             }}
         >
             {children}
