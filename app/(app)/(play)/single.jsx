@@ -2,11 +2,10 @@ import React, { useEffect, useState, useCallback, useReducer } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import Button from '../../../components/customs/Button';
 import ResultSingle from '../(result)/single';
-import { useAuthContext } from '@/contexts/AuthContext';
 import { useAppProvider } from '@/contexts/AppProvider';
 import Toast from 'react-native-toast-message-custom';
 import { Audio } from 'expo-av';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import { useResultProvider } from '@/contexts/ResultProvider';
 
@@ -49,7 +48,7 @@ function gameReducer(state, action) {
 				isCorrect: false,
 				wrongCount: state.wrongCount + 1,
 				buttonColor: 'bg-[#F44336]',
-				buttonText: 'Incorrect',
+				buttonText: 'Sai rồi!!',
 				showCorrectAnswer: true,
 			};
 		case 'NEXT_QUESTION':
@@ -81,7 +80,7 @@ const SinglePlay = () => {
 	const { quizId, exerciseId, type } = useLocalSearchParams();
 	const { i18n } = useAppProvider();
 	const { questions, fetchQuestions, saveQuestionResult } = useQuestionProvider();
-	const { result, fetchResultData } = useResultProvider()
+	const { result, fetchResultData } = useResultProvider();
 	const { completed } = useResultProvider();
 	const [state, dispatch] = useReducer(gameReducer, initialState);
 	const [sound, setSound] = useState(null);
@@ -89,7 +88,7 @@ const SinglePlay = () => {
 
 	useEffect(() => {
 		if (quizId) {
-			fetchQuestions(quizId)
+			fetchQuestions(quizId);
 		}
 	}, [quizId]);
 
@@ -99,8 +98,7 @@ const SinglePlay = () => {
 		} else if (quizId && type) {
 			fetchResultData({ quizId, type });
 		}
-	}, [exerciseId, quizId, type])
-
+	}, [exerciseId, quizId, type]);
 
 	useEffect(() => {
 		if (result && result._id) {
@@ -109,7 +107,6 @@ const SinglePlay = () => {
 			dispatch({ type: 'SET_CURRENT_QUESTION_INDEX', payload: nextIndex });
 		}
 	}, [result]);
-
 
 	// useEffect(() => {
 	//     if (sound) return () => sound.unloadAsync();
@@ -123,13 +120,24 @@ const SinglePlay = () => {
 	// }, []);
 
 	const handleAnswerPress = useCallback((answerId) => {
-		dispatch({
-			type: 'SET_ANSWER',
-			payload: state.selectedAnswers.includes(answerId)
-				? state.selectedAnswers.filter(id => id !== answerId)
-				: [...state.selectedAnswers, answerId],
-		});
-	}, [state.selectedAnswers]);
+		const currentQuestion = questions[state.currentQuestionIndex];
+		const questionType = currentQuestion?.question_type;
+	
+		if (questionType === 'single') {
+			dispatch({
+				type: 'SET_ANSWER',
+				payload: [answerId],
+			});
+		} else if (questionType === 'multiple') {
+			dispatch({
+				type: 'SET_ANSWER',
+				payload: state.selectedAnswers.includes(answerId)
+					? state.selectedAnswers.filter((id) => id !== answerId) 
+					: [...state.selectedAnswers, answerId],
+			});
+		}
+		// Nếu cần xử lý thêm cho loại câu hỏi khác (ví dụ: box), thêm logic tại đây
+	}, [state.selectedAnswers, questions, state.currentQuestionIndex]);	
 
 	const handleSubmit = useCallback(async () => {
 		if (state.isProcessing) return;
@@ -174,8 +182,6 @@ const SinglePlay = () => {
 				dispatch({ type: 'NEXT_QUESTION' });
 			} else {
 				dispatch({ type: 'COMPLETE' });
-				dispatch({ type: 'COMPLETE' });
-				
 				const completedResult = await completed(exerciseId, quizId);
 
 				if (completedResult && completedResult._id) {
@@ -191,7 +197,6 @@ const SinglePlay = () => {
 	};
 
 	if (state.isCompleted && resultId) {
-		console.log('Quiz completed:', state.isCompleted, 'Result ID:', resultId);
 		return (
 			<ResultSingle
 				resultId={resultId}
@@ -258,7 +263,7 @@ const SinglePlay = () => {
 					type="fill"
 					loading={state.isProcessing}
 					otherStyles={`p-5 ${state.buttonColor}`}
-					textStyles={`mx-auto text-lg mx-auto ${state.buttonTextColor}`}
+					textStyles={`mx-auto text-lg ${state.buttonTextColor}`}
 				/>
 			</View>
 		</View>
