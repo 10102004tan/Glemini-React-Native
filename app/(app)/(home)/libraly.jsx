@@ -564,8 +564,15 @@ const Library = () => {
 
         <Button
           text="Lọc"
-          otherStyles="w-full bg-gray-200 p-3 rounded-xl flex justify-center mt-4"
+          otherStyles="w-full bg-gray-200 p-3 rounded-xl flex justify-center mt-4 mb-2"
           onPress={filter}
+        />
+        <Button
+          text="Đặt lại"
+          onPress={resetFilters}
+          otherStyles={
+            "bg-primary p-2 rounded-xl flex items-center justify-center"
+          }
         />
       </BottomSheet>
 
