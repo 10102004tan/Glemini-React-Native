@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableWithoutFeedback, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import { View, Text, Image, TouchableWithoutFeedback, TouchableOpacity, ScrollView, FlatList, Dimensions } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import Wrapper from '../../components/customs/Wrapper';
 import { Images } from '../../constants';
@@ -19,6 +19,9 @@ import socket from '@/utils/socket';
 import Button from '@/components/customs/Button';
 import { useRoomProvider } from '@/contexts/RoomProvider';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
+import Lottie from '@/components/loadings/Lottie';
+import { createdAtConvert } from '@/utils';
+import Carousel from 'react-native-reanimated-carousel';
 
 
 const TeacherHomeScreen = () => {
@@ -31,9 +34,15 @@ const TeacherHomeScreen = () => {
    const [roomCode, setRoomCode] = useState('');
    const { currentRoom, setCurrentRoom } = useRoomProvider();
    const [recentCreatedRooms, setRecentCreatedRooms] = useState([]);
+   const [isFetching, setIsFetching] = useState(false);
+   const { userData } = useAuthContext();
+   const [users, setUsers] = useState([]);
+   const width = Dimensions.get('window').width;
+   const carouselHeight = width * 2 / 3;
 
-   useEffect(() => {
-      const fetchRecentCreatedRooms = async () => {
+   const fetchRecentCreatedRooms = async () => {
+      try {
+         setIsFetching(true);
          const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_LIST}`, {
             method: 'POST',
             headers: {
@@ -51,8 +60,14 @@ const TeacherHomeScreen = () => {
          } else {
             alert('Lỗi khi lấy danh sách phòng chơi');
          }
+      } catch (error) {
+         console.log(error)
+      } finally {
+         setIsFetching(false);
       }
+   }
 
+   useEffect(() => {
       if (userData) {
          fetchRecentCreatedRooms();
       }
@@ -68,10 +83,6 @@ const TeacherHomeScreen = () => {
       setIsHiddenNavigationBar(false);
       setVisibleBottomSheet(false);
    };
-
-   const { userData } = useAuthContext();
-
-   const [users, setUsers] = useState([]);
 
    useEffect(() => {
       socket.on('joinRoom', (data) => {
@@ -169,7 +180,7 @@ const TeacherHomeScreen = () => {
          </BottomSheet>
 
          {/* Header */}
-         <View className="px-4 py-6 bg-primary rounded-b-3xl">
+         <View className="px-4 py-6 bg-primary rounded-b-3xl pt-[40px]">
             {/* Teacher Info */}
             <View className={"flex flex-row justify-between"}>
                <View className="flex flex-row items-center justify-start mb-3">
@@ -215,9 +226,9 @@ const TeacherHomeScreen = () => {
                   }
                />
                <PressAction
-               onPress={() => {
-                  router.push('/(app)/(home)/report');
-               }}
+                  onPress={() => {
+                     router.push('/(app)/(home)/report');
+                  }}
                   title={'Báo cáo'}
                   icon={
                      <Ionicons
@@ -229,50 +240,65 @@ const TeacherHomeScreen = () => {
                />
             </View>
          </View>
-         <View className="p-4 mb-[100px]">
-            <Text className="text-lg uppercase font-semibold text-center my-4">
-               Các phòng chơi đã tạo gần đây
-            </Text>
-            {
-               recentCreatedRooms.length > 0 ? <FlatList
-                  showsVerticalScrollIndicator={false}
-                  data={recentCreatedRooms}
-                  keyExtractor={item => item._id}
-                  renderItem={({ item }) => (
-                     <TouchableOpacity
-                        onPress={() => {
-                           setCurrentRoom(item.room_code);
-                           socket.emit('joinRoom', { roomCode: item.room_code, user: userData });
-                           router.push({
-                              pathname: '/(app)/(teacher)/teacher_room_wait',
-                              params: { roomCode: item.room_code }
-                           });
-                        }}
-                        className="flex-1 m-2 rounded-lg"
-                        style={{ maxWidth: '48%' }}
-                     >
-                        <View className="">
-                           <Image
-                              source={{ uri: 'https://quizroom.sitehome.app/QuizRoomLogo.png' }}
-                              className="w-full object-cover"
-                              style={{ aspectRatio: 1 }}
-                           />
-                           <View>
-                              <Text className="text-center">Mã phòng: {item.room_code}</Text>
+         <View className="mb-[100px]">
+            <View className="flex flex-row items-center justify-between px-4 mt-4">
+               <Text className="text-lg font-semibold">Danh sách phòng chơi</Text>
+               <TouchableOpacity onPress={() => router.push('/(app)/(teacher)/teacher_room_list')}>
+                  <Text className="text-blue-600">Xem tất cả</Text>
+               </TouchableOpacity>
+            </View>
+            <View className={`h-[${carouselHeight}px]`}>
+               {
+                  recentCreatedRooms.length > 0 ? <>
+                     <Carousel
+                        loop
+                        width={width}
+                        height={carouselHeight}
+                        autoPlay={false}
+                        data={recentCreatedRooms}
+                        mode='parallax'
+                        scrollAnimationDuration={2000}
+                        renderItem={({ item }) => (
+                           <View
+                              className="flex-1 rounded-xl overflow-hidden border"
+                           >
+                              <View className="flex flex-row">
+                                 <View className="flex items-center justify-center w-1/2 h-full">
+                                    <Image
+                                       source={{ uri: 'https://www.jrykerscreative.com.au/wp-content/uploads/2020/09/lets-play-650x804.jpg' }}
+                                       className="h-full"
+                                       style={{ aspectRatio: 1 }}
+                                    />
+                                 </View>
+                                 <View className="p-4">
+                                    <Text className="font-semibold">Mã phòng: <Text className="text-blue-600 font-semibold">{item.room_code}</Text></Text>
+                                    <Text className="text-gray text-[12px] mt-2">{createdAtConvert(item.createdAt)}</Text>
+                                    <Button text='Xem chi tiết' otherStyles='p-4 mt-2' onPress={() => {
+                                       setCurrentRoom(item.room_code);
+                                       socket.emit('joinRoom', { roomCode: item.room_code, user: userData });
+                                       router.push({
+                                          pathname: '/(app)/(teacher)/teacher_room_wait',
+                                          params: { roomCode: item.room_code }
+                                       });
+                                    }} />
+                                 </View>
+                              </View>
                            </View>
-                        </View>
-                     </TouchableOpacity>
-                  )}
-                  numColumns={2}
-                  contentContainerStyle={{ paddingBottom: 300 }} // Đảm bảo các cột được căn đều
-                  columnWrapperStyle={{ justifyContent: 'space-between' }} // Đảm bảo các cột được căn đều
-               />
-                  : <Text className="text-center">Không có phòng chơi nào</Text>
-            }
-
-
+                        )}
+                     />
+                  </>
+                     : <View className="w-full h-[400px] flex items-center justify-center">
+                        <Lottie
+                           source={require('@/assets/jsons/empty.json')}
+                           width={250}
+                           height={250}
+                           text={'Bạn chưa tạo phòng nào'}
+                        />
+                     </View>
+               }
+            </View>
          </View>
-      </Wrapper>
+      </Wrapper >
    );
 };
 

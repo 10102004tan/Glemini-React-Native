@@ -32,7 +32,6 @@ export default function ActivityScreen() {
    useFocusEffect(
       useCallback(() => {
          fetchResultsForStudent();
-         setIndex(0)
       }, [])
    );
 
@@ -87,7 +86,6 @@ export default function ActivityScreen() {
                   Alert.alert('Thông báo', 'Bạn đã hoàn thành phòng chơi này !!!');
                }
             } else {
-
                try {
                   // Xóa kết quả cũ nếu có
                   const responseDeleteOldResult = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_RESET}`, {
@@ -105,12 +103,36 @@ export default function ActivityScreen() {
                } catch (error) {
                   console.log(error)
                } finally {
-                  setCurrentRoom(data.metadata._id);
-                  socket.emit('joinRoom', { roomCode, user: userData });
-                  router.replace({
-                     pathname: '/(app)/(teacher)/teacher_room_wait',
-                     params: { roomCode: roomTemp }
+                  const checkAdded = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_ADD_USER}`, {
+                     method: 'POST',
+                     headers: {
+                        'Content-Type': 'application/json',
+                        'x-client-id': userData._id,
+                        authorization: userData.accessToken,
+                     },
+                     body: JSON.stringify({
+                        room_code: data.metadata.room_code,
+                        user_id: userData._id,
+                     }),
                   });
+                  const checkData = await checkAdded.json();
+                  // console.log(checkData)
+                  if (checkData.statusCode === 200) {
+                     setCurrentRoom(data.metadata._id);
+                     socket.emit('joinRoom', { roomCode, user: userData });
+                     router.replace({
+                        pathname: '/(app)/(teacher)/teacher_room_wait',
+                        params: { roomCode: roomTemp }
+                     });
+                  } else {
+                     if (checkData.message === "No room found") {
+                        Alert.alert('Thông báo', 'Phòng chơi không tồn tại !!!');
+                     } else if (checkData.message === "Room is full") {
+                        Alert.alert('Thông báo', 'Số lượng người chơi đã đầy không thể tham gia !!!');
+                     } else if (checkData.message === "User already joined room") {
+                        Alert.alert('Thông báo', 'Bạn đã tham gia vào phòng chơi này !!!');
+                     }
+                  }
                }
             }
             setRoomTemp(null);
@@ -187,7 +209,7 @@ const ResultCompletedItem = ({ result }) => {
             <Text className="text-sm font-pmedium">
                {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
             </Text>
-            <Text className="text-base font-light">
+            <Text className="text-sm font-light">
                {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
             </Text>
             <Text className="text-xs font-light">
@@ -257,7 +279,7 @@ const ResultDoingItem = ({ result }) => {
             {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
          </Text>
          <Text className="text-xs font-light">
-            hạn: {moment(result.exercise_id.date_end).format('DD/MM/YYYY')}
+            hạn: {moment(result.exercise_id?.date_end).format('DD/MM/YYYY')}
          </Text>
 
          <Text className="text-sm mt-4 font-light text-center text-slate-50 bg-violet-300 rounded-full px-2">

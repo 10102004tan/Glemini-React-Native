@@ -1,18 +1,15 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, Image, ScrollView, RefreshControl } from 'react-native';
-import Wrapper from '@/components/customs/Wrapper';
 import Carousel from 'react-native-reanimated-carousel';
 import { Images } from '@/constants';
 import { useAppProvider } from '@/contexts/AppProvider';
-import { useSubjectProvider } from '@/contexts/SubjectProvider';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import QuizItem from '@/components/customs/QuizItem';
-import { useNavigation } from '@react-navigation/native';
 import QuizModal from '@/components/modals/QuizModal';
 import NotificationIcon from "@/components/customs/NotificationIcon";
 import { AuthContext } from "@/contexts/AuthContext";
 import { useResultProvider } from '@/contexts/ResultProvider';
-import { router, useFocusEffect } from 'expo-router';
+import { router } from 'expo-router';
 import Toast from 'react-native-toast-message-custom';
 import Lottie from '@/components/loadings/Lottie';
 
@@ -78,14 +75,12 @@ const StudentHomeScreen = () => {
 			</View>
 
 			{loading ? (
-				// Loading state
 				<Lottie
 					source={require('@/assets/jsons/loading.json')}
 					width={150}
 					height={150}
 				/>
 			) : (
-				// Content when loading is complete
 				<ScrollView
 					showsVerticalScrollIndicator={false}
 					refreshControl={
@@ -104,8 +99,11 @@ const StudentHomeScreen = () => {
 							data={bannerQuizzes}
 							mode='parallax'
 							scrollAnimationDuration={2500}
-							renderItem={({ item }) => (
+							renderItem={({ item, index }) => (
 								<TouchableOpacity onPress={() => handlePressQuizItem(item)}>
+									<View className='absolute z-10 top-5 left-5 px-3 py-1 rounded bg-blue-500/80'>
+										<Text className='text-xl font-bold text-white'>{index + 1}</Text>
+									</View>
 									<Image
 										source={item.quiz_thumb ? { uri: item.quiz_thumb } : Images.banner1}
 										className="w-full h-full rounded-2xl"

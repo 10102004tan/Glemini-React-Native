@@ -14,6 +14,7 @@ const ConfirmDialog = ({
    onCancel = () => { },
    title = '',
    message = '',
+   disableCancel = false,
 }) => {
    const [showModal, setShowModal] = useState(visible);
    const { i18n } = useAppProvider();
@@ -59,8 +60,12 @@ const ConfirmDialog = ({
                   </StyledText>
                   <StyledView className="flex-row justify-between w-full">
                      <StyledTouchableOpacity
-                        className="flex-1 border p-3 rounded-lg items-center mr-2"
-                        onPress={onCancel}
+                        className={`flex-1 border p-3 rounded-lg items-center mr-2 ${disableCancel ? 'bg-gray-300 pointer-events-none' : 'bg-white'}`}
+                        onPress={() => {
+                           if (!disableCancel) {
+                              onCancel();
+                           }
+                        }}
                      >
                         <StyledText className="text-black font-semibold">
                            {i18n.t('overview_quiz_screen.cancel')}
