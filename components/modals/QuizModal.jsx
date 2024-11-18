@@ -27,11 +27,7 @@ const QuizModal = ({
 			<View className="flex-1 justify-center items-center bg-black/50 ">
 				<View className="w-11/12 bg-white rounded-2xl overflow-hidden">
 					<Image
-						source={
-							quiz?.quiz_thumb
-								? { uri: quiz.quiz_thumb }
-								: Images.banner1
-						}
+						src={(quiz?.quiz_thumb || "https://elearningindustry.com/wp-content/uploads/2021/10/Shareable-Quizzes-In-Online-Training-7-Reasons.jpg")}
 						className="w-full h-56"
 						style={{ resizeMode: 'cover' }}
 					/>
@@ -52,7 +48,7 @@ const QuizModal = ({
 							</Text>
 							<Text className="text-sm font-medium">
 								<Text>{i18n.t('student_homepage.author')}</Text>{' '}
-								{quiz?.user_id?.user_fullname}
+								{quiz?.user?.user_fullname}
 							</Text>
 							<View className="flex-col mt-3 text-base">
 								<Text className="text-slate-600 font-medium underline">
