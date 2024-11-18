@@ -300,15 +300,15 @@ const RealtimePlay = () => {
    // Hàm cập nhật thời gian đếm ngược cho mỗi câu hỏi
    useEffect(() => {
       let interval = null;
-      if (!isProcessing && !isCompleted) {
+      if (!isProcessing && !isCompleted && !showConfirmDialog) {
          interval = setInterval(() => {
             setQuestionTimeCountDown(prevTime => {
                if (prevTime > 0) {
                   return prevTime - 1;
                } else {
-                  clearInterval(interval); // Clear the interval when countdown reaches 0.
-                  handleSubmit(); // Call `handleSubmit` when the countdown reaches 0.
-                  return 30; // Ensure `questionTimeCountDown` is set to 0 after submitting.
+                  clearInterval(interval);
+                  handleSubmit();
+                  return 30;
                }
             });
          }, 1000);
@@ -465,6 +465,7 @@ const RealtimePlay = () => {
          <RankBoard users={rankData} visible={showRankBoard} currentUser={userData} createdUser={createdUserId} />
 
          <ConfirmDialog
+            disableCancel={true}
             title={"Thông báo"}
             visible={showConfirmDialog}
             onCancel={() => {
@@ -494,14 +495,28 @@ const RealtimePlay = () => {
                      },
                      {
                         text: 'Thoát',
-                        onPress: () => {
-                           completed();
-                           setIsCompleted(true);
-                           socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
-                           router.replace({
-                              pathname: '/(app)/(home)',
-                              params: {}
-                           })
+                        onPress: async () => {
+                           const exitRoom = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_REMOVE_USER}`, {
+                              method: 'POST',
+                              headers: {
+                                 'Content-Type': 'application/json',
+                                 'x-client-id': userData._id,
+                                 authorization: userData.accessToken,
+                              },
+                              body: JSON.stringify({
+                                 room_code: roomCode,
+                                 user_id: userData._id,
+                              }),
+                           });
+
+                           const data = await exitRoom.json();
+                           if (data.statusCode === 200) {
+                              completed();
+                              setIsCompleted(true);
+                              socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
+                           } else {
+                              Alert.alert('Thông báo', 'Không thể thoát khỏi phòng chơi');
+                           }
                         }
                      }
                   ])
