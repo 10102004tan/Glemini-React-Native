@@ -137,7 +137,7 @@ const TeacherView = () => {
                         <Text className='pb-2 text-base text-slate-700 font-semibold'>{i18n.t('classroom.teacher.fieldSubject')}</Text>
                         <SelectList
                             setSelected={setSelectedSubject}
-                            data={subjects.map(subject => ({ key: subject._id, value: subject.name }))}
+                            data={subjects.map(subject => ({ key: subject._id, value: i18n.t(`subjects.${subject.name}`) }))}
                             placeholder={i18n.t('classroom.teacher.placeholderFieldSubject')}
                         />
                     </View>

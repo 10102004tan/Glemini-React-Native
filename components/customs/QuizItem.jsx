@@ -17,7 +17,7 @@ function QuizItem({ quiz }) {
                 </View>                
             </View>
             <View className={"p-2"}>
-                <Text>{(quiz.quiz_name.length > 20 ? quiz.quiz_name.substring(0, 20) + "..." : quiz.quiz_name)}</Text>
+                <Text>{(quiz.quiz_name.length > 15 ? quiz.quiz_name.substring(0, 15) + "..." : quiz.quiz_name)}</Text>
                 <View className={"flex-row gap-2 items-center mt-3"}>
                     <Image className={"w-[20px] h-[20px] rounded-full object-cover"}
                         src={quiz.user?.user_avatar.replace("h_100", "h_30").replace("w_100", "w_30")} />
