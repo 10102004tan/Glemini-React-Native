@@ -12,14 +12,6 @@ function QuestionResultItem({ question = {} }) {
          </Text>
 
          {question.question_id.question_answer_ids.map((answer) => {
-            const isUserAnswer = question.answer.some(
-               (userAns) => userAns._id === answer._id
-            );
-            const isCorrectAnswer =
-               question.question_id.correct_answer_ids.includes(
-                  answer._id
-               );
-
             return (
                <View
                   key={answer._id}

@@ -95,15 +95,24 @@ const handleResetFilters = () => {
 };
 
 
-    if (teacherStatus === 'pending' || teacherStatus === 'rejected') {
+    if (teacherStatus === 'pedding' || teacherStatus === 'rejected') {
         return <LockFeature />;
     }
 
     const renderItem = ({ item }) => {
-        const totalQuestions = item.results?.[0]?.result_questions?.length || 0;
-        const correctAnswers = item.results?.[0]?.result_questions?.filter(q => q.correct).length || 0;
-        const completionPercentage = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
-
+        // Tính tổng số câu hỏi từ tất cả kết quả
+        const totalQuestions = item.results?.reduce((acc, result) => acc + (result.result_questions?.length || 0), 0) || 0;
+        
+        // Tính tổng số câu trả lời đúng từ tất cả kết quả
+        const correctAnswers = item.results?.reduce((acc, result) => 
+            acc + (result.result_questions?.filter(q => q.correct).length || 0), 0
+        ) || 0;
+        
+        // Tính tỷ lệ hoàn thành
+        const completionPercentage = totalQuestions > 0 
+            ? Math.round((correctAnswers / totalQuestions) * 100) 
+            : 0;
+    
         return (
             <Pressable
                 onPress={() => {
@@ -142,7 +151,7 @@ const handleResetFilters = () => {
                 </View>
             </Pressable>
         );
-    };
+    };    
 
     return (
         <View className="flex-1 bg-white mb-20">
