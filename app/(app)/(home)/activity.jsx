@@ -2,7 +2,7 @@
 import { Images } from "@/constants";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useResultProvider } from "@/contexts/ResultProvider";
-import { useFocusEffect, useRouter } from "expo-router";
+import { Link, useFocusEffect, useRouter } from "expo-router";
 import LottieView from "lottie-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, Dimensions, FlatList, Image, Alert } from "react-native";
@@ -18,6 +18,8 @@ import moment from "moment";
 import Toast from "react-native-toast-message-custom";
 import Lottie from "@/components/loadings/Lottie";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useCameraPermissions } from "expo-camera";
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 16;
 
@@ -27,7 +29,17 @@ export default function ActivityScreen() {
    const [roomTemp, setRoomTemp] = useState(null);
    const { userData } = useAuthContext();
    const { setCurrentRoom } = useRoomProvider();
+   const [permission, requestPermission] = useCameraPermissions();
+   const isPermissionGranted = Boolean(permission?.granted);
    const router = useRouter();
+
+   useEffect(() => {
+      if (!isPermissionGranted) {
+         requestPermission();
+      }
+
+   }, [])
+
 
    useFocusEffect(
       useCallback(() => {
@@ -159,9 +171,23 @@ export default function ActivityScreen() {
                setRoomCode(text);
             }} />
 
-            <Button text='JOIN' otherStyles='p-4' onPress={() => {
+            <Button text='Tham gia' otherStyles='p-4 justify-center' onPress={() => {
                setRoomTemp(roomCode);
             }} />
+
+            {
+               isPermissionGranted && <Button text="Quét mã để tham gia tại đây"
+                  otherStyles="p-4 mt-3 justify-center"
+                  icon={<Ionicons name="qr-code-outline" size={20} color="white" />}
+                  onPress={() => {
+                     router.push({
+                        pathname: '/(app)/(room)/scanner',
+                        params: { type: 'join' }
+                     })
+                  }}
+               />
+            }
+
          </View>
 
          <TabView

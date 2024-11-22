@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Alert } from 'react-native'
+import { View, Text, ScrollView, Alert, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Wrapper from '@/components/customs/Wrapper'
 import Field from '@/components/customs/Field'
@@ -13,7 +13,8 @@ import * as Clipboard from 'expo-clipboard';
 import { AppState } from 'react-native';
 import { BackHandler } from 'react-native';
 import { useIsFocused } from '@react-navigation/native'
-import { create } from 'react-test-renderer'
+import QRGenerator from '@/components/customs/QRGenerator'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 const TeacherRoomWaitScreen = () => {
    const router = useRouter();
    const [joinedUsers, setJoinedUsers] = useState([]);
@@ -263,7 +264,7 @@ const TeacherRoomWaitScreen = () => {
                            });
 
                            const data = await exitRoom.json();
-                           console.log(data)
+                           // console.log(data)
                            if (data.statusCode === 200) {
                               socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
                               router.replace({
@@ -279,13 +280,14 @@ const TeacherRoomWaitScreen = () => {
                }} />
             </View>
             <View className="my-4">
-               {roomData && roomData.status === 'completed' && <Text className="text-white bg-red-400 text-center p-4 rounded-2xl">Phòng chơi đã kết thúc trước đó bạn có muốn mở lại không ?</Text>}
-               {roomData && roomData.status === 'doing' && <Text className="text-white bg-red-400 text-center p-4 rounded-2xl">Phòng hiện đang mở hãy chuyển tới màn hình theo dõi kết quả</Text>}
+               {roomData && roomData.status === 'completed' && <Text className="text-white bg-red-500 text-center p-4 rounded-2xl">Phòng chơi đã kết thúc trước đó bạn có muốn mở lại không ?</Text>}
+               {roomData && roomData.status === 'doing' && <Text className="text-white bg-red-500 text-center p-4 rounded-2xl">Phòng hiện đang mở hãy chuyển tới màn hình theo dõi kết quả</Text>}
             </View>
             <ScrollView className="">
                {/* Copy Room Code */}
-               <View className="p-4 rounded-2xl bg-[#0C0C0C] w-full">
+               <View className="p-4 rounded-2xl bg-[#2f3542] w-full">
                   <View className="w-full h-[200px] bg-[rgba(117, 117, 117, 0.3)] flex items-center justify-center p-4 rounded-2xl">
+
                      <View className="w-full rounded-xl  bg-white">
                         <Field placeholder={`Mã phòng: ${roomData && roomData.room_code}`} />
                      </View>
@@ -306,7 +308,21 @@ const TeacherRoomWaitScreen = () => {
                      }} otherStyles='p-3 mt-4 w-full flex items-center justify-center bg-[#A1732A]' textStyles='' />}
                   </View>
                </View>
-               <View className="mt-4 p-4 rounded-2xl bg-[#0C0C0C] w-full">
+               {userData && roomData && userData._id === roomData.user_created_id && <View className="mt-4 bg-[#2f3542] p-8 flex items-center justify-center rounded-2xl">
+                  <Text className="text-blue-500 text-center">Chia sẽ mã QR code này để các người chơi khác có thể vào phòng</Text>
+                  <QRGenerator value={roomCode} />
+                  <View className="mt-4 w-[100%] flex items-start flex-row justify-end pt-2">
+                     {/* Save QR */}
+                     <TouchableOpacity onPress={() => { }} className="ml-2 p-4 rounded-xl bg-purple-500">
+                        <Feather name="download" size={20} color="white" />
+                     </TouchableOpacity>
+                     {/*  */}
+                     <TouchableOpacity onPress={() => { }} className="ml-2 p-4 rounded-xl bg-green-500">
+                        <MaterialCommunityIcons name="google-classroom" size={20} color="white" />
+                     </TouchableOpacity>
+                  </View>
+               </View>}
+               <View className="mt-4 p-4 rounded-2xl bg-[#2f3542] w-full">
                   <Text className="text-white text-center">Chờ học sinh tham gia</Text>
                </View>
                <View className="mt-4 p-4 w-full">
@@ -321,18 +337,6 @@ const TeacherRoomWaitScreen = () => {
                            }} />
                      }
                   })}
-
-
-
-                  {/* <Text className="text-white">Messages</Text>
-                  {messages.map((msg, index) => (
-                     <Text className="text-white" key={index}>{msg}</Text>
-                  ))} */}
-
-                  {/* <Text className="text-white">Users in Room</Text>
-                  {joinedUsers.map((user) => (
-                     <Text className="text-white" key={user._id}>{user.user_fullname}</Text>
-                  ))} */}
                </View>
             </ScrollView>
          </View>
