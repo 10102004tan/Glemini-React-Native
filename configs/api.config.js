@@ -1,7 +1,7 @@
 "use strict";
 
 const dev = {
-  API_URL: "http://98.83.149.250:8000/api",
+  API_URL: "http://192.168.2.66:3000/api",
   API_VERSION: {
     V1: "/v1",
   },
@@ -60,6 +60,8 @@ const dev = {
     GET_ALL_QUIZZES_SHARED: "/quizzes/get-all-quizzes-shared",
     REMOVE_QUIZ_SHARED: "/quizzes/remove-quiz-shared",
     COPY_QUIZ: "/quizzes/copy-quiz",
+    GET_ALL_USER_SHARED: "/quizzes/get-all-user-shared",
+    REVOKE_SHARED_USER: "/quizzes/remove-user-shared",
 
     // Results
     RESULT_STUDENT: "/result/student",
