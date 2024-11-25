@@ -475,7 +475,7 @@ const QuestionProvider = ({ children }) => {
    };
 
    // Lưu kết quả mỗi câu
-   const saveQuestionResult = async (exerciseId, quizId, questionId, answerId, correct, score) => {
+   const saveQuestionResult = async (exerciseId, quizId, questionId, answerId, correct, score, questionType) => {
 		await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_SAVE_QUESTION, {
 			method: 'POST',
 			headers: {
@@ -491,6 +491,7 @@ const QuestionProvider = ({ children }) => {
 				answer: answerId,
 				correct,
 				score,
+            question_type: questionType
 			}),
 		});
 	};
