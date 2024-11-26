@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Alert } from 'react-native';
 import React, { useState } from 'react';
 import Wrapper from '../../../components/customs/Wrapper';
 import Field from '../../../components/customs/Field';
@@ -25,6 +25,12 @@ const CreateTitleQuizzScreen = () => {
    const { i18n } = useAppProvider();
 
    const handleGenerateQuestionFromGemini = async (quizId) => {
+
+      // Nếu đang xử lý không gọi lại hàm
+      if (generating) {
+         return;
+      }
+
       setGenerating(true);
       // Xử lý tạo quiz từ gemini
       const response = await fetch(
@@ -41,11 +47,19 @@ const CreateTitleQuizzScreen = () => {
       );
 
       const data = await response.json();
+      console.log(data)
       if (data.statusCode === 200) {
          const questions = data.metadata;
-         console.log(JSON.stringify(questions, null, 2));
+         // console.log(JSON.stringify(questions, null, 2));
          // console.log(JSON.stringify(questions, null, 2));
          generateQuestionsFromGemini(questions, quizId);
+      } else {
+         Toast.show({
+            type: 'error',
+            text1: "Đã xảy ra lỗi trong quá trình xử lý, vui lòng thử lại sau ít phút!",
+            visibilityTime: 1000,
+            autoHide: true,
+         });
       }
       setGenerating(false);
    };
@@ -83,10 +97,20 @@ const CreateTitleQuizzScreen = () => {
             // console.log(JSON.stringify(questions, null, 2));
             generateQuestionsFromGemini(questions, quizId);
          } else if (data.statusCode === 500) {
-            alert('Vượt quá giới hạn vui lòng nạp VIP');
+            Toast.show({
+               type: 'error',
+               text1: "Đã xảy ra lỗi trong quá trình xử lý, vui lòng thử lại sau ít phút!",
+               visibilityTime: 1000,
+               autoHide: true,
+            });
          }
       } catch (error) {
-         alert('Error when generate question from gemini');
+         Toast.show({
+            type: 'error',
+            text1: "Đã xảy ra lỗi trong quá trình xử lý, vui lòng thử lại sau ít phút!",
+            visibilityTime: 1000,
+            autoHide: true,
+         });
       } finally {
          setGenerating(false);
       }
@@ -111,7 +135,7 @@ const CreateTitleQuizzScreen = () => {
             }
          );
          const data = await response.json();
-         console.log(data)
+         // console.log(data)
          if (data.statusCode === 200) {
             setNeedUpdate(true);
 

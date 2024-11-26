@@ -12,6 +12,10 @@ const ResultReview = () => {
    const resultData = JSON.parse(result);
    const { i18n } = useAppProvider();
 
+
+   console.log("RESULT DATA")
+   console.log(resultData)
+
    // Trạng thái để lưu chỉ số câu hỏi được chọn và trạng thái hiển thị của Modal
    const [selectedIndex, setSelectedIndex] = useState(null);
    const [modalVisible, setModalVisible] = useState(false);
@@ -27,6 +31,7 @@ const ResultReview = () => {
    };
 
    const currentQuestion = resultData.result_questions[selectedIndex];
+   console.log(currentQuestion)
 
    const goToNextQuestion = () => {
       if (selectedIndex < resultData.result_questions.length - 1) {
@@ -159,7 +164,7 @@ const ResultReview = () => {
                      {!currentQuestion.correct && (
                         <View className='mt-4'>
                            <Text className='text-base text-slate-600 font-pregular'>
-                              {i18n.t('result.review.userAnswer')}: {currentQuestion && currentQuestion.answer.map(userAns => userAns.text).join(', ') || i18n.t('result.review.noAnswer')}
+                              {i18n.t('result.review.userAnswer')} {currentQuestion && (typeof currentQuestion.answer) === 'string' ? currentQuestion.answer : currentQuestion.answer.map(userAns => userAns.text).join(', ') || i18n.t('result.review.noAnswer')}
                            </Text>
                         </View>
                      )}

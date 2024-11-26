@@ -240,6 +240,13 @@ export default function AppRootLayout() {
          />
 
          <Stack.Screen
+            name="(room)/list"
+            options={{
+               headerTitle: "Danh sách phòng chơi",
+            }}
+         />
+
+         <Stack.Screen
             name="(play)/realtime"
             options={{
                headerShown: false,

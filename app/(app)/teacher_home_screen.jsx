@@ -31,8 +31,8 @@ const TeacherHomeScreen = () => {
    const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
    const { setActionQuizType } = useQuizProvider();
    const router = useRouter();
-   const [roomCode, setRoomCode] = useState('');
    const { currentRoom, setCurrentRoom } = useRoomProvider();
+   const [roomCode, setRoomCode] = useState('');
    const [recentCreatedRooms, setRecentCreatedRooms] = useState([]);
    const [isFetching, setIsFetching] = useState(false);
    const { userData } = useAuthContext();
@@ -243,7 +243,7 @@ const TeacherHomeScreen = () => {
          <View className="mb-[100px]">
             <View className="flex flex-row items-center justify-between px-4 mt-4">
                <Text className="text-lg font-semibold">Danh sách phòng chơi</Text>
-               <TouchableOpacity onPress={() => router.push('/(app)/(teacher)/teacher_room_list')}>
+               <TouchableOpacity onPress={() => router.push('/(app)/(room)/list')}>
                   <Text className="text-blue-600">Xem tất cả</Text>
                </TouchableOpacity>
             </View>
@@ -260,7 +260,7 @@ const TeacherHomeScreen = () => {
                         scrollAnimationDuration={2000}
                         renderItem={({ item }) => (
                            <View
-                              className="flex-1 rounded-xl overflow-hidden border"
+                              className="flex-1 rounded-xl overflow-hidden border border-gray"
                            >
                               <View className="flex flex-row">
                                  <View className="flex items-center justify-center w-1/2 h-full">
