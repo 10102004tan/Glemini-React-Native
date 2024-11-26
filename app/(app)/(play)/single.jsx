@@ -30,12 +30,12 @@ const initialState = {
 function gameReducer(state, action) {
 	switch (action.type) {
 		case 'SET_ANSWER':
-			return { 
-				...state, 
-				selectedAnswers: action.payload, 
-				isChosen: true, 
-				buttonColor: 'bg-[#0D70D2]', 
-				buttonTextColor: 'text-white' 
+			return {
+				...state,
+				selectedAnswers: action.payload,
+				isChosen: true,
+				buttonColor: 'bg-[#0D70D2]',
+				buttonTextColor: 'text-white'
 			};
 		case 'SET_BOX_ANSWER': // New case to handle box answers
 			return {
@@ -78,6 +78,11 @@ function gameReducer(state, action) {
 				buttonColor: 'bg-white',
 				buttonTextColor: 'text-black',
 			};
+		case 'SET_PREVIOUS_RESULT':
+			return {
+				...state,
+				score: action.payload.score,
+			};
 		case 'COMPLETE':
 			return { ...state, isCompleted: true };
 		case 'PROCESSING':
@@ -111,8 +116,10 @@ const SinglePlay = () => {
 	useEffect(() => {
 		if (quizId && type && exerciseId) {
 			fetchResultData({ quizId, exerciseId, type });
+
 		} else if (quizId && type) {
 			fetchResultData({ quizId, type });
+
 		}
 	}, [exerciseId, quizId, type]);
 
@@ -120,9 +127,13 @@ const SinglePlay = () => {
 		if (result && result._id) {
 			const answeredQuestionsCount = result.result_questions?.length || 0;
 			const nextIndex = answeredQuestionsCount < questions.length ? answeredQuestionsCount : 0;
+			const previousScore = result.result_questions?.reduce((total, question) => {
+				return total + (question.correct ? question.score : 0);
+			}, 0) || 0;
 			dispatch({ type: 'SET_CURRENT_QUESTION_INDEX', payload: nextIndex });
+			dispatch({ type: 'SET_PREVIOUS_RESULT', payload: { score: previousScore } });
 		}
-	}, [result]);
+	}, [result, questions]);
 
 	const handleAnswerPress = useCallback((answerId) => {
 		const currentQuestion = questions[state.currentQuestionIndex];
@@ -137,10 +148,10 @@ const SinglePlay = () => {
 			dispatch({
 				type: 'SET_ANSWER',
 				payload: state.selectedAnswers.includes(answerId)
-					? state.selectedAnswers.filter((id) => id !== answerId) 
+					? state.selectedAnswers.filter((id) => id !== answerId)
 					: [...state.selectedAnswers, answerId],
 			});
-		} 
+		}
 		// Handling box input
 		else if (questionType === 'box') {
 			dispatch({
@@ -181,12 +192,12 @@ const SinglePlay = () => {
 					.replace(/\s+/g, '') // Loại bỏ khoảng trắng thừa giữa các từ
 					.trim();
 			};
-			
+
 			const correctTextAnswers = currentQuestion.correct_answer_ids.map(a => normalizeText(a.text));
 			const userAnswer = normalizeText(state.inputAnswers[0] || 'Không có đáp án');
-			
+
 			isAnswerCorrect = correctTextAnswers.includes(userAnswer);
-			
+
 		} else {
 			const correctAnswerIds = currentQuestion.correct_answer_ids.map(answer => answer._id);
 			isAnswerCorrect = state.selectedAnswers.length === correctAnswerIds.length &&
