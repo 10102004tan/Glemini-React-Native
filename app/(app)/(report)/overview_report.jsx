@@ -98,7 +98,12 @@ export default function DetailReport() {
                             <Text className="font-medium text-base pb-4">{question.question_id.question_excerpt}</Text>
                             <Text className="text-base mt-2 font-semibold ">{`${overViewData.user_id?.user_fullname}`}</Text>
                             <Text className={`${question.correct ? "text-green-500" : "text-red-500"} font-medium border-b-[1px] pb-4 ${question.correct ? "border-green-500" : "border-red-500"}`}>
-                                {question.answer?.map(userAns => userAns.text).join(', ')}
+                                {
+                                    question.question_id.question_type === 'box' ?
+                                    question.answer
+                                    :
+                                    question.answer?.map(userAns => userAns.text).join(', ')
+                                }
                             </Text>
                             <Text className="text-base mt-2">Câu trả lời chính xác</Text>
                             <Text className="font-medium">

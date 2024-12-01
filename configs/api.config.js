@@ -1,14 +1,12 @@
-"use strict";
+'use strict';
 
 const dev = {
-  API_URL: "http://98.83.149.250:8000/api",
+  API_URL: "http://10.0.241.176:3000/api",
   API_VERSION: {
     V1: "/v1",
   },
-
 	END_POINTS: {
 		SERVER: '/working',
-
 		// Authentication
 		LOGIN: '/auth/login',
 		SIGN_UP: '/auth/signup',
@@ -120,20 +118,19 @@ const dev = {
 		// exercise
 		EXERCISE_REPORT: '/exercise/report',
 	},
-
 };
 
 const prod = {
-  API_VERSION: {
-    V1: "/v1",
-  },
-  API_URL: "http://localhost:8000/api",
-  END_POINTS: {
-    LOGIN: "/login",
-    REGISTER: "/register",
-    LOGOUT: "/logout",
-    PROFILE: "/profile",
-  },
+	API_VERSION: {
+		V1: '/v1',
+	},
+	API_URL: 'http://localhost:8000/api',
+	END_POINTS: {
+		LOGIN: '/login',
+		REGISTER: '/register',
+		LOGOUT: '/logout',
+		PROFILE: '/profile',
+	},
 };
 
 module.exports = dev;

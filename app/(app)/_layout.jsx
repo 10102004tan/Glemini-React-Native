@@ -232,6 +232,21 @@ export default function AppRootLayout() {
          />
 
          <Stack.Screen
+            name="(room)/scanner"
+            options={{
+               headerShown: false,
+               // headerTitle: "Chi tiết lớp học",
+            }}
+         />
+
+         <Stack.Screen
+            name="(room)/list"
+            options={{
+               headerTitle: "Danh sách phòng chơi",
+            }}
+         />
+
+         <Stack.Screen
             name="(play)/realtime"
             options={{
                headerShown: false,

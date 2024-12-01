@@ -1,8 +1,7 @@
-
 import { Images } from "@/constants";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useResultProvider } from "@/contexts/ResultProvider";
-import { useFocusEffect, useRouter } from "expo-router";
+import { Link, useFocusEffect, useRouter } from "expo-router";
 import LottieView from "lottie-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, Dimensions, FlatList, Image, Alert } from "react-native";
@@ -18,6 +17,8 @@ import moment from "moment";
 import Toast from "react-native-toast-message-custom";
 import Lottie from "@/components/loadings/Lottie";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useCameraPermissions } from "expo-camera";
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 16;
 
@@ -27,13 +28,16 @@ export default function ActivityScreen() {
    const [roomTemp, setRoomTemp] = useState(null);
    const { userData } = useAuthContext();
    const { setCurrentRoom } = useRoomProvider();
+   const [permission, requestPermission] = useCameraPermissions();
+   const isPermissionGranted = Boolean(permission?.granted);
    const router = useRouter();
 
-   useFocusEffect(
-      useCallback(() => {
-         fetchResultsForStudent();
-      }, [])
-   );
+   useEffect(() => {
+      if (!isPermissionGranted) {
+         requestPermission();
+      }
+      fetchResultsForStudent();
+   }, [])
 
    useEffect(() => {
       const checkRoom = async () => {
@@ -147,10 +151,22 @@ export default function ActivityScreen() {
    }, [roomTemp])
 
    const [index, setIndex] = useState(0);
+   const [refreshing, setRefreshing] = useState(false);
    const [routes] = useState([
       { key: 'doing', title: 'Đang thực hiện' },
       { key: 'completed', title: 'Đã hoàn thành' },
    ]);
+
+   const fetchResults = async () => {
+      try {
+         setRefreshing(true);
+         await fetchResultsForStudent();
+      } catch (error) {
+         setRefreshing(false);
+      } finally {
+         setRefreshing(false);
+      }
+   };
 
    return (
       <View className="flex-1 mb-20 bg-slate-50">
@@ -159,16 +175,32 @@ export default function ActivityScreen() {
                setRoomCode(text);
             }} />
 
-            <Button text='JOIN' otherStyles='p-4' onPress={() => {
+            <Button text='Tham gia' otherStyles='p-4 justify-center' onPress={() => {
                setRoomTemp(roomCode);
             }} />
+
+            {
+               isPermissionGranted && <Button text="Quét mã để tham gia tại đây"
+                  otherStyles="p-4 mt-3 justify-center"
+                  icon={<Ionicons name="qr-code-outline" size={20} color="white" />}
+                  onPress={() => {
+                     router.push({
+                        pathname: '/(app)/(room)/scanner',
+                        params: { type: 'join' }
+                     })
+                  }}
+               />
+            }
+
          </View>
 
          <TabView
             navigationState={{ index, routes }}
             renderScene={SceneMap({
-               doing: () => <DoingResults results={results.doing} />,
-               completed: () => <CompletedResults results={results.completed} />,
+               doing: () => <DoingResults results={results.doing} onRefresh={fetchResults}
+               refreshing={refreshing}/>,
+               completed: () => <CompletedResults results={results.completed} onRefresh={fetchResults}
+               refreshing={refreshing} />,
             })}
             onIndexChange={setIndex}
             initialLayout={{ width: Dimensions.get('window').width }}
@@ -224,7 +256,7 @@ const ResultCompletedItem = ({ result }) => {
    );
 };
 
-const CompletedResults = ({ results }) => {
+const CompletedResults = ({ results, refreshing, onRefresh }) => {
    const router = useRouter();
 
    if (!results || results.length === 0) {
@@ -252,6 +284,8 @@ const CompletedResults = ({ results }) => {
          keyExtractor={item => item._id}
          numColumns={2}
          columnWrapperStyle="flex-row justify-between"
+         refreshing={refreshing}
+         onRefresh={onRefresh}
       />
    );
 };
@@ -279,7 +313,7 @@ const ResultDoingItem = ({ result }) => {
             {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
          </Text>
          <Text className="text-xs font-light">
-            hạn: {moment(result.exercise_id?.date_end).format('DD/MM/YYYY')}
+            {result.type !== 'publish' ? `hạn: ${moment(result.exercise_id?.date_end).format('DD/MM/YYYY')}` : 'Không thời hạn'}
          </Text>
 
          <Text className="text-sm mt-4 font-light text-center text-slate-50 bg-violet-300 rounded-full px-2">
@@ -289,7 +323,7 @@ const ResultDoingItem = ({ result }) => {
    </View>
 }
 
-const DoingResults = ({ results }) => {
+const DoingResults = ({ results, refreshing, onRefresh }) => {
    const { userData } = useAuthContext();
    const router = useRouter();
    const { completed } = useResultProvider()
@@ -361,6 +395,8 @@ const DoingResults = ({ results }) => {
          keyExtractor={item => item._id}
          numColumns={2}
          columnWrapperStyle="flex-row justify-between"
+         refreshing={refreshing}
+         onRefresh={onRefresh}
       />
    );
 };

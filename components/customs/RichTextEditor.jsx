@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, ScrollView, View, Keyboard } from 'react-native';
+import { Text, ScrollView, View, Keyboard, TextInput } from 'react-native';
 import {
    actions,
    RichEditor,
@@ -15,6 +15,7 @@ import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const RichTextEditor = ({
+   questionType = '',
    typingType = '',
    content = '',
    selectedAnswer = 0,
@@ -25,16 +26,18 @@ const RichTextEditor = ({
 }) => {
    const [editorValue, setEditorValue] = useState('');
    const { question, setQuestion, editAnswerContent, resetQuestion } = useQuestionProvider();
-   const { userData, processAccessTokenExpired } = useAuthContext();
+   const { userData } = useAuthContext();
    const richText = React.useRef();
 
    useEffect(() => {
-      if (focus) {
-         richText.current.focusContentEditor();
-      } else {
-         richText.current.blurContentEditor();
+      if (typingType === Status.quiz.ANSWER && questionType !== 'box') {
+         if (focus) {
+            richText.current.focusContentEditor();
+         } else {
+            richText.current.blurContentEditor();
+         }
       }
-   }, [focus]);
+   }, [focus, typingType, questionType]);
 
    // Tạo các customs icon cho toolbar của RichEditor
    const handleHead = ({ tintColor }) => (
@@ -47,11 +50,16 @@ const RichTextEditor = ({
 
    // Cập nhật nội dung của RichEditor
    useEffect(() => {
-      if (richText) {
-         richText.current.setContentHTML(content);
-         editorValue !== content && setEditorValue(content);
+      if (typingType === Status.quiz.ANSWER && questionType === 'box') {
+         setEditorValue(content)
+      } else {
+         if (richText) {
+            richText.current.setContentHTML(content);
+            editorValue !== content && setEditorValue(content);
+         }
       }
-   }, [content, richText]);
+
+   }, [content, richText, typingType, questionType]);
 
    useEffect(() => {
       if (isSave) {
@@ -147,38 +155,46 @@ const RichTextEditor = ({
    return (
       <View className="flex-1 w-full p-4 ">
          <ScrollView className="max-h-[300px]">
-            <RichEditor
-               defaultParagraphSeparator=""
-               initialContentHTML={content}
-               placeholder="Nhập giải thích cho câu hỏi ở đây ..."
-               style={{ width: '100%', height: 300 }}
-               ref={richText}
-               onChange={(descriptionText) => {
-                  setEditorValue(descriptionText);
-               }}
-            />
+            {/* Question type === box use simple editor to edit value of answer */}
+            {typingType === Status.quiz.ANSWER && questionType === 'box' ? <View>
+               <TextInput placeholder='Nhập vào đáp án' value={editorValue} onChangeText={(text) => setEditorValue(text)} />
+            </View> : <>
+               {/* Question type === one choose or multiple choose */}
+               <RichEditor
+                  defaultParagraphSeparator=""
+                  initialContentHTML={content}
+                  placeholder={typingType === Status.quiz.ANSWER ? "Nhập nội dung đáp án" : typingType === Status.quiz.QUESTION ? "Nhập nội dung câu hỏi" : "Thêm giải thích cho câu hỏi"}
+                  style={{ width: '100%', height: 300 }}
+                  ref={richText}
+                  onChange={(descriptionText) => {
+                     setEditorValue(descriptionText);
+                  }}
+               />
+            </>}
          </ScrollView>
 
-         <RichToolbar
-            editor={richText}
-            actions={[
-               actions.heading1,
-               actions.setBold,
-               actions.setItalic,
-               actions.setUnderline,
-               actions.insertBulletsList,
-               actions.insertOrderedList,
-               actions.insertLink,
-               typingType !== Status.quiz.ANSWER && typingType !== ''
-                  ? actions.insertImage
-                  : null,
-            ]}
-            iconMap={{
-               [actions.heading1]: handleHead,
-               [actions.insertImage]: handleImage,
-            }}
-            onPressAddImage={pickImage}
-         />
+         {
+            !(typingType === Status.quiz.ANSWER && questionType === 'box') && <RichToolbar
+               editor={richText}
+               actions={[
+                  actions.heading1,
+                  actions.setBold,
+                  actions.setItalic,
+                  actions.setUnderline,
+                  actions.insertBulletsList,
+                  actions.insertOrderedList,
+                  actions.insertLink,
+                  typingType !== Status.quiz.ANSWER && typingType !== ''
+                     ? actions.insertImage
+                     : null,
+               ]}
+               iconMap={{
+                  [actions.heading1]: handleHead,
+                  [actions.insertImage]: handleImage,
+               }}
+               onPressAddImage={pickImage}
+            />
+         }
       </View>
    );
 };
