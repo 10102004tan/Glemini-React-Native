@@ -196,7 +196,7 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(report)/detail_report"
             options={{
-               headerTitle: "Chi tiết báo cáo",
+               headerTitle: i18n.t('report.reportDetail.title'),
             }}
          />
 

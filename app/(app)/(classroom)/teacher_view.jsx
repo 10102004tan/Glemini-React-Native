@@ -82,7 +82,7 @@ const TeacherView = () => {
             <TextInput
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                placeholder={'Nhập tên lớp cần tìm'}
+                placeholder={i18n.t('classroom.teacher.titleSearchQuery')}
                 className='border border-slate-500 rounded-xl py-2 px-5 mx-5 mt-4'
             />
 
@@ -114,7 +114,7 @@ const TeacherView = () => {
 					source={require('@/assets/jsons/empty.json')}
 					width={250}
 					height={250}
-                    text={'Không có lớp học'}
+                    text={i18n.t('classroom.emptyClass')}
 				/>
             )}
 

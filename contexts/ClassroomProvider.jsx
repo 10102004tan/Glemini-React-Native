@@ -203,13 +203,22 @@ const ClassroomProvider = ({ children }) => {
 
             const data = await response.json();
 
-            if (data.statusCode === 200) {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Thêm mới thành công!',
-                    autoHide: true,
-                });
-                fetchClassroom(classroomId)
+            if (data.statusCode === 200) {                
+                if (data.metadata === true) {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Thêm mới thành công!',
+                        autoHide: true,
+                    });
+                    fetchClassroom(classroomId)
+                } 
+                else {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Thêm mới thất bại!',
+                        autoHide: true,
+                    });
+                }
             } else {
                 Toast.show({
                     type: 'error',
