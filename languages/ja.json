@@ -353,5 +353,23 @@
          "textNotStartedYet": "課題の開始時間ではありません",
          "emptyExercise": "この教室には課題がありません"
       }
+   },
+   "activity": {
+      "title": "アクティビティ",
+      "btnJoin": "参加する",
+      "textRoomCODE": "ルームコード",
+      "btnScan": "ここでコードをスキャンして参加",
+      "textDoing": "進行中",
+      "textCompleted": "完了済み",
+      "emptyActivity": "アクティビティがありません",
+      "publish": "公開",
+      "exercise": "割り当てられた",
+      "room": "ルーム",
+      "titleQuestionContinuteQUiz": "クイズを続行しますか？",
+      "textQuestionContinuteQuiz": "このクイズを続行しますか？",
+      "btnCancel": "キャンセル",
+      "btnContinute": "続ける",
+      "notiDL": "提出期限が過ぎました！",
+      "textCreated": "作成者:"
    }
 }

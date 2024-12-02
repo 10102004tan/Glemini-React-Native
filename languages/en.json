@@ -352,5 +352,23 @@
          "textNotStartedYet": "It is not time to start the exercise yet",
          "emptyExercise": "There are no exercises in this classroom"
       }
+   },
+   "activity": {
+      "title": "Activity",
+      "btnJoin": "Join",
+      "textRoomCODE": "Room Code",
+      "btnScan": "Scan the code to join here",
+      "textDoing": "In Progress",
+      "textCompleted": "Completed",
+      "emptyActivity": "No activities available",
+      "publish": "Public",
+      "exercise": "Assigned",
+      "room": "Room",
+      "titleQuestionContinuteQUiz": "Continue the quiz?",
+      "textQuestionContinuteQuiz": "Do you want to continue this quiz?",
+      "btnCancel": "Cancel",
+      "btnContinute": "Continue",
+      "notiDL": "Submission deadline has passed!",
+      "textCreated": "created by:"
    }
 }
