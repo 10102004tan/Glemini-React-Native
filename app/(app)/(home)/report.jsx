@@ -9,8 +9,10 @@ import debounce from 'lodash/debounce';
 import Toast from "react-native-toast-message-custom";
 import { useClassroomProvider } from "@/contexts/ClassroomProvider";
 import { Picker } from '@react-native-picker/picker';
+import { useAppProvider } from "@/contexts/AppProvider";
 
 export default function ReportScreen() {
+   const {i18n} = useAppProvider()
    const { teacherStatus } = useContext(AuthContext);
    const { fetchResultsForTeacher } = useResultProvider();
    const { classrooms } = useClassroomProvider();
@@ -127,7 +129,7 @@ export default function ReportScreen() {
                <View className='flex-row w-full'>
                   <View className='w-1/3 flex items-center justify-center px-5'>
                      <Text className='text-white p-3 bg-black rounded-md w-full text-center'>
-                        {item.type === 'room' ? 'Trực tiếp' : 'Bài tập'}
+                        {item.type === 'room' ? i18n.t('report.realtime') : i18n.t('report.exercise')}
                      </Text>
                   </View>
                   <View className='w-2/3 h-auto flex-row items-center py-5 border-b-[1px] border-slate-300'>
@@ -137,7 +139,7 @@ export default function ReportScreen() {
                         <View className="flex-row items-center">
                            <Feather name="users" size={16} color={'gray'} />
                            <Text className='ml-2 text-slate-500'>
-                              {item.results?.length} người tham gia
+                              {item.results?.length} {i18n.t('report.userJoin')}
                            </Text>
                         </View>
                      </View>
@@ -158,7 +160,7 @@ export default function ReportScreen() {
          <View className="px-4 pt-2 pb-4 shadow-lg">
             <View className="flex-row items-center rounded-md mb-4 gap-4">
                <TextInput
-                  placeholder="Tìm kiếm"
+                  placeholder={i18n.t('report.placeholderSearch')}
                   value={searchTermMockup}
                   onChangeText={(text) => {
                      setSearchTermMockup(text);
@@ -170,7 +172,7 @@ export default function ReportScreen() {
                   className="bg-black p-4 border-[1px] rounded-lg"
                   onPress={handleResetFilters}
                >
-                  <Text className="text-slate-50 ">Đặt lại</Text>
+                  <Text className="text-slate-50 ">{i18n.t('report.btnFresh')}</Text>
                </TouchableOpacity>
             </View>
             <View className="flex-row gap-4 justify-around items-center mb-4">
@@ -179,7 +181,7 @@ export default function ReportScreen() {
                      selectedValue={classFilter}
                      onValueChange={(itemValue) => setClassFilter(itemValue)}
                   >
-                     <Picker.Item label="Lớp" value="" />
+                     <Picker.Item label={i18n.t('report.optionClass')} value="" />
                      {classrooms.map((cls) => (
                         <Picker.Item key={cls._id} label={cls.class_name} value={cls.class_name} />
                      ))}
@@ -191,9 +193,9 @@ export default function ReportScreen() {
                      selectedValue={typeFilter}
                      onValueChange={(itemValue) => setTypeFilter(itemValue)}
                   >
-                     <Picker.Item label="Loại" value="" />
-                     <Picker.Item label="Trực tiếp" value="room" />
-                     <Picker.Item label="Bài tập" value="exercise" />
+                     <Picker.Item label={i18n.t('report.optionType')} value="" />
+                     <Picker.Item label={i18n.t('report.realtime')} value="room" />
+                     <Picker.Item label={i18n.t('report.exercise')} value="exercise" />
                   </Picker>
                </View>
 
@@ -201,7 +203,7 @@ export default function ReportScreen() {
                   className="bg-transparent px-4 py-4 min-w-[100px] border-[1px] rounded-lg"
                   onPress={handleSortOrderToggle}
                >
-                  <Text className="text-gray-700 text-center">{sortOrder === "newest" ? "Mới nhất" : "Cũ nhất"}</Text>
+                  <Text className="text-gray-700 text-center">{sortOrder === "newest" ? i18n.t('report.optionNew') : i18n.t('report.optionOld')}</Text>
                </TouchableOpacity>
             </View>
             <View className='w-full h-[1px] bg-slate-300' />
@@ -218,7 +220,7 @@ export default function ReportScreen() {
                ListFooterComponent={isFetchingMore ? <ActivityIndicator size="large" color="#0000ff" /> : null}
                ListEmptyComponent={
                   <View className="flex items-center justify-center mt-10">
-                     <Text className="text-slate-500">Không có dữ liệu để hiển thị</Text>
+                     <Text className="text-slate-500">{i18n.t('report.emptyReport')}</Text>
                   </View>
                }
             />
