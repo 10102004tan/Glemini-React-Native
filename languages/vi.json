@@ -353,5 +353,23 @@
          "textNotStartedYet": "Chưa đến thời gian làm bài",
          "emptyExercise": "Chưa có bài tập nào trong lớp này"
       }
+   },
+   "activity": {
+      "title": "Hoạt động",
+      "btnJoin": "Tham gia",
+      "textRoomCODE": "Mã phòng",
+      "btnScan": "Quét mã để tham gia tại đây",
+      "textDoing": "Đang thực hiện",
+      "textCompleted": "Đã hoàn thành",
+      "emptyActivity": "Danh sách trống",
+      "publish": "Công khai",
+      "exercise": "Được giao",
+      "room": "Phòng",
+      "titleQuestionContinuteQUiz": "Tiếp tục thực hiện?",
+      "textQuestionContinuteQuiz": "Bạn có muốn tiếp tục bài kiểm tra này?",
+      "btnCancel": "Hủy",
+      "btnContinute": "Tiếp tục",
+      "notiDL": "Đã quá hạn làm bài!",
+      "textCreated": "bởi:"
    }
 }
