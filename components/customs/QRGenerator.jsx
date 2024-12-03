@@ -6,9 +6,11 @@ import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
 import { useRef } from 'react';
 import { ToastAndroid } from 'react-native';
-
-const QRGenerator = ({ value }) => {
-   const deepLinkUrl = 'exp://192.168.215.179:8081/--/check/' + value; // 'glemini://room_code'
+import { APP_PORT, IP } from '../../configs/app.config';
+import { API_VERSION, END_POINTS } from '@/configs/api.config';
+import Toast from 'react-native-toast-message-custom';
+const QRGenerator = ({ value = '', handleShareRoom = () => { } }) => {
+   const deepLinkUrl = `exp://${IP}:${APP_PORT}/--/check/` + value;
 
    const svgRef = useRef(null);
 
@@ -43,8 +45,6 @@ const QRGenerator = ({ value }) => {
    };
 
 
-
-
    return (
       <>
          <View className="rounded-lg p-4 border-white border mt-4">
@@ -64,7 +64,7 @@ const QRGenerator = ({ value }) => {
                <Feather name="download" size={20} color="white" />
             </TouchableOpacity>
             {/*  */}
-            <TouchableOpacity onPress={() => { }} className="ml-2 p-4 rounded-xl bg-green-500">
+            <TouchableOpacity onPress={() => { handleShareRoom() }} className="ml-2 p-4 rounded-xl bg-green-500">
                <MaterialCommunityIcons name="google-classroom" size={20} color="white" />
             </TouchableOpacity>
          </View >

@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, FlatList } from 'react-native'
+import { View, Text, ScrollView, Image, FlatList, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Wrapper from '@/components/customs/Wrapper'
 import { useAuthContext } from '@/contexts/AuthContext'
@@ -34,7 +34,7 @@ const ListRoomScreen = () => {
 
          const data = await response.json();
          if (data.statusCode === 200) {
-            setRoomSearch([data.metadata]);
+            setRoomSearch(data.metadata);
          }
       } catch (error) {
          console.log(error)
@@ -112,6 +112,15 @@ const ListRoomScreen = () => {
       }
    }, [userData])
 
+   const renderFooter = () => {
+      if (!isFetching) return null;
+      return (
+         <View style={{ padding: 10, alignItems: 'center' }}>
+            <ActivityIndicator size="small" color="#000" />
+         </View>
+      );
+   };
+
    return (
       <Wrapper >
          <View className="p-4">
@@ -138,6 +147,7 @@ const ListRoomScreen = () => {
                            columnGap: 8
                         }}
                         numColumns={2}
+                        ListFooterComponent={renderFooter}
                      />
                   </> : <>
                      {isFetching ? <Text className="text-center text-blue-500">Đang tìm kiếm</Text> : <Text className="text-center text-red-500">Không có phòng chơi nào</Text>}
@@ -145,6 +155,7 @@ const ListRoomScreen = () => {
                </> : <>
                   {rooms.length > 0 ? <>
                      <FlatList
+                        onEndReachedThreshold={0.1}
                         onEndReached={() => {
                            setPage(page + 1);
                            fetchRecentCreatedRooms();
@@ -164,6 +175,7 @@ const ListRoomScreen = () => {
                            columnGap: 8
                         }}
                         numColumns={2}
+                        list
                      />
                   </> : <>
                      <Text className="text-center text-red-500">Không có phòng chơi nào</Text>

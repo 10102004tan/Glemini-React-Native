@@ -99,9 +99,10 @@ const dev = {
 		CLASSROOM_ADD_QUIZ: '/classroom/add-quiz',
 		CLASSROOM_REMOVE_STUDENT: '/classroom/rm-student',
 
-		//user
+		// User
 		SHARE_QUIZ: '/user/share-quiz',
 		CHECK_EDIT_QUIZ: '/user/check-edit-quiz',
+		NOTIFY_SHARE_ROOM: '/classroom/notify-student',
 
 		// Room
 		ROOM_CREATE: '/room/create',
