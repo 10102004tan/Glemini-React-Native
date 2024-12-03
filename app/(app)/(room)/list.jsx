@@ -1,23 +1,69 @@
-import { View, Text, ScrollView, Image } from 'react-native'
+import { View, Text, ScrollView, Image, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Wrapper from '@/components/customs/Wrapper'
 import { useAuthContext } from '@/contexts/AuthContext'
 import Toast from 'react-native-toast-message-custom'
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config'
-import { createdAtConvert } from '@/utils'
-import Button from '@/components/customs/Button'
-import { useRouter } from 'expo-router'
-import { useRoomProvider } from '@/contexts/RoomProvider'
-import socket from '@/utils/socket'
+import Field from '@/components/customs/Field'
+import RoomItem from '@/components/customs/RoomItem'
 
 const ListRoomScreen = () => {
    const { userData } = useAuthContext();
    const [rooms, setRooms] = useState([]);
    const [isFetching, setIsFetching] = useState(false);
-   const router = useRouter();
-   const { currentRoom, setCurrentRoom } = useRoomProvider();
+   const [page, setPage] = useState(1);
+   const LIMIT = 10;
+   const [roomSearch, setRoomSearch] = useState('');
+   const [roomCode, setRoomCode] = useState('');
+
+   const fetchRoomSearch = async () => {
+      try {
+         setIsFetching(true);
+         setRoomSearch([]);
+         const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_CODE}`, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+               'x-client-id': userData._id,
+               authorization: userData.accessToken,
+            },
+            body: JSON.stringify({
+               room_code: roomCode,
+            }),
+         });
+
+         const data = await response.json();
+         if (data.statusCode === 200) {
+            setRoomSearch([data.metadata]);
+         }
+      } catch (error) {
+         console.log(error)
+         setRoomSearch([]);
+      } finally {
+         setIsFetching(false)
+      }
+   }
+
+   useEffect(() => {
+      if (roomCode) {
+         // Debounce search
+         const handler = setTimeout(() => {
+            fetchRoomSearch();
+         }, 500);
+
+         return () => {
+            clearTimeout(handler);
+         }
+      }
+   }, [roomCode])
+
+
 
    const fetchRecentCreatedRooms = async () => {
+      if (isFetching) {
+         return;
+      }
+
       try {
          setIsFetching(true);
          const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_LIST}`, {
@@ -29,11 +75,19 @@ const ListRoomScreen = () => {
             },
             body: JSON.stringify({
                user_created_id: userData._id,
+               page: page,
+               limit: LIMIT,
             }),
          });
          const data = await response.json();
          if (data.statusCode === 200) {
-            setRooms(data.metadata);
+            if (data.metadata.length > 0) {
+               if (page === 1) {
+                  setRooms(data.metadata);
+               } else {
+                  setRooms([...rooms, ...data.metadata]);
+               }
+            }
          } else {
             Toast.show({
                type: 'error',
@@ -42,16 +96,19 @@ const ListRoomScreen = () => {
                autoHide: true,
             });
          }
+
+
       } catch (error) {
          console.log(error)
       } finally {
          setIsFetching(false);
+         // console.log(rooms.length)
       }
    }
 
    useEffect(() => {
       if (userData) {
-         fetchRecentCreatedRooms();
+         fetchRecentCreatedRooms(1);
       }
    }, [userData])
 
@@ -59,39 +116,62 @@ const ListRoomScreen = () => {
       <Wrapper >
          <View className="p-4">
             {/* <Text className="text-center text-lg font-semibold">Danh sách phòng chơi</Text> */}
-            <ScrollView className="w-full h-full"
-               showsVerticalScrollIndicator={false}
-            >
-               {rooms && rooms.length > 0 && rooms.map((item, index) => {
-                  return <View key={index}
-                     className="flex-1 rounded-xl overflow-hidden border border-gray mb-2"
-                  >
-                     <View className="flex flex-row">
-                        <View className="flex items-center justify-center w-1/2 h-full">
-                           <Image
-                              source={{ uri: 'https://www.jrykerscreative.com.au/wp-content/uploads/2020/09/lets-play-650x804.jpg' }}
-                              className="h-full"
-                              style={{ aspectRatio: 1 }}
-                           />
-                        </View>
-                        <View className="p-4">
-                           <Text className="font-semibold">Mã phòng: <Text className="text-blue-600 font-semibold">{item.room_code}</Text></Text>
-                           <Text className="text-gray text-[12px] mt-2">{createdAtConvert(item.createdAt)}</Text>
-                           <Button text='Xem chi tiết' otherStyles='p-4 mt-2' onPress={() => {
-                              setCurrentRoom(item.room_code);
-                              socket.emit('joinRoom', { roomCode: item.room_code, user: userData });
-                              router.push({
-                                 pathname: '/(app)/(teacher)/teacher_room_wait',
-                                 params: { roomCode: item.room_code }
-                              });
-                           }} />
-                        </View>
-                     </View>
-                  </View>
-               })}
-            </ScrollView>
+            <Field placeholder='Tìm kiếm phòng chơi' wrapperStyles='mb-4' value={roomCode} onChange={(text) => {
+               setRoomCode(text);
+            }} />
+            {
+               roomCode !== '' ? <>
+                  {roomSearch.length > 0 ? <>
+                     <FlatList
+                        style={{ marginBottom: 60 }}
+                        showsHorizontalScrollIndicator={false}
+                        showsVerticalScrollIndicator={false}
+                        data={roomSearch}
+                        keyExtractor={item => item._id}
+                        renderItem={({ item }) => (
+                           <RoomItem key={item._id} room={item} />
+                        )}
+                        // columnWrapperStyle={{ justifyContent: 'space-between' }}
+                        columnWrapperStyle={{
+                           justifyContent: 'space-between',
+                           rowGap: 4,
+                           columnGap: 8
+                        }}
+                        numColumns={2}
+                     />
+                  </> : <>
+                     {isFetching ? <Text className="text-center text-blue-500">Đang tìm kiếm</Text> : <Text className="text-center text-red-500">Không có phòng chơi nào</Text>}
+                  </>}
+               </> : <>
+                  {rooms.length > 0 ? <>
+                     <FlatList
+                        onEndReached={() => {
+                           setPage(page + 1);
+                           fetchRecentCreatedRooms();
+                        }}
+                        style={{ marginBottom: 60 }}
+                        showsHorizontalScrollIndicator={false}
+                        showsVerticalScrollIndicator={false}
+                        data={rooms}
+                        keyExtractor={item => item._id}
+                        renderItem={({ item }) => (
+                           <RoomItem key={item._id} room={item} />
+                        )}
+                        // columnWrapperStyle={{ justifyContent: 'space-between' }}
+                        columnWrapperStyle={{
+                           justifyContent: 'space-between',
+                           rowGap: 4,
+                           columnGap: 8
+                        }}
+                        numColumns={2}
+                     />
+                  </> : <>
+                     <Text className="text-center text-red-500">Không có phòng chơi nào</Text>
+                  </>}
+               </>
+            }
          </View>
-      </Wrapper>
+      </Wrapper >
    )
 }
 

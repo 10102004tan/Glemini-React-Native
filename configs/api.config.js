@@ -111,6 +111,7 @@ const dev = {
 		ROOM_REMOVE_USER: '/room/remove-user',
 		ROOM_REPORT: '/room/report',
 		ROOM_CHECK_USER: '/room/check-joined',
+		ROOM_CODE: '/room/room-code',
 
 		// Use for realtime play
 		ROOM_GET_RESULTS: '/result/get-results',

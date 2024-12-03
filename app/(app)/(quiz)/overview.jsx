@@ -215,7 +215,7 @@ const QuizzOverViewScreen = () => {
 
    // Cập nhật thông tin của quiz
    const handleUpdateQuiz = async (id, thumbnail = quizThumbnail) => {
-      console.log(quizThumbnail)
+      // console.log(quizThumbnail)
       const quiz = {
          quiz_id: id,
          quiz_name: quizName,
@@ -227,9 +227,14 @@ const QuizzOverViewScreen = () => {
 
       // console.log(JSON.stringify(quiz, null, 2));
 
-      updateQuiz(quiz);
-      handleCloseBottomSheet();
-      router.back();
+      const success = await updateQuiz(quiz);
+      if (success) {
+         handleCloseBottomSheet();
+         router.back();
+      } else {
+         // setAlertMessage(i18n.t('overview_quiz_screen.alertNetwork'));
+         // setShowConfirmDialog(true);
+      }
    };
 
    // Lấy danh sách câu hỏi của bộ quiz hiện tại
