@@ -150,8 +150,6 @@ export default function AppRootLayout() {
                         </TouchableOpacity>
                      </View>
                   );
-
-                  return null;
                },
             }}
          />
@@ -159,6 +157,14 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(quiz)/create_title"
             options={{
+               headerTitle: "",
+            }}
+         />
+
+         <Stack.Screen
+            name="check/[value]"
+            options={{
+               headerShown: false,
                headerTitle: "",
             }}
          />
