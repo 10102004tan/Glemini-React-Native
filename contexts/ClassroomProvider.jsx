@@ -6,31 +6,34 @@ import Toast from 'react-native-toast-message-custom';
 const ClassroomContext = createContext();
 
 const ClassroomProvider = ({ children }) => {
-    const [schools, setSchools] = useState([]);
+    const [province, setProvince] = useState('');
+	const [districts, setDistricts] = useState([]);
+	const [selectDistrict, setSelectDistrict] = useState('');
+	const [schools, setSchools] = useState([]);
     const [classrooms, setClassrooms] = useState([]);
     const [classroom, setClassroom] = useState([]);
     const { userData } = useAuthContext();
 
     // Lấy danh sách trường từ API
-    const fetchSchools = async () => {
-        const response = await fetch(
-            `${API_URL}${API_VERSION.V1}${END_POINTS.SCHOOL}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-client-id': userData._id,
-                    authorization: userData.accessToken,
-                },
-            }
-        );
+    // const fetchSchools = async () => {
+    //     const response = await fetch(
+    //         `${API_URL}${API_VERSION.V1}${END_POINTS.SCHOOL}`,
+    //         {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'x-client-id': userData._id,
+    //                 authorization: userData.accessToken,
+    //             },
+    //         }
+    //     );
 
-        const data = await response.json();
+    //     const data = await response.json();
 
-        if (data.statusCode === 200) {
-            setSchools(data.metadata);
-        }
-    };
+    //     if (data.statusCode === 200) {
+    //         setSchools(data.metadata);
+    //     }
+    // };
 
     const fetchClassrooms = async () => {
         const path = userData.user_type === 'teacher' ?
@@ -200,13 +203,22 @@ const ClassroomProvider = ({ children }) => {
 
             const data = await response.json();
 
-            if (data.statusCode === 200) {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Thêm mới thành công!',
-                    autoHide: true,
-                });
-                fetchClassroom(classroomId)
+            if (data.statusCode === 200) {                
+                if (data.metadata === true) {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Thêm mới thành công!',
+                        autoHide: true,
+                    });
+                    fetchClassroom(classroomId)
+                } 
+                else {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Thêm mới thất bại!',
+                        autoHide: true,
+                    });
+                }
             } else {
                 Toast.show({
                     type: 'error',
@@ -270,9 +282,49 @@ const ClassroomProvider = ({ children }) => {
         }
     };
 
+	const fetchDistrictQuery = async (provinceId) => {
+        
+		const body = {
+			"operationName": "fetchDistrictQ",
+			"variables": {
+				"province": provinceId
+			},
+			"query": "query fetchDistrictQ($province: String!) {\n  fetchDistrict(province: $province) {\n    id\n    name\n    __typename\n  }\n}\n"
+		}
+		const response = await fetch(`https://violympic.vn/graphql`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+			},
+			body: JSON.stringify(body)
+		});
+		const data = await response.json();
+        setDistricts(data)
+	}
+
+	const fetchSchoolQuery = async (districtId) => {
+		const body = {
+			"operationName": "fetchSchoolQ",
+			"variables": {
+				"district": districtId
+			},
+			"query": "query fetchSchoolQ($district: String!) {\n  fetchSchool(district: $district) {\n    id\n    name\n    __typename\n  }\n}\n"
+		}
+		const response = await fetch(`https://violympic.vn/graphql`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+			},
+			body: JSON.stringify(body)
+		});
+		const data = await response.json();
+		setSchools(data)
+	}
+
     useEffect(() => {
         if (userData) {
-            fetchSchools();
             fetchClassrooms();
         }
     }, [userData]);
@@ -280,6 +332,7 @@ const ClassroomProvider = ({ children }) => {
     return (
         <ClassroomContext.Provider value={{
             schools,
+            setSchools,
             classrooms,
             createClassroom,
             setClassrooms,
@@ -289,7 +342,10 @@ const ClassroomProvider = ({ children }) => {
             removeStudent,
             addStudent,
             addQuizToClassroom,
-            removeClassroom
+            removeClassroom,
+			fetchSchoolQuery,
+			fetchDistrictQuery,
+			province, setProvince, districts, setDistricts, selectDistrict, setSelectDistrict
         }}>
             {children}
         </ClassroomContext.Provider>

@@ -1,5 +1,5 @@
-import {View, Text, TextInput, Button, Pressable, Alert, Image, Modal, TouchableOpacity} from 'react-native';
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import { View, Text, TextInput, Button, Pressable, Alert, Image, Modal, TouchableOpacity } from 'react-native';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { Link, router } from 'expo-router';
 import { useLocalSearchParams } from 'expo-router';
@@ -7,12 +7,16 @@ import CustomInput from '@/components/customs/CustomInput';
 import InputImage from '@/components/customs/InputImage';
 import * as ImagePicker from 'expo-image-picker';
 import { AuthContext } from '@/contexts/AuthContext';
-import {debounce, validateEmail, validateFullname, validatePassword} from '@/utils';
+import { debounce, validateEmail, validateFullname, validatePassword } from '@/utils';
 import { useAppProvider } from '@/contexts/AppProvider';
 import Toast from 'react-native-toast-message-custom';
 import CustomButton from "@/components/customs/CustomButton";
 import * as Notifications from "expo-notifications";
-import {registerForPushNotificationsAsync} from "@/helpers/notification";
+import { registerForPushNotificationsAsync } from "@/helpers/notification";
+import { listProvince } from "@/utils/provinceData"
+import { Picker } from '@react-native-picker/picker';
+import { useClassroomProvider } from '@/contexts/ClassroomProvider';
+import { MultipleSelectList, SelectList } from 'react-native-dropdown-select-list';
 
 
 const TIME_SHOW_TOAST = 1500;
@@ -23,8 +27,21 @@ const TYPEIMAGE = {
 };
 
 const SignUpScreen = () => {
-    const {i18n} = useAppProvider();
-    const {signUp} = useContext(AuthContext);
+    const { i18n } = useAppProvider();
+    const {
+        province,
+        setProvince,
+        districts,
+        setDistricts,
+        selectDistrict,
+        setSelectDistrict,
+        schools,
+        setSchools,
+        fetchDistrictQuery,
+        fetchSchoolQuery
+    } = useClassroomProvider();
+    const [selectedSchool, setSelectedSchool] = useState([]);
+    const { signUp } = useContext(AuthContext);
     const { type } = useLocalSearchParams();
     const [email, setEmail] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -39,10 +56,27 @@ const SignUpScreen = () => {
     const [isOpenedModal, setIsOpenedModal] = useState(false);
     const [disabled, setDisabled] = useState(false);
 
+    useEffect(() => {
+        if (province) {
+            setSelectDistrict(null);
+            setDistricts([]);
+            setSchools([]);
+            fetchDistrictQuery(province);
+
+        }
+    }, [province]);
+
+
+
+    useEffect(() => {
+        if (selectDistrict) {
+            fetchSchoolQuery(selectDistrict);
+        }
+    }, [selectDistrict]);
 
     const handlerSignUp = async () => {
         setDisabled(true);
-        await signUp({email, password, fullname,type,images:[imageIDCard,imageCard,imageConfirm]})
+        await signUp({ email, password, fullname, type, schools: selectedSchool, images: [imageIDCard, imageCard, imageConfirm] })
             .then((message) => {
                 setDisabled(false);
             })
@@ -55,7 +89,7 @@ const SignUpScreen = () => {
                     autoHide: true,
                 });
                 setDisabled(false);
-            }).catch(e=>{
+            }).catch(e => {
                 setDisabled(false);
             });
     };
@@ -95,7 +129,7 @@ const SignUpScreen = () => {
                 });
             }
         }
-        else{
+        else {
             let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.All,
                 allowsEditing: true,
@@ -159,7 +193,7 @@ const SignUpScreen = () => {
             });
             return false;
         }
-        if(!validateEmail(email)){
+        if (!validateEmail(email)) {
             Toast.show({
                 type: 'error',
                 text2: i18n.t('error.emailInvalid'),
@@ -223,28 +257,59 @@ const SignUpScreen = () => {
             <Text className="mt-[30px] text-[16px]">{i18n.t('signUp.title')}</Text>
             <Text className="mt-3 text-[25px]">{i18n.t('signUp.startNow')}</Text>
             <View className="flex flex-row mt-3">
-                    <Text className='mr-2'>{i18n.t('signUp.haveAccount')}</Text>
-                    <Link href={"/sign-in"}>
-                        <Text className="text-blue-500">{i18n.t('signUp.signInNow')}</Text>
-                    </Link>
-                </View>
+                <Text className='mr-2'>{i18n.t('signUp.haveAccount')}</Text>
+                <Link href={"/sign-in"}>
+                    <Text className="text-blue-500">{i18n.t('signUp.signInNow')}</Text>
+                </Link>
+            </View>
             <View className="mt-[30px]">
                 <CustomInput onChangeText={setFullname} label={i18n.t('signUp.fullname')} value={fullname} />
                 <CustomInput label={i18n.t('signUp.email')} value={email} onChangeText={setEmail} />
                 <CustomInput secure={!showPassword} onChangeText={setPassword} label={i18n.t('signUp.password')} value={password} />
                 <CustomInput secure={!showPasswordVerify} onChangeText={setPasswordVerify} label={i18n.t('signUp.confirmPassword')} value={passwordVerify} />
                 {type === "teacher" && (
-                    <View>
-                        <InputImage onLongPress={()=>handlerLongPress(TYPEIMAGE.Card)} onPress={()=>{handlerPickImage(TYPEIMAGE.Card)}} desc={i18n.t("signUp.descForCard")} title={i18n.t('signUp.card')} logo={(imageCard ? imageCard.uri : 'https://cdn-icons-png.flaticon.com/512/175/175062.png')} />
-                        <InputImage onLongPress={()=>handlerLongPress(TYPEIMAGE.IDCard)} onPress={()=>{handlerPickImage(TYPEIMAGE.IDCard)}} desc={i18n.t("signUp.descForCardID")} title={i18n.t('signUp.cardID')} logo={(imageIDCard?imageIDCard.uri:'https://cdn-icons-png.flaticon.com/512/6080/6080012.png')} />
-                        <InputImage onLongPress={()=>handlerLongPress(TYPEIMAGE.Confirm)} onPress={()=>{handlerPickImage(TYPEIMAGE.Confirm)}} desc={i18n.t("signUp.descForDocument")} title={i18n.t('signUp.documentConfirm')} logo={(imageConfirm?imageConfirm.uri:'https://cdn-icons-png.freepik.com/256/888/888034.png?semt=ais_hybrid')} />
-                    </View>
+                    <>
+                        <View className='my-2'>
+                            <Text>Chọn tỉnh</Text>
+                            <SelectList
+                                setSelected={setProvince}
+                                data={listProvince.map(province => ({ key: province.id, value: province.name }))}
+                                placeholder={'Chọn tỉnh'}
+                            />
+                        </View>
+                        {districts && districts.data?.fetchDistrict.length > 0 &&
+                            <View className='my-2'>
+                                <Text>Chọn huyện</Text>
+                                <SelectList
+                                    setSelected={setSelectDistrict}
+                                    data={districts.data?.fetchDistrict.map(district => ({ key: district.id, value: district.name }))}
+                                    placeholder={'Chọn huyện'}
+                                />
+                            </View>
+                        }
+                        {schools && schools.data?.fetchSchool.length > 0 &&
+                            <View className='my-2'>
+                                <Text>Chọn trường học</Text>
+                                <MultipleSelectList
+                                    setSelected={val => setSelectedSchool(val)}
+                                    data={schools.data?.fetchSchool.map(school => ({ key: school.id, value: school.name }))}
+                                    placeholder={'Chọn trường học'}
+                                    save='value'
+                                />
+                            </View>
+                        }
+                        <View>
+                            <InputImage onLongPress={() => handlerLongPress(TYPEIMAGE.Card)} onPress={() => { handlerPickImage(TYPEIMAGE.Card) }} desc={i18n.t("signUp.descForCard")} title={i18n.t('signUp.card')} logo={(imageCard ? imageCard.uri : 'https://cdn-icons-png.flaticon.com/512/175/175062.png')} />
+                            <InputImage onLongPress={() => handlerLongPress(TYPEIMAGE.IDCard)} onPress={() => { handlerPickImage(TYPEIMAGE.IDCard) }} desc={i18n.t("signUp.descForCardID")} title={i18n.t('signUp.cardID')} logo={(imageIDCard ? imageIDCard.uri : 'https://cdn-icons-png.flaticon.com/512/6080/6080012.png')} />
+                            <InputImage onLongPress={() => handlerLongPress(TYPEIMAGE.Confirm)} onPress={() => { handlerPickImage(TYPEIMAGE.Confirm) }} desc={i18n.t("signUp.descForDocument")} title={i18n.t('signUp.documentConfirm')} logo={(imageConfirm ? imageConfirm.uri : 'https://cdn-icons-png.freepik.com/256/888/888034.png?semt=ais_hybrid')} />
+                        </View>
+                    </>
                 )}
-                <CustomButton disabled={disabled} className={"mb-4"}  onPress={()=>handlerValidate() && handlerSignUp()} title={i18n.t('signUp.signUp')} />
+                <CustomButton disabled={disabled} className={"mb-4"} onPress={() => handlerValidate() && handlerSignUp()} title={i18n.t('signUp.signUp')} />
             </View>
-                
+
             <Modal animationType='slide' transparent={true} visible={isOpenedModal}>
-                <Pressable onPress={()=>setIsOpenedModal(false)} className="bg-[#00000097] h-[100%] flex justify-center items-center px-5">
+                <Pressable onPress={() => setIsOpenedModal(false)} className="bg-[#00000097] h-[100%] flex justify-center items-center px-5">
                     <View className="w-[100%] h-[30%] bg-white p-2">
                         <Image resizeMode='contain' className="w-[100%] h-[100%]" source={{ uri: (imageCurrent ? imageCurrent.uri : 'https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png') }} alt="avatar" />
                     </View>

@@ -168,7 +168,7 @@ const TeacherView = () => {
                </View>
             </View>
          </BottomSheet>
-      </View>
+      </View >
    );
 };
 
