@@ -12,8 +12,10 @@ import * as XLSX from 'xlsx';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import Lottie from "@/components/loadings/Lottie";
+import { useAppProvider } from "@/contexts/AppProvider";
 
 export default function DetailReport() {
+    const {i18n} = useAppProvider()
     const modal = createRef();
     const { reportId, type } = useLocalSearchParams();
     const { reportData, fetchReportDetail } = useResultProvider();
@@ -87,17 +89,17 @@ export default function DetailReport() {
                     <View>
                         <Text className='text-black text-base font-bold'>{reportData.quiz_id?.quiz_name}</Text>
                         <Text className={`font-medium ${getStatus() ? 'text-green-500' : 'text-red-500'}`}>
-                            {getStatus() ? 'Đang diễn ra' : 'Đã kết thúc'}
+                            {getStatus() ? i18n.t('report.reportDetail.starting') : i18n.t('report.reportDetail.end')}
                         </Text>
                     </View>
                     <TouchableOpacity onPress={() => {
                         Alert.alert(
-                            "Tải file báo cáo?",
-                            "Bạn có muốn tiếp tục tải file báo cáo này?",
+                            i18n.t('report.reportDetail.questionDownload'),
+                            i18n.t('report.reportDetail.textQuestionDownload'),
                             [
-                                { text: "Hủy", style: "cancel" },
+                                { text: i18n.t('report.reportDetail.cancel'), style: "cancel" },
                                 {
-                                    text: "Tiếp tục", onPress: () => {
+                                    text: i18n.t('report.reportDetail.continute'), onPress: () => {
                                         downloadExcel()
                                     }
                                 },
@@ -118,24 +120,24 @@ export default function DetailReport() {
                         <Text>{moment(reportData.date_end).format("MMMM Do YYYY | h:mm A")}</Text>
                     </View>
                     <TouchableOpacity className='flex-row items-center' onPress={onOpen}>
-                        <Text className='px-1 py-1 bg-green-500/60 rounded-lg'>Xem quiz</Text>
+                        <Text className='px-1 py-1 bg-green-500/60 rounded-lg'>{i18n.t('report.reportDetail.btnViewQuiz')}</Text>
                         <MaterialCommunityIcons name="menu-right" size={30} />
                     </TouchableOpacity>
                 </View>
             </View>
             <View className='flex-1 p-3'>
-                <Text className='text-base font-semibold'>Chú thích</Text>
+                <Text className='text-base font-semibold'>{i18n.t('report.reportDetail.text1')}</Text>
                 <View className='w-full flex-row items-center justify-around my-1'>
                     <View className='flex-row items-center gap-2'>
                         <View className='w-6 h-6 rounded-full bg-green-500' />
-                        <Text className='text-green-500'>Chính xác </Text>
+                        <Text className='text-green-500'>{i18n.t('report.reportDetail.text2')}</Text>
                     </View>
                     <View className='flex-row items-center gap-2'>
                         <View className='w-6 h-6 bg-red-500' />
-                        <Text className='text-red-500'>Không chính xác</Text>
+                        <Text className='text-red-500'>{i18n.t('report.reportDetail.text3')}</Text>
                     </View>
                 </View>
-                <Text className='text-base font-semibold my-1'>Danh sách người dùng đã tham gia</Text>
+                <Text className='text-base font-semibold my-1'>{i18n.t('report.reportDetail.text4')}</Text>
                 <View className='flex-1'>
                     {
                         reportData.result_ids && reportData.result_ids.length > 0 ?
@@ -187,7 +189,7 @@ export default function DetailReport() {
                 withHandle={false}
                 scrollViewProps={{ showsVerticalScrollIndicator: false }}>
                 <View className="p-4">
-                    <Text className="text-lg font-bold mb-3">Câu hỏi trong Quiz</Text>
+                    <Text className="text-lg font-bold mb-3">{i18n.t('report.reportDetail.titleQuiz')}</Text>
                     {questions?.length > 0 ? (
                         <ScrollView showsVerticalScrollIndicator={false}>
                             {

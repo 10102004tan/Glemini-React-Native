@@ -274,7 +274,41 @@
       "buttonEdit": "Chỉnh sửa"
    },
    "report": {
-      "title": "Báo cáo"
+      "title": "Báo cáo",
+      "realtime": "Trực tiếp",
+      "exercise": "Bài tập",
+      "userJoin": "người tham gia",
+      "placeholderSearch": "Tìm kiếm báo cáo",
+      "btnFresh": "Đặt lại",
+      "optionClass": "Lớp",
+      "optionType": "Loại",
+      "optionNew": "Mới nhất",
+      "optionOld": "Cũ nhất",
+      "emptyReport": "Không có dữ liệu để hiển thị",
+      "reportDetail": {
+         "title": "Chi tiết báo cáo",
+         "starting": "Đang diễn ra",
+         "end": "Đã kết thúc",
+         "questionDownload": "Tải file báo cáo?",
+         "textQuestionDownload": "Bạn có muốn tiếp tục tải file báo cáo này?",
+         "cancel": "Hủy",
+         "continute": "Tiếp túc",
+         "btnViewQuiz": "Xem quiz",
+         "text1": "Chú thích",
+         "text2": "Chính xác",
+         "text3": "Không chính xác",
+         "text4": "Danh sách người dùng đã tham gia",
+         "titleQuiz": "Câu hỏi trong Quiz"
+      },
+      "reportOverview": {
+         "questionCorrect": "Câu đúng",
+         "point": "Điểm",
+         "titleQues": "Câu hỏi",
+         "typeCorrect": "Đúng",
+         "typeIncorrect": "Sai",
+         "infoScore": "điểm | 1 câu",
+         "infoAnswerCorrect": "Câu trả lời chính xác"
+      }
    },
    "status": {
       "title": "Trạng thái",
@@ -292,6 +326,7 @@
    },
    "classroom": {
       "title": "Lớp học",
+      "emptyClass": "Không có lớp học",
       "teacher": {
          "btnAddClass": "Tạo lớp học mới",
          "titleBts": "Nhập thông tin lớp học mới",
@@ -304,8 +339,37 @@
          "btnSave": "Tạo mới",
          "btnCancel": "Hủy",
          "btnEdit": "Chỉnh sửa",
-         "titleBtsAddStudent": "Thêm danh sách học sinh"
+         "titleBtsAddStudent": "Thêm danh sách học sinh",
+         "titleSearchQuery": "Nhập tên lớp cần tìm"
       },
-      "student": {}
+      "student": {
+         "titleSearchQuery": "Nhập tên lớp cần tìm",
+         "title": "Bài tập được giao",
+         "textEnd": "Đã kết thúc",
+         "notiDL": "Hết hạn làm bài",
+         "notiChildDL": "Bạn không thể làm bài này nữa.",
+         "notiStart": "Chưa bắt đầu",
+         "notiChildStart": "Hiện tại bạn chưa thể làm bài này.",
+         "textNotStartedYet": "Chưa đến thời gian làm bài",
+         "emptyExercise": "Chưa có bài tập nào trong lớp này"
+      }
+   },
+   "activity": {
+      "title": "Hoạt động",
+      "btnJoin": "Tham gia",
+      "textRoomCODE": "Mã phòng",
+      "btnScan": "Quét mã để tham gia tại đây",
+      "textDoing": "Đang thực hiện",
+      "textCompleted": "Đã hoàn thành",
+      "emptyActivity": "Danh sách trống",
+      "publish": "Công khai",
+      "exercise": "Được giao",
+      "room": "Phòng",
+      "titleQuestionContinuteQUiz": "Tiếp tục thực hiện?",
+      "textQuestionContinuteQuiz": "Bạn có muốn tiếp tục bài kiểm tra này?",
+      "btnCancel": "Hủy",
+      "btnContinute": "Tiếp tục",
+      "notiDL": "Đã quá hạn làm bài!",
+      "textCreated": "bởi:"
    }
 }
