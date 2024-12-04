@@ -329,6 +329,22 @@ const ClassroomProvider = ({ children }) => {
         }
     }, [userData]);
 
+
+    const fetchFilterSchool = async ({keyword}) => {
+        const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.SCHOOL_FILTER}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({keyword})
+        });
+        const data = await response.json();
+        if (data.statusCode === 200) {
+            return data.metadata;
+        }
+        return [];
+    }
+
     return (
         <ClassroomContext.Provider value={{
             schools,
@@ -345,6 +361,7 @@ const ClassroomProvider = ({ children }) => {
             removeClassroom,
 			fetchSchoolQuery,
 			fetchDistrictQuery,
+            fetchFilterSchool,
 			province, setProvince, districts, setDistricts, selectDistrict, setSelectDistrict
         }}>
             {children}
