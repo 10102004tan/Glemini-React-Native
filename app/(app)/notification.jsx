@@ -11,6 +11,7 @@ import AntiFlatList from "@/components/customs/AntiFlatList/AntiFlatList";
 import AntiFlatListNotification from "@/components/customs/AntiFlatList/AntiFlatListNotification";
 import {router} from "expo-router";
 import {STATUS_VERIFIED} from "@/utils/notificationCode";
+import NotificationListSkelaton from "@/components/customs/AntiFlatList/NotificationListSkelaton";
 
 const COUNT_LENGTH = 30;
 export default function NotificationScreen() {

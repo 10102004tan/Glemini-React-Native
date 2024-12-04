@@ -53,6 +53,7 @@ const QuestionEditBoard = ({
       >
          {/* Dùng để chỉnh sửa câu hỏi, đáp án của quiz */}
          <RichTextEditor
+            questionType={questionType}
             closeEditBoard={closeEditBoard}
             isSave={isSaveData}
             setIsSaveData={setIsSaveData}

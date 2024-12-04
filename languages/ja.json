@@ -274,7 +274,41 @@
       "buttonEdit": "編集"
    },
    "report": {
-      "title": "レポート"
+      "title": "レポート",
+      "realtime": "リアルタイム",
+      "exercise": "課題",
+      "userJoin": "参加者",
+      "placeholderSearch": "レポートを検索",
+      "btnFresh": "リセット",
+      "optionClass": "クラス",
+      "optionType": "タイプ",
+      "optionNew": "最新",
+      "optionOld": "最古",
+      "emptyReport": "表示するデータがありません",
+      "reportDetail": {
+         "title": "レポートの詳細",
+         "starting": "進行中",
+         "end": "終了済み",
+         "questionDownload": "レポートファイルをダウンロードしますか？",
+         "textQuestionDownload": "このレポートファイルのダウンロードを続行しますか？",
+         "cancel": "キャンセル",
+         "continute": "続ける",
+         "btnViewQuiz": "クイズを見る",
+         "text1": "凡例",
+         "text2": "正解",
+         "text3": "不正解",
+         "text4": "参加者リスト",
+         "titleQuiz": "クイズの質問"
+      },
+      "reportOverview": {
+         "questionCorrect": "正解の質問",
+         "point": "ポイント",
+         "titleQues": "質問",
+         "typeCorrect": "正解",
+         "typeIncorrect": "不正解",
+         "infoScore": "ポイント | 1 質問",
+         "infoAnswerCorrect": "正しい答え"
+      }
    },
    "status": {
       "title": "ステータス",
@@ -289,5 +323,53 @@
       "title": "機能をロック",
       "desc": "この機能はロックされています。",
       "button": "アップグレード"
+   },
+   "classroom": {
+      "title": "教室",
+      "emptyClass": "教室がありません",
+      "teacher": {
+         "btnAddClass": "新しい教室を作成",
+         "titleBts": "新しい教室の情報を入力",
+         "fieldSchool": "学校名",
+         "placeholderFieldSchool": "学校名を選択してください...",
+         "fieldSubject": "科目名",
+         "placeholderFieldSubject": "科目を選択してください...",
+         "fieldClassroom": "教室名",
+         "placeholderFieldClassroom": "教室名を入力してください...",
+         "btnSave": "作成",
+         "btnCancel": "キャンセル",
+         "btnEdit": "編集",
+         "titleBtsAddStudent": "生徒リストを追加",
+         "titleSearchQuery": "検索する教室名を入力してください"
+      },
+      "student": {
+         "titleSearchQuery": "検索する教室名を入力してください",
+         "title": "割り当てられた課題",
+         "textEnd": "終了済み",
+         "notiDL": "提出期限切れ",
+         "notiChildDL": "この課題を提出することはできません。",
+         "notiStart": "まだ開始されていません",
+         "notiChildStart": "この課題をまだ開始することはできません。",
+         "textNotStartedYet": "課題の開始時間ではありません",
+         "emptyExercise": "この教室には課題がありません"
+      }
+   },
+   "activity": {
+      "title": "アクティビティ",
+      "btnJoin": "参加する",
+      "textRoomCODE": "ルームコード",
+      "btnScan": "ここでコードをスキャンして参加",
+      "textDoing": "進行中",
+      "textCompleted": "完了済み",
+      "emptyActivity": "アクティビティがありません",
+      "publish": "公開",
+      "exercise": "割り当てられた",
+      "room": "ルーム",
+      "titleQuestionContinuteQUiz": "クイズを続行しますか？",
+      "textQuestionContinuteQuiz": "このクイズを続行しますか？",
+      "btnCancel": "キャンセル",
+      "btnContinute": "続ける",
+      "notiDL": "提出期限が過ぎました！",
+      "textCreated": "作成者:"
    }
 }

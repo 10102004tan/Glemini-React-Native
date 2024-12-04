@@ -273,7 +273,41 @@
       "buttonEdit": "Edit"
    },
    "report": {
-      "title": "Report"
+      "title": "Report",
+      "realtime": "Live",
+      "exercise": "Exercise",
+      "userJoin": "participants",
+      "placeholderSearch": "Search reports",
+      "btnFresh": "Reset",
+      "optionClass": "Class",
+      "optionType": "Type",
+      "optionNew": "Newest",
+      "optionOld": "Oldest",
+      "emptyReport": "No data to display",
+      "reportDetail": {
+         "title": "Report Details",
+         "starting": "In Progress",
+         "end": "Ended",
+         "questionDownload": "Download report file?",
+         "textQuestionDownload": "Do you want to continue downloading this report file?",
+         "cancel": "Cancel",
+         "continute": "Continue",
+         "btnViewQuiz": "View Quiz",
+         "text1": "Legend",
+         "text2": "Correct",
+         "text3": "Incorrect",
+         "text4": "List of Participants",
+         "titleQuiz": "Questions in Quiz"
+      },
+      "reportOverview": {
+         "questionCorrect": "Correct Questions",
+         "point": "Points",
+         "titleQues": "Question",
+         "typeCorrect": "Right",
+         "typeIncorrect": "Wrong",
+         "infoScore": "points | 1 question",
+         "infoAnswerCorrect": "Correct Answer"
+      }
    },
    "status": {
       "title": "Status",
@@ -288,5 +322,53 @@
       "title": "You do not have access to this feature",
       "desc": "Please upgrade your account to access this feature.",
       "button": "Here"
+   },
+   "classroom": {
+      "title": "Classroom",
+      "emptyClass": "No classrooms available",
+      "teacher": {
+         "btnAddClass": "Create New Classroom",
+         "titleBts": "Enter New Classroom Information",
+         "fieldSchool": "School Name",
+         "placeholderFieldSchool": "Select a school name...",
+         "fieldSubject": "Subject Name",
+         "placeholderFieldSubject": "Select a subject...",
+         "fieldClassroom": "Classroom Name",
+         "placeholderFieldClassroom": "Enter the classroom name...",
+         "btnSave": "Create",
+         "btnCancel": "Cancel",
+         "btnEdit": "Edit",
+         "titleBtsAddStudent": "Add Student List",
+         "titleSearchQuery": "Enter the classroom name to search"
+      },
+      "student": {
+         "titleSearchQuery": "Enter the classroom name to search",
+         "title": "Assigned Exercises",
+         "textEnd": "Ended",
+         "notiDL": "Submission Deadline Passed",
+         "notiChildDL": "You can no longer submit this exercise.",
+         "notiStart": "Not Started Yet",
+         "notiChildStart": "You cannot start this exercise yet.",
+         "textNotStartedYet": "It is not time to start the exercise yet",
+         "emptyExercise": "There are no exercises in this classroom"
+      }
+   },
+   "activity": {
+      "title": "Activity",
+      "btnJoin": "Join",
+      "textRoomCODE": "Room Code",
+      "btnScan": "Scan the code to join here",
+      "textDoing": "In Progress",
+      "textCompleted": "Completed",
+      "emptyActivity": "No activities available",
+      "publish": "Public",
+      "exercise": "Assigned",
+      "room": "Room",
+      "titleQuestionContinuteQUiz": "Continue the quiz?",
+      "textQuestionContinuteQuiz": "Do you want to continue this quiz?",
+      "btnCancel": "Cancel",
+      "btnContinute": "Continue",
+      "notiDL": "Submission deadline has passed!",
+      "textCreated": "created by:"
    }
 }

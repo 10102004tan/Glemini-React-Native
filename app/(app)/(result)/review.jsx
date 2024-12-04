@@ -13,6 +13,8 @@ const ResultReview = () => {
    const { i18n } = useAppProvider();
 
 
+   console.log("RESULT DATA")
+   console.log(resultData)
 
    // Trạng thái để lưu chỉ số câu hỏi được chọn và trạng thái hiển thị của Modal
    const [selectedIndex, setSelectedIndex] = useState(null);
@@ -29,6 +31,7 @@ const ResultReview = () => {
    };
 
    const currentQuestion = resultData.result_questions[selectedIndex];
+   console.log(currentQuestion)
 
    const goToNextQuestion = () => {
       if (selectedIndex < resultData.result_questions.length - 1) {
@@ -40,6 +43,14 @@ const ResultReview = () => {
       if (selectedIndex > 0) {
          setSelectedIndex(prevIndex => prevIndex - 1);
       }
+   };
+
+   // Hàm chuẩn hóa chuỗi văn bản
+   const normalizeText = (text) => {
+      return text
+         .toLowerCase() // Chuyển về chữ thường
+         .replace(/\s+/g, ' ') // Loại bỏ khoảng trắng thừa giữa các từ
+         .trim(); // Loại bỏ khoảng trắng đầu và cuối
    };
 
    return (
@@ -99,46 +110,61 @@ const ResultReview = () => {
                         </Text>
 
                         {currentQuestion && currentQuestion.question_id.question_answer_ids.map((answer, ansIndex) => {
-  // Kiểm tra xem đây có phải là câu trả lời của người dùng hay không
-  const isUserAnswer = currentQuestion.answer.some(userAns => userAns._id === answer._id);
-  // Kiểm tra xem đây có phải là câu trả lời đúng hay không
-  const isCorrectAnswer = currentQuestion.question_id.correct_answer_ids.some(
-    correctAns => correctAns._id === answer._id
-  );
+                           if (currentQuestion.question_id.question_type === 'box') {
+                              const correctTextAnswers = normalizeText(currentQuestion.question_id.correct_answer_ids[0].text);
+                              const userAnswerText = normalizeText(answer.text);
 
-  // Xác định màu sắc dựa trên điều kiện
-  const bulletStyle = isCorrectAnswer && isUserAnswer
-    ? 'bg-yellow-500' // Cả câu trả lời của bạn và câu trả lời đúng
-    : isCorrectAnswer
-    ? 'bg-green-500' // Chỉ là câu trả lời đúng
-    : isUserAnswer
-    ? 'bg-red-500' // Chỉ là câu trả lời của bạn
-    : 'bg-slate-400/50'; // Các câu trả lời khác
+                              const isAnswerCorrect = correctTextAnswers.includes(userAnswerText);
 
-  const textStyle = isCorrectAnswer && isUserAnswer
-    ? 'text-yellow-500 font-semibold' // Cả câu trả lời của bạn và câu trả lời đúng
-    : isCorrectAnswer
-    ? 'text-green-500 font-semibold' // Chỉ là câu trả lời đúng
-    : isUserAnswer
-    ? 'text-red-500 font-regular' // Chỉ là câu trả lời của bạn
-    : 'text-slate-400 font-regular'; // Các câu trả lời khác
+                              return (
+                                 <View key={ansIndex} className='flex-row items-center mb-2'>
+                                    <View className={`w-3 h-3 rounded-full mr-2`} />
+                                    <Text className={`text-base ${isAnswerCorrect ? 'text-green-500' : 'text-red-500'}`}>
+                                       {answer.text}
+                                    </Text>
+                                 </View>
+                              );
+                           } else {
+                              // Kiểm tra xem đây có phải là câu trả lời của người dùng hay không
+                              const isUserAnswer = currentQuestion.answer.some(userAns => userAns._id === answer._id);
+                              // Kiểm tra xem đây có phải là câu trả lời đúng hay không
+                              const isCorrectAnswer = currentQuestion.question_id.correct_answer_ids.some(
+                                 correctAns => correctAns._id === answer._id
+                              );
 
-  return (
-    <View key={ansIndex} className='flex-row items-center mb-2'>
-      <View className={`w-3 h-3 rounded-full mr-2 ${bulletStyle}`} />
-      <Text className={`text-base ${textStyle}`}>
-        {answer.text}
-      </Text>
-    </View>
-  );
-})}
+                              const bulletStyle = isCorrectAnswer && isUserAnswer
+                                 ? 'bg-yellow-500' // Cả câu trả lời của bạn và câu trả lời đúng
+                                 : isCorrectAnswer
+                                    ? 'bg-green-500' // Chỉ là câu trả lời đúng
+                                    : isUserAnswer
+                                       ? 'bg-red-500' // Chỉ là câu trả lời của bạn
+                                       : 'bg-slate-400/50'; // Các câu trả lời khác
+
+                              const textStyle = isCorrectAnswer && isUserAnswer
+                                 ? 'text-yellow-500 font-semibold' // Cả câu trả lời của bạn và câu trả lời đúng
+                                 : isCorrectAnswer
+                                    ? 'text-green-500 font-semibold' // Chỉ là câu trả lời đúng
+                                    : isUserAnswer
+                                       ? 'text-red-500 font-regular' // Chỉ là câu trả lời của bạn
+                                       : 'text-slate-400 font-regular'; // Các câu trả lời khác
+
+                              return (
+                                 <View key={ansIndex} className='flex-row items-center mb-2'>
+                                    <View className={`w-3 h-3 rounded-full mr-2 ${bulletStyle}`} />
+                                    <Text className={`text-base ${textStyle}`}>
+                                       {answer.text}
+                                    </Text>
+                                 </View>
+                              );
+                           }
+                        })}
 
                      </View>
 
                      {!currentQuestion.correct && (
                         <View className='mt-4'>
                            <Text className='text-base text-slate-600 font-pregular'>
-                              {i18n.t('result.review.userAnswer')}: {currentQuestion && currentQuestion.answer.map(userAns => userAns.text).join(', ') || i18n.t('result.review.noAnswer')}
+                              {i18n.t('result.review.userAnswer')} {currentQuestion && (typeof currentQuestion.answer) === 'string' ? currentQuestion.answer : currentQuestion.answer.map(userAns => userAns.text).join(', ') || i18n.t('result.review.noAnswer')}
                            </Text>
                         </View>
                      )}
@@ -173,11 +199,10 @@ const ResultReview = () => {
                         />
                      </View>
                   </View>
-
-               </View >
-            </Modal >
+               </View>
+            </Modal>
          )}
-      </View >
+      </View>
    );
 };
 

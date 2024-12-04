@@ -179,7 +179,7 @@ const TeacherDetail = () => {
 
     const [index, setIndex] = useState(0);
     const [routes] = useState([
-        { key: 'exercises', title: 'Danhh sách bài tập' },
+        { key: 'exercises', title: 'Danh sách bài tập' },
         { key: 'students', title: 'Danh sách học sinh' },
     ]);
 
@@ -191,7 +191,7 @@ const TeacherDetail = () => {
     return (
         <View className='flex-1 bg-white'>
             <View className='w-full h-44 bg-red-800 flex justify-center items-center'>
-                <Text className='text-2xl text-white'>{classroom.class_name} - {classroom.subject?.name}</Text>
+                <Text className='text-2xl text-white'>{classroom.class_name} - {i18n.t(`subjects.${classroom.subject?.name}`)}</Text>
                 <TouchableOpacity className='bg-white/70 rounded-full p-2 absolute bottom-5 right-5' onPress={() => { setShowBottomSheet(1); }}>
                     <AntDesign name='adduser' size={25} />
                 </TouchableOpacity>

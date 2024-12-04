@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Alert } from 'react-native'
+import { View, Text, ScrollView, Alert, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Wrapper from '@/components/customs/Wrapper'
 import Field from '@/components/customs/Field'
@@ -13,7 +13,16 @@ import * as Clipboard from 'expo-clipboard';
 import { AppState } from 'react-native';
 import { BackHandler } from 'react-native';
 import { useIsFocused } from '@react-navigation/native'
-import { create } from 'react-test-renderer'
+import QRGenerator from '@/components/customs/QRGenerator'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import Toast from 'react-native-toast-message-custom'
+import Lottie from '@/components/loadings/Lottie';
+import BottomSheet from '@/components/customs/BottomSheet'
+import { useClassroomProvider } from '@/contexts/ClassroomProvider'
+import Overlay from '@/components/customs/Overlay'
+import DropDownMultipleSelect from '@/components/customs/DropDownMultipleSelect'
+import { SelectList } from 'react-native-dropdown-select-list'
+
 const TeacherRoomWaitScreen = () => {
    const router = useRouter();
    const [joinedUsers, setJoinedUsers] = useState([]);
@@ -21,6 +30,11 @@ const TeacherRoomWaitScreen = () => {
    const [roomData, setRoomData] = useState(null);
    const { userData } = useAuthContext();
    const { roomCode } = useGlobalSearchParams();
+   const [totalJoindUsers, setTotalJoindUsers] = useState(0);
+   const [testLoading, setTestLoading] = useState(true);
+   const { classrooms } = useClassroomProvider();
+   const [showClassroom, setShowClassroom] = useState(false);
+   const [selectedClass, setSelectedClass] = useState(null);
 
 
    useEffect(() => {
@@ -28,18 +42,33 @@ const TeacherRoomWaitScreen = () => {
       socket.on('userJoined', (data) => {
          setJoinedUsers((prev) => [...prev, data.user]);
          console.log(`User ${data.user.user_fullname} joined room`);
+         setTotalJoindUsers((prev) => prev + 1);
+         Toast.show({
+            type: 'info',
+            text1: `Người chơi ${data.user.user_fullname} đã tham gia phòng`,
+            visibilityTime: 3000,
+            autoHide: true,
+         });
       });
 
       // Lắng nghe danh sách user cập nhật
       socket.on('updateUserList', (users) => {
          // console.log(users)
          setJoinedUsers(users);
+         setTotalJoindUsers(users.length);
       });
 
       // Lắng nghe khi người dùng rời phòng
       socket.on('userLeft', (data) => {
          setJoinedUsers((prev) => prev.filter((user) => user._id !== data.user._id));
          console.log(data.message);
+         setTotalJoindUsers((prev) => prev - 1);
+         Toast.show({
+            type: 'info',
+            text1: `Người chơi ${data.user.user_fullname} đã rời phòng`,
+            visibilityTime: 3000,
+            autoHide: true,
+         });
       })
 
       // Hủy lắng nghe khi component bị hủy
@@ -123,7 +152,12 @@ const TeacherRoomWaitScreen = () => {
                         params: {}
                      })
                   } else {
-                     Alert.alert('Thông báo', 'Không thể thoát khỏi phòng chơi');
+                     Toast.show({
+                        type: 'info',
+                        text1: 'Không thể mở phòng chơi',
+                        visibilityTime: 3000,
+                        autoHide: true,
+                     });
                   }
                }
             },
@@ -161,17 +195,31 @@ const TeacherRoomWaitScreen = () => {
    const handleCopyRoomCode = async () => {
       try {
          await Clipboard.setStringAsync(roomData.room_code);
-         Alert.alert("Success", "Room code copied to clipboard!");
+         Toast.show({
+            type: 'success',
+            text1: 'Sao chép mã phòng thành công',
+            visibilityTime: 1000,
+            autoHide: true,
+         });
       } catch (error) {
-         console.error("Failed to copy room code:", error);
-         Alert.alert("Error", "Failed to copy room code.");
+         Toast.show({
+            type: 'error',
+            text1: 'Sao chép mã phòng thất bại',
+            visibilityTime: 1000,
+            autoHide: true,
+         });
       }
    };
 
    const handleStartRoom = async () => {
       // Kiểm tra xem phòng chơi có đủ người chưa
       if ((joinedUsers.length - 1) < 1) {
-         Alert.alert('Thông báo', 'Phòng chơi cần ít nhất 1 người tham gia để bắt đầu');
+         Toast.show({
+            type: 'info',
+            text1: 'Phòng chơi cần ít nhất 1 người tham gia để bắt đầu',
+            visibilityTime: 3000,
+            autoHide: true,
+         });
          return;
       }
 
@@ -205,7 +253,12 @@ const TeacherRoomWaitScreen = () => {
          })
       }
       else {
-         Alert.alert('Thông báo', 'Không thể bắt đầu phòng chơi');
+         Toast.show({
+            type: 'info',
+            text1: 'Không thể bắt đầu phòng chơi',
+            visibilityTime: 3000,
+            autoHide: true,
+         });
       }
    }
 
@@ -232,12 +285,117 @@ const TeacherRoomWaitScreen = () => {
          setRoomData(data.metadata);
       }
       else {
-         Alert.alert('Thông báo', 'Không thể mở phòng chơi');
+         Toast.show({
+            type: 'info',
+            text1: 'Không thể mở phòng chơi',
+            visibilityTime: 3000,
+            autoHide: true,
+         });
       }
+   }
+
+   // Hàm xử lý thông báo tới sinh viên khi giáo viên share phòng vào lớp
+   const handleNotification = async (classroomId, roomCode) => {
+      if (classroomId === null) {
+         Toast.show({
+            type: 'info',
+            text1: 'Vui lòng chọn lớp học',
+            visibilityTime: 3000,
+            autoHide: true,
+         });
+         return;
+      }
+
+      try {
+         const res = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.NOTIFY_SHARE_ROOM}`, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+               'x-client-id': userData._id,
+               authorization: userData.accessToken,
+            },
+            body: JSON.stringify({
+               classroomId,
+               roomCode
+            }),
+         });
+
+         const data = await res.json();
+         console.log(data)
+         if (data.statusCode === 200) {
+            Toast.show({
+               type: 'success',
+               text1: "Thông báo đã được gửi đi !!!",
+               visibilityTime: 1000,
+               autoHide: true,
+            });
+         } else {
+            Toast.show({
+               type: 'error',
+               text1: "Lỗi khi gửi thông báo, vui lòng thử lại sau ít phút",
+               visibilityTime: 2000,
+               autoHide: true,
+            });
+         }
+      } catch (error) {
+         console.log(error);
+         Toast.show({
+            type: 'error',
+            text1: "Lỗi khi gửi thông báo, vui lòng thử lại sau ít phút",
+            visibilityTime: 1000,
+            autoHide: true,
+         });
+      }
+   }
+
+   if (!roomData) {
+      return (
+         <Wrapper>
+            <View className="flex items-center justify-center w-full h-full">
+               <Lottie
+                  source={require('@/assets/jsons/fly-loading.json')}
+                  width={300}
+                  height={300}
+               />
+            </View>
+         </Wrapper>
+      )
    }
 
    return (
       <Wrapper>
+
+         {/* Bottom sheet */}
+         <Overlay visible={showClassroom} onPress={() => {
+            setShowClassroom(false);
+         }} />
+         <BottomSheet visible={showClassroom} onClose={() => {
+            setShowClassroom(false);
+         }}>
+            {/* Hiển thị danh sách lớp học */}
+            <View className="bg-white p-4 rounded-2xl">
+               <Text className="text-xl font-semibold mb-4">Danh sách lớp học</Text>
+               <ScrollView
+                  showsHorizontalScrollIndicator={false}
+                  showsVerticalScrollIndicator={false}
+               >
+                  {classrooms.length > 0 && classrooms.map((cls) => (
+                     <SelectList
+                        key={cls._id}
+                        data={classrooms.map((cls) => ({
+                           key: cls._id,
+                           value: cls.class_name,
+                        }))}
+                        setSelected={setSelectedClass}
+                        placeholder="Chọn lớp học"
+                     />
+                  ))}
+
+                  <Button text='Chia sẻ' onPress={() => { handleNotification(selectedClass, roomCode) }} otherStyles='p-3 mt-4 w-full flex items-center justify-center bg-[#A1732A]' textStyles='' />
+               </ScrollView>
+            </View>
+         </BottomSheet>
+
          <View className="flex-1 p-4 bg-primary pt-[60px]">
             <View className="flex flex-row items-center justify-end w-full">
                <Button text='Thoát' otherStyles='p-3 bg-red-500 justify-center w-fit' onPress={() => {
@@ -263,7 +421,7 @@ const TeacherRoomWaitScreen = () => {
                            });
 
                            const data = await exitRoom.json();
-                           console.log(data)
+                           // console.log(data)
                            if (data.statusCode === 200) {
                               socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
                               router.replace({
@@ -271,7 +429,12 @@ const TeacherRoomWaitScreen = () => {
                                  params: {}
                               })
                            } else {
-                              Alert.alert('Thông báo', 'Không thể thoát khỏi phòng chơi');
+                              Toast.show({
+                                 type: 'info',
+                                 text1: 'Không thể mở phòng chơi',
+                                 visibilityTime: 3000,
+                                 autoHide: true,
+                              });
                            }
                         }
                      }
@@ -279,15 +442,19 @@ const TeacherRoomWaitScreen = () => {
                }} />
             </View>
             <View className="my-4">
-               {roomData && roomData.status === 'completed' && <Text className="text-white bg-red-400 text-center p-4 rounded-2xl">Phòng chơi đã kết thúc trước đó bạn có muốn mở lại không ?</Text>}
-               {roomData && roomData.status === 'doing' && <Text className="text-white bg-red-400 text-center p-4 rounded-2xl">Phòng hiện đang mở hãy chuyển tới màn hình theo dõi kết quả</Text>}
+               {roomData && roomData.status === 'completed' && <Text className="text-white bg-red-500 text-center p-4 rounded-2xl">Phòng chơi đã kết thúc trước đó bạn có muốn mở lại không ?</Text>}
+               {roomData && roomData.status === 'doing' && <Text className="text-white bg-red-500 text-center p-4 rounded-2xl">Phòng hiện đang mở hãy chuyển tới màn hình theo dõi kết quả</Text>}
             </View>
-            <ScrollView className="">
+            <ScrollView className=""
+               showsHorizontalScrollIndicator={false}
+               showsVerticalScrollIndicator={false}
+            >
                {/* Copy Room Code */}
-               <View className="p-4 rounded-2xl bg-[#0C0C0C] w-full">
+               <View className="p-4 rounded-2xl bg-[#2f3542] w-full">
                   <View className="w-full h-[200px] bg-[rgba(117, 117, 117, 0.3)] flex items-center justify-center p-4 rounded-2xl">
+
                      <View className="w-full rounded-xl  bg-white">
-                        <Field placeholder={`Mã phòng: ${roomData && roomData.room_code}`} />
+                        <Field placeholder={`Mã phòng: ${roomData && roomData.room_code}`} disabled={true} />
                      </View>
                      <Button text='Sao chép' onPress={handleCopyRoomCode} otherStyles='p-3 mt-4 w-full flex items-center justify-center bg-[#A1732A]' textStyles='' icon={<Feather name="copy" size={20} color="white" />} />
                      {userData && roomData && userData._id === roomData.user_created_id && roomData.status === 'completed' && <Button text='Mở lại' onPress={() => {
@@ -306,8 +473,14 @@ const TeacherRoomWaitScreen = () => {
                      }} otherStyles='p-3 mt-4 w-full flex items-center justify-center bg-[#A1732A]' textStyles='' />}
                   </View>
                </View>
-               <View className="mt-4 p-4 rounded-2xl bg-[#0C0C0C] w-full">
-                  <Text className="text-white text-center">Chờ học sinh tham gia</Text>
+               {userData && roomData && userData._id === roomData.user_created_id && <View className="mt-4 bg-[#2f3542] p-8 flex items-center justify-center rounded-2xl">
+                  <Text className="text-blue-500 text-center">Chia sẽ mã QR code này để các người chơi khác có thể vào phòng</Text>
+                  <QRGenerator value={roomCode} handleShareRoom={() => {
+                     setShowClassroom(true)
+                  }} />
+               </View>}
+               <View className="mt-4 p-4 rounded-2xl bg-[#2f3542] w-full">
+                  <Text className="text-white text-center">Tổng số người đã tham gia ({totalJoindUsers > 0 ? totalJoindUsers - 1 : totalJoindUsers})</Text>
                </View>
                <View className="mt-4 p-4 w-full">
                   {/* Student Items */}
@@ -321,18 +494,6 @@ const TeacherRoomWaitScreen = () => {
                            }} />
                      }
                   })}
-
-
-
-                  {/* <Text className="text-white">Messages</Text>
-                  {messages.map((msg, index) => (
-                     <Text className="text-white" key={index}>{msg}</Text>
-                  ))} */}
-
-                  {/* <Text className="text-white">Users in Room</Text>
-                  {joinedUsers.map((user) => (
-                     <Text className="text-white" key={user._id}>{user.user_fullname}</Text>
-                  ))} */}
                </View>
             </ScrollView>
          </View>

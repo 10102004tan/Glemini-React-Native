@@ -2,6 +2,8 @@ import React from 'react';
 import { Text, View } from 'react-native';
 
 function QuestionResultItem({ question = {} }) {
+
+   // console.log(JSON.stringify(question));
    return (
       <View
          key={question.question_id._id}
@@ -11,15 +13,7 @@ function QuestionResultItem({ question = {} }) {
             {question.question_id.question_excerpt}
          </Text>
 
-         {question.question_id.question_answer_ids.map((answer) => {
-            const isUserAnswer = question.answer.some(
-               (userAns) => userAns._id === answer._id
-            );
-            const isCorrectAnswer =
-               question.question_id.correct_answer_ids.includes(
-                  answer._id
-               );
-
+         {question.question_id?.question_answer_ids.map((answer) => {
             return (
                <View
                   key={answer._id}
