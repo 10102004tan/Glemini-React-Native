@@ -12,7 +12,6 @@ import vi from '../languages/vi.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const AppContext = createContext();
 import socket from '../utils/socket';
-import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 
 // Example about a context provider in React Native
 const AppProvider = ({ children }) => {

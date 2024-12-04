@@ -4,7 +4,9 @@ import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import ClassroomCard from '@/components/customs/ClassroomCard';
 import { router } from 'expo-router';
 import Lottie from '@/components/loadings/Lottie';
+import { useAppProvider } from '@/contexts/AppProvider';
 const StudentView = () => {
+    const {i18n} = useAppProvider()
     const { classrooms, fetchClassrooms } = useClassroomProvider();
     const [searchQuery, setSearchQuery] = useState('');
     const [refreshing, setRefreshing] = useState(false);
@@ -34,7 +36,7 @@ const StudentView = () => {
             <TextInput
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                placeholder={'Nhập tên lớp cần tìm'}
+                placeholder={i18n.t('classroom.student.titleSearchQuery')}
                 className='border border-slate-500 rounded-xl py-2 px-5 mx-5 mt-4'
             />
 
@@ -57,7 +59,7 @@ const StudentView = () => {
 					source={require('@/assets/jsons/empty.json')}
 					width={250}
 					height={250}
-                    text={'Chưa có lớp học nào'}
+                    text={i18n.t('classroom.emptyClass')}
 				/>
             }
         </View>

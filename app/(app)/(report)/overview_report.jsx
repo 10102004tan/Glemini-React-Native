@@ -5,8 +5,10 @@ import { useResultProvider } from "@/contexts/ResultProvider";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import moment from "moment";
 import LottieView from "lottie-react-native";
+import { useAppProvider } from "@/contexts/AppProvider";
 
 export default function DetailReport() {
+    const {i18n} = useAppProvider()
     const { resultId } = useLocalSearchParams();
     const { overViewData, fetchOverViewData } = useResultProvider();
     const [isFetching, setIsFetching] = useState(true);
@@ -70,13 +72,13 @@ export default function DetailReport() {
                         <Text className="text-center font-bold mb-1">
                             {`${Math.floor((correctCount / overViewData.result_questions?.length * 100), 2)}% `}
                         </Text>
-                        <Text className='font-medium'>Câu đúng</Text>
+                        <Text className='font-medium'>{i18n.t('report.reportOverview.questionCorrect')}</Text>
                     </View>
                     <View>
                         <Text className="text-center font-bold mb-1">
                             {`${correctCount}/${overViewData.result_questions?.length}`}
                         </Text>
-                        <Text className='font-medium'>Điểm</Text>
+                        <Text className='font-medium'>{i18n.t('report.reportOverview.point')}</Text>
                     </View>
                 </View>
 
@@ -85,13 +87,13 @@ export default function DetailReport() {
                         <View key={question._id} className={`mb-3 p-2 rounded-lg ${question.correct ? "bg-green-500/20 border-green-500" : "bg-red-500/20 border-red-500"} border-[1px]`}>
                             <View className="flex-row justify-between items-center mb-2">
                                 <View className='flex-row justify-start gap-2'>
-                                    <Text className="text-slate-100 font-semibold bg-slate-700 px-3 py-2 rounded-lg">{`Câu hỏi ${index + 1}`}</Text>
+                                    <Text className="text-slate-100 font-semibold bg-slate-700 px-3 py-2 rounded-lg">{`${i18n.t('report.reportOverview.titleQues')} ${index + 1}`}</Text>
                                     <View className={`px-3 py-2 rounded-lg ${question.correct ? "bg-green-500" : "bg-red-500"}`}>
-                                        <Text className="text-white font-semibold text-sm w-10 text-center">{question.correct ? "Đúng" : "Sai"}</Text>
+                                        <Text className="text-white font-semibold text-sm w-12 text-center">{question.correct ? i18n.t('report.reportOverview.typeCorrect') : i18n.t('report.reportOverview.typeIncorrect')}</Text>
                                     </View>
                                 </View>
                                 <Text>
-                                    {question.correct ? question.score : '0'} pts | 1 secs
+                                    {question.correct ? question.score : '0'} {i18n.t('report.reportOverview.infoScore')}
                                 </Text>
                             </View>
 
@@ -105,7 +107,7 @@ export default function DetailReport() {
                                     question.answer?.map(userAns => userAns.text).join(', ')
                                 }
                             </Text>
-                            <Text className="text-base mt-2">Câu trả lời chính xác</Text>
+                            <Text className="text-base mt-2">{i18n.t('report.reportOverview.infoAnswerCorrect')}</Text>
                             <Text className="font-medium">
                                 {question.question_id.correct_answer_ids?.map(userAns => userAns.text).join(', ')}
 
