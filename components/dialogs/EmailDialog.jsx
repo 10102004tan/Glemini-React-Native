@@ -22,6 +22,7 @@ const EmailDialog = ({ visible, onClose, quiz_id }) => {
   const { userData } = useAuthContext();
   const [clicked, setClicked] = useState([]);
   const [loading, setLoading] = useState(false);
+  
 
   useEffect(() => {
     getAllUserShared();
