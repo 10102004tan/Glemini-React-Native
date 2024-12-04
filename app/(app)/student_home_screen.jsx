@@ -12,6 +12,7 @@ import { useResultProvider } from '@/contexts/ResultProvider';
 import { router } from 'expo-router';
 import Toast from 'react-native-toast-message-custom';
 import Lottie from '@/components/loadings/Lottie';
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 const StudentHomeScreen = () => {
 	const { i18n } = useAppProvider();
@@ -121,14 +122,16 @@ const StudentHomeScreen = () => {
 									filterQuizzes.map(({ subject, quizzes }) => {
 										return (
 											<View key={subject._id} className="mb-4">
-												<View className='flex-row justify-between mb-1'>
+												<View className='flex-row justify-between mb-2'>
 													<Text className="text-xl font-bold">{i18n.t(`subjects.${subject.name}`)}</Text>
-													<TouchableOpacity onPress={() => {
+
+													<TouchableOpacity className={"flex-row items-center rounded gap-1"} onPress={() => {
 														router.push({
 															pathname: '/(home)/search',
 															params: { subjectId: subject._id }
 														});
 													}}>
+														<AntDesign name={"search1"} size={20} color={"black"} />
 														<Text className="text-base">Xem thêm</Text>
 													</TouchableOpacity>
 												</View>

@@ -1,4 +1,16 @@
-import { View, Text, TextInput, Button, Pressable, Alert, Image, Modal, TouchableOpacity } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
+    Pressable,
+    Alert,
+    Image,
+    Modal,
+    TouchableOpacity,
+    FlatList,
+    ScrollView
+} from 'react-native';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { Link, router } from 'expo-router';
@@ -17,6 +29,11 @@ import { listProvince } from "@/utils/provinceData"
 import { Picker } from '@react-native-picker/picker';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import { MultipleSelectList, SelectList } from 'react-native-dropdown-select-list';
+import AntDesign from "@expo/vector-icons/AntDesign";
+import {Modalize} from "react-native-modalize";
+import DynamicWidthText from "@/components/customs/DynamicWithText";
+import SearchBar from "react-native-dynamic-search-bar";
+import DropdownSchoolSelected from "@/components/customs/DropdownSchoolSelected";
 
 
 const TIME_SHOW_TOAST = 1500;
@@ -35,14 +52,14 @@ const SignUpScreen = () => {
         setDistricts,
         selectDistrict,
         setSelectDistrict,
-        schools,
-        setSchools,
+        fetchFilterSchool,
         fetchDistrictQuery,
         fetchSchoolQuery
     } = useClassroomProvider();
     const [selectedSchool, setSelectedSchool] = useState([]);
     const { signUp } = useContext(AuthContext);
     const { type } = useLocalSearchParams();
+    const modalizeRef = useRef(null);
     const [email, setEmail] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordVerify, setShowPasswordVerify] = useState(false);
@@ -55,24 +72,19 @@ const SignUpScreen = () => {
     const [imageCurrent, setImageCurrent] = useState('');
     const [isOpenedModal, setIsOpenedModal] = useState(false);
     const [disabled, setDisabled] = useState(false);
-
-    useEffect(() => {
-        if (province) {
-            setSelectDistrict(null);
-            setDistricts([]);
-            setSchools([]);
-            fetchDistrictQuery(province);
-
-        }
-    }, [province]);
-
+    const [schools, setSchools] = useState([]);
+    const [keyword, setKeyword] = useState('');
+    const [isOpenDropdownSchool, setIsOpenDropdownSchool] = useState(false);
 
 
     useEffect(() => {
-        if (selectDistrict) {
-            fetchSchoolQuery(selectDistrict);
-        }
-    }, [selectDistrict]);
+        fetchFilterSchool({keyword}).then((data)=>{
+            setSchools(data);
+        }).catch(e => {
+            console.log(e);
+        });
+    }, []);
+
 
     const handlerSignUp = async () => {
         setDisabled(true);
@@ -235,6 +247,29 @@ const SignUpScreen = () => {
             return false;
         }
 
+        // check school
+        if (type === "teacher" && selectedSchool.length === 0) {
+            Toast.show({
+                type: 'error',
+                text1: i18n.t('error.title'),
+                text2: "Chưa chọn trường học",
+                visibilityTime: TIME_SHOW_TOAST,
+                autoHide: true,
+            });
+            return false;
+        }
+
+        // check length school, if >  10 => error
+        if (type === "teacher" && selectedSchool.length > 10) {
+            Toast.show({
+                type: 'error',
+                text1: i18n.t('error.title'),
+                text2: "Chọn tối đa 10 trường học",
+                visibilityTime: TIME_SHOW_TOAST,
+                autoHide: true,
+            });
+        }
+
         // if type = teacher => check image
         if (type === "teacher") {
             if (!imageIDCard || !imageCard || !imageConfirm) {
@@ -249,8 +284,38 @@ const SignUpScreen = () => {
             }
         }
 
+
         return true;
     };
+
+    const handlerSearchSchool = async () => {
+        await fetchFilterSchool({keyword}).then((data)=>{
+            setSchools(data);
+        }).catch(e => {
+            console.log(e);
+        });
+    };
+
+    const handlerSelectSchool = (item) => {
+        // check if selectedSchool has item => remove
+        let index = selectedSchool.findIndex((school) => school._id === item._id);
+        if (index !== -1) {
+            setSelectedSchool(selectedSchool.filter((school) => school._id !== item._id));
+        } else {
+            if (selectedSchool.length >= 2){
+                Toast.show({
+                    type: 'error',
+                    text1: i18n.t('error.title'),
+                    text2: "Chọn tối đa 2 trường học",
+                    visibilityTime: TIME_SHOW_TOAST,
+                    autoHide: true,
+                });
+                return;
+            }
+            setSelectedSchool([...selectedSchool, item]);
+        }
+    };
+
 
     return (
         <View>
@@ -267,44 +332,21 @@ const SignUpScreen = () => {
                 <CustomInput label={i18n.t('signUp.email')} value={email} onChangeText={setEmail} />
                 <CustomInput secure={!showPassword} onChangeText={setPassword} label={i18n.t('signUp.password')} value={password} />
                 <CustomInput secure={!showPasswordVerify} onChangeText={setPasswordVerify} label={i18n.t('signUp.confirmPassword')} value={passwordVerify} />
-                {type === "teacher" && (
-                    <>
-                        <View className='my-2'>
-                            <Text>Chọn tỉnh</Text>
-                            <SelectList
-                                setSelected={setProvince}
-                                data={listProvince.map(province => ({ key: province.id, value: province.name }))}
-                                placeholder={'Chọn tỉnh'}
-                            />
-                        </View>
-                        {districts && districts.data?.fetchDistrict.length > 0 &&
-                            <View className='my-2'>
-                                <Text>Chọn huyện</Text>
-                                <SelectList
-                                    setSelected={setSelectDistrict}
-                                    data={districts.data?.fetchDistrict.map(district => ({ key: district.id, value: district.name }))}
-                                    placeholder={'Chọn huyện'}
-                                />
-                            </View>
-                        }
-                        {schools && schools.data?.fetchSchool.length > 0 &&
-                            <View className='my-2'>
-                                <Text>Chọn trường học</Text>
-                                <MultipleSelectList
-                                    setSelected={val => setSelectedSchool(val)}
-                                    data={schools.data?.fetchSchool.map(school => ({ key: school.id, value: school.name }))}
-                                    placeholder={'Chọn trường học'}
-                                    save='value'
-                                />
-                            </View>
-                        }
+
+                <View className='my-2'>
+                    <Text className={"mb-2"}>Chọn trường</Text>
+                    <DropdownSchoolSelected handlerSelectSchool={handlerSelectSchool} selectedSchool={selectedSchool} schools={schools} handlerSearchSchool={handlerSearchSchool} setKeyword={setKeyword} keyword={keyword} setIsOpenDropdownSchool={setIsOpenDropdownSchool} isOpenDropdownSchool={isOpenDropdownSchool}/>
+                </View>
+
+                {
+                    type === "teacher" && (
                         <View>
                             <InputImage onLongPress={() => handlerLongPress(TYPEIMAGE.Card)} onPress={() => { handlerPickImage(TYPEIMAGE.Card) }} desc={i18n.t("signUp.descForCard")} title={i18n.t('signUp.card')} logo={(imageCard ? imageCard.uri : 'https://cdn-icons-png.flaticon.com/512/175/175062.png')} />
                             <InputImage onLongPress={() => handlerLongPress(TYPEIMAGE.IDCard)} onPress={() => { handlerPickImage(TYPEIMAGE.IDCard) }} desc={i18n.t("signUp.descForCardID")} title={i18n.t('signUp.cardID')} logo={(imageIDCard ? imageIDCard.uri : 'https://cdn-icons-png.flaticon.com/512/6080/6080012.png')} />
                             <InputImage onLongPress={() => handlerLongPress(TYPEIMAGE.Confirm)} onPress={() => { handlerPickImage(TYPEIMAGE.Confirm) }} desc={i18n.t("signUp.descForDocument")} title={i18n.t('signUp.documentConfirm')} logo={(imageConfirm ? imageConfirm.uri : 'https://cdn-icons-png.freepik.com/256/888/888034.png?semt=ais_hybrid')} />
                         </View>
-                    </>
-                )}
+                    )
+                }
                 <CustomButton disabled={disabled} className={"mb-4"} onPress={() => handlerValidate() && handlerSignUp()} title={i18n.t('signUp.signUp')} />
             </View>
 
