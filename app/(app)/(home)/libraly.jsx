@@ -374,6 +374,7 @@ const Library = () => {
    }
 
    const filter = async (spSkip = null) => {
+    //biến mặc định để ghi đè lên skip
       const skipLoad = spSkip === null ? skip : spSkip;
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_FILTER}`,
