@@ -36,8 +36,10 @@ import QuizzesSharedEmpty from "@/components/customs/QuizzesSharedEmpty";
 import ConfirmDialog from "@/components/dialogs/ConfirmDialog";
 import AntiFlatList from "@/components/customs/AntiFlatList/AntiFlatList";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import QuizzCreateAction from "@/components/customs/QuizCreateAction";
 const Library = () => {
   //biến name của bộ sưu tập
+  const { setActionQuizType } = useQuizProvider();
   const [nameCollection, setNameCollection] = useState("");
   const [collections, setCollections] = useState([]);
   const { userData, processAccessTokenExpired } = useAuthContext();
@@ -46,6 +48,9 @@ const Library = () => {
   const [search, setSearch] = useState("");
   const [skip, setSkip] = useState(0);
   const screenWidth = Dimensions.get("window").width;
+
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   // biến lưu trạng thái status
   const [status, setStatus] = useState("");
@@ -97,7 +102,7 @@ const Library = () => {
   };
 
   //biến của bottomsheet
-  const { isHiddenNavigationBar, setIsHiddenNavigationBar } = useAppProvider();
+  const { setIsHiddenNavigationBar } = useAppProvider();
   const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
   const [visibleCreateNewBottomSheet, setVisibleCreateNewBottomSheet] =
     useState(false);
@@ -244,40 +249,6 @@ const Library = () => {
     }).start();
   };
 
-  const filter = async () => {
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_FILTER}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_id: userData._id,
-          quiz_name: search,
-          quiz_status: status,
-          quiz_subjects: subject,
-          start_filter_date: startDate,
-          end_filter_date: endDate,
-        }),
-      }
-    );
-    const data = await response.json();
-    // console.log(JSON.stringify(data.metadata, null, 2));
-    if (data.statusCode === 200) {
-      setQuizzes(data.metadata);
-    } else {
-      if (data.statusCode === 401 && data.message === "expired") {
-        processAccessTokenExpired();
-      }
-
-      setQuizzes([]);
-    }
-    handleCloseBottomSheet();
-  };
-
   const resetFilters = async () => {
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_FILTER}`,
@@ -307,6 +278,12 @@ const Library = () => {
       }
       setQuizzes([]);
     }
+    handleCloseBottomSheet();
+    setSearch("");
+    setStatus("");
+    setSubject([]);
+    setStartDate(null);
+    setEndDate(null);
   };
 
   // tạo bộ sưu tập
@@ -382,6 +359,44 @@ const Library = () => {
     return <LockFeature />;
   }
 
+  const filter = async () => {
+    const response = await fetch(
+      `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_FILTER}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-client-id": userData._id,
+          authorization: userData.accessToken,
+        },
+        body: JSON.stringify({
+          user_id: userData._id,
+          quiz_name: search,
+          quiz_status: status,
+          quiz_subjects: subject,
+          start_filter_date: startDate,
+          end_filter_date: endDate,
+          skip,
+          limit: LIMIT,
+        }),
+      }
+    );
+    const data = await response.json();
+    if (data.statusCode === 200) {
+      console.log("Đã tìm kiếm xong.");
+      setQuizzes(data.metadata);
+      // setHasMore(data.hasMore);
+      setSkip((prev) => prev + LIMIT);
+      setHasMore(data.metadata.length === LIMIT);
+    } else {
+      if (data.statusCode === 401 && data.message === "expired") {
+        processAccessTokenExpired();
+      }
+      setQuizzes([]);
+    }
+    handleCloseBottomSheet();
+  };
+
   //
   const ComponentItem = ({ data }) => {
     return (
@@ -397,13 +412,44 @@ const Library = () => {
 
   // Load more và refresh của thư viện của tôi
   const handleLoadMore = () => {
-    console.log("loadmore::", skip);
-    fetchQuizzes({ skip: skip + LIMIT }).then((res) => {
-      setSkip(skip + LIMIT);
-    });
+    if (isLoading) {
+      console.log("Already loading...");
+      return;
+    }
+
+    if (!hasMore) {
+      console.log("Không còn quiz để hiển thị.");
+      return;
+    }
+
+    setIsLoading(true);
+    console.log(
+      "loadmore: ",
+      skip,
+      "Tổng số Quiz đã hiển thị:",
+      quizzes.length
+    );
+
+    fetchQuizzes({ skip: skip + LIMIT })
+      .then(() => {
+        setSkip((prev) => prev + LIMIT);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
+
   const handleRefresh = () => {
+    console.log("Refreshing data...");
     setIsRefreshing(true);
+    setQuizzes([]); // Xóa danh sách hiện tại
+    setSkip(0); // Đặt lại skip
+    setHasMore(true); // Reset trạng thái load more
+    setSearch("");
+    setStatus("");
+    setSubject([]);
+    setStartDate(null);
+    setEndDate(null);
     fetchQuizzes({ skip: 0 }).then((res) => {
       setSkip(0);
       setIsRefreshing(false);
@@ -412,9 +458,11 @@ const Library = () => {
 
   // Load more và refresh của quizzes đã nhận
   const handleLoadMoreQuizShared = () => {
+    console.log("loadmore::", skip);
     setSkip((prev) => prev + LIMIT);
   };
   const handleRefreshQuizShared = () => {
+    console.log("Refreshing data...");
     setIsRefreshingShared(true);
     setSkip(0);
   };
@@ -429,29 +477,58 @@ const Library = () => {
           visibleFilterBottomSheet
         }
       ></Overlay>
+
       {/* Bottom Sheet của Thư viện của tôi */}
       <BottomSheet
         visible={visibleCreateNewBottomSheet}
         onClose={handleCloseBottomSheet}
       >
-        <View className="flex-col">
-          <View className="m-1 w-full flex flex-row items-center justify-start">
-            <Button
-              text="+"
-              otherStyles="w-1/6 flex item-center justify-center "
-              onPress={() => {
+        <View className="flex flex-col items-start justify-start">
+          <Text className="text-lg">Tạo bài kiểm tra với AI</Text>
+          <View className="flex items-center justify-start flex-row mt-4">
+            <QuizzCreateAction
+              title={"Tạo bài kiểm tra"}
+              icon={
+                <Ionicons name="documents-outline" size={24} color="black" />
+              }
+            />
+            <QuizzCreateAction
+              handlePress={() => {
+                setActionQuizType("ai/prompt");
                 handleCloseBottomSheet();
                 router.push("/(app)/(quiz)/create_title");
               }}
+              otherStyles="ml-2"
+              title={"Tạo từ văn bản"}
+              icon={<Ionicons name="text-outline" size={24} color="black" />}
             />
-            <Text className="flex justify-center items-center ml-2 font-bold text-[17px]">
-              Tạo từ đầu
-            </Text>
           </View>
-          <Text className="text-gray">
-            Sử dụng các loại câu hỏi tương tác hoặc chọn câu hỏi hiện có từ Thư
-            viện Quizizz{" "}
-          </Text>
+          <Text className="text-lg mt-8">Tạo thủ công</Text>
+          <View className="flex items-center justify-start flex-row mt-4">
+            <QuizzCreateAction
+              handlePress={() => {
+                setActionQuizType("template");
+                handleCloseBottomSheet();
+                router.push("/(app)/(quiz)/create_title");
+              }}
+              title={"Tải lên mẫu"}
+              icon={
+                <Ionicons name="documents-outline" size={24} color="black" />
+              }
+            />
+            <QuizzCreateAction
+              handlePress={() => {
+                setActionQuizType("create");
+                handleCloseBottomSheet();
+                router.push("(app)/(quiz)/create_title");
+              }}
+              otherStyles="ml-2"
+              title={"Tạo bằng tay"}
+              icon={
+                <Ionicons name="hand-left-outline" size={24} color="black" />
+              }
+            />
+          </View>
         </View>
       </BottomSheet>
 

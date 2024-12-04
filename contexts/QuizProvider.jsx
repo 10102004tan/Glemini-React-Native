@@ -49,7 +49,11 @@ const QuizProvider = ({ children }) => {
                   setQuizzes(data.metadata);
                } else {
                   setQuizzes([...quizzes, ...data.metadata]);
+                  //setQuizzes((prev) => [...prev, ...data.metadata]);
                }
+            }else{
+              // Không có dữ liệu, ngừng load thêm dữ liệu mới nữa 
+              setQuizzes((prev) => [...prev]);
             }
          }
          setQuizFetching(false);
