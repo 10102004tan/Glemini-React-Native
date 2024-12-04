@@ -145,7 +145,9 @@
       "btnThuThach": "Challenge",
       "btnLuyenTap": "Practice",
       "desc": "Description:",
-      "textDesc": "No description here!"
+      "textDesc": "No description here!",
+      "btnSeeMore": "See more",
+      "emptyList": "Empty List!"
    },
    "teacher_homepage": {
       "searchInputPlaceholder": "Create a quiz or a lesson",
@@ -342,6 +344,7 @@
          "titleSearchQuery": "Enter the classroom name to search"
       },
       "student": {
+         "titleScreen": "Classroom Details",
          "titleSearchQuery": "Enter the classroom name to search",
          "title": "Assigned Exercises",
          "textEnd": "Ended",

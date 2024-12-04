@@ -145,7 +145,9 @@
       "btnThuThach": "Thử thách bạn",
       "btnLuyenTap": "Luyện tập",
       "desc": "Mô tả:",
-      "textDesc": "Không có mô tả ở đây!"
+      "textDesc": "Không có mô tả ở đây!",
+      "btnSeeMore": "Xem thêm",
+      "emptyList": "Danh sách trống"
    },
    "teacher_homepage": {
       "searchInputPlaceholder": "Tạo một bài kiểm tra hoặc một bài học",
@@ -343,6 +345,7 @@
          "titleSearchQuery": "Nhập tên lớp cần tìm"
       },
       "student": {
+         "titleScreen": "Chi tiết lớp học",
          "titleSearchQuery": "Nhập tên lớp cần tìm",
          "title": "Bài tập được giao",
          "textEnd": "Đã kết thúc",
