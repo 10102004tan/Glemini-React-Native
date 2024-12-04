@@ -16,23 +16,33 @@ import { useNavigation } from '@react-navigation/native';
 import Lottie from '@/components/loadings/Lottie';
 
 const TeacherView = () => {
-   const { userData } = useAuthContext();
+   const { userData, fetchDetailUser } = useAuthContext();
    const [first, setFirst] = useState(false);
    const [selectedSchool, setSelectedSchool] = useState(null);
    const [selectedSubject, setSelectedSubject] = useState(null);
    const [className, setClassName] = useState('');
    const [searchQuery, setSearchQuery] = useState('');
    const [refreshing, setRefreshing] = useState(false);
-   const { schools, classrooms, createClassroom, fetchClassrooms } = useClassroomProvider();
+   const { classrooms, createClassroom, fetchClassrooms } = useClassroomProvider();
    const { subjects } = useSubjectProvider();
    const { setIsHiddenNavigationBar, i18n } = useAppProvider();
    const navigation = useNavigation();
+   const [schools, setSchools] = useState([])
 
    const handleCloseBts = () => {
       setFirst(false);
       setIsHiddenNavigationBar(false);
    };
 
+   useEffect(() => {
+      fetchDetailUser().then(data => {
+         setSchools(data.schools);
+      }).catch(err => {
+         console.log(err);
+      });
+      
+   }, [userData])
+   
    const handleCreateClass = async () => {
       if (!selectedSchool || !selectedSubject || !className) {
          Toast.show({
