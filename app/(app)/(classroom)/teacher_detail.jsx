@@ -1,5 +1,5 @@
-import { View, Text, FlatList, Image, Modal, Pressable, TextInput, TouchableOpacity } from 'react-native';
-import React, { useState, useCallback } from 'react';
+import { View, Text, FlatList, Image, Modal, Pressable, TextInput, TouchableOpacity, Animated, Easing  } from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -22,12 +22,24 @@ const TeacherDetail = () => {
     const { i18n } = useAppProvider();
     const { classroom, fetchClassroom, removeStudent, addStudent } = useClassroomProvider();
     const [email, setEmail] = useState('');
+    const [isLoading, setIsLoading] = useState(true)
 
     useFocusEffect(
         useCallback(() => {
-            fetchClassroom(classroomId);
+            const loadClassroom = async () => {
+                setIsLoading(true);
+                try {
+                    await fetchClassroom(classroomId);
+                } catch (error) {
+                    console.error('Error fetching classroom:', error);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+    
+            loadClassroom();
         }, [classroomId])
-    );
+    );    
 
     const handleCloseBottomSheet = () => {
         setShowBottomSheet(0);
@@ -187,11 +199,39 @@ const TeacherDetail = () => {
         exercises: renderExercises,
         students: renderStudents,
     });
+    const [shimmerAnimation] = useState(new Animated.Value(0));
 
+    useEffect(() => {
+        const shimmerLoop = Animated.loop(
+            Animated.timing(shimmerAnimation, {
+                toValue: 1,
+                duration: 1200,
+                easing: Easing.circle,
+                useNativeDriver: true,
+            })
+        );
+        shimmerLoop.start();
+
+        return () => shimmerLoop.stop(); // Cleanup animation when component unmounts
+    }, [shimmerAnimation]);
+
+    const shimmerBackground = shimmerAnimation.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['#9d9d9d', '#fff'],
+    });
     return (
         <View className='flex-1 bg-white'>
             <View className='w-full h-44 bg-red-800 flex justify-center items-center'>
-                <Text className='text-2xl text-white'>{classroom.class_name} - {i18n.t(`subjects.${classroom.subject?.name}`)}</Text>
+            {isLoading ? (
+                <Animated.View
+                    className='w-3/4 h-12 rounded-md'
+                    style={{ backgroundColor: shimmerBackground }}
+                />
+            ) : (
+                <Text className='text-2xl text-white'>
+                    {classroom.class_name} - {i18n.t(`subjects.${classroom.subject?.name}`)}
+                </Text>
+            )}
                 <TouchableOpacity className='bg-white/70 rounded-full p-2 absolute bottom-5 right-5' onPress={() => { setShowBottomSheet(1); }}>
                     <AntDesign name='adduser' size={25} />
                 </TouchableOpacity>
