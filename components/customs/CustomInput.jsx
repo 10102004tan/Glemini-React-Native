@@ -18,7 +18,7 @@ export default function CustomInput({
 			</Text>
 			<View
 				className={
-					'flex flex-row w-[100%] items-center justify-between p-2 border rounded ' +
+					'bg-white flex-row w-[100%] items-center justify-between p-2 border rounded ' +
 					(isFocus ? 'border-blue-500' : 'border-black')
 				}
 			>

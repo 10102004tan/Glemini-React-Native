@@ -105,6 +105,7 @@ export default function SearchScreen() {
   }, []);
   // for multi filter in  subjectIds
   useEffect(() => {
+
     if (!isFirstLoad) {
       setFilterModalize((prev) => ({
         ...prev,

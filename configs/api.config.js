@@ -1,7 +1,7 @@
 'use strict';
 
 const dev = {
-  API_URL: "http://10.0.241.176:3000/api",
+  API_URL: "http://10.0.123.130:3000/api",
   API_VERSION: {
     V1: "/v1",
   },
@@ -83,6 +83,7 @@ const dev = {
 
 		// School
 		SCHOOL: '/schools',
+		SCHOOL_FILTER: '/schools/filter',
 
 		// Classroom
 		CLASSROOM: '/classroom',
