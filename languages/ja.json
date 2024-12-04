@@ -87,6 +87,10 @@
    "play": {
       "single": {
          "buttonQuit": "離れる",
+         "titleQuizOut": "終了しますか？",
+         "textQuizOut": "このクイズを終了しますか？",
+         "btnCancel": "キャンセル",
+         "btnContinute": "続行",
          "score": "得点",
          "questionCouter": "もんだいばんごう:",
          "buttonConfirm": "見定める",
@@ -146,7 +150,9 @@
       "btnThuThach": "自分に挑戦",
       "btnLuyenTap": "練習",
       "desc": "説明:",
-      "textDesc": "ここに説明はありません!"
+      "textDesc": "ここに説明はありません!",
+      "btnSeeMore": "もっと見る",
+      "emptyList": "リストが空です"
    },
    "teacher_homepage": {
       "searchInputPlaceholder": "クイズまたはレッスンを作成",
@@ -327,6 +333,9 @@
    "classroom": {
       "title": "教室",
       "emptyClass": "教室がありません",
+      "textTeacher": "先生:",
+      "textStudent": "学生",
+      "textSubject": "主題:",
       "teacher": {
          "btnAddClass": "新しい教室を作成",
          "titleBts": "新しい教室の情報を入力",
@@ -340,9 +349,14 @@
          "btnCancel": "キャンセル",
          "btnEdit": "編集",
          "titleBtsAddStudent": "生徒リストを追加",
-         "titleSearchQuery": "検索する教室名を入力してください"
+         "titleSearchQuery": "検索する教室名を入力してください",
+         "emptyClassroom": "きょしつがありません",
+         "titleQuestionContinuteQUiz": "クイズを続けますか？",
+         "textQuestionContinuteQuiz": "このクラスを削除しますか？",
+         "btnContinute": "続ける"
       },
       "student": {
+         "titleScreen": "教室詳細",
          "titleSearchQuery": "検索する教室名を入力してください",
          "title": "割り当てられた課題",
          "textEnd": "終了済み",
