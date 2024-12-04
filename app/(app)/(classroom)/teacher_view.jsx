@@ -14,6 +14,7 @@ import ClassroomCard from '@/components/customs/ClassroomCard';
 import { Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Lottie from '@/components/loadings/Lottie';
+import SkeletonClassroomCard from '@/components/loadings/SkeletonClassroomCard';
 
 const TeacherView = () => {
    const { userData, fetchDetailUser } = useAuthContext();
@@ -40,9 +41,9 @@ const TeacherView = () => {
       }).catch(err => {
          console.log(err);
       });
-      
+
    }, [userData])
-   
+
    const handleCreateClass = async () => {
       if (!selectedSchool || !selectedSubject || !className) {
          Toast.show({
@@ -105,7 +106,14 @@ const TeacherView = () => {
             icon={<Icon className='text-lg' name='add-circle-outline' size={18} />}
          />
 
-         {filteredClassrooms && filteredClassrooms.length > 0 ? (
+         {refreshing ? (
+            // Hiển thị skeleton loader khi đang tải dữ liệu
+            <>
+               {[...Array(4)].map((_, index) => (
+                  <SkeletonClassroomCard key={index} />
+               ))}
+            </>
+         ) : filteredClassrooms && filteredClassrooms.length > 0 ? (
             <FlatList
                data={filteredClassrooms}
                renderItem={({ item }) => (
@@ -127,6 +135,7 @@ const TeacherView = () => {
                text={'Không có lớp học'}
             />
          )}
+
 
          {/* BottomSheet */}
          <Overlay onPress={handleCloseBts} visible={first} />
