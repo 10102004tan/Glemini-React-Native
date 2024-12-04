@@ -22,9 +22,10 @@ import { useCameraPermissions } from "expo-camera";
 import { useAppProvider } from "@/contexts/AppProvider";
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 16;
+import SkeletonList from "@/components/loadings/SkeletonListActivity";
 
 export default function ActivityScreen() {
-   const {i18n} = useAppProvider()
+   const { i18n } = useAppProvider()
    const { results, fetchResultsForStudent } = useResultProvider();
    const [roomCode, setRoomCode] = useState(null);
    const [roomTemp, setRoomTemp] = useState(null);
@@ -200,9 +201,9 @@ export default function ActivityScreen() {
             navigationState={{ index, routes }}
             renderScene={SceneMap({
                doing: () => <DoingResults results={results.doing} onRefresh={fetchResults} i18n={i18n}
-               refreshing={refreshing}/>,
+                  refreshing={refreshing} />,
                completed: () => <CompletedResults results={results.completed} onRefresh={fetchResults} i18n={i18n}
-               refreshing={refreshing} />,
+                  refreshing={refreshing} />,
             })}
             onIndexChange={setIndex}
             initialLayout={{ width: Dimensions.get('window').width }}
@@ -261,7 +262,11 @@ const ResultCompletedItem = ({ result, i18n }) => {
 const CompletedResults = ({ results, refreshing, onRefresh, i18n }) => {
    const router = useRouter();
 
-   if (!results || results.length === 0) {
+   if (refreshing || !results) {
+      return <SkeletonList count={6} />;
+   }
+
+   if (results.length === 0) {
       return <Lottie
          source={require('@/assets/jsons/empty.json')}
          width={150}
@@ -280,7 +285,7 @@ const CompletedResults = ({ results, refreshing, onRefresh, i18n }) => {
                   params: { resultId: item._id },
                });
             }}>
-               <ResultCompletedItem result={item} i18n={i18n}/>
+               <ResultCompletedItem result={item} i18n={i18n} />
             </Pressable>
          )}
          keyExtractor={item => item._id}
@@ -329,7 +334,12 @@ const DoingResults = ({ results, refreshing, onRefresh, i18n }) => {
    const { userData } = useAuthContext();
    const router = useRouter();
    const { completed } = useResultProvider()
-   if (!results || results.length === 0) {
+
+   if (refreshing || !results) {
+      return <SkeletonList count={6} />;
+   }
+
+   if (results.length === 0) {
       return <Lottie
          source={require('@/assets/jsons/empty.json')}
          width={150}
@@ -350,7 +360,7 @@ const DoingResults = ({ results, refreshing, onRefresh, i18n }) => {
                   [
                      { text: i18n.t('activity.btnCancel'), style: "cancel" },
                      {
-                     text: i18n.t('activity.btnContinute'), onPress: async () => {
+                        text: i18n.t('activity.btnContinute'), onPress: async () => {
 
                            if (item.type === 'publish') {
                               router.push({
