@@ -104,6 +104,10 @@
    "play": {
       "single": {
          "buttonQuit": "Thoát ngay",
+         "titleQuizOut": "Thoát?",
+         "textQuizOut": "Bạn có muốn thoát khỏi kiểm tra này?",
+         "btnCancel": "Hủy",
+         "btnContinute": "Tiếp tục",
          "score": "Điểm",
          "questionCouter": "Câu hỏi số:",
          "buttonConfirm": "Xác nhận",
@@ -329,6 +333,9 @@
    "classroom": {
       "title": "Lớp học",
       "emptyClass": "Không có lớp học",
+      "textTeacher": "Giáo viên:",
+      "textStudent": "học sinh",
+      "textSubject": "Môn học:",
       "teacher": {
          "btnAddClass": "Tạo lớp học mới",
          "titleBts": "Nhập thông tin lớp học mới",
@@ -342,7 +349,11 @@
          "btnCancel": "Hủy",
          "btnEdit": "Chỉnh sửa",
          "titleBtsAddStudent": "Thêm danh sách học sinh",
-         "titleSearchQuery": "Nhập tên lớp cần tìm"
+         "titleSearchQuery": "Nhập tên lớp cần tìm",
+         "emptyClassroom": "Không có lớp học nào",
+         "titleQuestionContinuteQUiz": "Tiếp tục thực hiện?",
+         "textQuestionContinuteQuiz": "Bạn có muốn xóa lớp học này không?",
+         "btnContinute": "Tiếp tục"
       },
       "student": {
          "titleScreen": "Chi tiết lớp học",
