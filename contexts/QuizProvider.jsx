@@ -16,6 +16,7 @@ const QuizProvider = ({ children }) => {
    const LIMIT = 10;
    const [isEdited, setIsEdited] = useState(false);
 
+
    // Get all quizzes of the user
    const fetchQuizzes = async ({ skip = 0, limit = LIMIT }) => {
       if (!userData) {
@@ -42,7 +43,7 @@ const QuizProvider = ({ children }) => {
             }
          );
          const data = await response.json();
-         // console.log(data);
+
          if (data.statusCode === 200) {
             if (data.metadata.length > 0) {
                if (skip === 0) {
@@ -51,9 +52,9 @@ const QuizProvider = ({ children }) => {
                   setQuizzes([...quizzes, ...data.metadata]);
                   //setQuizzes((prev) => [...prev, ...data.metadata]);
                }
-            }else{
-              // Không có dữ liệu, ngừng load thêm dữ liệu mới nữa 
-              setQuizzes((prev) => [...prev]);
+            } else {
+               // Không có dữ liệu, ngừng load thêm dữ liệu mới nữa
+               setQuizzes((prev) => [...prev]);
             }
          }
          setQuizFetching(false);
@@ -159,13 +160,6 @@ const QuizProvider = ({ children }) => {
          setNeedUpdate(false);
       }
    }, [needUpdate]);
-
-   // Get all quizzes of the user
-   useEffect(() => {
-      if (userData) {
-         fetchQuizzes({ skip: 0 });
-      }
-   }, [userData]);
 
    return (
       <QuizContext.Provider
