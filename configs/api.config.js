@@ -72,6 +72,7 @@ const dev = {
 		RESULT_REPORT: '/result/reports',
 		RESULT_RESET: '/result/reset',
 		RESULT_RANK: '/result/rank',
+
 		// Subjects
 		SUBJECTS: '/subjects',
 
@@ -86,6 +87,7 @@ const dev = {
 
 		// School
 		SCHOOL: '/schools',
+		SCHOOL_FILTER: '/schools/filter',
 
 		// Classroom
 		CLASSROOM: '/classroom',
