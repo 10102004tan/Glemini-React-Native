@@ -24,6 +24,7 @@
       "signIn": "Sign In Now",
       "fullname": "Fullname",
       "welcome": "Welcome to Glemini App",
+      "selectSchool": "Select School",
       "choice": {
          "student": "Student",
          "teacher": "Teacher",
@@ -58,7 +59,8 @@
       "nameNotIncludeChar": "Fullname can't include special characters",
       "title": "Error",
       "passwordNotMatch": "Password does not match",
-      "imageRequired": "Image is required"
+      "imageRequired": "Image is required",
+      "maxSchool": "You can only choose 2 schools"
    },
    "success": {
       "signUp": "Sign up successfully",
@@ -200,8 +202,10 @@
    },
    "profile": {
       "title": "Profile",
+      "titleSchool": "School",
       "fullname": "Fullname",
       "info": "Personal Information",
+      "selectSchool": "Select School",
       "email": "Email",
       "phone": "Phone",
       "address": "Address",
@@ -260,17 +264,29 @@
       "title": "Settings"
    },
    "home": {
-      "title": "Home"
+      "title": "Home",
+      "more": "More"
    },
    "search": {
-      "title": "Search"
+      "title": "Search",
+      "placeholder": "Search here...",
+      "filter": "Filter",
+      "btnFilter": "Filter",
+      "btnReset": "Reset",
+      "all": "All",
+      "newest": "Newest",
+        "oldest": "Oldest",
+      "status": "Status",
+      "subject": "Subject",
+      "plays": "Plays"
    },
    "classes": {
       "title": "Classes"
    },
    "account": {
       "title": "Account",
-      "buttonEdit": "Edit"
+      "buttonEdit": "Edit",
+      "recentActivity": "Recent Activity"
    },
    "report": {
       "title": "Report",
@@ -370,5 +386,6 @@
       "btnContinute": "Continue",
       "notiDL": "Submission deadline has passed!",
       "textCreated": "created by:"
-   }
+   },
+
 }

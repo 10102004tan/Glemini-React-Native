@@ -39,6 +39,7 @@ const TeacherHomeScreen = () => {
    const [users, setUsers] = useState([]);
    const width = Dimensions.get('window').width;
    const carouselHeight = width * 2 / 3;
+   const {i18n} = useAppProvider();
 
    const fetchRecentCreatedRooms = async () => {
       try {
@@ -198,12 +199,6 @@ const TeacherHomeScreen = () => {
                <NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti} />
             </View>
 
-            {/*/!* Search *!/*/}
-            {/*<Field*/}
-            {/*   icon={<AntDesign name="search1" size={24} color="black" />}*/}
-            {/*   inputStyles="bg-white"*/}
-            {/*   placeholder={'Tìm kiếm một bài kiểm tra hoặc bài học'}*/}
-            {/*/>*/}
 
             {/* Actions */}
             <View className="flex flex-row items-center justify-between mt-6">

@@ -1,7 +1,7 @@
 "use strict";
 
 const dev = {
-	API_URL: "http://10.0.123.130:3000/api",
+	API_URL: "http://10.10.0.112:3000/api",
 	API_VERSION: {
 		V1: "/v1",
 	},
@@ -26,6 +26,7 @@ const dev = {
 
 		// Notification
 		UPDATE_NOTIFICATION_STATUS: "/notification",
+		READ_ALL_NOTIFICATION: "/notification/read-all",
 
 		// Question
 		GET_QUIZ_BY_USER: "/quizzes/get-by-user",

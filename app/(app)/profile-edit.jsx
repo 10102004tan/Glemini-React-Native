@@ -178,7 +178,7 @@ export default function ProfileEditScreen() {
                 Toast.show({
                     type: 'error',
                     text1: i18n.t('error.title'),
-                    text2: "Chọn tối đa 2 trường học",
+                    text2: i18n.t('error.maxSchool'),
                     visibilityTime: 2000,
                     autoHide: true,
                 });
@@ -206,7 +206,7 @@ export default function ProfileEditScreen() {
                 <CustomInput label={i18n.t("profile.fullname")} onChangeText={(value)=>handleInputChange('fullname',value)} value={data.fullname} />
                 <View className="mb-3">
                     <View className={"flex-row gap-2 items-center mb-3"}>
-                        <Text>School</Text>
+                        <Text>{i18n.t("profile.titleSchool")}</Text>
                         <TouchableOpacity onPress={openAddSchoolModal}>
                             <Ionicons name={"add"} size={16} color={"black"} />
                         </TouchableOpacity>
@@ -236,9 +236,9 @@ export default function ProfileEditScreen() {
                 }}
             >
                 <View className={"h-full bg-white"}>
-                    <Text className="text-center text-xl font-bold">Add school</Text>
+                    <Text className="text-center text-xl font-bold">{i18n.t("profile.titleSchool")}</Text>
                     <DropdownSchoolSelected handlerSelectSchool={handlerSelectSchool} selectedSchool={selectedSchool} schools={schools} handlerSearchSchool={handlerSearchSchool} setKeyword={setKeyword} keyword={keyword} setIsOpenDropdownSchool={setIsOpenDropdownSchool} isOpenDropdownSchool={isOpenDropdownSchool}/>
-                    <CustomButton title={"Save"} onPress={handleSaveSchool} />
+                    <CustomButton title={i18n.t("profile.save")} onPress={handleSaveSchool} />
                 </View>
             </Modalize>
         </View>

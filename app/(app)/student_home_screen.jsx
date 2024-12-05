@@ -132,7 +132,7 @@ const StudentHomeScreen = () => {
 														});
 													}}>
 														<AntDesign name={"search1"} size={20} color={"black"} />
-														<Text className="text-base">Xem thêm</Text>
+														<Text className="text-base">{i18n.t("home.more")}</Text>
 													</TouchableOpacity>
 												</View>
 												{/* Horizontal ScrollView to display quizzes in rows of two items each */}

@@ -489,7 +489,21 @@ export const AuthProvider = ({children}) => {
         });
         const data = await response.json();
         return data.statusCode;
-    }
+    };
+
+    const readAllNotification = async () => {
+        const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.READ_ALL_NOTIFICATION}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': `${userData.accessToken}`,
+                'x-client-id': `${userData._id}`,
+            }
+        });
+        const data = await response.json();
+        console.log(data);
+        return data.statusCode;
+    };
 
     return (
         <AuthContext.Provider
@@ -518,7 +532,8 @@ export const AuthProvider = ({children}) => {
                 skipNotification,
                 setSkipNotification,
                 setIsRefreshing,
-                isRefreshing
+                isRefreshing,
+                readAllNotification
             }}
         >
             {children}

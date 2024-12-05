@@ -24,6 +24,7 @@
       "fullname": "フルネーム",
       "startNow": "今すぐ始める",
       "welcome": "当社のアプリへようこそ",
+      "selectSchool": "学校を選択",
       "choice": {
          "student": "学生",
          "teacher": "先生",
@@ -59,7 +60,8 @@
       "documentConfirmRequired": "文書確認が必要です",
       "nameNotIncludeChar": "フルネームに特殊文字を含めることはできません",
       "title": "エラー",
-      "imageRequired": "画像が必要です"
+      "imageRequired": "画像が必要です",
+      "maxSchool": "学校は2つだけ選択できます"
    },
    "success": {
       "signUp": "サインアップに成功しました",
@@ -242,8 +244,10 @@
    },
    "profile": {
       "title": "プロフィール",
+      "titleSchool": "学校名",
       "fullname": "フルネーム",
       "info": "個人情報",
+      "selectSchool": "学校を選択",
       "email": "メール",
       "phone": "電話",
       "address": "住所",
@@ -261,17 +265,29 @@
       "title": "設定"
    },
    "home": {
-      "title": "ホーム"
+      "title": "ホーム",
+      "more": "もっと"
    },
    "search": {
-      "title": "検索"
+      "title": "検索",
+      "placeholder": "検索する",
+      "filter": "フィルター",
+      "btnFilter": "フィルター",
+      "btnReset": "リセット",
+      "all": "全て",
+      "newest": "最新",
+      "oldest": "最古",
+      "status": "ステータス",
+      "subject": "科目",
+      "plays": "プレイ",
    },
    "classes": {
       "title": "クラス"
    },
    "account": {
       "title": "アカウント",
-      "buttonEdit": "編集"
+      "buttonEdit": "編集",
+      "recentActivity": "最近のアクティビティ"
    },
    "report": {
       "title": "レポート",

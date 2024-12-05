@@ -2,12 +2,14 @@ import SearchBar from "react-native-dynamic-search-bar";
 import {FlatList, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import React, {useState} from "react";
 import SchoolItem from "@/components/customs/SchoolItem";
+import {useAppProvider} from "@/contexts/AppProvider";
 
 export default function DropdownSchoolSelected({isOpenDropdownSchool,setIsOpenDropdownSchool,selectedSchool,schools,handlerSearchSchool,handlerSelectSchool,setKeyword,keyword=''}) {
     const [isScrolling, setIsScrolling] = useState(false);
+    const {i18n} = useAppProvider();
     return (
         <View className={"p-2 rounded-[10px] bg-white border-amber-400 mb-2"} style={{borderColor:"#eee",borderWidth:2}}>
-            {isOpenDropdownSchool && (<SearchBar value={keyword} placeholder="Search here" onBlur={handlerSearchSchool} onSearchPress={handlerSearchSchool} onClearPress={()=>setIsOpenDropdownSchool(false)} onChangeText={(text) => setKeyword(text)}/>)}
+            {isOpenDropdownSchool && (<SearchBar value={keyword} placeholder={i18n.t("search.placeholder")} onBlur={handlerSearchSchool} onSearchPress={handlerSearchSchool} onClearPress={()=>setIsOpenDropdownSchool(false)} onChangeText={(text) => setKeyword(text)}/>)}
 
             {selectedSchool.length > 0 && !isOpenDropdownSchool ? (<TouchableOpacity onPress={()=>setIsOpenDropdownSchool(true)} className={"flex-row flex-wrap gap-2 items-center p-2 max-h-[80px] rounded-[10px]"}>
                 {
@@ -16,7 +18,7 @@ export default function DropdownSchoolSelected({isOpenDropdownSchool,setIsOpenDr
                             className={"text-[10px] rounded-[10px] bg-gray px-2 text-white"}>{item.school_name.trim().replace("- ", "")}</Text>
                     </View>))
                 }
-            </TouchableOpacity>) : (<TouchableOpacity onPress={()=>setIsOpenDropdownSchool(true)} className={"flex-row flex-wrap gap-2 items-center p-2 max-h-[80px] rounded-[10px]"}><Text>Chọn trường</Text></TouchableOpacity>)}
+            </TouchableOpacity>) : (<TouchableOpacity onPress={()=>setIsOpenDropdownSchool(true)} className={"flex-row flex-wrap gap-2 items-center p-2 max-h-[80px] rounded-[10px]"}><Text>{i18n.t("profile.selectSchool")}</Text></TouchableOpacity>)}
 
             {isOpenDropdownSchool &&  (<View className={"flex-row flex-wrap gap-2 items-center p-2 max-h-[80px] rounded-[10px]"}>
                 {

@@ -302,6 +302,7 @@ const detailquizz = () => {
       }
    };
 
+
    return (
       <Wrapper>
          <EmailDialog
