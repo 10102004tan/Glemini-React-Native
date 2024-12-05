@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, Alert, Animated } from 'react-native';
 import Button from '../../../components/customs/Button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,11 +15,28 @@ const ResultSingle = ({ resultId, handleRestart }) => {
    const { userData } = useAuthContext();
    const [sound, setSound] = useState(null);
    const router = useRouter();
-   const {fetchOverViewData, overViewData} = useResultProvider()
+   const { fetchOverViewData, overViewData } = useResultProvider()
+   const [isLoading, setIsLoading] = useState(false);
 
-   useEffect(()=>{
-      fetchOverViewData(resultId)
-   },[resultId])
+   useEffect(() => {
+      const loadData = async () => {
+         setIsLoading(true);
+         try {
+            if (resultId) {
+               fetchOverViewData(resultId)
+            }
+         } catch (error) {
+            console.error("Error fetching data:", error);
+         } finally {
+            setIsLoading(false);
+         }
+      }
+
+      loadData()
+   }, [resultId])
+
+   console.log(isLoading);
+   
    // const playCompletedSound = async () => {
    //    try {
    //       const { sound } = await Audio.Sound.createAsync(
@@ -37,36 +54,68 @@ const ResultSingle = ({ resultId, handleRestart }) => {
    //    return () => sound && sound.unloadAsync();
    // }, [overViewData]);
 
-   if (!overViewData) {
+   const correctCount = overViewData.result_questions?.filter(q => q.correct)?.length;
+   const incorrectCount = overViewData.result_questions?.filter(q => q.correct === false)?.length;
+
+   const correctPercentage = overViewData.result_questions
+      ? (correctCount / overViewData.result_questions.length) * 100
+      : 0;
+   const wrongPercentage = overViewData.result_questions
+      ? (incorrectCount / overViewData.result_questions.length) * 100
+      : 0;
+
+   if (isLoading && !overViewData) {
       return (
-         <View className="flex-1 items-center justify-center">
-            <LottieView
-               source={require('@/assets/jsons/splash.json')}
-               autoPlay
-               loop
-               style={{ width: 100, height: 100 }}
-            />
+         <View className="flex-1 bg-[#1C2833] px-5 pb-4 pt-10">
+            {/* Skeleton for buttons */}
+            <Skeleton width="50%" height={40} style={{ marginBottom: 20 }} />
+            <Skeleton width="50%" height={40} style={{ marginBottom: 20 }} />
+
+            {/* Skeleton for user info */}
+            <View className="flex-row p-5 bg-slate-600 mt-5 mx-3 rounded-lg">
+               <Skeleton width={80} height={80} borderRadius={40} />
+               <View className="flex ml-5">
+                  <Skeleton width="70%" height={20} style={{ marginBottom: 10 }} />
+                  <Skeleton width="50%" height={15} />
+               </View>
+            </View>
+
+            {/* Skeleton for result summary */}
+            <View className="p-5 bg-slate-600 mt-5 mx-3 rounded-lg">
+               <Skeleton width="100%" height={20} style={{ marginBottom: 10 }} />
+               <Skeleton width="100%" height={10} style={{ marginBottom: 10 }} />
+               <Skeleton width="40%" height={20} style={{ marginBottom: 10 }} />
+            </View>
+
+            {/* Skeleton for detail boxes */}
+            <View className="flex-row justify-between mx-3 mt-5">
+               <Skeleton width="45%" height={80} borderRadius={10} />
+               <Skeleton width="45%" height={80} borderRadius={10} />
+            </View>
          </View>
       );
    }
 
-   const correctCount = overViewData.result_questions?.filter(q => q.correct)?.length;
-   const incorrectCount = overViewData.result_questions?.filter(q => q.correct === false)?.length;
-
-   const correctPercentage = overViewData.result_questions 
-      ? (correctCount / overViewData.result_questions.length) * 100 
-      : 0;
-   const wrongPercentage = overViewData.result_questions 
-      ? (incorrectCount / overViewData.result_questions.length) * 100 
-      : 0;
-   
    return (
       <View className="flex-1 bg-[#1C2833] px-5 pb-4 pt-10">
          {/* Top Navigation Button */}
          <View className="flex self-end mt-3">
             <Button
                text={i18n.t('result.single.buttonQuit')}
-               onPress={() => router.push('/(app)/(home)')}
+               onPress={() => {
+                  Alert.alert(
+                     i18n.t('play.single.titleQuizOut'),
+                     i18n.t('play.single.textQuizOut'),
+                     [
+                        { text: i18n.t('play.single.btnCancel'), style: "cancel" },
+                        {
+                           text: i18n.t('play.single.buttonQuit'), onPress: async () => {
+										router.replace('/(app)/(home)')
+									}
+                        }
+                     ]
+                  );
+               }}
                type="fill"
                otherStyles="bg-[#435362] p-2"
                textStyles="text-sm"
@@ -77,7 +126,18 @@ const ResultSingle = ({ resultId, handleRestart }) => {
          <View className="flex-row justify-around pt-5">
             <Button
                text={i18n.t('result.single.buttonReplay')}
-               onPress={handleRestart}
+               onPress={() => {
+                  Alert.alert(
+                     i18n.t('result.single.titleQuizOut'),
+                     i18n.t('result.single.textQuizOut'),
+                     [
+                        { text: i18n.t('result.single.btnCancel'), style: "cancel" },
+                        {
+                           text: i18n.t('result.single.btnContinute'), onPress: handleRestart
+                        }
+                     ]
+                  );
+               }}
                type="fill"
                otherStyles="bg-violet-500 py-4 px-6 border-b-4 border-b-violet-600"
                textStyles="text-lg"
@@ -157,9 +217,9 @@ const ResultSingle = ({ resultId, handleRestart }) => {
             <Button
                text={i18n.t('result.single.buttonReview')}
                onPress={() =>
-                  router.push({ 
-                     pathname: '(result)/review', 
-                     params: { result: JSON.stringify(overViewData) } 
+                  router.push({
+                     pathname: '(result)/review',
+                     params: { result: JSON.stringify(overViewData) }
                   })
                }
                type="fill"
@@ -184,4 +244,41 @@ const DetailBox = ({ label, value, icon, background }) => (
    </View>
 );
 
+const Skeleton = ({ width, height, borderRadius = 4, style }) => {
+   const fadeAnim = useState(new Animated.Value(0.3))[0]; // Giá trị ban đầu cho hiệu ứng
+
+   useEffect(() => {
+      const loop = Animated.loop(
+         Animated.sequence([
+            Animated.timing(fadeAnim, {
+               toValue: 1, // Tăng độ sáng
+               duration: 800,
+               useNativeDriver: true,
+            }),
+            Animated.timing(fadeAnim, {
+               toValue: 0.3, // Giảm độ sáng
+               duration: 800,
+               useNativeDriver: true,
+            }),
+         ])
+      );
+      loop.start();
+      return () => loop.stop(); // Dừng animation khi component bị unmount
+   }, [fadeAnim]);
+
+   return (
+      <Animated.View
+         style={[
+            {
+               width,
+               height,
+               borderRadius,
+               backgroundColor: '#2C3E50', // Màu nền xám tối
+               opacity: fadeAnim, // Hiệu ứng mờ dần
+            },
+            style,
+         ]}
+      />
+   );
+};
 export default ResultSingle;

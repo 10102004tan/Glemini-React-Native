@@ -109,7 +109,11 @@
          "incorrect": "Incorrect",
          "textResult": "Result",
          "textDesc": "Practice",
-         "buttonReview": "Review"
+         "buttonReview": "Review",
+         "titleQuizOut": "Play Again?",
+         "textQuizOut": "Do you want to play this quiz again?",
+         "btnCancel": "Cancel",
+         "btnContinute": "Continue"
       },
       "review": {
          "title": "Review Answers",
@@ -352,7 +356,13 @@
          "emptyClassroom": "Empty list classroom!",
          "titleQuestionContinuteQUiz": "Continue the Quiz?",
          "textQuestionContinuteQuiz": "Do you want to continue this quiz?",
-         "btnContinute": "Continue"
+         "btnContinute": "Continue",
+         "titleDelStudent": "Confirm Delete Student?",
+         "textDelStudent": "Are you sure you want to remove this student from the class?",
+         "btnDel": "Delete",
+         "btsTitleAddStudent": "New Student Information",
+         "btsTitleEmail": "Contact Address (Email)",
+         "btsPlaceholder": "Enter email address"
       },
       "student": {
          "titleScreen": "Classroom Details",
@@ -365,6 +375,27 @@
          "notiChildStart": "You cannot start this exercise yet.",
          "textNotStartedYet": "It is not time to start the exercise yet",
          "emptyExercise": "There are no exercises in this classroom"
+      },
+      "upload": {
+         "title": "Add Students",
+         "success": "Successfully",
+         "fail": "Fail",
+         "notification": "Notification",
+         "uploadSuccess": "The file has been successfully uploaded.",
+         "uploadError": "File upload failed.",
+         "notiError": "An error occurred during the file upload process.",
+         "existFile": "The file already exists!",
+         "permissionFile": "Access denied.",
+         "permissionMedia": "Unable to access Media Library!",
+         "downloadFileExcel": "Excel template file downloaded successfully.",
+         "deletedFiledExcel": "Excel template file deleted successfully.",
+         "errorDelFileExcel": "Error deleting file:",
+         "textAddFile": "Add a file here",
+         "textDownloadFileExcel": "Download the sample Excel file",
+         "textFieldDownloadFileExcel": "Download sample (xlsx)",
+         "textFieldDelFileExcel": "Delete sample",
+         "guildText": "Instructions for Excel file format",
+         "guildRule": "Ensure each row has a full name and a valid email address."
       }
    },
    "activity": {
