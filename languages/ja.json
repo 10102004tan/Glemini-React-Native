@@ -110,7 +110,11 @@
          "incorrect": "まちがい",
          "textResult": "けっか",
          "textDesc": "れんしゅう",
-         "buttonReview": "見直す"
+         "buttonReview": "見直す",
+         "titleQuizOut": "もう一度プレイしますか？",
+         "textQuizOut": "このクイズをもう一度プレイしますか？",
+         "btnCancel": "キャンセル",
+         "btnContinute": "続行"
       },
       "review": {
          "title": "回答を確認",
@@ -353,7 +357,13 @@
          "emptyClassroom": "きょしつがありません",
          "titleQuestionContinuteQUiz": "クイズを続けますか？",
          "textQuestionContinuteQuiz": "このクラスを削除しますか？",
-         "btnContinute": "続ける"
+         "btnContinute": "続ける",
+         "titleDelStudent": "生徒を削除しますか？",
+         "textDelStudent": "この生徒をクラスから削除してもよろしいですか？",
+         "btnDel": "削除",
+         "btsTitleAddStudent": "新しい生徒情報",
+         "btsTitleEmail": "連絡先住所（メール）",
+         "btsPlaceholder": "メールアドレスを入力"
       },
       "student": {
          "titleScreen": "教室詳細",
@@ -366,6 +376,27 @@
          "notiChildStart": "この課題をまだ開始することはできません。",
          "textNotStartedYet": "課題の開始時間ではありません",
          "emptyExercise": "この教室には課題がありません"
+      },
+      "upload": {
+         "title": "生徒を追加",
+         "success": "成功",
+         "fail": "失敗",
+         "notification": "通知",
+         "uploadSuccess": "ファイルが正常にアップロードされました。",
+         "uploadError": "ファイルのアップロードに失敗しました。",
+         "notiError": "ファイルアップロード中にエラーが発生しました。",
+         "existFile": "ファイルは既に存在します！",
+         "permissionFile": "アクセスが拒否されました。",
+         "permissionMedia": "メディアライブラリにアクセスできません！",
+         "downloadFileExcel": "Excelテンプレートファイルを正常にダウンロードしました。",
+         "deletedFiledExcel": "Excelテンプレートファイルを正常に削除しました。",
+         "errorDelFileExcel": "ファイル削除エラー：",
+         "textAddFile": "ここにファイルを追加",
+         "textDownloadFileExcel": "サンプルExcelファイルをダウンロード",
+         "textFieldDownloadFileExcel": "サンプルをダウンロード (xlsx)",
+         "textFieldDelFileExcel": "サンプルファイルを削除",
+         "guildText": "Excelファイル形式のガイド",
+         "guildRule": "各行にフルネームと有効なメールアドレスが含まれていることを確認してください。"
       }
    },
    "activity": {

@@ -11,12 +11,14 @@ import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
 import Toast from 'react-native-toast-message-custom';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 const UploadExcelScreen = () => {
     const [uploadStatus, setUploadStatus] = useState(null);
     const [isTemplateExist, setIsTemplateExist] = useState(false);
     const { userData, processAccessTokenExpired } = useAuthContext();
     const router = useRouter();
+    const { i18n } = useAppProvider()
     const { classroomId } = useGlobalSearchParams();
     const templateFileUri = `${FileSystem.documentDirectory}template_excel.xlsx`;
 
@@ -120,22 +122,22 @@ const UploadExcelScreen = () => {
                 handleUploadSuccess();
                 Toast.show({
                     type: 'success',
-                    text1: 'Thành công',
-                    text2: 'Tệp đã được tải lên thành công.',
+                    text1: i18n.t('classroom.upload.success'),
+                    text2: i18n.t('classroom.upload.uploadSuccess'),
                 });
             } else {
                 Toast.show({
                     type: 'error',
-                    text1: 'Lỗi',
-                    text2: data.message || 'Tải lên tệp thất bại.',
+                    text1: i18n.t('classroom.upload.fail'),
+                    text2: data.message || i18n.t('classroom.upload.uploadError'),
                 });
             }
         } catch (error) {
             setUploadStatus('Tải lên tệp thất bại.');
             Toast.show({
                 type: 'error',
-                text1: 'Lỗi',
-                text2: 'Đã xảy ra lỗi trong quá trình tải lên tệp.',
+                text1: i18n.t('classroom.upload.fail'),
+                text2: i18n.t('classroom.upload.notiError'),
             });
         }
     };
@@ -150,8 +152,8 @@ const UploadExcelScreen = () => {
             if (fileInfo.exists) {
                 Toast.show({
                     type: 'info',
-                    text1: 'Thông báo',
-                    text2: 'File đã tồn tại!',
+                    text1: i18n.t('classroom.upload.notification'),
+                    text2: i18n.t('classroom.upload.existFile'),
                 });
                 await Sharing.shareAsync(fileUri, {
                     mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -162,8 +164,8 @@ const UploadExcelScreen = () => {
             if (status !== 'granted') {
                 Toast.show({
                     type: 'error',
-                    text1: 'Quyền truy cập thất bại',
-                    text2: 'Không thể truy cập Thư viện!',
+                    text1: i18n.t('classroom.upload.permissionFile'),
+                    text2: i18n.t('classroom.upload.permissionMedia'),
                 });
                 return;
             }
@@ -180,8 +182,8 @@ const UploadExcelScreen = () => {
             setIsTemplateExist(true);
             Toast.show({
                 type: 'success',
-                text1: 'Thành công',
-                text2: 'Tải tệp mẫu Excel thành công.',
+                text1: i18n.t('classroom.upload.success'),
+                text2: i18n.t('classroom.upload.downloadFileExcel'),
             });
         } catch (error) {
             Toast.show({
@@ -198,14 +200,14 @@ const UploadExcelScreen = () => {
             setIsTemplateExist(false); // Update template existence state
             Toast.show({
                 type: 'success',
-                text1: 'Thành công',
-                text2: 'Xóa tệp mẫu Excel thành công.',
+                text1: i18n.t('classroom.upload.success'),
+                text2: i18n.t('classroom.upload.deletedFiledExcel'),
             });
         } catch (error) {
             Toast.show({
                 type: 'warn',
-                text1: 'Lỗi',
-                text2: `Lỗi xóa file tệp: ${error.message}`,
+                text1: i18n.t('classroom.upload.fail'),
+                text2: `${i18n.t('classroom.upload.errorDelFileExcel')} ${error.message}`,
             });
         }
     };
@@ -239,24 +241,24 @@ const UploadExcelScreen = () => {
                         </TouchableOpacity>
                         <TouchableOpacity onPress={pickExcelDocument}>
                             <Text className="font-semibold">
-                                Thêm tệp tại đây
+                                {i18n.t('classroom.upload.textAddFile')}
                             </Text>
                         </TouchableOpacity>
                     </View>
 
                     <View className="mt-4">
                         <Text className="text-center font-semibold">
-                            Tải xuống tệp Excel mẫu
+                        {i18n.t('classroom.upload.textDownloadFileExcel')}
                         </Text>
                         <View className="flex items-center justify-center mt-2 flex-row">
                             <Button
-                                onPress={()=>{
+                                onPress={() => {
                                     if (!isTemplateExist) {
                                         downloadAndOpenFile()
                                     }
                                 }}
                                 otherStyles={`p-3 ${isTemplateExist ? 'opacity-50' : ''}`}
-                                text="Tải xuống mẫu (xlsx)"
+                                text={i18n.t('classroom.upload.textFieldDownloadFileExcel')}
                                 icon={<SimpleLineIcons name="docs" size={18} color="white" />}
                                 disabled={isTemplateExist}
                             />
@@ -268,7 +270,7 @@ const UploadExcelScreen = () => {
                                     }
                                 }}
                                 otherStyles={`p-3 ml-2 ${!isTemplateExist ? 'opacity-50' : ''}`}
-                                text="Xóa tệp mẫu"
+                                text={i18n.t('classroom.upload.textFieldDelFileExcel')}
                                 icon={<SimpleLineIcons name="trash" size={18} color="white" />}
                                 disabled={!isTemplateExist}
                             />
@@ -276,7 +278,7 @@ const UploadExcelScreen = () => {
 
                         {/* New Section for Excel File Template */}
                         <View className="mt-6 p-4 bg-gray-100 rounded-lg">
-                            <Text className="font-semibold text-center text-lg mb-2">Hướng dẫn định dạng tệp Excel</Text>
+                            <Text className="font-semibold text-center text-lg mb-2">{i18n.t('classroom.upload.guildText')}</Text>
 
                             {/* Column Headers */}
                             <View className="flex flex-row bg-gray-200 border border-gray-300">
@@ -299,7 +301,7 @@ const UploadExcelScreen = () => {
                             </View>
 
                             <Text className="mt-4 text-sm text-gray-600">
-                                Đảm bảo mỗi hàng có tên đầy đủ và địa chỉ email hợp lệ.
+                            {i18n.t('classroom.upload.guildRule')}
                             </Text>
                         </View>
                     </View>

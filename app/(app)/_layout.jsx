@@ -270,7 +270,7 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(classroom)/upload_excel"
             options={{
-               headerTitle: "Thêm học sinh",
+               headerTitle: i18n.t('classroom.upload.title'),
             }}
          />
 

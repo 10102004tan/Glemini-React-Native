@@ -323,14 +323,14 @@ const TeacherDetail = () => {
             {/* BottomSheet 2 */}
             <BottomSheet onClose={handleCloseBottomSheet} visible={showBottomSheet === 2}>
                 <View className='items-center'>
-                    <Text className='text-lg font-semibold'>Thông tin học sinh mới</Text>
+                    <Text className='text-lg font-semibold'>{i18n.t('classroom.teacher.btsTitleAddStudent')}</Text>
 
                     <View className='pt-5 w-full'>
-                        <Text className='pb-2 mt-3 text-base text-slate-700 font-semibold'>Địa chỉ liên lạc (email) </Text>
+                        <Text className='pb-2 mt-3 text-base text-slate-700 font-semibold'>{i18n.t('classroom.teacher.btsTitleEmail')}</Text>
                         <TextInput
                             value={email}
                             onChangeText={setEmail}
-                            placeholder='Nhập địa chỉ email'
+                            placeholder={i18n.t('classroom.teacher.btsPlaceholder')}
                             className='border border-slate-500 rounded-xl py-2 px-5'
                         />
 
@@ -361,14 +361,14 @@ const TeacherDetail = () => {
             >
                 <View className='flex-1 justify-center items-center bg-black/50'>
                     <View className='bg-white p-5 rounded-lg w-3/4'>
-                        <Text className='text-lg font-semibold mb-3'>Xác nhận xóa học sinh</Text>
-                        <Text>Bạn có chắc chắn muốn xóa học sinh này khỏi lớp học không?</Text>
+                        <Text className='text-lg font-semibold mb-3'>{i18n.t('classroom.teacher.titleDelStudent')}</Text>
+                        <Text>{i18n.t('classroom.teacher.textDelStudent')}</Text>
                         <View className='flex-row justify-between mt-4'>
                             <Pressable onPress={() => setModalVisible(false)}>
-                                <Text className='text-red-500 bg-red-500/30 rounded-lg font-semibold px-3 py-2'>Hủy</Text>
+                                <Text className='text-red-500 bg-red-500/30 rounded-lg font-semibold px-3 py-2'>{i18n.t('classroom.teacher.btnCancel')}</Text>
                             </Pressable>
                             <Pressable onPress={handleDeleteStudent}>
-                                <Text className='text-blue-500 bg-blue-500/30 rounded-lg font-semibold px-3 py-2'>Xóa</Text>
+                                <Text className='text-blue-500 bg-blue-500/30 rounded-lg font-semibold px-3 py-2'>{i18n.t('classroom.teacher.btnDel')}</Text>
                             </Pressable>
                         </View>
                     </View>

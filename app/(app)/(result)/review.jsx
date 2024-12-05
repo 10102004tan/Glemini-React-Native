@@ -13,8 +13,8 @@ const ResultReview = () => {
    const { i18n } = useAppProvider();
 
 
-   console.log("RESULT DATA")
-   console.log(resultData)
+   // console.log("RESULT DATA")
+   // console.log(resultData)
 
    // Trạng thái để lưu chỉ số câu hỏi được chọn và trạng thái hiển thị của Modal
    const [selectedIndex, setSelectedIndex] = useState(null);
