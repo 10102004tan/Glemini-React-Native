@@ -28,8 +28,6 @@ export default function ProfileScreen() {
 	const { i18n } = useAppProvider();
 	// formData
 
-
-
 	const pickImageAsync = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
 			mediaTypes: ImagePicker.MediaTypeOptions.All,

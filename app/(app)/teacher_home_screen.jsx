@@ -198,12 +198,12 @@ const TeacherHomeScreen = () => {
                <NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti} />
             </View>
 
-            {/* Search */}
-            <Field
-               icon={<AntDesign name="search1" size={24} color="black" />}
-               inputStyles="bg-white"
-               placeholder={'Tìm kiếm một bài kiểm tra hoặc bài học'}
-            />
+            {/*/!* Search *!/*/}
+            {/*<Field*/}
+            {/*   icon={<AntDesign name="search1" size={24} color="black" />}*/}
+            {/*   inputStyles="bg-white"*/}
+            {/*   placeholder={'Tìm kiếm một bài kiểm tra hoặc bài học'}*/}
+            {/*/>*/}
 
             {/* Actions */}
             <View className="flex flex-row items-center justify-between mt-6">

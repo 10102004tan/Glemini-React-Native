@@ -109,7 +109,7 @@ export const AuthProvider = ({children}) => {
         }
         throw new Error(data.message);
     };
-    const signUp = async ({email, password, fullname, type, images}) => {
+    const signUp = async ({email, password, fullname, type, images,schools}) => {
         // trim data
         email = email.trim();
         password = password.trim();
@@ -121,6 +121,9 @@ export const AuthProvider = ({children}) => {
         formData.append("fullname", fullname);
         formData.append("type", type);
         formData.append("expo_push_token", expoPushToken);
+        schools.forEach((school) => {
+            formData.append("schoolIds", school._id);
+        });
         // if type = teacher => add image to form data
         if (type === "teacher" && images.length > 0) {
             images.forEach((image, index) => {
@@ -130,6 +133,9 @@ export const AuthProvider = ({children}) => {
                     type: `${image.type}/${image.name.split(".")[1]}`,
                 });
             });
+
+            // add schools to form data
+
         }
 
         const response = await fetch(

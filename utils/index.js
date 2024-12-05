@@ -106,6 +106,16 @@ const createdAtConvert = (dateString) => {
 	return `${diffInYears} năm trước`;
 };
 
+const convertSubjectToDataKeyValue = (subjects) => {
+	if (subjects.length === 0) return;
+	return subjects.map((item) => {
+		return {
+			key: item._id,
+			value: item.name,
+		};
+	});
+};
+
 export {
 	validateEmail,
 	validatePassword,
@@ -117,4 +127,5 @@ export {
 	convertMarkdownToText,
 	sortRankBoardDesc,
 	createdAtConvert,
+	convertSubjectToDataKeyValue
 };
