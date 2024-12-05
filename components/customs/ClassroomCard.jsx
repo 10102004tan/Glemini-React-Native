@@ -4,10 +4,13 @@ import React from 'react';
 import { useAuthContext } from '@/contexts/AuthContext';
 import Toast from 'react-native-toast-message-custom';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 const ClassroomCard = ({ classroom }) => {
     const { userData } = useAuthContext()
+    const {i18n} = useAppProvider()
     const { removeClassroom } = useClassroomProvider()
+    
     return (
         <View
             className={`flex-row justify-between items-center p-5 mx-5 my-2 bg-white rounded-lg border-orange-600 border-l-[6px]`}
@@ -15,18 +18,19 @@ const ClassroomCard = ({ classroom }) => {
         >
             <View>
                 <Text className='font-pbold text-lg'>{`${classroom.class_name}`}</Text>
-                <Text className='font-semibold text-base'> {userData.user_type === 'teacher' ? `${classroom.school?.school_name}` : `Giáo viên: ${classroom.user_id.user_fullname}`}</Text>
-                <Text className='font-pregular'>{`${classroom.students?.length} học sinh`}</Text>
+                <Text className='font-semibold text-base'> {userData.user_type === 'teacher' ? `${i18n.t('classroom.textSubject')} ${i18n.t(`subjects.${classroom.subject.name}`)}` : `${i18n.t('classroom.textTeacher')} ${classroom.user_id.user_fullname}`}</Text>
+                <Text className='font-semibold text-base'> {classroom.school?.school_name || 'No data'}</Text>
+                <Text className='font-pregular'>{`${classroom.students?.length} ${i18n.t('classroom.textStudent')}`}</Text>
             </View>
             {userData.user_type === 'teacher' &&
                 <TouchableOpacity className='bg-slate-50 rounded-full p-2' onPress={() => {
                     Alert.alert(
-                        "Tiếp tục thực hiện?",
-                        "Bạn có muốn xóa lớp học này?",
+                        i18n.t('classroom.teacher.titleQuestionContinuteQUiz'),
+                        i18n.t('classroom.teacher.textQuestionContinuteQuiz'),
                         [
-                            { text: "Hủy", style: "cancel" },
+                            { text: i18n.t('classroom.teacher.btnCancel'), style: "cancel" },
                             {
-                                text: "Tiếp tục", onPress: () => {
+                                text: i18n.t('classroom.teacher.btnContinute'), onPress: () => {
                                     removeClassroom(classroom._id)
                                 }
                             },

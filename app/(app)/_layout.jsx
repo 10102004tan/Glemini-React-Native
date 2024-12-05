@@ -185,7 +185,7 @@ export default function AppRootLayout() {
             }}
          />
 
-         <Stack.Screen
+         <Stack.Screen  
             name="(play)/single"
             options={{
                headerShown: false,
@@ -216,7 +216,7 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(classroom)/teacher_detail"
             options={{
-               headerTitle: "Chi tiết lớp học",
+               headerTitle: i18n.t('classroom.student.titleScreen'),
             }}
          />
 
@@ -263,14 +263,14 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(classroom)/student_detail"
             options={{
-               headerTitle: "Chi tiết lớp học",
+               headerTitle: i18n.t('classroom.student.titleScreen'),
             }}
          />
 
          <Stack.Screen
             name="(classroom)/upload_excel"
             options={{
-               headerTitle: "Thêm học sinh",
+               headerTitle: i18n.t('classroom.upload.title'),
             }}
          />
 

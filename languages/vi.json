@@ -104,6 +104,10 @@
    "play": {
       "single": {
          "buttonQuit": "Thoát ngay",
+         "titleQuizOut": "Thoát?",
+         "textQuizOut": "Bạn có muốn thoát khỏi kiểm tra này?",
+         "btnCancel": "Hủy",
+         "btnContinute": "Tiếp tục",
          "score": "Điểm",
          "questionCouter": "Câu hỏi số:",
          "buttonConfirm": "Xác nhận",
@@ -123,7 +127,11 @@
          "incorrect": "Không chính xác",
          "textResult": "Tỉ lệ kết quả",
          "textDesc": "Luyện tập",
-         "buttonReview": "Xem lại"
+         "buttonReview": "Xem lại",
+         "titleQuizOut": "Chơi lại?",
+         "textQuizOut": "Bạn có muốn chơi lại bộ câu hỏi này?",
+         "btnCancel": "Hủy",
+         "btnContinute": "Tiếp tục"
       },
       "review": {
          "title": "Xem lại Câu trả lời",
@@ -145,7 +153,9 @@
       "btnThuThach": "Thử thách bạn",
       "btnLuyenTap": "Luyện tập",
       "desc": "Mô tả:",
-      "textDesc": "Không có mô tả ở đây!"
+      "textDesc": "Không có mô tả ở đây!",
+      "btnSeeMore": "Xem thêm",
+      "emptyList": "Danh sách trống"
    },
    "teacher_homepage": {
       "searchInputPlaceholder": "Tạo một bài kiểm tra hoặc một bài học",
@@ -327,6 +337,9 @@
    "classroom": {
       "title": "Lớp học",
       "emptyClass": "Không có lớp học",
+      "textTeacher": "Giáo viên:",
+      "textStudent": "học sinh",
+      "textSubject": "Môn học:",
       "teacher": {
          "btnAddClass": "Tạo lớp học mới",
          "titleBts": "Nhập thông tin lớp học mới",
@@ -340,9 +353,20 @@
          "btnCancel": "Hủy",
          "btnEdit": "Chỉnh sửa",
          "titleBtsAddStudent": "Thêm danh sách học sinh",
-         "titleSearchQuery": "Nhập tên lớp cần tìm"
+         "titleSearchQuery": "Nhập tên lớp cần tìm",
+         "emptyClassroom": "Không có lớp học nào",
+         "titleQuestionContinuteQUiz": "Tiếp tục thực hiện?",
+         "textQuestionContinuteQuiz": "Bạn có muốn xóa lớp học này không?",
+         "btnContinute": "Tiếp tục",
+         "titleDelStudent": "Xác nhận xóa học sinh?",
+         "textDelStudent": "Bạn có chắc chắn muốn xóa học sinh này khỏi lớp học không?",
+         "btnDel": "Xóa",
+         "btsTitleAddStudent": "Thông tin học sinh mới",
+         "btsTitleEmail": "Địa chỉ liên lạc (email)",
+         "btsPlaceholder": "Nhập địa chỉ email"
       },
       "student": {
+         "titleScreen": "Chi tiết lớp học",
          "titleSearchQuery": "Nhập tên lớp cần tìm",
          "title": "Bài tập được giao",
          "textEnd": "Đã kết thúc",
@@ -352,6 +376,27 @@
          "notiChildStart": "Hiện tại bạn chưa thể làm bài này.",
          "textNotStartedYet": "Chưa đến thời gian làm bài",
          "emptyExercise": "Chưa có bài tập nào trong lớp này"
+      },
+      "upload": {
+         "success": "Thành công",
+         "fail": "Thất bại",
+         "notification": "Thông báo",
+         "title": "Thêm học sinh",
+         "uploadSuccess": "Tệp đã được tải lên thành công.",
+         "uploadError": "Tải lên tệp thất bại.",
+         "notiError": "Đã xảy ra lỗi trong quá trình tải lên tệp.",
+         "existFile": "File đã tồn tại!",
+         "permissionFile": "Quyền truy cập thất bại",
+         "permissionMedia": "Không thể truy cập Thư viện!",
+         "downloadFileExcel": "Tải tệp mẫu Excel thành công.",
+         "deletedFiledExcel": "Xóa tệp mẫu Excel thành công.",
+         "errorDelFileExcel": "Lỗi xóa file tệp:",
+         "textAddFile": "Thêm tệp tại đây",
+         "textDownloadFileExcel": "Tải xuống tệp Excel mẫu",
+         "textFieldDownloadFileExcel": "Tải xuống mẫu (xlsx)",
+         "textFieldDelFileExcel": "Xóa tệp mẫu",
+         "guildText": "Hướng dẫn định dạng tệp Excel",
+         "guildRule": "Đảm bảo mỗi hàng có tên đầy đủ và địa chỉ email hợp lệ."
       }
    },
    "activity": {
