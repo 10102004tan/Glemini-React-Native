@@ -88,7 +88,7 @@ const TeacherView = () => {
    );
 
    return (
-      <View className='flex-1 bg-slate-50 pb-20'>
+      <View className='flex-1 bg-white pb-20'>
          {/* Bộ tìm kiếm */}
          <TextInput
             value={searchQuery}

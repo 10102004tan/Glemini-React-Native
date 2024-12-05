@@ -172,7 +172,7 @@ export default function ActivityScreen() {
    };
 
    return (
-      <View className="flex-1 mb-20 bg-slate-50">
+      <View className="flex-1 bg-white pb-20">
          <View className="p-4">
             <Field placeholder={i18n.t('activity.textRoomCODE')} wrapperStyles="mb-3" value={roomCode} onChange={(text) => {
                setRoomCode(text);
