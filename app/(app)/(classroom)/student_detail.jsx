@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Pressable, Image } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, RefreshControl } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
@@ -16,7 +16,7 @@ const StudentDetail = () => {
    const { classroom, fetchClassroom } = useClassroomProvider();
    const { fetchResultData } = useResultProvider()
    const [isLoading, setIsLoading] = useState(false)
-
+   const [refreshing, setRefreshing] = useState(null)
    useFocusEffect(
       useCallback(() => {
          const loadClassroom = async () => {
@@ -33,6 +33,12 @@ const StudentDetail = () => {
          loadClassroom();
       }, [classroomId])
    );
+
+   const onRefresh = async () => {
+      setRefreshing(true);
+      await fetchClassroom(classroomId);
+      setRefreshing(false);
+   };
 
    const startQuiz = async (quizId, exerciseId) => {
       // console.log({quizId, exerciseId, type : 'exercise'});
@@ -52,7 +58,7 @@ const StudentDetail = () => {
    return (
       <View className='p-4 bg-white flex-1'>
          <Text className='text-xl font-semibold mb-3 text-gray-800'>{i18n.t('classroom.student.title')}</Text>
-         {isLoading ?
+         {isLoading || refreshing ?
             <>
                {[...Array(5)].map((_, index) => (
                   <SkeletonClassroomCard key={index} />
@@ -137,6 +143,9 @@ const StudentDetail = () => {
                         </Pressable>
                      );
                   }}
+                  refreshControl={
+                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                  }
                />
                : <Lottie
                   source={require('@/assets/jsons/empty.json')}

@@ -24,6 +24,7 @@
       "signIn": "Sign In Now",
       "fullname": "Fullname",
       "welcome": "Welcome to Glemini App",
+      "selectSchool": "Select School",
       "choice": {
          "student": "Student",
          "teacher": "Teacher",
@@ -58,7 +59,8 @@
       "nameNotIncludeChar": "Fullname can't include special characters",
       "title": "Error",
       "passwordNotMatch": "Password does not match",
-      "imageRequired": "Image is required"
+      "imageRequired": "Image is required",
+      "maxSchool": "You can only choose 2 schools"
    },
    "success": {
       "signUp": "Sign up successfully",
@@ -276,8 +278,10 @@
    },
    "profile": {
       "title": "Profile",
+      "titleSchool": "School",
       "fullname": "Fullname",
       "info": "Personal Information",
+      "selectSchool": "Select School",
       "email": "Email",
       "phone": "Phone",
       "address": "Address",
@@ -336,17 +340,29 @@
       "title": "Settings"
    },
    "home": {
-      "title": "Home"
+      "title": "Home",
+      "more": "More"
    },
    "search": {
-      "title": "Search"
+      "title": "Search",
+      "placeholder": "Search here...",
+      "filter": "Filter",
+      "btnFilter": "Filter",
+      "btnReset": "Reset",
+      "all": "All",
+      "newest": "Newest",
+        "oldest": "Oldest",
+      "status": "Status",
+      "subject": "Subject",
+      "plays": "Plays"
    },
    "classes": {
       "title": "Classes"
    },
    "account": {
       "title": "Account",
-      "buttonEdit": "Edit"
+      "buttonEdit": "Edit",
+      "recentActivity": "Recent Activity"
    },
    "report": {
       "title": "Report",
@@ -392,7 +408,17 @@
       "reject": "Reject"
    },
    "library": {
-      "title": "Library"
+      "title": "Library",
+      "library": "Library",
+      "collection": "Collection",
+      "quizShared": "Shared Quiz",
+      "quizCreated": "Created Quiz",
+      "filter": "Filter",
+      "search": "Search",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "btnFresh": "Reset"
+
    },
    "lockFeature": {
       "title": "You do not have access to this feature",
@@ -477,9 +503,28 @@
       "room": "Room",
       "titleQuestionContinuteQUiz": "Continue the quiz?",
       "textQuestionContinuteQuiz": "Do you want to delete this classroom?",
+      "titleQuestionReplayQuiz": "Continue playing?",
+      "textQuestionReplayQuiz": "Do you want to delete the existing result to start a new attempt?",
+      "btnReadResult": "View",
       "btnCancel": "Cancel",
       "btnContinute": "Continue",
       "notiDL": "Submission deadline has passed!",
       "textCreated": "created by:"
+   },
+   "modal": {
+      "title": "Notification",
+      "text": "Are you sure you want to delete this item?",
+      "btnCancel": "Cancel",
+      "btnDelete": "Delete",
+      "btnSave": "Save",
+      "btnEdit": "Edit",
+      "titleDeleteSchool": "Delete School",
+      "textDeleteSchool": "Are you sure you want to delete this school?",
+      "ok": "OK"
+   },
+   "notification": {
+      "title": "Notification",
+      "emptyNotification": "No notifications available",
+      "readAll": "Mark all as read"
    }
 }

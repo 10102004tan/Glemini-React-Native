@@ -7,8 +7,8 @@ import Toast from "react-native-toast-message-custom";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { LogBox } from "react-native";
 import Providers from "@/contexts/Providers";
-
 import * as Notifications from "expo-notifications";
+
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
