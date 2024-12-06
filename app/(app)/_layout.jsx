@@ -1,17 +1,16 @@
-import { Redirect, Stack } from "expo-router";
+import {Redirect, router, Stack} from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
-import { Alert, Text, TouchableOpacity } from "react-native";
+import {ActivityIndicator, Alert, Text, TouchableOpacity} from "react-native";
 import { useGlobalSearchParams } from "expo-router";
 import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
 import { View } from "react-native";
-import ResultReview from "./(result)/review";
 import AppProvider, { useAppProvider } from "@/contexts/AppProvider";
 import { useQuizProvider } from "@/contexts/QuizProvider";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import SpinningIcon from "@/components/loadings/SpinningIcon";
 import Toast from "react-native-toast-message-custom";
 import Icon from "react-native-vector-icons/Ionicons";
+import {useNotificationObserver} from "@/helpers/notification";
 
 export default function AppRootLayout() {
    const { userData, isLoading, fetchStatus, setTeacherStatus } =
@@ -27,6 +26,8 @@ export default function AppRootLayout() {
 
    const { isEdited } = useQuizProvider();
 
+   useNotificationObserver();
+
    useEffect(() => {
       if (userData) {
          fetchStatus();
@@ -37,7 +38,7 @@ export default function AppRootLayout() {
                   setTeacherStatus(teacher_status);
                   Toast.show({
                      type: status,
-                     text1: "Thông báo",
+                     text1: i18n.t("notification.title"),
                      text2: message,
                      visibilityTime: 2000,
                   });
@@ -48,12 +49,17 @@ export default function AppRootLayout() {
    }, [userData]);
 
    if (isLoading) {
-      return <Text>Loading...</Text>;
+      return <View className="h-[100%] bg-white items-center justify-center">
+          <ActivityIndicator
+              style={{ color: '#000' }}
+          />
+      </View>
    }
 
    if (!userData) {
       return <Redirect href={"/(auths)/sign-in"} />;
    }
+
 
    return (
       <Stack>
@@ -185,7 +191,7 @@ export default function AppRootLayout() {
             }}
          />
 
-         <Stack.Screen
+         <Stack.Screen  
             name="(play)/single"
             options={{
                headerShown: false,
@@ -216,7 +222,7 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(classroom)/teacher_detail"
             options={{
-               headerTitle: "Chi tiết lớp học",
+               headerTitle: i18n.t('classroom.student.titleScreen'),
             }}
          />
 
@@ -263,14 +269,14 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(classroom)/student_detail"
             options={{
-               headerTitle: "Chi tiết lớp học",
+               headerTitle: i18n.t('classroom.student.titleScreen'),
             }}
          />
 
          <Stack.Screen
             name="(classroom)/upload_excel"
             options={{
-               headerTitle: "Thêm học sinh",
+               headerTitle: i18n.t('classroom.upload.title'),
             }}
          />
 
@@ -280,6 +286,13 @@ export default function AppRootLayout() {
                headerTitle: "Quay lại bộ sưu tập",
             }}
          />
+
+          <Stack.Screen
+              name="notification"
+              options={{
+                  headerTitle: i18n.t('notification.title'),
+              }}
+          />
       </Stack>
    );
 }

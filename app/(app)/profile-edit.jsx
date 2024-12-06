@@ -134,14 +134,14 @@ export default function ProfileEditScreen() {
     }
 
     const handleDeleteSchool = (index) => {
-        Alert.alert("Delete school", "Are you sure to delete this school?", [
+        Alert.alert(i18n.t("modal.titleDeleteSchool"), i18n.t("modal.textDeleteSchool"), [
             {
-                text: "Cancel",
+                text: i18n.t("modal.btnCancel"),
                 onPress: () => {},
                 style: "cancel"
             },
             {
-                text: "OK",
+                text: i18n.t("modal.ok"),
                 onPress: () => {
                     setSelectedSchool(selectedSchool.filter((_, i) => i !== index));
                 }

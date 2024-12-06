@@ -13,6 +13,7 @@ import {router} from "expo-router";
 import {STATUS_VERIFIED} from "@/utils/notificationCode";
 import NotificationListSkelaton from "@/components/customs/AntiFlatList/NotificationListSkelaton";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import {useAppProvider} from "@/contexts/AppProvider";
 
 const COUNT_LENGTH = 30;
 export default function NotificationScreen() {
@@ -30,7 +31,7 @@ export default function NotificationScreen() {
     const modalizeRef = useRef(null);
     const [currentSelected, setCurrentSelected] = useState(null);
     const [isLoadMore, setIsLoadMore] = useState(false);
-    // const [isRefreshing, setIsRefreshing] = useState(false);
+    const {i18n} = useAppProvider();
 
     useEffect(() => {
         if (!currentSelected) return;
@@ -134,7 +135,7 @@ export default function NotificationScreen() {
             {
                 numberOfUnreadNoti > 0 &&  <TouchableOpacity onPress={handlerReadAll} className={"flex-row items-center justify-center mb-2"}>
                     <AntDesign name={"check"} size={20} color={"#000"} />
-                    <Text className={"text-lg font-bold"}>Đánh dấu tất cả đã đọc</Text>
+                    <Text className={"text-lg font-bold"}>{i18n.t("notification.readAll")}</Text>
                 </TouchableOpacity>
             }
             <AntiFlatListNotification loading={isLoadMore} isRefreshing={isRefreshing} handleRefresh={handleRefresh} handleLoadMore={handleLoadMore} colSpan={4} data={notification} componentItem={ComponentItem}/>

@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import {View, Text, ActivityIndicator} from "react-native";
 import React, { useState, useEffect } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Wrapper from "@/components/customs/Wrapper";
@@ -259,10 +259,10 @@ const detailquizz = () => {
    }, [selectedCollection]);
 
    useEffect(() => {
-      console.log("RUNNING")
       if (id) {
          fetchQuiz();
          fetchQuestions();
+         setQuizId(id);
       }
    }, [id]);
 
@@ -302,6 +302,16 @@ const detailquizz = () => {
       }
    };
 
+
+   if (!quizId || questionFetching){
+       return (
+           <View className="h-[100%] bg-white items-center justify-center">
+               <ActivityIndicator
+                   style={{ color: '#000' }}
+               />
+           </View>
+       )
+   }
 
    return (
       <Wrapper>

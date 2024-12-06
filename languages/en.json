@@ -88,6 +88,10 @@
    "play": {
       "single": {
          "buttonQuit": "Quit",
+         "titleQuizOut": "Exit?",
+         "textQuizOut": "Do you want to exit this quiz?",
+         "btnCancel": "Cancel",
+         "btnContinute": "Continue",
          "score": "Score",
          "questionCouter": "Question number:",
          "buttonConfirm": "Confirm",
@@ -107,7 +111,11 @@
          "incorrect": "Incorrect",
          "textResult": "Result",
          "textDesc": "Practice",
-         "buttonReview": "Review"
+         "buttonReview": "Review",
+         "titleQuizOut": "Play Again?",
+         "textQuizOut": "Do you want to play this quiz again?",
+         "btnCancel": "Cancel",
+         "btnContinute": "Continue"
       },
       "review": {
          "title": "Review Answers",
@@ -147,7 +155,9 @@
       "btnThuThach": "Challenge",
       "btnLuyenTap": "Practice",
       "desc": "Description:",
-      "textDesc": "No description here!"
+      "textDesc": "No description here!",
+      "btnSeeMore": "See more",
+      "emptyList": "Empty List!"
    },
    "teacher_homepage": {
       "searchInputPlaceholder": "Create a quiz or a lesson",
@@ -342,6 +352,9 @@
    "classroom": {
       "title": "Classroom",
       "emptyClass": "No classrooms available",
+      "textTeacher": "Teacher:",
+      "textStudent": "students",
+      "textSubject": "Subject:",
       "teacher": {
          "btnAddClass": "Create New Classroom",
          "titleBts": "Enter New Classroom Information",
@@ -355,9 +368,20 @@
          "btnCancel": "Cancel",
          "btnEdit": "Edit",
          "titleBtsAddStudent": "Add Student List",
-         "titleSearchQuery": "Enter the classroom name to search"
+         "titleSearchQuery": "Enter the classroom name to search",
+         "emptyClassroom": "Empty list classroom!",
+         "titleQuestionContinuteQUiz": "Continue the Quiz?",
+         "textQuestionContinuteQuiz": "Do you want to continue this quiz?",
+         "btnContinute": "Continue",
+         "titleDelStudent": "Confirm Delete Student?",
+         "textDelStudent": "Are you sure you want to remove this student from the class?",
+         "btnDel": "Delete",
+         "btsTitleAddStudent": "New Student Information",
+         "btsTitleEmail": "Contact Address (Email)",
+         "btsPlaceholder": "Enter email address"
       },
       "student": {
+         "titleScreen": "Classroom Details",
          "titleSearchQuery": "Enter the classroom name to search",
          "title": "Assigned Exercises",
          "textEnd": "Ended",
@@ -367,6 +391,27 @@
          "notiChildStart": "You cannot start this exercise yet.",
          "textNotStartedYet": "It is not time to start the exercise yet",
          "emptyExercise": "There are no exercises in this classroom"
+      },
+      "upload": {
+         "title": "Add Students",
+         "success": "Successfully",
+         "fail": "Fail",
+         "notification": "Notification",
+         "uploadSuccess": "The file has been successfully uploaded.",
+         "uploadError": "File upload failed.",
+         "notiError": "An error occurred during the file upload process.",
+         "existFile": "The file already exists!",
+         "permissionFile": "Access denied.",
+         "permissionMedia": "Unable to access Media Library!",
+         "downloadFileExcel": "Excel template file downloaded successfully.",
+         "deletedFiledExcel": "Excel template file deleted successfully.",
+         "errorDelFileExcel": "Error deleting file:",
+         "textAddFile": "Add a file here",
+         "textDownloadFileExcel": "Download the sample Excel file",
+         "textFieldDownloadFileExcel": "Download sample (xlsx)",
+         "textFieldDelFileExcel": "Delete sample",
+         "guildText": "Instructions for Excel file format",
+         "guildRule": "Ensure each row has a full name and a valid email address."
       }
    },
    "activity": {
@@ -381,11 +426,26 @@
       "exercise": "Assigned",
       "room": "Room",
       "titleQuestionContinuteQUiz": "Continue the quiz?",
-      "textQuestionContinuteQuiz": "Do you want to continue this quiz?",
+      "textQuestionContinuteQuiz": "Do you want to delete this classroom?",
       "btnCancel": "Cancel",
       "btnContinute": "Continue",
       "notiDL": "Submission deadline has passed!",
       "textCreated": "created by:"
    },
-
+   "modal": {
+      "title": "Notification",
+      "text": "Are you sure you want to delete this item?",
+      "btnCancel": "Cancel",
+      "btnDelete": "Delete",
+      "btnSave": "Save",
+      "btnEdit": "Edit",
+      "titleDeleteSchool": "Delete School",
+      "textDeleteSchool": "Are you sure you want to delete this school?",
+      "ok": "OK"
+   },
+   "notification": {
+      "title": "Notification",
+      "emptyNotification": "No notifications available",
+      "readAll": "Mark all as read"
+   }
 }

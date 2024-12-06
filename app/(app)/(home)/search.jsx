@@ -1,23 +1,23 @@
-import {ActivityIndicator, Text, View,} from "react-native";
+import { ActivityIndicator, Text, View, } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import {Modalize} from "react-native-modalize";
-import React, {useContext, useEffect, useRef, useState,} from "react";
-import {API_URL, API_VERSION, END_POINTS} from "@/configs/api.config";
-import {useAppProvider} from "@/contexts/AppProvider";
-import {MultipleSelectList, SelectList,} from "@10102004tan/react-native-select-dropdown-v2";
-import {useSubjectProvider} from "@/contexts/SubjectProvider";
+import { Modalize } from "react-native-modalize";
+import React, { useCallback, useContext, useEffect, useRef, useState, } from "react";
+import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
+import { useAppProvider } from "@/contexts/AppProvider";
+import { MultipleSelectList, SelectList, } from "@10102004tan/react-native-select-dropdown-v2";
+import { useSubjectProvider } from "@/contexts/SubjectProvider";
 import QuizCard from "@/components/customs/QuizCard";
 import QuizModal from "@/components/modals/QuizModal";
-import {router, useLocalSearchParams} from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import CustomButton from "@/components/customs/CustomButton";
 import AntiFlatList from "@/components/customs/AntiFlatList/AntiFlatList";
-import {useResultProvider} from "@/contexts/ResultProvider";
+import { useResultProvider } from "@/contexts/ResultProvider";
 import LockFeature from "@/components/customs/LockFeature";
-import {AuthContext} from "@/contexts/AuthContext";
-import {teacherStatusCode} from "@/utils/statusCode";
+import { AuthContext } from "@/contexts/AuthContext";
+import { teacherStatusCode } from "@/utils/statusCode";
 import SearchBar from "react-native-dynamic-search-bar";
 import { Keyboard } from 'react-native'
-import {convertSubjectToDataKeyValue} from "@/utils";
+import { convertSubjectToDataKeyValue } from "@/utils";
 import QuizListSkeleton from "@/components/customs/QuizListSkeleton";
 
 
@@ -40,6 +40,7 @@ export default function SearchScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [selectedSubject, setSelectedSubject] = useState([]);
+  const [load, setLoad] = useState(false);
   const [filter, setFilter] = useState({
     quiz_on: -1,
     subjectIds: subjectId ? [subjectId] : [],
@@ -80,23 +81,26 @@ export default function SearchScreen() {
       value: i18n.t("search.oldest"),
     },
   ];
-  const [filterModalize,setFilterModalize] = useState(filter);
+  const [filterModalize, setFilterModalize] = useState(filter);
 
 
   // for subjectId from home page to search page
-    useEffect(() => {
-      if (!isFirstLoad){
-        setFilter((prev)=>{
-          return {
-            ...prev,
-            subjectIds: subjectId ? [subjectId] : [],
-            skip: 0
-          }
-        });
-        setSelectedSubject(subjectId ? [subjectId] : []);
-      }
-    }, [subjectId]);
 
+  useEffect(() => {
+    setIsFirstLoad(true);
+    if (!isFirstLoad) {
+      setSelectedSubject([subjectId]);
+      setFilterModalize((prev) => ({
+        ...prev,
+        subjectIds: [subjectId],
+      }));
+      setFilter((prev) => ({
+        ...prev,
+        skip: 0,
+        subjectIds: [subjectId],
+      }));
+    }
+  }, [load]);
   // convert subject data to key value in mutiple dropdown
   useEffect(() => {
     const dataConvert = convertSubjectToDataKeyValue(subjects);
@@ -157,20 +161,18 @@ export default function SearchScreen() {
       },
       body: JSON.stringify(filter),
     })
-        .then((res) => res.json())
-        .then((data) => {
+      .then((res) => res.json())
+      .then((data) => {
 
-          //
-          console.log("filter::",filter);
-          if (data.statusCode !== 200) return;
 
-          // set isFirstLoad
-          isFirstLoad && setIsFirstLoad(false);
+        if (data.statusCode !== 200) return;
 
-          isRefreshing && setIsRefreshing(false);
+        // set isFirstLoad
+        isFirstLoad && setIsFirstLoad(false);
 
-          filter.skip === 0 ? setQuizList(data.metadata) : setQuizList((prevQuizList) => [...prevQuizList, ...data.metadata]);
+        isRefreshing && setIsRefreshing(false);
 
+        filter.skip === 0 ? setQuizList(data.metadata) : setQuizList((prevQuizList) => [...prevQuizList, ...data.metadata]);
         })
         .catch((err) => {
           console.error(err);
@@ -197,25 +199,25 @@ export default function SearchScreen() {
       setIsFirstLoad(true);
       return {
         ...prev,
-        key:"",
+        key: "",
         skip: 0
       };
     });
   }
   const handleFilter = () => {
-      setIsFirstLoad(true);
-      setFilter((prev)=>{
-        return {
-          ...prev,
-          skip: 0,
-          sortStatus: filterModalize.sortStatus,
-          subjectIds: filterModalize.subjectIds,
-          quiz_on: filterModalize.quiz_on
-        }
-      });
+    setIsFirstLoad(true);
+    setFilter((prev) => {
+      return {
+        ...prev,
+        skip: 0,
+        sortStatus: filterModalize.sortStatus,
+        subjectIds: filterModalize.subjectIds,
+        quiz_on: filterModalize.quiz_on
+      }
+    });
 
-      // hidden modal
-      closeModalize();
+    // hidden modal
+    closeModalize();
   }
   const handleResetFilter = () => {
     setFilter({
@@ -240,7 +242,7 @@ export default function SearchScreen() {
   };
   const handleRefresh = () => {
     setIsRefreshing(true);
-    setFilter((prev)=>{
+    setFilter((prev) => {
       return {
         ...prev,
         skip: 0
@@ -250,16 +252,16 @@ export default function SearchScreen() {
   // component item for AntiFlatList
   const ComponentItem = ({ data }) => {
     return (
-        <QuizCard
-            quiz_thumb={data.quiz_thumb}
-            quiz_name={data.quiz_name}
-            quiz_turn={data.quiz_turn}
-            createdAt={data.createdAt}
-            question_count={data.question_count}
-            user_avatar={data.user_avatar}
-            user_fullname={data.user_fullname}
-            onPress={() => onOpenModal(data)}
-        />
+      <QuizCard
+        quiz_thumb={data.quiz_thumb}
+        quiz_name={data.quiz_name}
+        quiz_turn={data.quiz_turn}
+        createdAt={data.createdAt}
+        question_count={data.question_count}
+        user_avatar={data.user_avatar}
+        user_fullname={data.user_fullname}
+        onPress={() => onOpenModal(data)}
+      />
     );
   };
   // end component item for AntiFlatList
@@ -301,11 +303,11 @@ export default function SearchScreen() {
           <AntDesign onPress={onOpenModalize} name={"filter"} size={30} />
         </View>
 
-        {/* check first load*/}
-        {
-          isFirstLoad || isRefreshing? (
-              <QuizListSkeleton/>
-          ) : (
+      {/* check first load*/}
+      {
+        isFirstLoad || isRefreshing ? (
+          <QuizListSkeleton />
+        ) : (
           <AntiFlatList
             colSpan={COL_SPAN}
             handleRefresh={handleRefresh}
@@ -397,13 +399,14 @@ export default function SearchScreen() {
               onPress={handleResetFilter}
           />
         </View>
-  </Modalize>
-  <QuizModal
-      visible={isOpenModal}
-      onClose={() => setIsOpenModal(false)}
-      quiz={selectedQuiz}
-      onStartQuiz={handleNavigateToQuiz}
-  />
-</View>
-);
+
+      </Modalize>
+      <QuizModal
+        visible={isOpenModal}
+        onClose={() => setIsOpenModal(false)}
+        quiz={selectedQuiz}
+        onStartQuiz={handleNavigateToQuiz}
+      />
+    </View>
+  );
 }

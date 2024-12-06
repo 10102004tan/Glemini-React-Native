@@ -1,12 +1,12 @@
 "use strict";
 
 const dev = {
-	API_URL: "http://10.10.0.112:3000/api",
+	API_URL: "http://10.0.202.198:3000/api",
 	API_VERSION: {
 		V1: "/v1",
 	},
 	END_POINTS: {
-		SERVER: '/working',
+	SERVER: '/working',
 		// Authentication
 		LOGIN: '/auth/login',
 		SIGN_UP: '/auth/signup',
@@ -60,6 +60,7 @@ const dev = {
 		REMOVE_QUIZ_SHARED: "/quizzes/remove-quiz-shared",
 		COPY_QUIZ: "/quizzes/copy-quiz",
 		GET_ALL_USER_SHARED: "/quizzes/get-all-user-shared",
+		REVOKE_SHARED_USER: "/quizzes/remove-user-shared",
 
 		// Results
 		RESULT_STUDENT: "/result/student",
@@ -71,6 +72,7 @@ const dev = {
 		RESULT_REPORT: "/result/reports",
 		RESULT_RESET: "/result/reset",
 		RESULT_RANK: "/result/rank",
+
 		// Subjects
 		SUBJECTS: "/subjects",
 
@@ -84,9 +86,8 @@ const dev = {
 		COLLECTION_GETALL: "/collections",
 
 		// School
-		SCHOOL: '/schools',
-		SCHOOL_FILTER: '/schools/filter',
-
+		SCHOOL: "/schools",
+		SCHOOL_FILTER: "/schools/filter",
 
 		// Classroom
 		CLASSROOM: "/classroom",
@@ -113,7 +114,7 @@ const dev = {
 		ROOM_REMOVE_USER: "/room/remove-user",
 		ROOM_REPORT: "/room/report",
 		ROOM_CHECK_USER: "/room/check-joined",
-		ROOM_CODE: '/room/room-code',
+		ROOM_CODE: "/room/room-code",
 
 		// Use for realtime play
 		ROOM_GET_RESULTS: "/result/get-results",
@@ -122,7 +123,7 @@ const dev = {
 
 		// exercise
 		EXERCISE_REPORT: "/exercise/report",
-	},
+},
 };
 
 const prod = {

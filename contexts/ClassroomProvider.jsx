@@ -9,31 +9,9 @@ const ClassroomProvider = ({ children }) => {
     const [province, setProvince] = useState('');
 	const [districts, setDistricts] = useState([]);
 	const [selectDistrict, setSelectDistrict] = useState('');
-	const [schools, setSchools] = useState([]);
     const [classrooms, setClassrooms] = useState([]);
     const [classroom, setClassroom] = useState([]);
     const { userData } = useAuthContext();
-
-    // Lấy danh sách trường từ API
-    // const fetchSchools = async () => {
-    //     const response = await fetch(
-    //         `${API_URL}${API_VERSION.V1}${END_POINTS.SCHOOL}`,
-    //         {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'x-client-id': userData._id,
-    //                 authorization: userData.accessToken,
-    //             },
-    //         }
-    //     );
-
-    //     const data = await response.json();
-
-    //     if (data.statusCode === 200) {
-    //         setSchools(data.metadata);
-    //     }
-    // };
 
     const fetchClassrooms = async () => {
         const path = userData.user_type === 'teacher' ?
@@ -347,8 +325,6 @@ const ClassroomProvider = ({ children }) => {
 
     return (
         <ClassroomContext.Provider value={{
-            schools,
-            setSchools,
             classrooms,
             createClassroom,
             setClassrooms,

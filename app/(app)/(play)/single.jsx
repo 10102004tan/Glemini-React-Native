@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useReducer } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Animated } from 'react-native';
 import Button from '../../../components/customs/Button';
 import ResultSingle from '../(result)/single';
 import { useAppProvider } from '@/contexts/AppProvider';
@@ -8,6 +8,7 @@ import { Audio } from 'expo-av';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import { useResultProvider } from '@/contexts/ResultProvider';
+import { Easing } from 'react-native';
 
 // Reducer to manage game state
 const initialState = {
@@ -106,6 +107,7 @@ const SinglePlay = () => {
 	const [state, dispatch] = useReducer(gameReducer, initialState);
 	const [sound, setSound] = useState(null);
 	const [resultId, setResultId] = useState(null);
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		if (quizId) {
@@ -114,14 +116,25 @@ const SinglePlay = () => {
 	}, [quizId]);
 
 	useEffect(() => {
-		if (quizId && type && exerciseId) {
-			fetchResultData({ quizId, exerciseId, type });
-
-		} else if (quizId && type) {
-			fetchResultData({ quizId, type });
-
-		}
+		const loadData = async () => {
+			setIsLoading(true); // Set loading state to true before starting data fetch
+			
+			try {
+				if (quizId && type && exerciseId) {
+					await fetchResultData({ quizId, exerciseId, type });
+				} else if (quizId && type) {
+					await fetchResultData({ quizId, type });
+				}
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			} finally {
+				setIsLoading(false); // Set loading state to false after data fetch completes
+			}
+		};
+	
+		loadData();
 	}, [exerciseId, quizId, type]);
+	
 
 	useEffect(() => {
 		if (result && result._id) {
@@ -254,7 +267,20 @@ const SinglePlay = () => {
 			<View className="flex-row px-5 pt-10 pb-3 bg-black">
 				<Button
 					text={i18n.t('play.single.buttonQuit')}
-					onPress={() => { router.back(); }}
+					onPress={() => {
+						Alert.alert(
+							i18n.t('play.single.titleQuizOut'),
+							i18n.t('play.single.textQuizOut'),
+							[
+								{ text: i18n.t('play.single.btnCancel'), style: "cancel" },
+								{
+									text: i18n.t('play.single.buttonQuit'), onPress: async () => {
+										router.back()
+									},
+								}
+							]
+						);
+					}}
 					loading={false}
 					type="fill"
 					otherStyles="bg-[#F41D1D]"
@@ -276,7 +302,16 @@ const SinglePlay = () => {
 					</ScrollView>
 				</View>
 				<ScrollView className="flex-1 mt-4">
-					{questions[state.currentQuestionIndex]?.question_answer_ids.map((answer, index) => {
+					{
+					isLoading ? 
+					<>
+					<SkeletonLoader/>
+					<SkeletonLoader/>
+					<SkeletonLoader/>
+					<SkeletonLoader/>
+					</>
+					:
+					questions[state.currentQuestionIndex]?.question_answer_ids.map((answer, index) => {
 						let backgroundColor = '#484E54';
 						if (state.showCorrectAnswer) {
 							const correctIds = questions[state.currentQuestionIndex].correct_answer_ids.map(a => a._id);
@@ -316,7 +351,8 @@ const SinglePlay = () => {
 								<Text className="text-white text-lg font-bold">{answer.text}</Text>
 							</TouchableOpacity>
 						);
-					})}
+					})
+					}
 				</ScrollView>
 				<Button
 					text={state.buttonText}
@@ -330,6 +366,44 @@ const SinglePlay = () => {
 			</View>
 		</View>
 	);
+};
+
+const SkeletonLoader = () => {
+    const shimmer = new Animated.Value(0);
+
+    useEffect(() => {
+        const shimmerAnimation = Animated.loop(
+            Animated.timing(shimmer, {
+                toValue: 1,
+                duration: 1000,
+                easing: Easing.linear,
+                useNativeDriver: true,
+            })
+        );
+        shimmerAnimation.start();
+        return () => shimmerAnimation.stop();
+    }, [shimmer]);
+
+    const translateX = shimmer.interpolate({
+        inputRange: [0, 1],
+        outputRange: [-200, 200], // Adjust range as needed for skeleton width
+    });
+
+    return (
+        <View className="bg-[#484E54] rounded-lg px-3 py-6 mt-2">
+            <View className="w-full h-6 bg-slate-700 rounded overflow-hidden relative">
+                <Animated.View
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: '#6b7280',
+                        transform: [{ translateX }],
+                        opacity: 0.4,
+                    }}
+                />
+            </View>
+        </View>
+    );
 };
 
 export default SinglePlay;

@@ -1,6 +1,6 @@
 "use strict";
 import { io } from "socket.io-client";
-const socket = io.connect("http://10.10.0.112:3000",{
+const socket = io.connect("http://10.0.202.198:3000",{
     transports: ['websocket'],
     reconnection: true,
 });
