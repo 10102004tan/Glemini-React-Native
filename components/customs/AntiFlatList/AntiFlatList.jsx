@@ -85,7 +85,7 @@ export default class AntiFlatList extends React.Component {
                         <RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh} />
                     )
                 }}
-                onEndReachedThreshold={0.5} renderFooter={this._renderFooter} onEndReached={this._onEndReached} layoutProvider={this._layoutProvider} dataProvider={this.state.dataProvider} rowRenderer={this._rowRenderer} />
+                onEndReachedThreshold={0.8} renderFooter={this._renderFooter} onEndReached={this._onEndReached} layoutProvider={this._layoutProvider} dataProvider={this.state.dataProvider} rowRenderer={this._rowRenderer} />
         )
     }
 }

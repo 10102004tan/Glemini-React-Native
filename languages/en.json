@@ -24,6 +24,7 @@
       "signIn": "Sign In Now",
       "fullname": "Fullname",
       "welcome": "Welcome to Glemini App",
+      "selectSchool": "Select School",
       "choice": {
          "student": "Student",
          "teacher": "Teacher",
@@ -58,7 +59,8 @@
       "nameNotIncludeChar": "Fullname can't include special characters",
       "title": "Error",
       "passwordNotMatch": "Password does not match",
-      "imageRequired": "Image is required"
+      "imageRequired": "Image is required",
+      "maxSchool": "You can only choose 2 schools"
    },
    "success": {
       "signUp": "Sign up successfully",
@@ -109,7 +111,11 @@
          "incorrect": "Incorrect",
          "textResult": "Result",
          "textDesc": "Practice",
-         "buttonReview": "Review"
+         "buttonReview": "Review",
+         "titleQuizOut": "Play Again?",
+         "textQuizOut": "Do you want to play this quiz again?",
+         "btnCancel": "Cancel",
+         "btnContinute": "Continue"
       },
       "review": {
          "title": "Review Answers",
@@ -206,8 +212,10 @@
    },
    "profile": {
       "title": "Profile",
+      "titleSchool": "School",
       "fullname": "Fullname",
       "info": "Personal Information",
+      "selectSchool": "Select School",
       "email": "Email",
       "phone": "Phone",
       "address": "Address",
@@ -266,17 +274,29 @@
       "title": "Settings"
    },
    "home": {
-      "title": "Home"
+      "title": "Home",
+      "more": "More"
    },
    "search": {
-      "title": "Search"
+      "title": "Search",
+      "placeholder": "Search here...",
+      "filter": "Filter",
+      "btnFilter": "Filter",
+      "btnReset": "Reset",
+      "all": "All",
+      "newest": "Newest",
+        "oldest": "Oldest",
+      "status": "Status",
+      "subject": "Subject",
+      "plays": "Plays"
    },
    "classes": {
       "title": "Classes"
    },
    "account": {
       "title": "Account",
-      "buttonEdit": "Edit"
+      "buttonEdit": "Edit",
+      "recentActivity": "Recent Activity"
    },
    "report": {
       "title": "Report",
@@ -362,7 +382,13 @@
          "emptyClassroom": "Empty list classroom!",
          "titleQuestionContinuteQUiz": "Continue the Quiz?",
          "textQuestionContinuteQuiz": "Do you want to continue this quiz?",
-         "btnContinute": "Continue"
+         "btnContinute": "Continue",
+         "titleDelStudent": "Confirm Delete Student?",
+         "textDelStudent": "Are you sure you want to remove this student from the class?",
+         "btnDel": "Delete",
+         "btsTitleAddStudent": "New Student Information",
+         "btsTitleEmail": "Contact Address (Email)",
+         "btsPlaceholder": "Enter email address"
       },
       "student": {
          "titleScreen": "Classroom Details",
@@ -375,6 +401,27 @@
          "notiChildStart": "You cannot start this exercise yet.",
          "textNotStartedYet": "It is not time to start the exercise yet",
          "emptyExercise": "There are no exercises in this classroom"
+      },
+      "upload": {
+         "title": "Add Students",
+         "success": "Successfully",
+         "fail": "Fail",
+         "notification": "Notification",
+         "uploadSuccess": "The file has been successfully uploaded.",
+         "uploadError": "File upload failed.",
+         "notiError": "An error occurred during the file upload process.",
+         "existFile": "The file already exists!",
+         "permissionFile": "Access denied.",
+         "permissionMedia": "Unable to access Media Library!",
+         "downloadFileExcel": "Excel template file downloaded successfully.",
+         "deletedFiledExcel": "Excel template file deleted successfully.",
+         "errorDelFileExcel": "Error deleting file:",
+         "textAddFile": "Add a file here",
+         "textDownloadFileExcel": "Download the sample Excel file",
+         "textFieldDownloadFileExcel": "Download sample (xlsx)",
+         "textFieldDelFileExcel": "Delete sample",
+         "guildText": "Instructions for Excel file format",
+         "guildRule": "Ensure each row has a full name and a valid email address."
       }
    },
    "activity": {
@@ -394,5 +441,21 @@
       "btnContinute": "Continue",
       "notiDL": "Submission deadline has passed!",
       "textCreated": "created by:"
+   },
+   "modal": {
+      "title": "Notification",
+      "text": "Are you sure you want to delete this item?",
+      "btnCancel": "Cancel",
+      "btnDelete": "Delete",
+      "btnSave": "Save",
+      "btnEdit": "Edit",
+      "titleDeleteSchool": "Delete School",
+      "textDeleteSchool": "Are you sure you want to delete this school?",
+      "ok": "OK"
+   },
+   "notification": {
+      "title": "Notification",
+      "emptyNotification": "No notifications available",
+      "readAll": "Mark all as read"
    }
 }

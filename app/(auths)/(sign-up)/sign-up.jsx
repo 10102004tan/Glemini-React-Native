@@ -334,7 +334,7 @@ const SignUpScreen = () => {
                 <CustomInput secure={!showPasswordVerify} onChangeText={setPasswordVerify} label={i18n.t('signUp.confirmPassword')} value={passwordVerify} />
 
                 <View className='my-2'>
-                    <Text className={"mb-2"}>Chọn trường</Text>
+                    <Text className={"mb-2"}>{i18n.t("signUp.selectSchool")}</Text>
                     <DropdownSchoolSelected handlerSelectSchool={handlerSelectSchool} selectedSchool={selectedSchool} schools={schools} handlerSearchSchool={handlerSearchSchool} setKeyword={setKeyword} keyword={keyword} setIsOpenDropdownSchool={setIsOpenDropdownSchool} isOpenDropdownSchool={isOpenDropdownSchool}/>
                 </View>
 

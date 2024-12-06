@@ -24,6 +24,7 @@
       "fullname": "フルネーム",
       "startNow": "今すぐ始める",
       "welcome": "当社のアプリへようこそ",
+      "selectSchool": "学校を選択",
       "choice": {
          "student": "学生",
          "teacher": "先生",
@@ -59,7 +60,8 @@
       "documentConfirmRequired": "文書確認が必要です",
       "nameNotIncludeChar": "フルネームに特殊文字を含めることはできません",
       "title": "エラー",
-      "imageRequired": "画像が必要です"
+      "imageRequired": "画像が必要です",
+      "maxSchool": "学校は2つだけ選択できます"
    },
    "success": {
       "signUp": "サインアップに成功しました",
@@ -110,7 +112,11 @@
          "incorrect": "まちがい",
          "textResult": "けっか",
          "textDesc": "れんしゅう",
-         "buttonReview": "見直す"
+         "buttonReview": "見直す",
+         "titleQuizOut": "もう一度プレイしますか？",
+         "textQuizOut": "このクイズをもう一度プレイしますか？",
+         "btnCancel": "キャンセル",
+         "btnContinute": "続行"
       },
       "review": {
          "title": "回答を確認",
@@ -248,8 +254,10 @@
    },
    "profile": {
       "title": "プロフィール",
+      "titleSchool": "学校名",
       "fullname": "フルネーム",
       "info": "個人情報",
+      "selectSchool": "学校を選択",
       "email": "メール",
       "phone": "電話",
       "address": "住所",
@@ -267,17 +275,29 @@
       "title": "設定"
    },
    "home": {
-      "title": "ホーム"
+      "title": "ホーム",
+      "more": "もっと"
    },
    "search": {
-      "title": "検索"
+      "title": "検索",
+      "placeholder": "検索する",
+      "filter": "フィルター",
+      "btnFilter": "フィルター",
+      "btnReset": "リセット",
+      "all": "全て",
+      "newest": "最新",
+      "oldest": "最古",
+      "status": "ステータス",
+      "subject": "科目",
+      "plays": "プレイ"
    },
    "classes": {
       "title": "クラス"
    },
    "account": {
       "title": "アカウント",
-      "buttonEdit": "編集"
+      "buttonEdit": "編集",
+      "recentActivity": "最近のアクティビティ"
    },
    "report": {
       "title": "レポート",
@@ -353,7 +373,13 @@
          "emptyClassroom": "きょしつがありません",
          "titleQuestionContinuteQUiz": "クイズを続けますか？",
          "textQuestionContinuteQuiz": "このクラスを削除しますか？",
-         "btnContinute": "続ける"
+         "btnContinute": "続ける",
+         "titleDelStudent": "生徒を削除しますか？",
+         "textDelStudent": "この生徒をクラスから削除してもよろしいですか？",
+         "btnDel": "削除",
+         "btsTitleAddStudent": "新しい生徒情報",
+         "btsTitleEmail": "連絡先住所（メール）",
+         "btsPlaceholder": "メールアドレスを入力"
       },
       "student": {
          "titleScreen": "教室詳細",
@@ -366,6 +392,27 @@
          "notiChildStart": "この課題をまだ開始することはできません。",
          "textNotStartedYet": "課題の開始時間ではありません",
          "emptyExercise": "この教室には課題がありません"
+      },
+      "upload": {
+         "title": "生徒を追加",
+         "success": "成功",
+         "fail": "失敗",
+         "notification": "通知",
+         "uploadSuccess": "ファイルが正常にアップロードされました。",
+         "uploadError": "ファイルのアップロードに失敗しました。",
+         "notiError": "ファイルアップロード中にエラーが発生しました。",
+         "existFile": "ファイルは既に存在します！",
+         "permissionFile": "アクセスが拒否されました。",
+         "permissionMedia": "メディアライブラリにアクセスできません！",
+         "downloadFileExcel": "Excelテンプレートファイルを正常にダウンロードしました。",
+         "deletedFiledExcel": "Excelテンプレートファイルを正常に削除しました。",
+         "errorDelFileExcel": "ファイル削除エラー：",
+         "textAddFile": "ここにファイルを追加",
+         "textDownloadFileExcel": "サンプルExcelファイルをダウンロード",
+         "textFieldDownloadFileExcel": "サンプルをダウンロード (xlsx)",
+         "textFieldDelFileExcel": "サンプルファイルを削除",
+         "guildText": "Excelファイル形式のガイド",
+         "guildRule": "各行にフルネームと有効なメールアドレスが含まれていることを確認してください。"
       }
    },
    "activity": {
@@ -385,5 +432,21 @@
       "btnContinute": "続ける",
       "notiDL": "提出期限が過ぎました！",
       "textCreated": "作成者:"
+   },
+   "modal": {
+      "title": "モーダル",
+      "text": "テキスト",
+      "btnCancel": "キャンセル",
+      "btnDelete": "削除",
+      "btnSave": "保存",
+      "btnEdit": "編集",
+      "titleDeleteSchool": "学校を削除",
+      "textDeleteSchool": "この学校を削除してもよろしいですか？",
+      "ok": "OK",
+   },
+   "notification": {
+      "title": "通知",
+      "emptyNotification": "通知がありません",
+      "readAll": "すべてを読む",
    }
 }
