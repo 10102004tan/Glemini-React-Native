@@ -22,9 +22,9 @@ export default function TabLayout() {
           position: "absolute",
           bottom: 20,
           borderRadius: 200,
-          left: "5%",
-          right: "5%",
-          width: "90%",
+          left: "2%",
+          right: "2%",
+          width: "96%",
           backgroundColor: "#fff",
           shadowOpacity: 0,
           borderTopWidth: 0,
@@ -109,7 +109,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="activity"
         options={{
-          title: "Hoạt động",
+          title: i18n.t('activity.title'),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "analytics-sharp" : "analytics-outline"}

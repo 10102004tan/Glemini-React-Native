@@ -29,22 +29,29 @@ const AssignQuizModal = ({ visible, onClose, onAssign }) => {
                     type: 'error',
                     text1: 'Ngày bắt đầu không được ở quá khứ.'
                 });
+                hideDatePicker();
+
                 return;
             }
             setStartDate(date);
-            if (date > deadline) setDeadline(date); 
+            if (date > deadline) setDeadline(date);
         } else {
             if (date < startDate) {
                 Toast.show({
                     type: 'error',
                     text1: "Ngày kết thúc không thể trước ngày bắt đầu."
                 });
+                hideDatePicker();
                 return;
             }
-            setDeadline(date);
         }
         hideDatePicker();
     };
+
+    const handleClose = () => {
+        onClose()
+        hideDatePicker()
+    }
 
     const handleConfirm = () => {
         if (!selectedClass || !assignmentName) {
@@ -67,7 +74,7 @@ const AssignQuizModal = ({ visible, onClose, onAssign }) => {
         setAssignmentName('');
         setStartDate(new Date());
         setDeadline(new Date());
-        onClose();
+        handleClose()
     };
 
     return (
@@ -75,7 +82,7 @@ const AssignQuizModal = ({ visible, onClose, onAssign }) => {
             visible={visible}
             transparent={true}
             animationType="slide"
-            onRequestClose={onClose}
+            onRequestClose={() => { handleClose() }}
         >
             <View className="flex-1 justify-center items-center bg-black/30">
                 <View className="bg-white rounded-lg p-6 w-4/5">
@@ -127,7 +134,9 @@ const AssignQuizModal = ({ visible, onClose, onAssign }) => {
                         <Text className="text-white text-center">Giao bài tập</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={onClose} className="mt-2">
+                    <TouchableOpacity onPress={() => {
+                        handleClose()
+                    }} className="mt-2">
                         <Text className="text-center text-gray-500">Đóng</Text>
                     </TouchableOpacity>
                 </View>

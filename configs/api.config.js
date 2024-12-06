@@ -1,30 +1,28 @@
 'use strict';
 
 const dev = {
-  API_URL: "http://192.168.2.65:3000/api",
-  API_VERSION: {
-    V1: "/v1",
-  },
-
-  END_POINTS: {
-    SERVER: "/working",
-
-    // Authentication
-    LOGIN: "/auth/login",
-    SIGN_UP: "/auth/signup",
-    LOGOUT: "/auth/logout",
-    VERIFY_OTP: "/auth/verify-otp",
-    RESET_PASSWORD: "/auth/reset-password",
-    REFRESH_TOKEN: "/auth/refresh-token",
-    PROFILE: "/user/profile",
-    PROFILE_EDIT: "/user/profile",
-    RE_UPLOAD: "/user/profile/verification/re-upload",
-    USER_NOTIFICATION: "/user/notifications",
-    PROFILE_EDIT_AVATAR: "/user/profile/avatar",
-    PROFILE_TEACHER_IMAGES: "/user/profile/verification/images",
-    CHANGE_PASSWORD: "/auth/change-password",
-    FORGOT_PASSWORD: "/auth/forgot-password",
-    USER_STATUS: "/auth/status",
+	API_URL: "http://192.168.89.116:3000/api",
+	API_VERSION: {
+		V1: "/v1",
+	},
+	END_POINTS: {
+		SERVER: '/working',
+		// Authentication
+		LOGIN: '/auth/login',
+		SIGN_UP: '/auth/signup',
+		LOGOUT: '/auth/logout',
+		VERIFY_OTP: '/auth/verify-otp',
+		RESET_PASSWORD: '/auth/reset-password',
+		REFRESH_TOKEN: '/auth/refresh-token',
+		PROFILE: '/user/profile',
+		PROFILE_EDIT: '/user/profile',
+		RE_UPLOAD: '/user/profile/verification/re-upload',
+		USER_NOTIFICATION: '/user/notifications',
+		PROFILE_EDIT_AVATAR: '/user/profile/avatar',
+		PROFILE_TEACHER_IMAGES: '/user/profile/verification/images',
+		CHANGE_PASSWORD: '/auth/change-password',
+		FORGOT_PASSWORD: '/auth/forgot-password',
+		USER_STATUS: '/auth/status',
 
     // Notification
     UPDATE_NOTIFICATION_STATUS: "/notification",
