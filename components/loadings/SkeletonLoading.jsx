@@ -27,10 +27,10 @@ const SkeletonLoading = ({ styles = '' }) => {
    });
 
    return (
-      <View className={`overflow-hidden rounded-lg  ${styles}`}>
+      <View className={`rounded-lg flex items-center justify-center overflow-hidden ${styles}`}>
          <Animated.View
             className="w-full h-full"
-            style={[{ backgroundColor, borderRadius: 8 }]}
+            style={[{ backgroundColor }]}
          ></Animated.View>
       </View>
    );

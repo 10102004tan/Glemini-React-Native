@@ -24,6 +24,7 @@
       "startNow": "Bắt đầu thôi",
       "fullname": "Họ và tên",
       "welcome": "Welcome to Glemini App",
+      "selectSchool": "Chọn trường học",
       "choice": {
          "student": "Học sinh",
          "teacher": "Giáo viên",
@@ -76,7 +77,8 @@
       "documentConfirmRequired": "Giấy tờ xác nhận là bắt buộc",
       "nameNotIncludeChar": "Họ và tên không được chứa ký tự đặc biệt",
       "title": "Lỗi",
-      "imageRequired": "Ảnh là bắt buộc"
+      "imageRequired": "Ảnh là bắt buộc",
+      "maxSchool": "Tối đa 2 trường"
    },
    "success": {
       "signUp": "Đăng ký thành công",
@@ -251,8 +253,10 @@
    },
    "profile": {
       "title": "Thông tin tài khoản",
+      "titleSchool": "Thông tin trường học",
       "info": "Thông tin cá nhân",
       "fullname": "Họ và tên",
+      "selectSchool": "Chọn trường học",
       "email": "Email",
       "phone": "Số điện thoại",
       "address": "Địa chỉ",
@@ -271,17 +275,29 @@
       "language": "Ngôn ngữ"
    },
    "home": {
-      "title": "Trang chủ"
+      "title": "Trang chủ",
+      "more": "Xem thêm"
    },
    "search": {
-      "title": "Tìm kiếm"
+      "title": "Tìm kiếm",
+        "placeholder": "Tìm kiếm",
+      "filter": "Bộ lọc",
+      "btnFilter": "Lọc",
+      "btnReset": "Đặt lại",
+      "all": "Tất cả",
+      "newest": "Mới nhất",
+      "oldest": "Cũ nhất",
+      "status": "Trạng thái",
+      "subject": "Môn học",
+      "plays": "Lượt chơi"
    },
    "classes": {
       "title": "Lớp học"
    },
    "account": {
       "title": "Tài khoản",
-      "buttonEdit": "Chỉnh sửa"
+      "buttonEdit": "Chỉnh sửa",
+      "recentActivity": "Hoạt động gần đây"
    },
    "report": {
       "title": "Báo cáo",
@@ -419,5 +435,21 @@
       "btnContinute": "Tiếp tục",
       "notiDL": "Đã quá hạn làm bài!",
       "textCreated": "bởi:"
+   },
+   "modal": {
+      "title": "Thông báo",
+      "text": "Bạn có chắc chắn muốn xóa không?",
+      "btnCancel": "Hủy",
+      "btnDelete": "Xóa",
+      "btnSave": "Lưu",
+      "btnEdit": "Chỉnh sửa",
+      "titleDeleteSchool": "Xóa trường học",
+      "textDeleteSchool": "Bạn có chắc chắn muốn xóa trường học này không?",
+      "ok": "OK"
+   },
+   "notification": {
+      "title": "Thông báo",
+      "emptyNotification": "Không có thông báo",
+      "readAll": "Đánh dấu tất cả đã đọc"
    }
 }
