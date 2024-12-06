@@ -124,7 +124,7 @@ export default function AccountScreen() {
          <View className={"mb-3"}>
             <View className={"flex flex-row gap-2 items-center mb-3"}>
                <Entypo name={"back-in-time"} />
-               <Text className={"font-semibold"}>Action Recent</Text>
+               <Text className={"font-semibold"}>{i18n.t("account.recentActivity")}</Text>
             </View>
             <FlatList data={notification.slice(0, COUNT_NOTIFICATION_RECENT)} renderItem={(item) => {
                const { noti_type, noti_content, createdAt, noti_options, noti_status, _id: notiId } = item.item;

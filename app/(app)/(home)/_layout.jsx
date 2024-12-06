@@ -73,10 +73,15 @@ export default function TabLayout() {
         options={{
           title: i18n.t("search.title"),
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "search-circle-sharp" : "search-outline"}
-              color={color}
-            />
+              <View>
+                  {
+                      focused ? (
+                          <Ionicons name="search" size={30} color={color} />
+                      ) : (
+                          <Ionicons name="search-outline" size={30} color={color} />
+                      )
+                  }
+              </View>
           ),
         }}
       />
