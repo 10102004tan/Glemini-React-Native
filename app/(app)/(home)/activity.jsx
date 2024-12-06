@@ -34,13 +34,31 @@ export default function ActivityScreen() {
    const [permission, requestPermission] = useCameraPermissions();
    const isPermissionGranted = Boolean(permission?.granted);
    const router = useRouter();
+   const [index, setIndex] = useState(0);
+   const [refreshing, setRefreshing] = useState(null);
+   const [isFirstLoad, setIsFirstLoad] = useState(null);
+   const [routes] = useState([
+      { key: 'doing', title: i18n.t("activity.textDoing") },
+      { key: 'completed', title: i18n.t("activity.textCompleted") },
+   ]);
 
    useEffect(() => {
       if (!isPermissionGranted) {
          requestPermission();
       }
-      fetchResultsForStudent();
+      const loadData = async () => {
+         setRefreshing(true)
+         try {
+            await fetchResultsForStudent();
+         } catch (error) {
+            console.error('Error fetching classroom:', error);
+         } finally {
+            setRefreshing(false)
+         }
+      }
+      loadData()
    }, [])
+
 
    useEffect(() => {
       const checkRoom = async () => {
@@ -152,13 +170,6 @@ export default function ActivityScreen() {
          checkRoom()
       }
    }, [roomTemp])
-
-   const [index, setIndex] = useState(0);
-   const [refreshing, setRefreshing] = useState(false);
-   const [routes] = useState([
-      { key: 'doing', title: i18n.t("activity.textDoing") },
-      { key: 'completed', title: i18n.t("activity.textCompleted") },
-   ]);
 
    const fetchResults = async () => {
       try {
@@ -280,10 +291,34 @@ const CompletedResults = ({ results, refreshing, onRefresh, i18n }) => {
          data={results}
          renderItem={({ item }) => (
             <Pressable onPress={() => {
-               router.push({
-                  pathname: '(report)/overview_report',
-                  params: { resultId: item._id },
-               });
+               if (item.type === 'publish' && !item.room_id && !item.exercise_id) {
+                  Alert.alert(
+                     i18n.t('activity.titleQuestionReplayQUiz'),
+                     i18n.t('activity.textQuestionReplayQuiz'),
+                     [
+                        { text: i18n.t('activity.btnCancel'), style: "cancel" },
+                        {
+                           text: i18n.t('activity.btnReadResult'), onPress: async () => {
+                              router.push({
+                                 pathname: '(report)/overview_report',
+                                 params: { resultId: item._id },
+                              });
+                           }
+                        },
+                        {
+                           text: i18n.t('activity.btnContinute'), onPress: async () => {
+                              console.log("OK");
+
+                           }
+                        },
+                     ]
+                  );
+               } else {
+                  router.push({
+                     pathname: '(report)/overview_report',
+                     params: { resultId: item._id },
+                  });
+               }
             }}>
                <ResultCompletedItem result={item} i18n={i18n} />
             </Pressable>
