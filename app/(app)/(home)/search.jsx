@@ -40,7 +40,6 @@ export default function SearchScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [selectedSubject, setSelectedSubject] = useState([]);
-  const [load, setLoad] = useState(false);
   const [filter, setFilter] = useState({
     quiz_on: -1,
     subjectIds: subjectId ? [subjectId] : [],
@@ -222,8 +221,8 @@ export default function SearchScreen() {
   const handleResetFilter = () => {
     setFilter({
       quiz_on: -1,
-      subjectIds: [],
-      key: "",
+      subjectIds: subjectId ? [subjectId] : [],
+      key,
       sortStatus: -1,
       skip: 0,
       limit: LIMIT,

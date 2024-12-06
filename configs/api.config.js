@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const dev = {
 	API_URL: "http://192.168.2.21:3000/api",
@@ -6,7 +6,7 @@ const dev = {
 		V1: "/v1",
 	},
 	END_POINTS: {
-	SERVER: '/working',
+		SERVER: '/working',
 		// Authentication
 		LOGIN: '/auth/login',
 		SIGN_UP: '/auth/signup',
@@ -27,6 +27,7 @@ const dev = {
 		// Notification
 		UPDATE_NOTIFICATION_STATUS: "/notification",
 		READ_ALL_NOTIFICATION: "/notification/read-all",
+		NOTIFY_SHARE_ROOM: '/classroom/notify-student',
 
 		// Question
 		GET_QUIZ_BY_USER: "/quizzes/get-by-user",
@@ -123,20 +124,20 @@ const dev = {
 
 		// exercise
 		EXERCISE_REPORT: "/exercise/report",
-},
+	},
 };
 
 const prod = {
 	API_VERSION: {
-		V1: "/v1",
-	},
-	API_URL: "http://localhost:8000/api",
+		V1: '/v1',
+},
+API_URL: 'http://localhost:8000/api',
 	END_POINTS: {
-		LOGIN: "/login",
-		REGISTER: "/register",
-		LOGOUT: "/logout",
-		PROFILE: "/profile",
-	},
+	LOGIN: '/login',
+		REGISTER: '/register',
+		LOGOUT: '/logout',
+		PROFILE: '/profile',
+},
 };
 
 module.exports = dev;

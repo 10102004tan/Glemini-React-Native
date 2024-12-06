@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableWithoutFeedback, TouchableOpacity, ScrollView, FlatList, Dimensions } from 'react-native';
+import { View, Text, Image, TouchableWithoutFeedback, TouchableOpacity, ScrollView, FlatList, Dimensions, RefreshControl } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import Wrapper from '../../components/customs/Wrapper';
 import { Images } from '../../constants';
@@ -22,6 +22,11 @@ import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import Lottie from '@/components/loadings/Lottie';
 import { createdAtConvert } from '@/utils';
 import Carousel from 'react-native-reanimated-carousel';
+import QuizCardItem from '@/components/customs/QuizCardItem';
+import CardQuiz from '@/components/customs/CardQuiz';
+import CardRoomItem from '@/components/customs/CardRoomItem';
+import RoomItemSkeleton from '@/components/loadings/RoomItemSkeleton';
+import QuizCardSkeleton from '@/components/loadings/QuizCardSkeleton';
 
 
 const TeacherHomeScreen = () => {
@@ -34,16 +39,57 @@ const TeacherHomeScreen = () => {
    const { currentRoom, setCurrentRoom } = useRoomProvider();
    const [roomCode, setRoomCode] = useState('');
    const [recentCreatedRooms, setRecentCreatedRooms] = useState([]);
-   const [isFetching, setIsFetching] = useState(false);
+   const [isFetching, setIsFetching] = useState(true);
    const { userData } = useAuthContext();
    const [users, setUsers] = useState([]);
    const width = Dimensions.get('window').width;
    const carouselHeight = width * 2 / 3;
-   const {i18n} = useAppProvider();
+   const [newQuizzes, setNewQuizzes] = useState([]);
+   const [refreshing, setRefreshing] = useState(false);
+
+   const onRefresh = () => {
+      setRefreshing(true);
+      fetchRecentCreatedRooms();
+      fetchNewQuizzes();
+      setRefreshing(false);
+   }
+
+   const fetchNewQuizzes = async () => {
+      try {
+         const fetchNewQuizzes = async () => {
+            const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.GET_NEWEST_QUIZZES}`, {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+                  'x-client-id': _id,
+                  authorization: accessToken,
+               },
+               body: JSON.stringify({
+                  user_id: _id,
+               }),
+            })
+
+            const data = await response.json();
+            console.log(data)
+            if (data.statusCode === 200) {
+               setNewQuizzes(data.metadata);
+            }
+         }
+
+         if (userData) {
+            fetchNewQuizzes();
+         }
+      } catch (error) {
+         console.log(error)
+      } finally {
+         // setIsFetching(false);
+      }
+   }
+
 
    const fetchRecentCreatedRooms = async () => {
       try {
-         setIsFetching(true);
+         // setIsFetching(true);
          const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_LIST}`, {
             method: 'POST',
             headers: {
@@ -64,13 +110,16 @@ const TeacherHomeScreen = () => {
       } catch (error) {
          console.log(error)
       } finally {
-         setIsFetching(false);
+         // setIsFetching(false);
       }
    }
 
    useEffect(() => {
       if (userData) {
+         setIsFetching(true);
          fetchRecentCreatedRooms();
+         fetchNewQuizzes();
+         setIsFetching(false);
       }
    }, [userData])
 
@@ -180,119 +229,168 @@ const TeacherHomeScreen = () => {
             </View>
          </BottomSheet>
 
-         {/* Header */}
-         <View className="px-4 py-6 bg-primary rounded-b-3xl pt-[40px]">
-            {/* Teacher Info */}
-            <View className={"flex flex-row justify-between"}>
-               <View className="flex flex-row items-center justify-start mb-3">
-                  <Image
-                     className={'w-[50px] h-[50px] rounded-full'}
-                     src={user_avatar}
-                  />
-                  <View className="ml-3 max-w-[330px]">
-                     <Text className="text-lg font-pmedium text-white">
-                        {user_fullname}
-                     </Text>
-                     <Text className="text-white">{user_email}</Text>
+         <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+         >
+            <ScrollView>
+               {/* Header */}
+               <View className="px-4 py-6 bg-primary rounded-b-3xl pt-[40px]">
+                  {/* Teacher Info */}
+                  <View className={"flex flex-row justify-between"}>
+                     <View className="flex flex-row items-center justify-start mb-3">
+                        <Image
+                           className={'w-[50px] h-[50px] rounded-full'}
+                           src={user_avatar}
+                        />
+                        <View className="ml-3 max-w-[330px]">
+                           <Text className="text-lg font-pmedium text-white">
+                              {user_fullname}
+                           </Text>
+                           <Text className="text-white">{user_email}</Text>
+                        </View>
+                     </View>
+                     <NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti} />
+                  </View>
+
+                  {/*/!* Search *!/*/}
+                  {/* <Field
+                     icon={<AntDesign name="search1" size={24} color="black" />}
+                     inputStyles="bg-white"
+                     placeholder={'Tìm kiếm một bài kiểm tra hoặc bài học'} /> */}
+                  <View className="w-full h-[1px] rounded-xl mt-3 bg-white"></View>
+
+                  {/* Actions */}
+                  <View className="flex flex-row items-center justify-between mt-6">
+                     <PressAction
+                        onPress={handleCreateQuiz}
+                        title={'Tạo Quiz'}
+                        icon={<AntDesign name="plus" size={24} color="black" />}
+                     />
+                     <PressAction
+                        onPress={() => {
+                           router.push('/(app)/(home)/libraly');
+                        }}
+                        title={'Thư viện của tôi'}
+                        icon={
+                           <Ionicons
+                              name="library-outline"
+                              size={24}
+                              color="black"
+                           />
+                        }
+                     />
+                     <PressAction
+                        onPress={() => {
+                           router.push('/(app)/(home)/report');
+                        }}
+                        title={'Báo cáo'}
+                        icon={
+                           <Ionicons
+                              name="analytics-outline"
+                              size={24}
+                              color="black"
+                           />
+                        }
+                     />
                   </View>
                </View>
-               <NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti} />
-            </View>
-
-
-            {/* Actions */}
-            <View className="flex flex-row items-center justify-between mt-6">
-               <PressAction
-                  onPress={handleCreateQuiz}
-                  title={'Tạo Quiz'}
-                  icon={<AntDesign name="plus" size={24} color="black" />}
-               />
-               <PressAction
-                  onPress={() => {
-                     router.push('/(app)/(home)/libraly');
-                  }}
-                  title={'Thư viện của tôi'}
-                  icon={
-                     <Ionicons
-                        name="library-outline"
-                        size={24}
-                        color="black"
-                     />
-                  }
-               />
-               <PressAction
-                  onPress={() => {
-                     router.push('/(app)/(home)/report');
-                  }}
-                  title={'Báo cáo'}
-                  icon={
-                     <Ionicons
-                        name="analytics-outline"
-                        size={24}
-                        color="black"
-                     />
-                  }
-               />
-            </View>
-         </View>
-         <View className="mb-[100px]">
-            <View className="flex flex-row items-center justify-between px-4 mt-4">
-               <Text className="text-lg font-semibold">Danh sách phòng chơi</Text>
-               <TouchableOpacity onPress={() => router.push('/(app)/(room)/list')}>
-                  <Text className="text-blue-600">Xem tất cả</Text>
-               </TouchableOpacity>
-            </View>
-            <View className={`h-[${carouselHeight}px]`}>
-               {
-                  recentCreatedRooms.length > 0 ? <>
-                     <Carousel
-                        loop
-                        width={width}
-                        height={carouselHeight}
-                        autoPlay={false}
-                        data={recentCreatedRooms}
-                        mode='parallax'
-                        scrollAnimationDuration={2000}
-                        renderItem={({ item }) => (
-                           <View
-                              className="flex-1 rounded-xl overflow-hidden border border-gray"
-                           >
-                              <View className="flex flex-row">
-                                 <View className="flex items-center justify-center w-1/2 h-full">
-                                    <Image
-                                       source={{ uri: 'https://www.jrykerscreative.com.au/wp-content/uploads/2020/09/lets-play-650x804.jpg' }}
-                                       className="h-full"
-                                       style={{ aspectRatio: 1 }}
-                                    />
-                                 </View>
-                                 <View className="p-4">
-                                    <Text className="font-semibold">Mã phòng: <Text className="text-blue-600 font-semibold">{item.room_code}</Text></Text>
-                                    <Text className="text-gray text-[12px] mt-2">{createdAtConvert(item.createdAt)}</Text>
-                                    <Button text='Xem chi tiết' otherStyles='p-4 mt-2' onPress={() => {
-                                       setCurrentRoom(item.room_code);
-                                       socket.emit('joinRoom', { roomCode: item.room_code, user: userData });
-                                       router.push({
-                                          pathname: '/(app)/(teacher)/teacher_room_wait',
-                                          params: { roomCode: item.room_code }
-                                       });
-                                    }} />
-                                 </View>
-                              </View>
-                           </View>
-                        )}
-                     />
-                  </>
-                     : <View className="w-full h-[400px] flex items-center justify-center">
-                        <Lottie
-                           source={require('@/assets/jsons/empty.json')}
-                           width={250}
-                           height={250}
-                           text={'Bạn chưa tạo phòng nào'}
-                        />
-                     </View>
-               }
-            </View>
-         </View>
+               <View className={``}>
+                  <View className="flex flex-row items-center justify-between px-4 mt-4">
+                     <Text className="text-lg font-semibold">Các phòng chơi đã tạo gần đây</Text>
+                     <TouchableOpacity onPress={() => router.push('/(app)/(room)/list')}>
+                        <Text className="text-blue-600">Xem tất cả</Text>
+                     </TouchableOpacity>
+                  </View>
+                  <View className={`h-[${carouselHeight}px]`}>
+                     {
+                        recentCreatedRooms.length > 0 ? <>
+                           <Carousel
+                              loop
+                              width={width}
+                              height={carouselHeight}
+                              autoPlay={false}
+                              data={recentCreatedRooms}
+                              mode='parallax'
+                              scrollAnimationDuration={2000}
+                              renderItem={({ item }) => (
+                                 <CardRoomItem room={item} />
+                              )}
+                           />
+                        </>
+                           : <>
+                              {isFetching ? <Carousel
+                                 loop
+                                 width={width}
+                                 height={carouselHeight}
+                                 autoPlay={false}
+                                 data={[1, 2, 3]}
+                                 mode='parallax'
+                                 scrollAnimationDuration={2000}
+                                 renderItem={({ item }) => (
+                                    <CardRoomItem room={item} />
+                                 )}
+                              /> : <View className="w-full h-[400px] flex items-center justify-center">
+                                 <Lottie
+                                    source={require('@/assets/jsons/empty.json')}
+                                    width={250}
+                                    height={250}
+                                    text={'Bạn chưa tạo phòng nào'}
+                                 />
+                              </View>}
+                           </>
+                     }
+                  </View>
+               </View>
+               <View className="mb-[100px] relative">
+                  <View className="flex flex-row items-center justify-between px-4 mt-4">
+                     <Text className="text-lg font-semibold">Các bộ câu hỏi đã tạo gần đây</Text>
+                     <TouchableOpacity onPress={() => router.push('/(app)/(home)/libraly')}>
+                        <Text className="text-blue-600">Xem tất cả</Text>
+                     </TouchableOpacity>
+                  </View>
+                  <View className={`h-[${carouselHeight}px]`}>
+                     {
+                        newQuizzes.length > 0 ? <>
+                           <Carousel
+                              loop
+                              width={width}
+                              height={carouselHeight}
+                              autoPlay={false}
+                              data={newQuizzes}
+                              mode='parallax'
+                              scrollAnimationDuration={2000}
+                              renderItem={({ item }) => (
+                                 <CardQuiz quiz={item} type='vertical' routerPath='/(app)/(quiz)/overview' params={{ id: item._id }} />
+                              )}
+                           />
+                        </>
+                           : <>
+                              {isFetching ? <Carousel
+                                 loop
+                                 width={width}
+                                 height={carouselHeight}
+                                 autoPlay={false}
+                                 data={[1, 2, 3]}
+                                 mode='parallax'
+                                 scrollAnimationDuration={2000}
+                                 renderItem={({ item }) => (
+                                    <QuizCardSkeleton />
+                                 )}
+                              /> : <View className="w-full h-[400px] flex items-center justify-center">
+                                 <Lottie
+                                    source={require('@/assets/jsons/empty.json')}
+                                    width={250}
+                                    height={250}
+                                    text={'Bạn chưa tạo bài kiểm tra nào'}
+                                 />
+                              </View>}
+                           </>
+                     }
+                  </View>
+               </View>
+            </ScrollView>
+         </RefreshControl>
       </Wrapper >
    );
 };
