@@ -342,7 +342,17 @@
       "reject": "Reject"
    },
    "library": {
-      "title": "Library"
+      "title": "Library",
+      "library": "Library",
+      "collection": "Collection",
+      "quizShared": "Shared Quiz",
+      "quizCreated": "Created Quiz",
+      "filter": "Filter",
+      "search": "Search",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "btnFresh": "Reset"
+
    },
    "lockFeature": {
       "title": "You do not have access to this feature",
