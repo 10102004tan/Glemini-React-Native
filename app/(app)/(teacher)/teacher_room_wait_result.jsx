@@ -13,6 +13,7 @@ import { useGlobalSearchParams, useRouter } from 'expo-router';
 import socket from '@/utils/socket';
 import Button from '@/components/customs/Button';
 import { sortRankBoardDesc } from '../../../utils';
+import { useAppProvider } from '@/contexts/AppProvider';
 const TeacherRoomWaitResultScreen = () => {
    const [translateValue] = useState(new Animated.Value(0));
    const screenWidth = Dimensions.get('window').width;
@@ -30,8 +31,9 @@ const TeacherRoomWaitResultScreen = () => {
    const animatedWidthGreen = useRef(new Animated.Value(50)).current;
    const animatedWidthRed = useRef(new Animated.Value(50)).current;
    const [minutesLeft, setMinutesLeft] = useState(0); // đơn vị phút
-   const [roomStatus, setRoomStatus] = useState('Phòng vẫn đang mở');
+   // const [roomStatus, setRoomStatus] = useState('Phòng vẫn đang mở');
    const router = useRouter();
+   const { i18n } = useAppProvider();
 
    useEffect(() => {
       // Chạy animation khi giá trị `accuracy` thay đổi
@@ -203,14 +205,15 @@ const TeacherRoomWaitResultScreen = () => {
                <Text className="text-white font-semibold text-lg">
                   {/* Thời gian còn lại: {minutesLeft} phút */}
                </Text>
-               <Button text='Kết thúc' otherStyles='p-3 bg-red-500' onPress={() => {
-                  Alert.alert('Thông báo', 'Bạn có chắc chắn muốn thoát phòng?', [
+               <Button text={i18n.t('room_wait_result.done')
+               } otherStyles='p-3 bg-red-500' onPress={() => {
+                  Alert.alert(i18n.t('room_wait.alert'), i18n.t('room_wait.exitRoomConfirmation'), [
                      {
-                        text: 'Hủy',
+                        text: i18n.t('room_wait.cancel'),
                         onPress: () => { }
                      },
                      {
-                        text: 'Thoát',
+                        text: i18n.t('room_wait.leave'),
                         onPress: async () => {
                            const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_UPDATE_STATUS}`, {
                               method: 'POST',
@@ -241,7 +244,7 @@ const TeacherRoomWaitResultScreen = () => {
             <View className="p-4 rounded-2xl bg-black flex flex-row items-center justify-between">
                <View >
                   <Text className="text-sm text-gray">
-                     Mã tham gia
+                     {i18n.t('room_item.roomCode')}
                   </Text>
                   <Text className="text-white text-lg">
                      {roomCode}
@@ -262,7 +265,7 @@ const TeacherRoomWaitResultScreen = () => {
                      {accuracy}%
                   </Text>
                   <Text className="text-gray text-sm">
-                     Độ chính xác
+                     {i18n.t('room_wait_result.correctPercent')}
                   </Text>
                </View>
             </View>
@@ -273,14 +276,14 @@ const TeacherRoomWaitResultScreen = () => {
                      onPress={() => setTabResult('rankboard')}
                   >
                      <Text className="text-white text-center">
-                        Bảng xếp hạng
+                        {i18n.t('room_wait_result.rankboard')}
                      </Text>
                   </TouchableOpacity>
                   <TouchableOpacity className="w-1/2"
                      onPress={() => setTabResult('question')}
                   >
                      <Text className="text-white text-center">
-                        Câu hỏi
+                        {i18n.t('room_wait_result.question')}
                      </Text>
                   </TouchableOpacity>
                   <Animated.View className="w-1/2 absolute h-1 bg-white rounded-2xl bottom-0 left-0"
@@ -302,7 +305,7 @@ const TeacherRoomWaitResultScreen = () => {
                   <View className="flex items-center flex-row justify-start">
                      <AntDesign name="user" size={14} color="white" />
                      <Text className="text-white ml-1">
-                        {joinedUsers.length - 1} Người tham gia
+                        {joinedUsers.length - 1} {i18n.t('room_wait_result.userJoined')}
                      </Text>
                   </View>
                   {/* Items */}

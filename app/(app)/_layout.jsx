@@ -108,7 +108,7 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(quiz)/overview"
             options={{
-               headerTitle: "Chi tiết",
+               headerTitle: i18n.t('overview_quiz_screen.detail'),
                headerRight: () => {
                   return (
                      <TouchableOpacity
@@ -124,7 +124,7 @@ export default function AppRootLayout() {
                         ) : (
                            <Ionicons name="save" size={20} color="white" />
                         )}
-                        <Text className="ml-2 text-white">Lưu</Text>
+                        <Text className="ml-2 text-white">{i18n.t('overview_quiz_screen.btnSaveDetail')}</Text>
                      </TouchableOpacity>
                   );
                },
@@ -185,7 +185,7 @@ export default function AppRootLayout() {
             }}
          />
 
-         <Stack.Screen  
+         <Stack.Screen
             name="(play)/single"
             options={{
                headerShown: false,
@@ -248,7 +248,7 @@ export default function AppRootLayout() {
          <Stack.Screen
             name="(room)/list"
             options={{
-               headerTitle: "Danh sách phòng chơi",
+               headerTitle: i18n.t('room_item.listRoom'),
             }}
          />
 

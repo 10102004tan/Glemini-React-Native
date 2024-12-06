@@ -558,7 +558,7 @@ const RealtimePlay = () => {
                   {`${i18n.t('play.single.score')}: ${score}`}
                </Text>
                <Text className="p-3 bg-[#484E54] rounded-2xl text-white self-start">
-                  Thời gian còn lại: {questionTimeCountDown}
+                  {i18n.t('realtime_play.countDownTime')}: {questionTimeCountDown}
                </Text>
             </View>
             <View className="bg-[#fff] rounded-2xl p-4 py-10">

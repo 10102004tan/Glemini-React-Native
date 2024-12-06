@@ -166,7 +166,12 @@
       "createFromImage": "Create from Image",
       "createFromText": "Create from Text",
       "uploadTemplate": "Upload Template",
-      "createWithHand": "Create Manually"
+      "createWithHand": "Create Manually",
+      "createdRecentQuizzes": "Recently created question sets",
+      "createdRecentRooms": "Recently created rooms",
+      "viewAll": "View all",
+      "noTestsCreated": "You haven't created any tests yet",
+      "noRoomsCreated": "You haven't created any rooms yet"
    },
    "create_title_quiz_screen": {
       "quizName": "Quiz Name",
@@ -176,6 +181,67 @@
       "promptRequest": "Please tell us your prompt",
       "quizThumbnailUploadTitle": "Upload an image file to create questions from its content",
       "startCreateQuiz": "Start Creating Quiz"
+   },
+   "room_item": {
+      "viewDetail": "View details",
+      "roomCode": "Room code",
+      "prevMinutes": "minutes ago",
+      "prevHour": "hour ago",
+      "prevDay": "day ago",
+      "prevMonth": "month ago",
+      "prevYear": "year ago",
+      "new": "Just created",
+      "processing": "In progress",
+      "ended": "Ended",
+      "findRoomLabel": "Find game room",
+      "listRoom": "List of rooms",
+      "emptyList": "Empty list",
+      "searching": "Searching..."
+   },
+   "room_wait": {
+      "userJoined": "Player {name} has joined the room",
+      "userLeft": "Player {name} has left the room",
+      "roomNotEnoughPlayers": "The room needs at least 1 player to start",
+      "copyRoomCodeSuccess": "Room code copied successfully",
+      "copyRoomCodeFail": "Failed to copy room code",
+      "cannotStartRoom": "Cannot start the room",
+      "roomAlreadyCompleted": "The room has already ended, do you want to reopen it?",
+      "roomInProgress": "The room is currently open, please go to the results screen",
+      "exitRoomConfirmation": "Are you sure you want to leave the room?",
+      "notifySent": "Notification has been sent!!!",
+      "notifyError": "Error sending notification, please try again after a few minutes",
+      "classroomSelect": "Please select a classroom",
+      "alert": "Alert",
+      "cancel": "Cancel",
+      "leave": "Leave",
+      "errorLeaveRoom": "Error leaving the room",
+      "listJoined": "List of players who have joined the room",
+      "copy": "Copy",
+      "openAgain": "Open again",
+      "followResult": "Follow the results",
+      "start": "Start",
+      "shareQr": "Share this QR code so other players can join the room",
+      "totalJoined": "Total number of participants",
+      "completed": "Completed",
+      "notFound": "Not found",
+      "full": "The number of players is full, cannot join!!!",
+      "joined": "You have joined this room!!!"
+   },
+   "room_wait_result": {
+      "correctPercent": "Accuracy",
+      "rankboard": "Leaderboard",
+      "question": "Question",
+      "userJoined": "Participants",
+      "done": "End"
+   },
+   "realtime_play": {
+      "countDownTime": "Countdown time"
+   },
+   "card_quiz": {
+      "public": "Public",
+      "private": "Private",
+      "noDescription": "No description",
+      "viewOnly": "View only"
    },
    "overview_quiz_screen": {
       "detail": "Detail",

@@ -1,4 +1,5 @@
 'use strict';
+import { useAppProvider } from '@/contexts/AppProvider';
 import markdownToTxt from 'markdown-to-txt';
 
 const validateEmail = (email) => {
@@ -74,36 +75,37 @@ const sortRankBoardDesc = (data) => {
 };
 
 const createdAtConvert = (dateString) => {
+	const { i18n } = useAppProvider();
 	const date = new Date(dateString);
 	const now = new Date();
 	const diffInSeconds = Math.floor((now - date) / 1000);
 
 	if (diffInSeconds < 60) {
-		return 'Vừa mới tạo';
+		return i18n.t('room_item.new');
 	}
 
 	const diffInMinutes = Math.floor(diffInSeconds / 60);
 	if (diffInMinutes < 60) {
-		return `${diffInMinutes} phút trước`;
+		return `${diffInMinutes} ${i18n.t('room_item.prevMinutes')}`;
 	}
 
 	const diffInHours = Math.floor(diffInMinutes / 60);
 	if (diffInHours < 24) {
-		return `${diffInHours} giờ trước`;
+		return `${diffInHours} ${i18n.t('room_item.prevHour')}`;
 	}
 
 	const diffInDays = Math.floor(diffInHours / 24);
 	if (diffInDays < 30) {
-		return `${diffInDays} ngày trước`;
+		return `${diffInDays} ${i18n.t('room_item.prevDay')}`;
 	}
 
 	const diffInMonths = Math.floor(diffInDays / 30);
 	if (diffInMonths < 12) {
-		return `${diffInMonths} tháng trước`;
+		return `${diffInMonths} ${i18n.t('room_item.prevMonth')}`;
 	}
 
 	const diffInYears = Math.floor(diffInMonths / 12);
-	return `${diffInYears} năm trước`;
+	return `${diffInYears} ${i18n.t('room_item.prevYear')}`;
 };
 
 const convertSubjectToDataKeyValue = (subjects) => {
@@ -127,5 +129,5 @@ export {
 	convertMarkdownToText,
 	sortRankBoardDesc,
 	createdAtConvert,
-	convertSubjectToDataKeyValue
+	convertSubjectToDataKeyValue,
 };
