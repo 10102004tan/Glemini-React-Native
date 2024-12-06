@@ -3,6 +3,7 @@ import React from "react";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useQuizProvider } from "@/contexts/QuizProvider";
+import { useAppProvider } from "@/contexts/AppProvider";
 
 const CardQuiz = ({
    quiz = {},
@@ -11,9 +12,11 @@ const CardQuiz = ({
    isDelete = false,
    params = {},
    handleDelete,
+   showCheck = true
 }) => {
    const router = useRouter();
    const { isEdited } = useQuizProvider();
+   const { i18n } = useAppProvider();
 
    if (type === "horizontal") {
       const { quiz_thumb, quiz_name, quiz_description, quiz_status } = quiz;
@@ -87,14 +90,14 @@ const CardQuiz = ({
                <View className="flex flex-col p-4 w-full">
                   <Text className="text-lg font-semibold mt-2">{quiz.quiz_name}</Text>
                   <Text className="text-gray mb-2 max-w-[360px] overflow-hidden ">
-                     {quiz.quiz_description || "Không có mô tả"}
+                     {quiz.quiz_description || i18n.t('card_quiz.noDescription')}
                   </Text>
                   <View className="flex-row justify-between">
                      <Text className="text-green-600">
-                        {quiz.quiz_status === "unpublished" ? "Riêng tư" : "Công khai"}
+                        {quiz.quiz_status === "unpublished" ? i18n.t('card_quiz.private') : i18n.t('card_quiz.public')}
                      </Text>
                      <Text className="font-bold text-[15px]">
-                        {isEdited ? "" : "Chỉ được xem"}
+                        {showCheck ? isEdited ? "" : i18n.t('card_quiz.viewOnly') : ""}
                      </Text>
                   </View>
                </View>

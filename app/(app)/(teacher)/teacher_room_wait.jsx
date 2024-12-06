@@ -22,6 +22,7 @@ import { useClassroomProvider } from '@/contexts/ClassroomProvider'
 import Overlay from '@/components/customs/Overlay'
 import DropDownMultipleSelect from '@/components/customs/DropDownMultipleSelect'
 import { SelectList } from 'react-native-dropdown-select-list'
+import { useAppProvider } from '@/contexts/AppProvider'
 
 const TeacherRoomWaitScreen = () => {
    const router = useRouter();
@@ -35,6 +36,7 @@ const TeacherRoomWaitScreen = () => {
    const { classrooms } = useClassroomProvider();
    const [showClassroom, setShowClassroom] = useState(false);
    const [selectedClass, setSelectedClass] = useState(null);
+   const { i18n } = useAppProvider();
 
 
    useEffect(() => {
@@ -45,7 +47,7 @@ const TeacherRoomWaitScreen = () => {
          setTotalJoindUsers((prev) => prev + 1);
          Toast.show({
             type: 'info',
-            text1: `Người chơi ${data.user.user_fullname} đã tham gia phòng`,
+            text1: i18n.t('room_wait.userJoined').replace('{name}', data.user.user_fullname),
             visibilityTime: 3000,
             autoHide: true,
          });
@@ -65,7 +67,7 @@ const TeacherRoomWaitScreen = () => {
          setTotalJoindUsers((prev) => prev - 1);
          Toast.show({
             type: 'info',
-            text1: `Người chơi ${data.user.user_fullname} đã rời phòng`,
+            text1: i18n.t('room_wait.userLeft').replace('{name}', data.user.user_fullname),
             visibilityTime: 3000,
             autoHide: true,
          });
@@ -127,10 +129,10 @@ const TeacherRoomWaitScreen = () => {
       if (!isFocused) return; // Chỉ lắng nghe khi màn hình được hiển thị
 
       const backAction = async () => {
-         Alert.alert('Cảnh báo', 'Bạn có chắc chắn muốn thoát khỏi phòng chơi không?', [
-            { text: 'Hủy', onPress: () => null, style: 'cancel' },
+         Alert.alert(i18n.t('room_wait.alert'), i18n.t('room_wait.exitRoomConfirmation'), [
+            { text: i18n.t('room_wait.cancel'), onPress: () => null, style: 'cancel' },
             {
-               text: 'Thoát', onPress: async () => {
+               text: i18n.t('room_wait.leave'), onPress: async () => {
                   const exitRoom = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_REMOVE_USER}`, {
                      method: 'POST',
                      headers: {
@@ -154,7 +156,7 @@ const TeacherRoomWaitScreen = () => {
                   } else {
                      Toast.show({
                         type: 'info',
-                        text1: 'Không thể mở phòng chơi',
+                        text1: i18n.t('room_wait.errorLeaveRoom'),
                         visibilityTime: 3000,
                         autoHide: true,
                      });
@@ -197,14 +199,14 @@ const TeacherRoomWaitScreen = () => {
          await Clipboard.setStringAsync(roomData.room_code);
          Toast.show({
             type: 'success',
-            text1: 'Sao chép mã phòng thành công',
+            text1: i18n.t('room_wait.copyRoomCodeSuccess'),
             visibilityTime: 1000,
             autoHide: true,
          });
       } catch (error) {
          Toast.show({
             type: 'error',
-            text1: 'Sao chép mã phòng thất bại',
+            text1: i18n.t('room_wait.copyRoomCodeFail'),
             visibilityTime: 1000,
             autoHide: true,
          });
@@ -216,7 +218,7 @@ const TeacherRoomWaitScreen = () => {
       if ((joinedUsers.length - 1) < 1) {
          Toast.show({
             type: 'info',
-            text1: 'Phòng chơi cần ít nhất 1 người tham gia để bắt đầu',
+            text1: i18n.t('room_wait.roomNotEnoughPlayers'),
             visibilityTime: 3000,
             autoHide: true,
          });
@@ -255,7 +257,7 @@ const TeacherRoomWaitScreen = () => {
       else {
          Toast.show({
             type: 'info',
-            text1: 'Không thể bắt đầu phòng chơi',
+            text1: i18n.t('room_wait.cannotStartRoom'),
             visibilityTime: 3000,
             autoHide: true,
          });
@@ -287,7 +289,7 @@ const TeacherRoomWaitScreen = () => {
       else {
          Toast.show({
             type: 'info',
-            text1: 'Không thể mở phòng chơi',
+            text1: i18n.t('room_wait.cannotStartRoom'),
             visibilityTime: 3000,
             autoHide: true,
          });
@@ -299,7 +301,7 @@ const TeacherRoomWaitScreen = () => {
       if (classroomId === null) {
          Toast.show({
             type: 'info',
-            text1: 'Vui lòng chọn lớp học',
+            text1: i18n.t('room_wait.classroomSelect'),
             visibilityTime: 3000,
             autoHide: true,
          });
@@ -325,14 +327,14 @@ const TeacherRoomWaitScreen = () => {
          if (data.statusCode === 200) {
             Toast.show({
                type: 'success',
-               text1: "Thông báo đã được gửi đi !!!",
+               text1: i18n.t('room_wait.notifySent'),
                visibilityTime: 1000,
                autoHide: true,
             });
          } else {
             Toast.show({
                type: 'error',
-               text1: "Lỗi khi gửi thông báo, vui lòng thử lại sau ít phút",
+               text1: i18n.t('room_wait.notifyError'),
                visibilityTime: 2000,
                autoHide: true,
             });
@@ -341,7 +343,7 @@ const TeacherRoomWaitScreen = () => {
          console.log(error);
          Toast.show({
             type: 'error',
-            text1: "Lỗi khi gửi thông báo, vui lòng thử lại sau ít phút",
+            text1: i18n.t('room_wait.notifyError'),
             visibilityTime: 1000,
             autoHide: true,
          });
@@ -374,7 +376,7 @@ const TeacherRoomWaitScreen = () => {
          }}>
             {/* Hiển thị danh sách lớp học */}
             <View className="bg-white p-4 rounded-2xl">
-               <Text className="text-xl font-semibold mb-4">Danh sách lớp học</Text>
+               <Text className="text-xl font-semibold mb-4">{i18n.t('room_wait.listJoined')}</Text>
                <ScrollView
                   showsHorizontalScrollIndicator={false}
                   showsVerticalScrollIndicator={false}
@@ -398,14 +400,14 @@ const TeacherRoomWaitScreen = () => {
 
          <View className="flex-1 p-4 bg-primary pt-[60px]">
             <View className="flex flex-row items-center justify-end w-full">
-               <Button text='Thoát' otherStyles='p-3 bg-red-500 justify-center w-fit' onPress={() => {
-                  Alert.alert('Thông báo', 'Bạn có chắc chắn muốn thoát phòng?', [
+               <Button text={i18n.t('room_wait.leave')} otherStyles='p-3 bg-red-500 justify-center w-fit' onPress={() => {
+                  Alert.alert(i18n.t('room_wait.alert'), i18n.t('room_wait.exitRoomConfirmation'), [
                      {
-                        text: 'Hủy',
+                        text: i18n.t('room_wait.cancel'),
                         onPress: () => { }
                      },
                      {
-                        text: 'Thoát',
+                        text: i18n.t('room_wait.leave'),
                         onPress: async () => {
                            const exitRoom = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_REMOVE_USER}`, {
                               method: 'POST',
@@ -431,7 +433,7 @@ const TeacherRoomWaitScreen = () => {
                            } else {
                               Toast.show({
                                  type: 'info',
-                                 text1: 'Không thể mở phòng chơi',
+                                 text1: i18n.t('room_wait.errorLeaveRoom'),
                                  visibilityTime: 3000,
                                  autoHide: true,
                               });
@@ -442,8 +444,8 @@ const TeacherRoomWaitScreen = () => {
                }} />
             </View>
             <View className="my-4">
-               {roomData && roomData.status === 'completed' && <Text className="text-white bg-red-500 text-center p-4 rounded-2xl">Phòng chơi đã kết thúc trước đó bạn có muốn mở lại không ?</Text>}
-               {roomData && roomData.status === 'doing' && <Text className="text-white bg-red-500 text-center p-4 rounded-2xl">Phòng hiện đang mở hãy chuyển tới màn hình theo dõi kết quả</Text>}
+               {roomData && roomData.status === 'completed' && <Text className="text-white bg-red-500 text-center p-4 rounded-2xl">{i18n.t('room_wait.roomAlreadyCompleted')}</Text>}
+               {roomData && roomData.status === 'doing' && <Text className="text-white bg-red-500 text-center p-4 rounded-2xl">{i18n.t('room_wait.roomInProgress')}</Text>}
             </View>
             <ScrollView className=""
                showsHorizontalScrollIndicator={false}
@@ -454,33 +456,33 @@ const TeacherRoomWaitScreen = () => {
                   <View className="w-full h-[200px] bg-[rgba(117, 117, 117, 0.3)] flex items-center justify-center p-4 rounded-2xl">
 
                      <View className="w-full rounded-xl  bg-white">
-                        <Field placeholder={`Mã phòng: ${roomData && roomData.room_code}`} disabled={true} />
+                        <Field placeholder={`${i18n.t('room_item.roomCode')}: ${roomData && roomData.room_code}`} disabled={true} />
                      </View>
-                     <Button text='Sao chép' onPress={handleCopyRoomCode} otherStyles='p-3 mt-4 w-full flex items-center justify-center bg-[#A1732A]' textStyles='' icon={<Feather name="copy" size={20} color="white" />} />
-                     {userData && roomData && userData._id === roomData.user_created_id && roomData.status === 'completed' && <Button text='Mở lại' onPress={() => {
+                     <Button text={i18n.t('room_wait.copy')} onPress={handleCopyRoomCode} otherStyles='p-3 mt-4 w-full flex items-center justify-center bg-[#A1732A]' textStyles='' icon={<Feather name="copy" size={20} color="white" />} />
+                     {userData && roomData && userData._id === roomData.user_created_id && roomData.status === 'completed' && <Button text={i18n.t('room_wait.openAgain')} onPress={() => {
                         handleReOpenRoom();
                      }} otherStyles='p-3 mt-4 w-full flex items-center justify-center bg-[#A1732A]' textStyles='' />}
 
-                     {userData && roomData && userData._id === roomData.user_created_id && roomData.status === 'doing' && <Button text='Chuyển tới màn hình theo dõi' onPress={() => {
+                     {userData && roomData && userData._id === roomData.user_created_id && roomData.status === 'doing' && <Button text={i18n.t('room_wait.followResult')} onPress={() => {
                         router.replace({
                            pathname: '/(teacher)/teacher_room_wait_result',
                            params: { roomCode: roomCode, users: JSON.stringify(joinedUsers), quizId: roomData.quiz_id, createdAt: roomData.createdAt }
                         })
                      }} otherStyles='p-3 mt-4 w-full flex items-center justify-center bg-[#A1732A]' textStyles='' />}
 
-                     {userData && roomData && userData._id === roomData.user_created_id && roomData.status === 'start' && <Button text='Bắt đầu' onPress={() => {
+                     {userData && roomData && userData._id === roomData.user_created_id && roomData.status === 'start' && <Button text={i18n.t('room_wait.start')} onPress={() => {
                         handleStartRoom();
                      }} otherStyles='p-3 mt-4 w-full flex items-center justify-center bg-[#A1732A]' textStyles='' />}
                   </View>
                </View>
                {userData && roomData && userData._id === roomData.user_created_id && <View className="mt-4 bg-[#2f3542] p-8 flex items-center justify-center rounded-2xl">
-                  <Text className="text-blue-500 text-center">Chia sẽ mã QR code này để các người chơi khác có thể vào phòng</Text>
+                  <Text className="text-blue-500 text-center">{i18n.t('room_wait.shareQr')}</Text>
                   <QRGenerator value={roomCode} handleShareRoom={() => {
                      setShowClassroom(true)
                   }} />
                </View>}
                <View className="mt-4 p-4 rounded-2xl bg-[#2f3542] w-full">
-                  <Text className="text-white text-center">Tổng số người đã tham gia ({totalJoindUsers > 0 ? totalJoindUsers - 1 : totalJoindUsers})</Text>
+                  <Text className="text-white text-center">{i18n.t('room_wait.totalJoined')} ({totalJoindUsers > 0 ? totalJoindUsers - 1 : totalJoindUsers})</Text>
                </View>
                <View className="mt-4 p-4 w-full">
                   {/* Student Items */}

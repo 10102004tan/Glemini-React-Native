@@ -168,7 +168,70 @@
       "createFromImage": "Tạo từ ảnh",
       "createFromText": "Tạo từ văn bản",
       "uploadTemplate": "Tải lên mẫu",
-      "createWithHand": "Tạo bằng tay"
+      "createWithHand": "Tạo bằng tay",
+      "createdRecentQuizzes": "Các bộ câu hỏi đã tạo gần đây",
+      "createdRecentRooms": "Các phòng chơi đã tạo gần đây",
+      "viewAll": "Xem tất cả",
+      "noTestsCreated": "Bạn chưa tạo bài kiểm tra nào",
+      "noRoomsCreated": "Bạn chưa tạo phòng nào"
+   },
+   "room_item": {
+      "viewDetail": "Xem chi tiết",
+      "roomCode": "Mã phòng",
+      "prevMinutes": "phút trước",
+      "prevHour": "giờ trước",
+      "prevDay": "ngày trước",
+      "prevMonth": "tháng trước",
+      "prevYear": "năm trước",
+      "new": "Vừa mới tạo",
+      "processing": "Đang diễn ra",
+      "ended": "Đã kết thúc",
+      "findRoomLabel": "Tìm kiếm phòng chơi",
+      "listRoom": "Danh sách phòng chơi",
+      "emptyList": "Danh sách trống",
+      "searching": "Đang tìm kiếm..."
+   },
+   "room_wait": {
+      "userJoined": "Người chơi {name} đã tham gia phòng",
+      "userLeft": "Người chơi {name} đã rời phòng",
+      "roomNotEnoughPlayers": "Phòng chơi cần ít nhất 1 người tham gia để bắt đầu",
+      "copyRoomCodeSuccess": "Sao chép mã phòng thành công",
+      "copyRoomCodeFail": "Sao chép mã phòng thất bại",
+      "cannotStartRoom": "Không thể bắt đầu phòng chơi",
+      "roomAlreadyCompleted": "Phòng chơi đã kết thúc trước đó bạn có muốn mở lại không ?",
+      "roomInProgress": "Phòng hiện đang mở hãy chuyển tới màn hình theo dõi kết quả",
+      "exitRoomConfirmation": "Bạn có chắc chắn muốn thoát phòng?",
+      "notifySent": "Thông báo đã được gửi đi !!!",
+      "notifyError": "Lỗi khi gửi thông báo, vui lòng thử lại sau ít phút",
+      "classroomSelect": "Vui lòng chọn lớp học",
+      "errorLeaveRoom": "Lỗi khi rời phòng, vui lòng thử lại sau ít phút",
+      "alert": "Cảnh báo",
+      "cancel": "Hủy",
+      "leave": "Rời phòng",
+      "listJoined": "Danh sách người tham gia",
+      "copy": "Sao chép mã phòng",
+      "openAgain": "Mở lại",
+      "followResult": "Chuyển tới màn hình theo dõi",
+      "start": "Bắt đầu",
+      "shareQr": "Chia sẽ mã QR code này để các người chơi khác có thể vào phòng",
+      "totalJoined": "Tổng số người đã tham gia",
+      "completed": "Bạn đã hoàn thành phòng chơi này !!!",
+      "notFound": "Phòng chơi không tồn tại !!!",
+      "full": "Số lượng người chơi đã đầy không thể tham gia !!!",
+      "joined": "Bạn đã tham gia vào phòng chơi này !!!"
+   },
+   "room_wait_result": {
+      "correctPercent": "Độ chính xác",
+      "rankboard": "Bảng xếp hạng",
+      "question": "Câu hỏi",
+      "userJoined": "Người tham gia",
+      "done": "Kết thúc"
+   },
+   "card_quiz": {
+      "public": "Công khai",
+      "private": "Riêng tư",
+      "noDescription": "Không có mô tả",
+      "viewOnly": "Chỉ được xem"
    },
    "create_title_quiz_screen": {
       "quizName": "Tên bài kiểm tra",
@@ -436,6 +499,11 @@
       "notiDL": "Đã quá hạn làm bài!",
       "textCreated": "bởi:"
    },
+
+   "realtime_play": {
+      "countDownTime": "Thời gian còn lại"
+   },
+
    "modal": {
       "title": "Thông báo",
       "text": "Bạn có chắc chắn muốn xóa không?",
@@ -447,6 +515,7 @@
       "textDeleteSchool": "Bạn có chắc chắn muốn xóa trường học này không?",
       "ok": "OK"
    },
+
    "notification": {
       "title": "Thông báo",
       "emptyNotification": "Không có thông báo",

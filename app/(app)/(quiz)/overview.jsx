@@ -95,6 +95,7 @@ const QuizzOverViewScreen = () => {
       setQuestionFetching,
       isSave,
       setIsSave,
+      setIsEdited
    } = useQuizProvider();
 
    const {
@@ -172,6 +173,17 @@ const QuizzOverViewScreen = () => {
          setQuizStatusChange(data.metadata.quiz_status);
          setQuizSubjectsChange(data.metadata.subject_ids);
          setQuizThumbnailChange(data.metadata.quiz_thumb);
+
+
+         if (data.metadata.user_id === userData._id) {
+            setIsEdited(true);
+         } else {
+            const check = users.some(
+               (user) => user.user_id === userData._id && user.isEdit
+            );
+            setIsEdited(check);
+         }
+
       } else {
          if (data.statusCode === 401 && data.message === 'expired') {
             processAccessTokenExpired();
@@ -520,7 +532,10 @@ const QuizzOverViewScreen = () => {
             message={alertMessage}
          />
 
-         <ScrollView className="mb-[80px]">
+         <ScrollView className="mb-[80px]"
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+         >
             {quizFetching ? (
                <>
                   {/* <Text>LOADING</Text> */}

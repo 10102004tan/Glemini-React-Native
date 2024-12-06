@@ -1,14 +1,12 @@
-import { View, Text, Image, TouchableWithoutFeedback, TouchableOpacity, ScrollView, FlatList, Dimensions, RefreshControl } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, FlatList, Dimensions, RefreshControl } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import Wrapper from '../../components/customs/Wrapper';
-import { Images } from '../../constants';
-import Field from '../../components/customs/Field';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import PressAction from '../../components/customs/PressAction';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import BottomSheet from '../../components/customs/BottomSheet';
 import { useAppProvider } from '../../contexts/AppProvider';
-import { router, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import Overlay from '../../components/customs/Overlay';
 import LockFeature from '@/components/customs/LockFeature';
 import { AuthContext, useAuthContext } from '@/contexts/AuthContext';
@@ -16,28 +14,21 @@ import QuizzCreateAction from '../../components/customs/QuizCreateAction';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import NotificationIcon from "@/components/customs/NotificationIcon";
 import socket from '@/utils/socket';
-import Button from '@/components/customs/Button';
-import { useRoomProvider } from '@/contexts/RoomProvider';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import Lottie from '@/components/loadings/Lottie';
-import { createdAtConvert } from '@/utils';
 import Carousel from 'react-native-reanimated-carousel';
-import QuizCardItem from '@/components/customs/QuizCardItem';
 import CardQuiz from '@/components/customs/CardQuiz';
 import CardRoomItem from '@/components/customs/CardRoomItem';
-import RoomItemSkeleton from '@/components/loadings/RoomItemSkeleton';
 import QuizCardSkeleton from '@/components/loadings/QuizCardSkeleton';
+import { I18n } from 'i18n-js';
 
 
 const TeacherHomeScreen = () => {
    const { teacherStatus, userData: { user_fullname, user_avatar, user_email, _id, accessToken }, numberOfUnreadNoti } = useContext(AuthContext);
-
    const { setIsHiddenNavigationBar } = useAppProvider();
    const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
    const { setActionQuizType } = useQuizProvider();
    const router = useRouter();
-   const { currentRoom, setCurrentRoom } = useRoomProvider();
-   const [roomCode, setRoomCode] = useState('');
    const [recentCreatedRooms, setRecentCreatedRooms] = useState([]);
    const [isFetching, setIsFetching] = useState(true);
    const { userData } = useAuthContext();
@@ -46,6 +37,7 @@ const TeacherHomeScreen = () => {
    const carouselHeight = width * 2 / 3;
    const [newQuizzes, setNewQuizzes] = useState([]);
    const [refreshing, setRefreshing] = useState(false);
+   const { i18n } = useAppProvider();
 
    const onRefresh = () => {
       setRefreshing(true);
@@ -163,10 +155,10 @@ const TeacherHomeScreen = () => {
             onClose={handleCloseBottomSheet}
          >
             <View className="flex flex-col items-start justify-start">
-               <Text className="text-lg">Tạo bài kiểm tra với AI</Text>
+               <Text className="text-lg">{i18n.t('teacher_homepage.createQuizWithAi')}</Text>
                <View className="flex items-center justify-start flex-row mt-4">
-                  <QuizzCreateAction
-                     title={'Tạo bài kiểm tra'}
+                  {/* <QuizzCreateAction
+                     title={i18n.t('teacher_homepage.createQuizWithAi')}
                      icon={
                         <Ionicons
                            name="documents-outline"
@@ -174,7 +166,7 @@ const TeacherHomeScreen = () => {
                            color="black"
                         />
                      }
-                  />
+                  /> */}
                   <QuizzCreateAction
                      handlePress={() => {
                         setActionQuizType('ai/prompt');
@@ -182,7 +174,7 @@ const TeacherHomeScreen = () => {
                         router.push('/(app)/(quiz)/create_title');
                      }}
                      otherStyles="ml-2"
-                     title={'Tạo từ văn bản'}
+                     title={i18n.t('teacher_homepage.createFromText')}
                      icon={
                         <Ionicons
                            name="text-outline"
@@ -192,7 +184,7 @@ const TeacherHomeScreen = () => {
                      }
                   />
                </View>
-               <Text className="text-lg mt-8">Tạo thủ công</Text>
+               <Text className="text-lg mt-8">{i18n.t('teacher_homepage.createWithHand')}</Text>
                <View className="flex items-center justify-start flex-row mt-4">
                   <QuizzCreateAction
                      handlePress={() => {
@@ -200,7 +192,7 @@ const TeacherHomeScreen = () => {
                         handleCloseBottomSheet();
                         router.push('/(app)/(quiz)/create_title');
                      }}
-                     title={'Tải lên mẫu'}
+                     title={i18n.t('teacher_homepage.uploadTemplate')}
                      icon={
                         <Ionicons
                            name="documents-outline"
@@ -216,7 +208,7 @@ const TeacherHomeScreen = () => {
                         router.push('(app)/(quiz)/create_title');
                      }}
                      otherStyles="ml-2"
-                     title={'Tạo bằng tay'}
+                     title={i18n.t('teacher_homepage.createWithHand')}
                      icon={
                         <Ionicons
                            name="hand-left-outline"
@@ -233,7 +225,10 @@ const TeacherHomeScreen = () => {
             refreshing={refreshing}
             onRefresh={onRefresh}
          >
-            <ScrollView>
+            <ScrollView
+               showsHorizontalScrollIndicator={false}
+               showsVerticalScrollIndicator={false}
+            >
                {/* Header */}
                <View className="px-4 py-6 bg-primary rounded-b-3xl pt-[40px]">
                   {/* Teacher Info */}
@@ -253,25 +248,20 @@ const TeacherHomeScreen = () => {
                      <NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti} />
                   </View>
 
-                  {/*/!* Search *!/*/}
-                  {/* <Field
-                     icon={<AntDesign name="search1" size={24} color="black" />}
-                     inputStyles="bg-white"
-                     placeholder={'Tìm kiếm một bài kiểm tra hoặc bài học'} /> */}
-                  <View className="w-full h-[1px] rounded-xl mt-3 bg-white"></View>
+                  {/* <View className="w-full h-[1px] rounded-xl mt-3 bg-white"></View> */}
 
                   {/* Actions */}
                   <View className="flex flex-row items-center justify-between mt-6">
                      <PressAction
                         onPress={handleCreateQuiz}
-                        title={'Tạo Quiz'}
+                        title={i18n.t('teacher_homepage.createQuizButtonTitle')}
                         icon={<AntDesign name="plus" size={24} color="black" />}
                      />
                      <PressAction
                         onPress={() => {
                            router.push('/(app)/(home)/libraly');
                         }}
-                        title={'Thư viện của tôi'}
+                        title={i18n.t('teacher_homepage.myLibraryButtonTitle')}
                         icon={
                            <Ionicons
                               name="library-outline"
@@ -284,7 +274,7 @@ const TeacherHomeScreen = () => {
                         onPress={() => {
                            router.push('/(app)/(home)/report');
                         }}
-                        title={'Báo cáo'}
+                        title={i18n.t('teacher_homepage.reportButtonTitle')}
                         icon={
                            <Ionicons
                               name="analytics-outline"
@@ -295,11 +285,60 @@ const TeacherHomeScreen = () => {
                      />
                   </View>
                </View>
-               <View className={``}>
+               {/* Recent created quizzes */}
+               <View className="">
                   <View className="flex flex-row items-center justify-between px-4 mt-4">
-                     <Text className="text-lg font-semibold">Các phòng chơi đã tạo gần đây</Text>
+                     <Text className="text-lg font-semibold">{i18n.t('teacher_homepage.createdRecentQuizzes')}</Text>
+                     <TouchableOpacity onPress={() => router.push('/(app)/(home)/libraly')}>
+                        <Text className="text-blue-600">{i18n.t('teacher_homepage.viewAll')}</Text>
+                     </TouchableOpacity>
+                  </View>
+                  <View className={`h-[${carouselHeight}px]`}>
+                     {
+                        newQuizzes.length > 0 ? <>
+                           <Carousel
+                              loop
+                              width={width}
+                              height={carouselHeight}
+                              autoPlay={false}
+                              data={newQuizzes}
+                              mode='parallax'
+                              scrollAnimationDuration={2000}
+                              renderItem={({ item }) => (
+                                 <CardQuiz showCheck={false} quiz={item} type='vertical' routerPath='/(app)/(quiz)/overview' params={{ id: item._id }} />
+                              )}
+                           />
+                        </>
+                           : <>
+                              {isFetching ? <Carousel
+                                 loop
+                                 width={width}
+                                 height={carouselHeight}
+                                 autoPlay={false}
+                                 data={[1, 2, 3]}
+                                 mode='parallax'
+                                 scrollAnimationDuration={2000}
+                                 renderItem={({ item }) => (
+                                    <QuizCardSkeleton />
+                                 )}
+                              /> : <View className="w-full h-[400px] flex items-center justify-center">
+                                 <Lottie
+                                    source={require('@/assets/jsons/empty.json')}
+                                    width={250}
+                                    height={250}
+                                    text={i18n.t('teacher_homepage.noTestsCreated')}
+                                 />
+                              </View>}
+                           </>
+                     }
+                  </View>
+               </View>
+               {/* Recent created room */}
+               <View className={`mb-[100px]`}>
+                  <View className="flex flex-row items-center justify-between px-4 mt-4">
+                     <Text className="text-lg font-semibold">{i18n.t('teacher_homepage.createdRecentRooms')}</Text>
                      <TouchableOpacity onPress={() => router.push('/(app)/(room)/list')}>
-                        <Text className="text-blue-600">Xem tất cả</Text>
+                        <Text className="text-blue-600">{i18n.t('teacher_homepage.viewAll')}</Text>
                      </TouchableOpacity>
                   </View>
                   <View className={`h-[${carouselHeight}px]`}>
@@ -335,54 +374,7 @@ const TeacherHomeScreen = () => {
                                     source={require('@/assets/jsons/empty.json')}
                                     width={250}
                                     height={250}
-                                    text={'Bạn chưa tạo phòng nào'}
-                                 />
-                              </View>}
-                           </>
-                     }
-                  </View>
-               </View>
-               <View className="mb-[100px] relative">
-                  <View className="flex flex-row items-center justify-between px-4 mt-4">
-                     <Text className="text-lg font-semibold">Các bộ câu hỏi đã tạo gần đây</Text>
-                     <TouchableOpacity onPress={() => router.push('/(app)/(home)/libraly')}>
-                        <Text className="text-blue-600">Xem tất cả</Text>
-                     </TouchableOpacity>
-                  </View>
-                  <View className={`h-[${carouselHeight}px]`}>
-                     {
-                        newQuizzes.length > 0 ? <>
-                           <Carousel
-                              loop
-                              width={width}
-                              height={carouselHeight}
-                              autoPlay={false}
-                              data={newQuizzes}
-                              mode='parallax'
-                              scrollAnimationDuration={2000}
-                              renderItem={({ item }) => (
-                                 <CardQuiz quiz={item} type='vertical' routerPath='/(app)/(quiz)/overview' params={{ id: item._id }} />
-                              )}
-                           />
-                        </>
-                           : <>
-                              {isFetching ? <Carousel
-                                 loop
-                                 width={width}
-                                 height={carouselHeight}
-                                 autoPlay={false}
-                                 data={[1, 2, 3]}
-                                 mode='parallax'
-                                 scrollAnimationDuration={2000}
-                                 renderItem={({ item }) => (
-                                    <QuizCardSkeleton />
-                                 )}
-                              /> : <View className="w-full h-[400px] flex items-center justify-center">
-                                 <Lottie
-                                    source={require('@/assets/jsons/empty.json')}
-                                    width={250}
-                                    height={250}
-                                    text={'Bạn chưa tạo bài kiểm tra nào'}
+                                    text={i18n.t('teacher_homepage.noRoomsCreated')}
                                  />
                               </View>}
                            </>
