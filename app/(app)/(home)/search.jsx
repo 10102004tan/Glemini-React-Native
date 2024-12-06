@@ -25,7 +25,7 @@ import QuizListSkeleton from "@/components/customs/QuizListSkeleton";
 const COL_SPAN = 2;
 export default function SearchScreen() {
   const LIMIT = 10;
-  const { subjectId } = useLocalSearchParams();
+  const { subjectId, load} = useLocalSearchParams();
   const { setIsHiddenNavigationBar,i18n } = useAppProvider();
   const [key,setKey] = useState("");
   const modalizeRef = useRef(null);

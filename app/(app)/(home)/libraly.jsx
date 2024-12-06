@@ -39,7 +39,7 @@ import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import QuizzCreateAction from "@/components/customs/QuizCreateAction";
 import { I18n } from "i18n-js";
 const Library = () => {
-   const { i18n } = useAppProvider();
+  const { i18n } = useAppProvider();
   //biến name của bộ sưu tập
   const { setActionQuizType } = useQuizProvider();
   const [nameCollection, setNameCollection] = useState("");
@@ -424,6 +424,7 @@ const Library = () => {
 
   //
   const ComponentItem = ({ data }) => {
+    // console.log("data",data)
     return (
       <CardQuiz
         quiz={data}
@@ -517,12 +518,12 @@ const Library = () => {
         <View className="flex flex-col items-start justify-start">
           <Text className="text-lg">Tạo bài kiểm tra với AI</Text>
           <View className="flex items-center justify-start flex-row mt-4">
-            <QuizzCreateAction
+            {/* <QuizzCreateAction
               title={"Tạo bài kiểm tra"}
               icon={
                 <Ionicons name="documents-outline" size={24} color="black" />
               }
-            />
+            /> */}
             <QuizzCreateAction
               handlePress={() => {
                 setActionQuizType("ai/prompt");
@@ -569,22 +570,24 @@ const Library = () => {
         onClose={handleCloseBottomSheet}
       >
         <View className="m-3">
-          <Text className="text-gray mb-2">Tên bộ sưu tập</Text>
+          <Text className="text-gray mb-2">
+            {i18n.t("library.collection.collectionName")}
+          </Text>
           <TextInput
             value={nameCollection}
             onChangeText={setNameCollection}
-            placeholder="Nhập tên bộ sưu tập"
+            placeholder={i18n.t("library.collection.enterCollectionName")}
             className="border border-gray w-[350px] h-[50px] rounded-xl px-4"
           />
         </View>
         <View className="flex flex-row justify-between m-3">
           <Button
-            text="Hủy"
+            text={i18n.t("library.collection.btnCancel")}
             otherStyles="w-[45%] bg-gray-200 p-2 rounded-xl flex justify-center"
             onPress={handleCloseBottomSheet}
           />
           <Button
-            text="Tạo"
+            text={i18n.t("library.collection.btnCreate")}
             otherStyles="w-[50%] bg-blue-500 p-2 rounded-xl flex justify-center"
             textStyles="text-white text-center"
             onPress={() => {
@@ -661,7 +664,9 @@ const Library = () => {
                 onCancel={hideEndDatePicker}
               />
               <Text className="ml-2 text-gray">
-                {endDate ? endDate.toLocaleDateString() : i18n.t("library.endTime")}
+                {endDate
+                  ? endDate.toLocaleDateString()
+                  : i18n.t("library.endTime")}
               </Text>
               <View className="mr-1">
                 <AntDesign name="caretdown" size={12} color="black" />
@@ -713,7 +718,7 @@ const Library = () => {
                   : "text-gray-500"
               }`}
             >
-              {i18n.t("library.collection")}
+              {i18n.t("library.collection.title")}
             </Text>
           </TouchableOpacity>
 
@@ -725,7 +730,7 @@ const Library = () => {
                   : "text-gray-500"
               }`}
             >
-              {i18n.t("library.quizShared")}
+              {i18n.t("library.quizShared.title")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -793,7 +798,7 @@ const Library = () => {
             {/* Danh sách các bộ sưu tập */}
             <Button
               onPress={OpenBottomSheet}
-              text={"Tạo bộ sưu tập mới"}
+              text={i18n.t("library.collection.createNewCollection")}
               otherStyles={"w-1/2 justify-center p-4"}
               textStyles={"text-center text-white"}
             />

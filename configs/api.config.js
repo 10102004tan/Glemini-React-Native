@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const dev = {
   API_URL: "http://192.168.2.65:3000/api",
@@ -28,6 +28,8 @@ const dev = {
 
     // Notification
     UPDATE_NOTIFICATION_STATUS: "/notification",
+    READ_ALL_NOTIFICATION: "/notification/read-all",
+    NOTIFY_SHARE_ROOM: "/classroom/notify-student",
 
     // Question
     GET_QUIZ_BY_USER: "/quizzes/get-by-user",
@@ -62,6 +64,7 @@ const dev = {
     COPY_QUIZ: "/quizzes/copy-quiz",
     GET_ALL_USER_SHARED: "/quizzes/get-all-user-shared",
     REVOKE_SHARED_USER: "/quizzes/remove-user-shared",
+    GET_NEWEST_QUIZZES: "/quizzes/get-newest-quizzes",
 
     // Results
     RESULT_STUDENT: "/result/student",
@@ -109,6 +112,7 @@ const dev = {
 
     // Room
     ROOM_CREATE: "/room/create",
+
     ROOM_LIST: "/room/list",
     ROOM_DETAIL: "/room/detail",
     ROOM_ADD_USER: "/room/add-user",
@@ -128,16 +132,16 @@ const dev = {
 };
 
 const prod = {
-	API_VERSION: {
-		V1: '/v1',
-},
-API_URL: 'http://localhost:8000/api',
-	END_POINTS: {
-	LOGIN: '/login',
-		REGISTER: '/register',
-		LOGOUT: '/logout',
-		PROFILE: '/profile',
-},
+  API_VERSION: {
+    V1: "/v1",
+  },
+  API_URL: "http://localhost:8000/api",
+  END_POINTS: {
+    LOGIN: "/login",
+    REGISTER: "/register",
+    LOGOUT: "/logout",
+    PROFILE: "/profile",
+  },
 };
 
 module.exports = dev;
