@@ -4,22 +4,17 @@ import {
    TouchableOpacity,
    TextInput,
    Animated,
-   Image,
    ScrollView,
-   FlatList,
-   ActivityIndicator,
    Alert,
-   RefreshControl,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
-import Wrapper from "@/components/customs/Wrapper";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import Button from "@/components/customs/Button";
 import { useAppProvider } from "@/contexts/AppProvider";
 import BottomSheet from "@/components/customs/BottomSheet";
 import Overlay from "@/components/customs/Overlay";
 import { useQuizProvider } from "@/contexts/QuizProvider";
-import { router, useGlobalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import { AuthContext, useAuthContext } from "@/contexts/AuthContext";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -32,12 +27,8 @@ import {
 import LockFeature from "@/components/customs/LockFeature";
 import CardQuiz from "@/components/customs/CardQuiz";
 import { Dimensions } from "react-native";
-import QuizzesSharedEmpty from "@/components/customs/QuizzesSharedEmpty";
-import ConfirmDialog from "@/components/dialogs/ConfirmDialog";
 import AntiFlatList from "@/components/customs/AntiFlatList/AntiFlatList";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import QuizzCreateAction from "@/components/customs/QuizCreateAction";
-import { I18n } from "i18n-js";
 const Library = () => {
    const { i18n } = useAppProvider();
    //biến name của bộ sưu tập
@@ -516,48 +507,56 @@ const Library = () => {
             onClose={handleCloseBottomSheet}
          >
             <View className="flex flex-col items-start justify-start">
-               <Text className="text-lg">Tạo bài kiểm tra với AI</Text>
+               <Text className="text-lg">{i18n.t('teacher_homepage.createQuizWithAi')}</Text>
                <View className="flex items-center justify-start flex-row mt-4">
-                  {/* <QuizzCreateAction
-              title={"Tạo bài kiểm tra"}
-              icon={
-                <Ionicons name="documents-outline" size={24} color="black" />
-              }
-            /> */}
                   <QuizzCreateAction
                      handlePress={() => {
-                        setActionQuizType("ai/prompt");
+                        setActionQuizType('ai/prompt');
                         handleCloseBottomSheet();
-                        router.push("/(app)/(quiz)/create_title");
+                        router.push('/(app)/(quiz)/create_title');
                      }}
                      otherStyles="ml-2"
-                     title={"Tạo từ văn bản"}
-                     icon={<Ionicons name="text-outline" size={24} color="black" />}
+                     title={i18n.t('teacher_homepage.createFromText')}
+                     icon={
+                        <Ionicons
+                           name="text-outline"
+                           size={24}
+                           color="black"
+                        />
+                     }
                   />
                </View>
-               <Text className="text-lg mt-8">Tạo thủ công</Text>
+               <Text className="text-lg mt-8">{i18n.t('teacher_homepage.createWithHand')}</Text>
                <View className="flex items-center justify-start flex-row mt-4">
                   <QuizzCreateAction
                      handlePress={() => {
-                        setActionQuizType("template");
+                        setActionQuizType('template');
                         handleCloseBottomSheet();
-                        router.push("/(app)/(quiz)/create_title");
+                        router.push('/(app)/(quiz)/create_title');
                      }}
-                     title={"Tải lên mẫu"}
+                     title={i18n.t('teacher_homepage.uploadTemplate')}
                      icon={
-                        <Ionicons name="documents-outline" size={24} color="black" />
+                        <Ionicons
+                           name="documents-outline"
+                           size={24}
+                           color="black"
+                        />
                      }
                   />
                   <QuizzCreateAction
                      handlePress={() => {
-                        setActionQuizType("create");
+                        setActionQuizType('create');
                         handleCloseBottomSheet();
-                        router.push("(app)/(quiz)/create_title");
+                        router.push('(app)/(quiz)/create_title');
                      }}
                      otherStyles="ml-2"
-                     title={"Tạo bằng tay"}
+                     title={i18n.t('teacher_homepage.createWithHand')}
                      icon={
-                        <Ionicons name="hand-left-outline" size={24} color="black" />
+                        <Ionicons
+                           name="hand-left-outline"
+                           size={24}
+                           color="black"
+                        />
                      }
                   />
                </View>
@@ -583,12 +582,12 @@ const Library = () => {
             <View className="flex flex-row justify-between m-3">
                <Button
                   text={i18n.t("library.collection.btnCancel")}
-                  otherStyles="w-[45%] bg-gray-200 p-2 rounded-xl flex justify-center"
+                  otherStyles="w-[45%] bg-gray-200 p-3 rounded-xl flex justify-center"
                   onPress={handleCloseBottomSheet}
                />
                <Button
                   text={i18n.t("library.collection.btnCreate")}
-                  otherStyles="w-[50%] bg-blue-500 p-2 rounded-xl flex justify-center"
+                  otherStyles="w-[50%] bg-blue-500 p-3 rounded-xl flex justify-center"
                   textStyles="text-white text-center"
                   onPress={() => {
                      createCollection(); // Tạo bộ sưu tập
@@ -700,8 +699,8 @@ const Library = () => {
                <TouchableOpacity onPress={() => handleTabChange("library")}>
                   <Text
                      className={`font-normal text-[18px] ${activeTab === "library"
-                           ? "text-black font-bold"
-                           : "text-gray-500"
+                        ? "text-black font-bold"
+                        : "text-gray-500"
                         }`}
                   >
                      {i18n.t("library.library")}
@@ -712,8 +711,8 @@ const Library = () => {
                <TouchableOpacity onPress={() => handleTabChange("collection")}>
                   <Text
                      className={`font-normal text-[18px] ${activeTab === "collection"
-                           ? "text-black font-bold"
-                           : "text-gray-500"
+                        ? "text-black font-bold"
+                        : "text-gray-500"
                         }`}
                   >
                      {i18n.t("library.collection.title")}
@@ -723,8 +722,8 @@ const Library = () => {
                <TouchableOpacity onPress={() => handleTabChange("shared")}>
                   <Text
                      className={`font-normal text-[18px] ${activeTab === "shared"
-                           ? "text-black font-bold"
-                           : "text-gray-500"
+                        ? "text-black font-bold"
+                        : "text-gray-500"
                         }`}
                   >
                      {i18n.t("library.quizShared.title")}
@@ -754,7 +753,7 @@ const Library = () => {
                         onPress={CreateNewBottomSheet}
                         text={i18n.t("library.quizCreated")}
                         icon={<AntDesign name="plus" size={16} color="white" />}
-                        otherStyles={"w-1/4 justify-center p-4"}
+                        otherStyles={"justify-center p-4"}
                         textStyles={"text-center text-white"}
                      />
 
@@ -794,6 +793,7 @@ const Library = () => {
                <View className="p-3">
                   {/* Danh sách các bộ sưu tập */}
                   <Button
+                     icon={<AntDesign name="plus" size={16} color="white" />}
                      onPress={OpenBottomSheet}
                      text={i18n.t("library.collection.createNewCollection")}
                      otherStyles={"w-1/2 justify-center p-4"}

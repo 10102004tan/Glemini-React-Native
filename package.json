@@ -91,7 +91,7 @@
     "react-native-screens": "3.31.1",
     "react-native-search-bar": "^3.5.1",
     "react-native-select-dropdown": "^4.0.1",
-    "react-native-skeleton-placeholder": "^5.2.4",
+    "react-native-skeleton-placeholder-v2": "^5.2.4",
     "react-native-spinkit": "^1.5.1",
     "react-native-tab-view": "^3.5.2",
     "react-native-textinput-effects": "^0.6.3",

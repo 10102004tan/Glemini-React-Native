@@ -237,7 +237,7 @@ const RealtimeResult = ({ correctCount, wrongCount, score, totalQuestions, handl
             </View>
 
             <View className="relative mt-4 bg-[#435362] rounded-xl border border-white">
-               <Text className="p-4 bg-green-500 text-white mb-5 rounded-tl-xl rounded-tr-xl ">Bảng xếp hạng</Text>
+               <Text className="p-4 bg-green-500 text-white mb-5 rounded-tl-xl rounded-tr-xl ">{i18n.t('room_wait_result.rankboard')}</Text>
                <View className="p-4" showsVerticalScrollIndicator={false}>
                   {rankBoardData.rank && rankBoardData.rank.length > 0 &&
                      rankBoardData.rank.map((rank, index) => {
@@ -249,7 +249,7 @@ const RealtimeResult = ({ correctCount, wrongCount, score, totalQuestions, handl
                               <Image source={{ uri: rank.user_id.user_avatar }} className="w-[50px] h-[50px] rounded-full" />
                               <View className="ml-3">
                                  <Text className="text-lg font-semibold">{rank.user_id.user_fullname}</Text>
-                                 <Text className="text-red-500">Điểm số: {rank.userScore} </Text>
+                                 <Text className="text-red-500">{i18n.t('play.single.score')}: {rank.userScore} </Text>
                               </View>
                            </View>
                         }

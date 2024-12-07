@@ -205,7 +205,7 @@ const QuestionProvider = ({ children }) => {
          question_answer_ids: [
             {
                _id: 1,
-               text: 'Đáp án 1, Đán án 2',
+               text: 'Answer1, Answer2, Answer3, Answer4',
                image: '',
                correct: true,
             },
