@@ -40,7 +40,9 @@
       "cardIdDescription": "Card Image or ID Card",
       "descForCard": "Please provide a clear card image",
       "descForCardID": "Please take a photo of CCCD in a well-lit place",
-      "descForDocument": "Please provide a clear document confirmation image"
+      "descForDocument": "Please provide a clear document confirmation image",
+      "rejection": "Account verification failed, please provide accurate and clear information",
+      "btnResend": "Resend"
    },
    "error": {
       "notification": "Notification",

@@ -1,7 +1,7 @@
 'use strict';
 
 const dev = {
-	API_URL: 'http://192.168.89.116:3000/api',
+	API_URL: 'http://10.0.247.236:3000/api',
 	API_VERSION: {
 		V1: '/v1',
 	},
@@ -28,6 +28,7 @@ const dev = {
 
 		// Notification
 		UPDATE_NOTIFICATION_STATUS: '/notification',
+		READ_ALL_NOTIFICATION: '/notification/read-all',
 		NOTIFY_SHARE_ROOM: '/classroom/notify-student',
 
 		// Question
