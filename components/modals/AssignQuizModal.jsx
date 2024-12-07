@@ -43,7 +43,10 @@ const AssignQuizModal = ({ visible, onClose, onAssign }) => {
                 });
                 hideDatePicker();
                 return;
+            } else {
+                setDeadline(date);
             }
+
         }
         hideDatePicker();
     };
@@ -92,7 +95,7 @@ const AssignQuizModal = ({ visible, onClose, onAssign }) => {
                         placeholder="Nhập tên bài tập"
                         value={assignmentName}
                         onChangeText={setAssignmentName}
-                        className="border-b border-gray-300 mb-4 p-2"
+                        className="border-b border-slate-300 mb-4 p-2"
                     />
 
                     <Text className="text-base mb-1">Chọn lớp</Text>
@@ -106,15 +109,15 @@ const AssignQuizModal = ({ visible, onClose, onAssign }) => {
                     />
 
                     <Text className="text-base mt-4 mb-2">Ngày bắt đầu</Text>
-                    <TouchableOpacity onPress={() => showDatePicker("start")} className="border-b border-gray-300 py-2 mb-4">
-                        <Text className="text-gray-600">
+                    <TouchableOpacity onPress={() => showDatePicker("start")} className="border-b border-slate-300 py-2 mb-4">
+                        <Text className="text-slate-600">
                             {startDate ? startDate.toLocaleString() : "Chọn ngày bắt đầu"}
                         </Text>
                     </TouchableOpacity>
 
                     <Text className="text-base mt-4 mb-2">Ngày kết thúc</Text>
-                    <TouchableOpacity onPress={() => showDatePicker("end")} className="border-b border-gray-300 py-2 mb-4">
-                        <Text className="text-gray-600">
+                    <TouchableOpacity onPress={() => showDatePicker("end")} className="border-b border-slate-300 py-2 mb-4">
+                        <Text className="text-slate-600">
                             {deadline ? deadline.toLocaleString() : "Chọn ngày kết thúc"}
                         </Text>
                     </TouchableOpacity>
