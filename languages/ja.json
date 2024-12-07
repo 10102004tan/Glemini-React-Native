@@ -266,7 +266,15 @@
       "mutipleChoice": "複数選択",
       "fillInBlank": "空欄を埋める",
       "blank": "記述",
-      "logical": "論理"
+      "logical": "論理",
+      "back": "戻る"
+   },
+   "rich_editor": {
+      "enterAnswer": "答えの内容を入力してください",
+      "enterExplain": "説明を入力してください",
+      "enterQuestion": "質問の内容を入力してください",
+      "networkError": "ネットワークエラーです。接続を確認してもう一度お試しください",
+      "networkErrorTitle": "エラー"
    },
    "subjects": {
       "math": "数学",
@@ -409,7 +417,41 @@
       "reject": "拒否"
    },
    "library": {
-      "title": "ライブラリ"
+      "title": "ライブラリ",
+      "library": "ライブラリ",
+      "quizCreated": "作成されたクイズ",
+      "filter": "フィルター",
+      "search": "検索",
+      "startTime": "開始時間",
+      "endTime": "終了時間",
+      "btnFresh": "リセット",
+      "quizShared": {
+         "title": "共有されたクイズ"
+      },
+      "viewOnly": "閲覧のみ",
+      "noDescription": "説明なし",
+      "private": "非公開",
+      "public": "公開",
+      "coppyQuiz": "クイズをコピーする",
+      "collection": {
+         "title": "コレクション",
+         "createNewCollection": "新しいコレクションを作成",
+         "collectionName": "コレクション名",
+         "enterCollectionName": "コレクション名を入力",
+         "btnCreate": "作成",
+         "btnCancel": "キャンセル",
+         "detailCollection": {
+            "editCollectionName": "コレクション名を編集",
+            "edit": "編集",
+            "enterNewName": "新しい名前を入力",
+            "btnSave": "保存",
+            "btnCancel": "キャンセル",
+            "btnDelete": "削除",
+            "confirmDelete": "削除を確認",
+            "sureQuiz": "このクイズを削除してもよろしいですか？",
+            "sureCollection": "このコレクションを削除してもよろしいですか？"
+         }
+      }
    },
    "lockFeature": {
       "title": "機能をロック",
@@ -511,11 +553,11 @@
       "btnEdit": "編集",
       "titleDeleteSchool": "学校を削除",
       "textDeleteSchool": "この学校を削除してもよろしいですか？",
-      "ok": "OK",
+      "ok": "OK"
    },
    "notification": {
       "title": "通知",
       "emptyNotification": "通知がありません",
-      "readAll": "すべてを読む",
+      "readAll": "すべてを読む"
    }
 }

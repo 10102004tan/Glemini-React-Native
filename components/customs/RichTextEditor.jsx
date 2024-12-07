@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Text, ScrollView, View, Keyboard, TextInput } from 'react-native';
 import {
    actions,
@@ -13,6 +13,8 @@ import { Status } from '@/constants';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message-custom';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 const RichTextEditor = ({
    questionType = '',
@@ -27,17 +29,27 @@ const RichTextEditor = ({
    const [editorValue, setEditorValue] = useState('');
    const { question, setQuestion, editAnswerContent, resetQuestion } = useQuestionProvider();
    const { userData } = useAuthContext();
-   const richText = React.useRef();
+   const richText = useRef(null);
+   const fieldRef = useRef(null);
+   const { i18n } = useAppProvider();
 
    useEffect(() => {
-      if (typingType === Status.quiz.ANSWER && questionType !== 'box') {
+      if (typingType === Status.quiz.ANSWER && questionType === 'box') {
          if (focus) {
-            richText.current.focusContentEditor();
+            fieldRef.current.focus();
          } else {
-            richText.current.blurContentEditor();
+            fieldRef.current.blur();
+         }
+      } else {
+         if (richText.current) {
+            if (focus) {
+               richText.current.focusContentEditor();
+            } else {
+               richText.current.blurContentEditor();
+            }
          }
       }
-   }, [focus, typingType, questionType]);
+   }, [focus, typingType, questionType, fieldRef, richText]);
 
    // Tạo các customs icon cho toolbar của RichEditor
    const handleHead = ({ tintColor }) => (
@@ -92,7 +104,7 @@ const RichTextEditor = ({
    // Hàm tải ảnh lên server
    const uploadImage = async (file) => {
       try {
-         console.log(file);
+         // console.log(file);
          const formData = new FormData();
 
          const cleanFileName = file.fileName.replace(/[^a-zA-Z0-9.]/g, '_');
@@ -116,17 +128,21 @@ const RichTextEditor = ({
             }
          );
 
-         console.log(
-            `${API_URL}${API_VERSION.V1}${END_POINTS.QUESTION_UPLOAD_IMAGE}`
-         );
+         // console.log(
+         //    `${API_URL}${API_VERSION.V1}${END_POINTS.QUESTION_UPLOAD_IMAGE}`
+         // );
 
          const data = await response.json();
-         console.log(data);
+         // console.log(data);
          return data.metadata.url; // URL của ảnh trên server
       } catch (error) {
-         console.log(error);
+         // console.log(error);
          if (error.message === 'Network request failed') {
-            alert('Lỗi mạng, vui lòng kiểm tra kết nối và thử lại');
+            Toast.show({
+               type: 'error',
+               text1: i18n.t('rich_editor.networkErrorTitle'),
+               text2: i18n.t('rich_editor.networkError'),
+            });
          }
       }
    };
@@ -157,13 +173,13 @@ const RichTextEditor = ({
          <ScrollView className="max-h-[300px]">
             {/* Question type === box use simple editor to edit value of answer */}
             {typingType === Status.quiz.ANSWER && questionType === 'box' ? <View>
-               <TextInput placeholder='Nhập vào đáp án' value={editorValue} onChangeText={(text) => setEditorValue(text)} />
+               <TextInput ref={fieldRef} placeholder={i18n.t('rich_editor.enterAnswer')} value={editorValue} onChangeText={(text) => setEditorValue(text)} />
             </View> : <>
                {/* Question type === one choose or multiple choose */}
                <RichEditor
                   defaultParagraphSeparator=""
                   initialContentHTML={content}
-                  placeholder={typingType === Status.quiz.ANSWER ? "Nhập nội dung đáp án" : typingType === Status.quiz.QUESTION ? "Nhập nội dung câu hỏi" : "Thêm giải thích cho câu hỏi"}
+                  placeholder={typingType === Status.quiz.ANSWER ? i18n.t('rich_editor.enterAnswer') : typingType === Status.quiz.QUESTION ? i18n.t('rich_editor.enterQuestion') : i18n.t('rich_editor.enterExplain')}
                   style={{ width: '100%', height: 300 }}
                   ref={richText}
                   onChange={(descriptionText) => {

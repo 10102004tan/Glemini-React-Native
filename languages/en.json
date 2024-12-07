@@ -274,7 +274,15 @@
       "mutipleChoice": "Multiple Choice",
       "fillInBlank": "Fill in the Blank",
       "blank": "Essay",
-      "logical": "Logical"
+      "logical": "Logical",
+      "back": "Back"
+   },
+   "rich_editor": {
+      "enterAnswer": "Enter the answer content",
+      "enterExplain": "Enter the explanation",
+      "enterQuestion": "Enter the question content",
+      "networkError": "Network error, please check your connection and try again",
+      "networkErrorTitle": "Error"
    },
    "profile": {
       "title": "Profile",
@@ -351,7 +359,7 @@
       "btnReset": "Reset",
       "all": "All",
       "newest": "Newest",
-        "oldest": "Oldest",
+      "oldest": "Oldest",
       "status": "Status",
       "subject": "Subject",
       "plays": "Plays"
@@ -410,15 +418,39 @@
    "library": {
       "title": "Library",
       "library": "Library",
-      "collection": "Collection",
-      "quizShared": "Shared Quiz",
       "quizCreated": "Created Quiz",
       "filter": "Filter",
       "search": "Search",
       "startTime": "Start Time",
       "endTime": "End Time",
-      "btnFresh": "Reset"
-
+      "btnFresh": "Reset",
+      "quizShared": {
+         "title": "Shared Quiz"
+      },
+      "viewOnly": "View Only",
+      "noDescription": "No description",
+      "private": "Private",
+      "public": "Public",
+      "coppyQuiz": "Copy Quiz",
+      "collection": {
+         "title": "Collection",
+         "createNewCollection": "Create new collection",
+         "collectionName": "Collection Name",
+         "enterCollectionName": "Enter collection name",
+         "btnCreate": "Create",
+         "btnCancel": "Cancel",
+         "detailCollection": {
+            "editCollectionName": "Edit Collection Name",
+            "edit": "Edit",
+            "enterNewName": "Enter new name",
+            "btnSave": "Save",
+            "btnCancel": "Cancel",
+            "btnDelete": "Delete",
+            "confirmDelete": "Confirm deletion",
+            "sureQuiz": "Are you sure you want to delete this quiz?",
+            "sureCollection": "Are you sure you want to delete this collection?"
+         }
+      }
    },
    "lockFeature": {
       "title": "You do not have access to this feature",
