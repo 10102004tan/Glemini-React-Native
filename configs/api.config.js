@@ -1,7 +1,7 @@
 'use strict';
 
 const dev = {
-	API_URL: 'http://192.168.1.8:3000/api',
+	API_URL: 'http://192.168.89.116:3000/api',
 	API_VERSION: {
 		V1: '/v1',
 	},
@@ -74,6 +74,7 @@ const dev = {
 		RESULT_OVERVIEW: '/result/overview',
 		RESULT_REPORT: '/result/reports',
 		RESULT_RESET: '/result/reset',
+		RESULT_RESET_V2: '/result/reset-v2',
 		RESULT_RANK: '/result/rank',
 
 		// Subjects
