@@ -26,7 +26,7 @@ import SkeletonList from "@/components/loadings/SkeletonListActivity";
 
 export default function ActivityScreen() {
    const { i18n } = useAppProvider()
-   const { results, fetchResultsForStudent } = useResultProvider();
+   const { results, fetchResultsForStudent, fetchResetResultOfQuiz } = useResultProvider();
    const [roomCode, setRoomCode] = useState(null);
    const [roomTemp, setRoomTemp] = useState(null);
    const { userData } = useAuthContext();
@@ -213,7 +213,7 @@ export default function ActivityScreen() {
             renderScene={SceneMap({
                doing: () => <DoingResults results={results.doing} onRefresh={fetchResults} i18n={i18n}
                   refreshing={refreshing} />,
-               completed: () => <CompletedResults results={results.completed} onRefresh={fetchResults} i18n={i18n}
+               completed: () => <CompletedResults results={results.completed} onRefresh={fetchResults} i18n={i18n} fetchResetResultOfQuiz={fetchResetResultOfQuiz}
                   refreshing={refreshing} />,
             })}
             onIndexChange={setIndex}
@@ -270,7 +270,7 @@ const ResultCompletedItem = ({ result, i18n }) => {
    );
 };
 
-const CompletedResults = ({ results, refreshing, onRefresh, i18n }) => {
+const CompletedResults = ({ results, refreshing, onRefresh, i18n, fetchResetResultOfQuiz }) => {
    const router = useRouter();
 
    if (refreshing || !results) {
@@ -307,8 +307,11 @@ const CompletedResults = ({ results, refreshing, onRefresh, i18n }) => {
                         },
                         {
                            text: i18n.t('activity.btnContinute'), onPress: async () => {
-                              console.log("OK");
-
+                              await fetchResetResultOfQuiz(item._id)
+                              router.push({
+                                 pathname: '(play)/single',
+                                 params: { quizId: item.quiz_id._id, type: 'publish' }
+                              });
                            }
                         },
                      ]
