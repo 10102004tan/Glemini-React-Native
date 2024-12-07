@@ -40,7 +40,9 @@
       "cardIdDescription": "Ảnh thẻ hoặc CCCD",
       "descForCard": "Vui lòng cung cấp ảnh thẻ rõ nét",
       "descForCardID": "Vui lòng chụp CCCD ở nơi có ánh sáng tốt",
-      "descForDocument": "Vui lòng cung cấp ảnh giấy tờ xác nhận rõ ràng"
+      "descForDocument": "Vui lòng cung cấp ảnh giấy tờ xác nhận rõ ràng",
+      "rejection": "Xác thực tài khoản thất bại, vui lòng cung cấp thông tin chính xác, rõ ràng",
+      "btnResend": "Gửi lại"
    },
    "resetPassword": {
       "title": "Đặt lại mật khẩu",

@@ -62,8 +62,8 @@ export default function ProfileAuth(){
         if (!imageCard || !imageIDCard || !imageConfirm){
             Toast.show({
                 type:'error',
-                text1:'Thông báo',
-                text2:'Vui lòng cung cấp đủ thông tin'
+                text1:i18n.t('error.title'),
+                text2:i18n.t('error.imageRequired')
             });
             return;
         }
@@ -183,8 +183,6 @@ export default function ProfileAuth(){
                 });
             }
         }
-
-        console.log(imageCard,imageIDCard,imageConfirm);
     };
 
 
@@ -199,7 +197,7 @@ export default function ProfileAuth(){
                 teacherStatus === "rejected" && ( <View className={"bg-amber-200 rounded w-[100%] mb-3 p-3"} style={{height:100}}>
                     <FontAwesome name={"exclamation-circle"} size={24} color={"#f00"} />
                     <Text className={"text-gray mt-2"}>
-                        Xác thực tài khoản thất bại, vui lòng cung cấp thông tin chính xác, rõ ràng
+                        {i18n.t('signUp.rejection')}
                     </Text>
                 </View>)
             }
@@ -224,7 +222,7 @@ export default function ProfileAuth(){
                 <InputImage onLongPress={()=>handlerLongPress({type:TYPEIMAGE.Card})} onPress={()=>{handlerPickImage(TYPEIMAGE.Card)}} desc={i18n.t("signUp.descForCard")} title={i18n.t('signUp.card')} logo={(imageCard ? imageCard.uri : 'https://cdn-icons-png.flaticon.com/512/175/175062.png')} />
                 <InputImage onLongPress={()=>handlerLongPress({type:TYPEIMAGE.IDCard})} onPress={()=>{handlerPickImage(TYPEIMAGE.IDCard)}} desc={i18n.t("signUp.descForCardID")} title={i18n.t('signUp.cardID')} logo={(imageIDCard?imageIDCard.uri:'https://cdn-icons-png.flaticon.com/512/6080/6080012.png')} />
                 <InputImage onLongPress={()=>handlerLongPress({type:TYPEIMAGE.Confirm})} onPress={()=>{handlerPickImage(TYPEIMAGE.Confirm)}} desc={i18n.t("signUp.descForDocument")} title={i18n.t('signUp.documentConfirm')} logo={(imageConfirm?imageConfirm.uri:'https://cdn-icons-png.freepik.com/256/888/888034.png?semt=ais_hybrid')} />
-                <CustomButton disabled={isLoading} title={"Gửi yêu cầu xác thực"} onPress={reUploadFiles}/>
+                <CustomButton disabled={isLoading} title={i18n.t("signUp.btnResend")} onPress={reUploadFiles}/>
             </View>
             )
             }

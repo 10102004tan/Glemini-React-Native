@@ -26,27 +26,7 @@ export default function AppRootLayout() {
 
    const { isEdited } = useQuizProvider();
 
-   useNotificationObserver();
-
-   useEffect(() => {
-      if (userData) {
-         fetchStatus();
-         socket.on(
-            "update-status",
-            ({ user_id, teacher_status, message, status }) => {
-               if (userData._id === user_id) {
-                  setTeacherStatus(teacher_status);
-                  Toast.show({
-                     type: status,
-                     text1: i18n.t("notification.title"),
-                     text2: message,
-                     visibilityTime: 2000,
-                  });
-               }
-            }
-         );
-      }
-   }, [userData]);
+   useNotificationObserver({setTeacherStatus});
 
    if (isLoading) {
       return <View className="h-[100%] bg-white items-center justify-center">
