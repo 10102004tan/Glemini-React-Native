@@ -271,7 +271,15 @@
       "mutipleChoice": "Nhiều lựa chọn",
       "fillInBlank": "Điền từ",
       "blank": "Tự luận",
-      "logical": "Tư duy"
+      "logical": "Tư duy",
+      "back": "Quay lại"
+   },
+   "rich_editor": {
+      "enterAnswer": "Nhập nội dung đáp án",
+      "enterExplain": "Nhập giải thích",
+      "enterQuestion": "Nhập nội dung câu hỏi",
+      "networkError": "Lỗi mạng, vui lòng kiểm tra kết nối và thử lại",
+      "networkErrorTitle": "Lỗi mạng"
    },
    "edit_quiz_screen": {
       "title": "Chỉnh sửa câu hỏi",
@@ -343,7 +351,7 @@
    },
    "search": {
       "title": "Tìm kiếm",
-        "placeholder": "Tìm kiếm",
+      "placeholder": "Tìm kiếm",
       "filter": "Bộ lọc",
       "btnFilter": "Lọc",
       "btnReset": "Đặt lại",
@@ -406,7 +414,41 @@
       "reject": "Từ chối"
    },
    "library": {
-      "title": "Thư viện"
+      "title": "Thư viện",
+      "library": "Thư viện của tôi",
+      "quizCreated": "Tạo",
+      "filter": "Bộ lọc",
+      "search": "Tìm kiếm",
+      "startTime": "Thời gian bắt đầu",
+      "endTime": "Thời gian kết thúc",
+      "btnFresh": "Đặt lại",
+      "quizShared": {
+         "title": "Quiz được chia sẻ"
+      },
+      "viewOnly": "Chỉ xem",
+      "noDescription": "Không có mô tả",
+      "private": "Riêng tư",
+      "public": "Công khai",
+      "coppyQuiz": "Sao chép Quizz",
+      "collection": {
+         "title": "Bộ sưu tập",
+         "createNewCollection": "Tạo bộ sưu tập mới",
+         "collectionName": "Tên bộ sưu tập",
+         "enterCollectionName": "Nhập tên bộ sưu tập",
+         "btnCreate": "Tạo",
+         "btnCancel": "Hủy",
+         "detailCollection": {
+            "editCollectionName": "Chỉnh sửa tên bộ sưu tập",
+            "edit": "Chỉnh sửa",
+            "enterNewName": "Nhập tên mới",
+            "btnSave": "Lưu",
+            "btnCancel": "Hủy",
+            "btnDelete": "Xóa",
+            "confirmDelete": "Xác nhận xóa",
+            "sureQuiz": "Bạn có chắc chắn muốn xóa bài kiểm tra này không?",
+            "sureCollection": "Bạn có chắc chắn muốn xóa bộ sưu tập này không?"
+         }
+      }
    },
    "lockFeature": {
       "title": "Bạn chưa có quyền truy cập chức năng này",
@@ -499,11 +541,9 @@
       "notiDL": "Đã quá hạn làm bài!",
       "textCreated": "bởi:"
    },
-
    "realtime_play": {
       "countDownTime": "Thời gian còn lại"
    },
-
    "modal": {
       "title": "Thông báo",
       "text": "Bạn có chắc chắn muốn xóa không?",
@@ -515,7 +555,6 @@
       "textDeleteSchool": "Bạn có chắc chắn muốn xóa trường học này không?",
       "ok": "OK"
    },
-
    "notification": {
       "title": "Thông báo",
       "emptyNotification": "Không có thông báo",

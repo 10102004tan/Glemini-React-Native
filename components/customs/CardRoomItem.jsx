@@ -29,14 +29,14 @@ const CardRoomItem = ({ room }) => {
          }}
       >
          <View className="flex flex-row bg-white">
-            <View className="flex items-center justify-center h-full">
+            <View className="flex items-center justify-center h-full w-1/2">
                <Image
                   source={{ uri: 'https://www.jrykerscreative.com.au/wp-content/uploads/2020/09/lets-play-650x804.jpg' }}
                   className="h-full"
                   style={{ aspectRatio: 1 }}
                />
             </View>
-            <View className="pt-8">
+            <View className="pt-8 w-1/2 px-4">
                <Text className="font-semibold">{i18n.t('room_item.roomCode')}: <Text className="text-blue-600 font-semibold">{room.room_code}</Text></Text>
                <Text className="text-gray text-[12px] mt-2">{createdAtConvert(room.createdAt)}</Text>
                <Button text={i18n.t('room_item.viewDetail')} otherStyles='p-4 mt-2 justify-center' onPress={() => {
