@@ -30,6 +30,9 @@ import { useRoomProvider } from "@/contexts/RoomProvider.jsx";
 import Toast from "react-native-toast-message-custom";
 
 const detailquizz = () => {
+
+   const { i18n } = useAppProvider();
+
    const { isEdited, setIsEdited, needUpdate, setNeedUpdate } = useQuizProvider();
 
    // biến cho dialog email
@@ -314,222 +317,224 @@ const detailquizz = () => {
    }
 
    return (
-      <Wrapper>
-         <EmailDialog
-            quiz_id={id}
-            onSend={() => {
-               console.log("Send email");
-            }}
-            visible={showEmailDialog}
-            onClose={() => setShowEmailDialog(false)}
-            onConfirm={() => {
-               closeBottomSheet();
-               setShowEmailDialog(false);
-            }}
-            message={"Bạn chắc chắn muốn chia sẻ Quiz này?"}
+     <Wrapper>
+       <EmailDialog
+         quiz_id={id}
+         onSend={() => {
+           console.log("Send email");
+         }}
+         visible={showEmailDialog}
+         onClose={() => setShowEmailDialog(false)}
+         onConfirm={() => {
+           closeBottomSheet();
+           setShowEmailDialog(false);
+         }}
+         message={"Bạn chắc chắn muốn chia sẻ Quiz này?"}
+       />
+
+       <ConfirmDialog
+         title={i18n.t("detailQuiz.dialogTitleDelete")}
+         visible={showConfirmDialog}
+         onCancel={() => setShowConfirmDialog(false)}
+         onConfirm={() => {
+           deleteQuiz(id);
+           setShowConfirmDialog(false);
+           closeBottomSheet();
+           router.back("(app)/(home)/library");
+         }}
+         message={i18n.t("detailQuiz.sureDelete")}
+       />
+
+       <Overlay
+         onPress={closeBottomSheet}
+         visible={
+           showBottomSheetMoreOptions ||
+           showBottomSheetSaveToLibrary ||
+           showEmailDialog
+         }
+       ></Overlay>
+
+       {/* BottomSheet lưu vào bộ sưu tập */}
+       <BottomSheet
+         visible={showBottomSheetSaveToLibrary}
+         onClose={closeBottomSheet}
+       >
+         <View className="m-2">
+           <Text className="flex text-center text-[18px] text-gray">
+             {i18n.t("detailQuiz.saveToCollection.title")}
+           </Text>
+           <View className="w-full h-[1px] bg-gray my-2"></View>
+
+           <View className="w-full">
+             <View>
+               {collections.length > 0 &&
+                 collections.map((collection) => {
+                   return (
+                     <View key={collection.key} className="flex-row mb-2">
+                       <Checkbox
+                         isChecked={collection.quizzes.some(
+                           (quiz_id) => quiz_id === id
+                         )}
+                         onToggle={() => {
+                           if (
+                             collection.quizzes.some(
+                               (quiz_id) => quiz_id === id
+                             )
+                           ) {
+                             deleteQuizInCollection(collection.key);
+                           } else {
+                             addQuizToCollection(collection.key);
+                           }
+                         }}
+                       />
+                       <Text>{collection.value}</Text>
+                     </View>
+                   );
+                 })}
+             </View>
+           </View>
+         </View>
+       </BottomSheet>
+
+       {/* Bottom Sheet */}
+
+       {/* Bottom Sheet */}
+       <BottomSheet
+         visible={showBottomSheetMoreOptions}
+         onClose={closeBottomSheet}
+       >
+         <Button
+           text={i18n.t("detailQuiz.delete")}
+           otherStyles={"m-2 flex-row p-4"}
+           icon={<MaterialIcons name="delete" size={16} color="white" />}
+           onPress={() => {
+             setShowConfirmDialog(true);
+           }}
          />
-
-         <ConfirmDialog
-            title={"Chờ đã"}
-            visible={showConfirmDialog}
-            onCancel={() => setShowConfirmDialog(false)}
-            onConfirm={() => {
-               deleteQuiz(id);
-               setShowConfirmDialog(false);
+         {isEdited && quiz_user === userData._id && (
+           <Button
+             text={i18n.t("detailQuiz.shareTest")}
+             otherStyles={"m-2 flex-row p-4"}
+             icon={<AntDesign name="sharealt" size={16} color="white" />}
+             onPress={() => {
+               // closeBottomSheet();
+               setShowEmailDialog(true);
+               setShowBottomSheetMoreOptions(false);
+               setShowBottomSheetSaveToLibrary(false);
+             }}
+           />
+         )}
+         {isEdited && quiz_user === userData._id && (
+           <Button
+             text={i18n.t("detailQuiz.giveHomework")}
+             otherStyles={"m-2 flex-row p-4"}
+             icon={<Entypo name="home" size={16} color="white" />}
+             onPress={() => {
+               setShowAssignModal(true);
                closeBottomSheet();
-               router.back("(app)/(home)/library");
-            }}
-            message={"Bạn chắc chắn muốn xóa bộ câu hỏi này?"}
-         />
+             }}
+           />
+         )}
+         {isEdited && quiz_user === userData._id && (
+           <Button
+             text={i18n.t("detailQuiz.saveToCollection.title")}
+             otherStyles={"m-2 flex-row p-4"}
+             icon={<Entypo name="save" size={16} color="white" />}
+             onPress={() => {
+               closeBottomSheet();
+               openBottomSheetSaveToLibrary();
+             }}
+           />
+         )}
+       </BottomSheet>
 
-         <Overlay
-            onPress={closeBottomSheet}
-            visible={
-               showBottomSheetMoreOptions ||
-               showBottomSheetSaveToLibrary ||
-               showEmailDialog
-            }
-         ></Overlay>
-
-         {/* BottomSheet lưu vào bộ sưu tập */}
-         <BottomSheet
-            visible={showBottomSheetSaveToLibrary}
-            onClose={closeBottomSheet}
-         >
-            <View className="m-2">
-               <Text className="flex text-center text-[18px] text-gray">
-                  Lưu vào bộ sưu tập
-               </Text>
-               <View className="w-full h-[1px] bg-gray my-2"></View>
-
-               <View className="w-full">
-                  <View>
-                     {collections.length > 0 &&
-                        collections.map((collection) => {
-                           return (
-                              <View key={collection.key} className="flex-row mb-2">
-                                 <Checkbox
-                                    isChecked={collection.quizzes.some(
-                                       (quiz_id) => quiz_id === id
-                                    )}
-                                    onToggle={() => {
-                                       if (
-                                          collection.quizzes.some((quiz_id) => quiz_id === id)
-                                       ) {
-                                          deleteQuizInCollection(collection.key);
-                                       } else {
-                                          addQuizToCollection(collection.key);
-                                       }
-                                    }}
-                                 />
-                                 <Text>{collection.value}</Text>
-                              </View>
-                           );
-                        })}
-                  </View>
-               </View>
-            </View>
-         </BottomSheet>
-
-         {/* Bottom Sheet */}
-
-         {/* Bottom Sheet */}
-         <BottomSheet
-            visible={showBottomSheetMoreOptions}
-            onClose={closeBottomSheet}
-         >
-            <Button
-               text={"Xóa"}
-               otherStyles={"m-2 flex-row p-4"}
-               icon={<MaterialIcons name="delete" size={16} color="white" />}
-               onPress={() => {
-                  setShowConfirmDialog(true);
-               }}
-            />
-            {isEdited && quiz_user === userData._id && (
-               <Button
-                  text={"Chia sẻ bài kiểm tra"}
-                  otherStyles={"m-2 flex-row p-4"}
-                  icon={<AntDesign name="sharealt" size={16} color="white" />}
-                  onPress={() => {
-                     // closeBottomSheet();
-                     setShowEmailDialog(true);
-                     setShowBottomSheetMoreOptions(false);
-                     setShowBottomSheetSaveToLibrary(false);
-                  }}
+       <ScrollView>
+         <View className="flex mx-4">
+           <View className="w-full rounded-xl mt-4 flex-col">
+             <View className="w-full rounded-xl flex-row">
+               <CardQuiz
+                 type="vertical"
+                 routerPath="(quiz)/overview"
+                 params={{ id: id }}
+                 quiz={{
+                   quiz_name: quizName,
+                   quiz_thumb: quizThumbnail,
+                   quiz_description: quizDescription,
+                   quiz_status: quizStatus,
+                 }}
                />
-            )}
-            {isEdited && quiz_user === userData._id && (
-               <Button
-                  text={"Giao bài tập"}
-                  otherStyles={"m-2 flex-row p-4"}
-                  icon={<Entypo name="home" size={16} color="white" />}
-                  onPress={() => {
-                     setShowAssignModal(true);
-                     closeBottomSheet();
-                  }}
-               />
-            )}
-            {isEdited && quiz_user === userData._id && (
-               <Button
-                  text={"Lưu vào bộ sưu tập"}
-                  otherStyles={"m-2 flex-row p-4"}
-                  icon={<Entypo name="save" size={16} color="white" />}
-                  onPress={() => {
-                     closeBottomSheet();
-                     openBottomSheetSaveToLibrary();
-                  }}
-               />
-            )}
-         </BottomSheet>
-
-         <ScrollView>
-            <View className="flex mx-4">
-               <View className="w-full rounded-xl mt-4 flex-col">
-                  <View className="w-full rounded-xl flex-row">
-                     <CardQuiz
-                        type="vertical"
-                        routerPath="(quiz)/overview"
-                        params={{ id: id }}
-                        quiz={{
-                           quiz_name: quizName,
-                           quiz_thumb: quizThumbnail,
-                           quiz_description: quizDescription,
-                           quiz_status: quizStatus,
-                        }}
-                     />
-                  </View>
-               </View>
-            </View>
-
-            {quiz_user !== userData._id && (
-               <Button
-                  text={"Sao chép quiz"}
-                  otherStyles={"flex-row p-4 w-[50%] justify-center ml-4"}
-                  icon={<MaterialIcons name="file-copy" size={16} color="white" />}
-                  onPress={() => {
-                     copyQuiz();
-                  }}
-               />
-            )}
-
-            <View>
-               <Text className="text-gray text-right p-4">
-                  {quizTurn} người đã tham gia
-               </Text>
-            </View>
-
-            <View className="flex m-4 ">
-               {/* Quiz Questions */}
-               {questionFetching ? (
-                  <Text>Loading</Text>
-               ) : (
-                  <View className="mt-2 ">
-                     {currentQuizQuestion.length > 0 &&
-                        currentQuizQuestion.map((question, index) => {
-                           return (
-                              <QuestionOverview
-                                 key={index}
-                                 question={question}
-                                 index={index}
-                              />
-                           );
-                        })}
-                  </View>
-               )}
-            </View>
-         </ScrollView>
-
-         <View className="w-full h-[1px] bg-gray"></View>
-         <View className="p-2 flex-row justify-between">
-            <Button
-               text={"Thi thử"}
-               otherStyles={"p-4 w-1/2 justify-center"}
-               textStyles={"text-center"}
-            />
-            <Button
-               text={"Tạo phòng"}
-               otherStyles={"p-4 flex-1 ml-2 justify-center"}
-               textStyles={"text-center"}
-               onPress={() => {
-                  setShowRoomWaitingModal(true);
-                  closeBottomSheet();
-               }}
-            />
+             </View>
+           </View>
          </View>
 
-         <AssignQuizModal
-            visible={showAssignModal}
-            onClose={() => setShowAssignModal(false)}
-            onAssign={handleAssignQuiz}
-         />
+         {quiz_user !== userData._id && (
+           <Button
+             text={i18n.t("library.coppyQuiz")}
+             otherStyles={"flex-row p-4 w-[50%] justify-center ml-4"}
+             icon={<MaterialIcons name="file-copy" size={16} color="white" />}
+             onPress={() => {
+               copyQuiz();
+             }}
+           />
+         )}
 
-         <RoomWaitingModal
-            visible={roomWatingModal}
-            onClose={() => setShowRoomWaitingModal(false)}
-            onSubmit={handleCreateRoom}
+         <View>
+           <Text className="text-gray text-right p-4">
+             {quizTurn} {i18n.t("detailQuiz.peopleJoined")}
+           </Text>
+         </View>
+
+         <View className="flex m-4 ">
+           {/* Quiz Questions */}
+           {questionFetching ? (
+             <Text>Loading</Text>
+           ) : (
+             <View className="mt-2 ">
+               {currentQuizQuestion.length > 0 &&
+                 currentQuizQuestion.map((question, index) => {
+                   return (
+                     <QuestionOverview
+                       key={index}
+                       question={question}
+                       index={index}
+                     />
+                   );
+                 })}
+             </View>
+           )}
+         </View>
+       </ScrollView>
+
+       <View className="w-full h-[1px] bg-gray"></View>
+       <View className="p-2 flex-row justify-between">
+         <Button
+           text={"Thi thử"}
+           otherStyles={"p-4 w-1/2 justify-center"}
+           textStyles={"text-center"}
          />
-      </Wrapper>
+         <Button
+           text={"Tạo phòng"}
+           otherStyles={"p-4 flex-1 ml-2 justify-center"}
+           textStyles={"text-center"}
+           onPress={() => {
+             setShowRoomWaitingModal(true);
+             closeBottomSheet();
+           }}
+         />
+       </View>
+
+       <AssignQuizModal
+         visible={showAssignModal}
+         onClose={() => setShowAssignModal(false)}
+         onAssign={handleAssignQuiz}
+       />
+
+       <RoomWaitingModal
+         visible={roomWatingModal}
+         onClose={() => setShowRoomWaitingModal(false)}
+         onSubmit={handleCreateRoom}
+       />
+     </Wrapper>
    );
 };
 
