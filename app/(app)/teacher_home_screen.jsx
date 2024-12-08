@@ -210,7 +210,9 @@ const TeacherHomeScreen = () => {
                </View>
             </View>
          </BottomSheet>
+         <View className="w-full mt-[40px]">
 
+         </View>
          <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}

@@ -580,9 +580,47 @@
     "textDeleteSchool": "Bạn có chắc chắn muốn xóa trường học này không?",
     "ok": "OK"
   },
+
   "notification": {
     "title": "Thông báo",
     "emptyNotification": "Không có thông báo",
     "readAll": "Đánh dấu tất cả đã đọc"
+  },
+  "create_quiz_template": {
+    "upload": {
+      "prompt": "Ấn vào đây để tải lên file câu hỏi của bạn",
+      "step1": "Bước 1: Tải file mẫu tại đây",
+      "step2": "Bước 2: Đọc các hướng dẫn tại đây",
+      "deleteTemplateFiles": "Xóa file mẫu đã tải"
+    },
+    "templates": {
+      "forDocx": "Đối với định dạng (docx)",
+      "forMd": "Đối với định dạng (md)",
+      "forTxt": "Đối với định dạng (txt)",
+      "forTemplate": "file mẫu sẽ có định dạng như sau:",
+      "docxInstruction": "File mẫu docx sẽ cung cấp cho bạn một vài mẫu câu hỏi đã được tạo theo đúng định dạng.",
+      "docxNote": "Lưu ý chỉ copy và paste các câu hỏi vào file mẫu, không sửa đổi cấu trúc của file.",
+      "docxExampleTitle": "Title: Đây sẽ là tiêu đề của bộ câu hỏi",
+      "docxExampleQuestion": "Question: Các câu hỏi sẽ bắt đầu bằng “Question:” sau đó đến nội dung của câu hỏi",
+      "docxExampleAnswer": "Correct Answer: D",
+      "docxAnswerA": "Answer: A. Đáp án A",
+      "docxAnswerB": "Answer: B. Đáp án B",
+      "docxAnswerC": "Answer: C. Đáp án C",
+      "docxAnswerD": "Answer: D. Đáp án D",
+      "mdAnswerA": "- A. Đáp án A",
+      "mdAnswerB": "- B. Đáp án B",
+      "mdAnswerC": "- C. Đáp án C",
+      "mdAnswerD": "- D. Đáp án D",
+      "mdInstruction": "Các câu hỏi sẽ bắt đầu bằng '## Question:' sau đó đến nội dung của câu hỏi",
+      "mdExampleTitle": "# Quiz Title: Đây sẽ là tiêu đề của bộ câu hỏi",
+      "mdExampleAnswer": "### Correct Answer: D",
+      "uploadPrompt": "Sau khi đã tải file và chỉnh sửa các câu hỏi, bạn hãy tải file lên để tạo bài kiểm tra."
+    },
+    "buttons": {
+      "downloadDocx": "Tải File mẫu (docx)",
+      "downloadTxt": "Tải File mẫu (txt)",
+      "downloadMd": "Tải File mẫu (md)",
+      "clearDownload": "Xóa tất cả file đã tải"
+    }
   }
 }

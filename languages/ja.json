@@ -584,5 +584,42 @@
     "title": "通知",
     "emptyNotification": "通知がありません",
     "readAll": "すべてを読む"
+  },
+  "create_quiz_template": {
+    "upload": {
+      "prompt": "ここをクリックして質問ファイルをアップロードしてください",
+      "step1": "ステップ1: ここからテンプレートファイルをダウンロード",
+      "step2": "ステップ2: ここで手順を読む",
+      "deleteTemplateFiles": "ダウンロードしたテンプレートファイルを削除する"
+    },
+    "templates": {
+      "forDocx": "形式 (docx) の場合",
+      "forMd": "形式 (md) の場合",
+      "forTxt": "形式 (txt) の場合",
+      "forTemplate": "テンプレートファイルの形式は以下の通りです:",
+      "docxInstruction": "docxテンプレートには、正しい形式で作成されたいくつかの質問の例が含まれています。",
+      "docxNote": "テンプレートファイルに質問をコピーして貼り付けるだけで、構造を変更しないでください。",
+      "docxExampleTitle": "タイトル: これは質問セットのタイトルになります",
+      "docxExampleQuestion": "Question: 質問は「質問:」で始まり、その後に質問の内容が続きます",
+      "docxExampleAnswer": "Correct Answer: D",
+      "docxAnswerA": "Answer: A. 回答 A",
+      "docxAnswerB": "Answer: B. 回答 B",
+      "docxAnswerC": "Answer: C. 回答 C",
+      "docxAnswerD": "Answer: D. 回答 D",
+      "mdAnswerA": "- A. 回答 A",
+      "mdAnswerB": "- B. 回答 B",
+      "mdAnswerC": "- C. 回答 C",
+      "mdAnswerD": "- D. 回答 D",
+      "mdInstruction": "質問は「## 質問:」で始まり、その後に質問の内容が続きます",
+      "mdExampleTitle": "# クイズタイトル: これは質問セットのタイトルになります",
+      "mdExampleAnswer": "### Correct Answer: D",
+      "uploadPrompt": "質問をダウンロードして編集した後、ファイルをアップロードしてクイズを作成してください。"
+    },
+    "buttons": {
+      "downloadDocx": "テンプレートをダウンロード (docx)",
+      "downloadTxt": "テンプレートをダウンロード (txt)",
+      "downloadMd": "テンプレートをダウンロード (md)",
+      "clearDownload": "ダウンロードをクリア"
+    }
   }
 }

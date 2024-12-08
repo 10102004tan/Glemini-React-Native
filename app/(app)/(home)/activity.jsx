@@ -35,7 +35,7 @@ export default function ActivityScreen() {
    const isPermissionGranted = Boolean(permission?.granted);
    const router = useRouter();
    const [index, setIndex] = useState(0);
-   const [refreshing, setRefreshing] = useState(null);
+   const [refreshing, setRefreshing] = useState(false);
    const [isFirstLoad, setIsFirstLoad] = useState(null);
    const [routes] = useState([
       { key: 'doing', title: i18n.t("activity.textDoing") },
