@@ -14,6 +14,7 @@ const CardQuiz = ({
    handleDelete,
    showCheck = true
 }) => {
+   console.log(quiz);
    const router = useRouter();
    const { isEdited } = useQuizProvider();
    const { i18n } = useAppProvider();
@@ -74,6 +75,8 @@ const CardQuiz = ({
          <TouchableOpacity
             className="w-full"
             onPress={() => {
+               // check if the quiz is edited
+               if (!isEdited) return;
                router.push({
                   pathname: routerPath,
                   params: params,
