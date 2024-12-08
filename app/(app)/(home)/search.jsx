@@ -25,7 +25,11 @@ import QuizListSkeleton from "@/components/customs/QuizListSkeleton";
 const COL_SPAN = 2;
 export default function SearchScreen() {
   const LIMIT = 10;
+<<<<<<< HEAD
   const { subjectId, load} = useLocalSearchParams();
+=======
+  const { subjectId, load } = useLocalSearchParams();
+>>>>>>> ab9c30e203bf7adcd8b83f129bddfd14d5b60844
   const { setIsHiddenNavigationBar,i18n } = useAppProvider();
   const [key,setKey] = useState("");
   const modalizeRef = useRef(null);
@@ -221,7 +225,7 @@ export default function SearchScreen() {
   const handleResetFilter = () => {
     setFilter({
       quiz_on: -1,
-      subjectIds: subjectId ? [subjectId] : [],
+      subjectIds: [],
       key,
       sortStatus: -1,
       skip: 0,

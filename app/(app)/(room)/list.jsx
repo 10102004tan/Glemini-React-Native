@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message-custom'
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config'
 import Field from '@/components/customs/Field'
 import RoomItem from '@/components/customs/RoomItem'
+import { useAppProvider } from '@/contexts/AppProvider'
 
 const ListRoomScreen = () => {
    const { userData } = useAuthContext();
@@ -15,6 +16,7 @@ const ListRoomScreen = () => {
    const LIMIT = 10;
    const [roomSearch, setRoomSearch] = useState('');
    const [roomCode, setRoomCode] = useState('');
+   const { i18n } = useAppProvider();
 
    const fetchRoomSearch = async () => {
       try {
@@ -125,7 +127,7 @@ const ListRoomScreen = () => {
       <Wrapper >
          <View className="p-4">
             {/* <Text className="text-center text-lg font-semibold">Danh sách phòng chơi</Text> */}
-            <Field placeholder='Tìm kiếm phòng chơi' wrapperStyles='mb-4' value={roomCode} onChange={(text) => {
+            <Field placeholder={i18n.t('room_item.findRoomLabel')} wrapperStyles='mb-4' value={roomCode} onChange={(text) => {
                setRoomCode(text);
             }} />
             {
@@ -150,7 +152,7 @@ const ListRoomScreen = () => {
                         ListFooterComponent={renderFooter}
                      />
                   </> : <>
-                     {isFetching ? <Text className="text-center text-blue-500">Đang tìm kiếm</Text> : <Text className="text-center text-red-500">Không có phòng chơi nào</Text>}
+                     {isFetching ? <Text className="text-center text-blue-500">{i18n.t('room_item.searching')}</Text> : <Text className="text-center text-red-500">{i18n.t('room_item.emptyList')}</Text>}
                   </>}
                </> : <>
                   {rooms.length > 0 ? <>
@@ -178,7 +180,7 @@ const ListRoomScreen = () => {
                         list
                      />
                   </> : <>
-                     <Text className="text-center text-red-500">Không có phòng chơi nào</Text>
+                     <Text className="text-center text-red-500">{i18n.t('room_item.emptyList')}</Text>
                   </>}
                </>
             }

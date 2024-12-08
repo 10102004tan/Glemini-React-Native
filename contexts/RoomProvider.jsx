@@ -5,6 +5,7 @@ import { useAuthContext } from './AuthContext';
 import { useRouter } from 'expo-router';
 import socket from '@/utils/socket';
 import Toast from 'react-native-toast-message-custom';
+import { useAppProvider } from './AppProvider';
 
 const RoomContext = createContext();
 
@@ -15,6 +16,7 @@ const RoomProvider = ({ children }) => {
    const [rooms, setRooms] = useState([]);
    const [room, setRoom] = useState([]);
    const [currentRoom, setCurrentRoom] = useState(null);
+   const { i18n } = useAppProvider();
 
 
    const createRoom = async (room_code, quiz_id, user_created_id, user_max, description) => {
@@ -67,7 +69,7 @@ const RoomProvider = ({ children }) => {
       const data = await res.json();
       if (data.statusCode === 200) {
          if (notAccepted.includes(data.metadata.status)) {
-            Alert.alert('Thông báo', 'Không thể tham gia vào phòng chơi lúc này !!!');
+            Alert.alert(i18n.t('room_wait.alert'), i18n.t('room_wait.cannotStartRoom'));
          } else if (data.metadata.status === 'doing') {
             const res = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_CHECK_USER}`, {
                method: 'POST',
@@ -98,7 +100,7 @@ const RoomProvider = ({ children }) => {
             } else {
                Toast.show({
                   type: 'error',
-                  text1: 'Bạn đã hoàn thành phòng chơi này !!!',
+                  text1: i18n.t('room_wait.completed'),
                   visibilityTime: 3000,
                   autoHide: true,
                });
@@ -146,21 +148,21 @@ const RoomProvider = ({ children }) => {
                   if (checkData.message === "No room found") {
                      Toast.show({
                         type: 'error',
-                        text1: 'Phòng chơi không tồn tại !!!',
+                        text1: i18n.t('room_wait.notFound'),
                         visibilityTime: 3000,
                         autoHide: true,
                      });
                   } else if (checkData.message === "Room is full") {
                      Toast.show({
                         type: 'error',
-                        text1: 'Số lượng người chơi đã đầy không thể tham gia !!!',
+                        text1: i18n.t('room_wait.full'),
                         visibilityTime: 3000,
                         autoHide: true,
                      });
                   } else if (checkData.message === "User already joined room") {
                      Toast.show({
                         type: 'error',
-                        text1: 'Bạn đã tham gia vào phòng chơi này !!!',
+                        text1: i18n.t('room_wait.joined'),
                         visibilityTime: 3000,
                         autoHide: true,
                      });
@@ -169,7 +171,7 @@ const RoomProvider = ({ children }) => {
             }
          }
       } else {
-         Alert.alert('Thông báo', 'Mã phòng không tồn tại');
+         Alert.alert(i18n.t('room_wait.alert'), i18n.t('room_wait.notFound'));
       }
    };
 

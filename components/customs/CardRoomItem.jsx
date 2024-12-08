@@ -2,8 +2,18 @@ import { View, Text, Image } from 'react-native'
 import React from 'react'
 import Button from './Button';
 import { createdAtConvert } from '@/utils';
+import socket from '@/utils/socket';
+import { useRouter } from 'expo-router';
+import { useRoomProvider } from '@/contexts/RoomProvider';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 const CardRoomItem = ({ room }) => {
+   const router = useRouter();
+   const { setCurrentRoom } = useRoomProvider();
+   const { userData } = useAuthContext();
+   const { i18n } = useAppProvider();
+
    return (
       <View
          className="flex-1 rounded-xl overflow-hidden "
@@ -27,9 +37,9 @@ const CardRoomItem = ({ room }) => {
                />
             </View>
             <View className="pt-8">
-               <Text className="font-semibold">Mã phòng: <Text className="text-blue-600 font-semibold">{room.room_code}</Text></Text>
+               <Text className="font-semibold">{i18n.t('room_item.roomCode')}: <Text className="text-blue-600 font-semibold">{room.room_code}</Text></Text>
                <Text className="text-gray text-[12px] mt-2">{createdAtConvert(room.createdAt)}</Text>
-               <Button text='Xem chi tiết' otherStyles='p-4 mt-2' onPress={() => {
+               <Button text={i18n.t('room_item.viewDetail')} otherStyles='p-4 mt-2 justify-center' onPress={() => {
                   setCurrentRoom(room.room_code);
                   socket.emit('joinRoom', { roomCode: room.room_code, user: userData });
                   router.push({

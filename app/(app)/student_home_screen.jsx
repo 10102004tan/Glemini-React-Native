@@ -80,7 +80,7 @@ const StudentHomeScreen = () => {
 				<NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti} color={"black"} />
 			</View>
 
-			{loading ? (
+			{loading || refreshing ? (
 				<Lottie
 					source={require('@/assets/jsons/loading.json')}
 					width={150}
