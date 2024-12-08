@@ -15,8 +15,12 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 import { router, useGlobalSearchParams } from "expo-router";
 import { useAuthContext } from "@/contexts/AuthContext";
+import Overlay from "@/components/customs/Overlay";
+import { I18n } from "i18n-js";
+import { useAppProvider } from "@/contexts/AppProvider";
 
 const detail_collection = () => {
+  const { i18n } = useAppProvider();
   // chỉnh sửa tên của collection
   const [newCollectionName, setNewCollectionName] = useState("");
   const [isEditModalVisible, setEditModalVisible] = useState(false);
@@ -117,7 +121,11 @@ const detail_collection = () => {
   };
 
   //fetch api để cập nhật tên mới của collection từ backend server về database của collection
-  const updateCollectionName = async (collection_id, collection_name, quiz_ids) => {
+  const updateCollectionName = async (
+    collection_id,
+    collection_name,
+    quiz_ids
+  ) => {
     console.log("Updating collection name...");
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_UPDATE_NAME}`,
@@ -177,28 +185,35 @@ const detail_collection = () => {
   };
 
   const handleDeleteQuiz = (quiz_id) => {
-    Alert.alert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa quiz này không?", [
-      { text: "Hủy", style: "cancel" },
-      {
-        text: "Xóa",
-        onPress: () => deleteQuizInCollection(quiz_id),
-        style: "destructive",
-      },
-    ]);
+    Alert.alert(
+      i18n.t("library.collection.detailCollection.confirmDelete"),
+      i18n.t("library.collection.detailCollection.sureQuiz"),
+      [
+        {
+          text: i18n.t("library.collection.detailCollection.btnCancel"),
+          style: "cancel",
+        },
+        {
+          text: i18n.t("library.collection.detailCollection.btnDelete"),
+          onPress: () => deleteQuizInCollection(quiz_id),
+          style: "destructive",
+        },
+      ]
+    );
   };
 
   // hiển thị nút xác nhận xóa cho bộ sưu tập
   const handleDeletePress = () => {
     Alert.alert(
-      "Xác nhận xóa",
-      "Bạn có chắc chắn muốn xóa bộ sưu tập này không?",
+      i18n.t("library.collection.detailCollection.confirmDelete"),
+      i18n.t("library.collection.detailCollection.sureCollection"),
       [
         {
-          text: "Hủy",
+          text: i18n.t("library.collection.detailCollection.btnCancel"),
           style: "cancel",
         },
         {
-          text: "Xóa",
+          text: i18n.t("library.collection.detailCollection.btnDelete"),
           onPress: () => deleteCollection(id),
           style: "destructive",
         },
@@ -212,6 +227,7 @@ const detail_collection = () => {
 
   return (
     <Wrapper>
+      <Overlay visible={isEditModalVisible}></Overlay>
       <Modal
         transparent={true}
         visible={isEditModalVisible}
@@ -220,22 +236,24 @@ const detail_collection = () => {
         <View className="flex-1 justify-center items-center bg-opacity-50">
           <View className="bg-white rounded-lg p-4 shadow-lg w-11/12 max-w-md border border-black">
             <Text className="text-lg font-semibold mb-2">
-              Chỉnh sửa tên bộ sưu tập
+              {i18n.t("library.collection.detailCollection.editCollectionName")}
             </Text>
             <TextInput
               className="border border-gray-300 rounded-md p-2 mb-2"
-              placeholder="Nhập tên mới"
+              placeholder={i18n.t(
+                "library.collection.detailCollection.enterNewName"
+              )}
               value={newCollectionName}
               onChangeText={setNewCollectionName}
             />
             <View className="flex-row justify-end">
               <Button
-                text="Hủy"
+                text={i18n.t("library.collection.detailCollection.btnCancel")}
                 onPress={() => setEditModalVisible(false)}
                 otherStyles="bg-black text-white rounded-md px-4 py-2 mr-2"
               />
               <Button
-                text="Lưu"
+                text={i18n.t("library.collection.detailCollection.btnSave")}
                 onPress={() => updateCollectionName(id, newCollectionName)}
                 otherStyles="bg-blue-500 text-white rounded-md px-4 py-2"
               />
@@ -257,7 +275,9 @@ const detail_collection = () => {
                 <FontAwesome name="pencil" size={14} color="black" />
               </View>
 
-              <Text className="mr-1 flex items-center">Chỉnh sửa</Text>
+              <Text className="mr-1 flex items-center">
+                {i18n.t("library.collection.detailCollection.edit")}
+              </Text>
             </View>
           </TouchableOpacity>
 
@@ -277,7 +297,9 @@ const detail_collection = () => {
                 <MaterialIcons name="delete" size={14} color="black" />
               </View>
 
-              <Text className="mr-2 flex items-center">Xóa</Text>
+              <Text className="mr-2 flex items-center">
+                {i18n.t("library.collection.detailCollection.btnDelete")}
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -310,8 +332,8 @@ const detail_collection = () => {
                     </Text>
                     <Text className="text-gray-500">
                       {name.quiz_status === "unpublished"
-                        ? "Riêng tư"
-                        : "Công khai"}
+                        ? i18n.t("library.public")
+                        : i18n.t("library.public")}
                     </Text>
                   </View>
                 </View>

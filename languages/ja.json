@@ -41,7 +41,9 @@
       "cardIdDescription": "カード画像またはIDカード",
       "descForCard": "はっきりとしたカード画像を提供してください",
       "descForCardID": "明るい場所でCCCDを撮影してください",
-      "descForDocument": "はっきりとした文書確認画像を提供してください"
+      "descForDocument": "はっきりとした文書確認画像を提供してください",
+      "rejection": "アカウントの認証に失敗しました。正確かつ明確な情報を提供してください",
+      "btnResend": "再送信"
    },
    "error": {
       "notification": "通知",
