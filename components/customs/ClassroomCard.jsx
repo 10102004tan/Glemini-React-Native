@@ -13,10 +13,10 @@ const ClassroomCard = ({ classroom }) => {
     
     return (
         <View
-            className={`flex-row justify-between items-center p-5 mx-5 my-2 bg-white rounded-lg border-orange-600 border-l-[6px]`}
+            className={`flex-row items-center p-5 mx-5 my-2 bg-white rounded-lg border-orange-600 border-l-[6px]`}
             style={{ elevation: 3 }}
         >
-            <View>
+            <View className='w-11/12'>
                 <Text className='font-pbold text-lg'>{`${classroom.class_name}`}</Text>
                 <Text className='font-semibold text-base'> {userData.user_type === 'teacher' ? `${i18n.t('classroom.textSubject')} ${i18n.t(`subjects.${classroom.subject.name}`)}` : `${i18n.t('classroom.textTeacher')} ${classroom.user_id.user_fullname}`}</Text>
                 <Text className='font-semibold text-base'> {classroom.school?.school_name || 'No data'}</Text>
