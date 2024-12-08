@@ -54,7 +54,7 @@ const detailquizz = () => {
    const { deleteQuiz, questionFetching, setQuestionFetching, removeQuizShared } =
       useQuizProvider();
 
-   const { id } = useGlobalSearchParams();
+   const { id, user_id } = useGlobalSearchParams();
 
    const { userData } = useAuthContext();
    const [quizId, setQuizId] = useState("");
