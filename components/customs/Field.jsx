@@ -11,11 +11,12 @@ const Field = ({
    wrapperStyles = '',
    inputStyles = '',
    icon = null,
+   disabled = false,
 }) => {
    const { theme } = useAppProvider();
    return (
       <View
-         className={`flex flex-col items-start justify-center ${wrapperStyles}`}
+         className={`flex flex-col items-start justify-center ${wrapperStyles} `}
       >
          {label && <Text className={`mb-1 text-sm text-gray`}>{label}</Text>}
          <View
@@ -24,6 +25,7 @@ const Field = ({
             {icon && <View className="mr-2">{icon}</View>}
 
             <TextInput
+               editable={!disabled}
                className="w-full"
                value={value}
                placeholderTextColor={'#757575'}

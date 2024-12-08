@@ -24,6 +24,7 @@
       "signIn": "Sign In Now",
       "fullname": "Fullname",
       "welcome": "Welcome to Glemini App",
+      "selectSchool": "Select School",
       "choice": {
          "student": "Student",
          "teacher": "Teacher",
@@ -39,7 +40,9 @@
       "cardIdDescription": "Card Image or ID Card",
       "descForCard": "Please provide a clear card image",
       "descForCardID": "Please take a photo of CCCD in a well-lit place",
-      "descForDocument": "Please provide a clear document confirmation image"
+      "descForDocument": "Please provide a clear document confirmation image",
+      "rejection": "Account verification failed, please provide accurate and clear information",
+      "btnResend": "Resend"
    },
    "error": {
       "notification": "Notification",
@@ -58,7 +61,8 @@
       "nameNotIncludeChar": "Fullname can't include special characters",
       "title": "Error",
       "passwordNotMatch": "Password does not match",
-      "imageRequired": "Image is required"
+      "imageRequired": "Image is required",
+      "maxSchool": "You can only choose 2 schools"
    },
    "success": {
       "signUp": "Sign up successfully",
@@ -86,6 +90,10 @@
    "play": {
       "single": {
          "buttonQuit": "Quit",
+         "titleQuizOut": "Exit?",
+         "textQuizOut": "Do you want to exit this quiz?",
+         "btnCancel": "Cancel",
+         "btnContinute": "Continue",
          "score": "Score",
          "questionCouter": "Question number:",
          "buttonConfirm": "Confirm",
@@ -105,7 +113,11 @@
          "incorrect": "Incorrect",
          "textResult": "Result",
          "textDesc": "Practice",
-         "buttonReview": "Review"
+         "buttonReview": "Review",
+         "titleQuizOut": "Play Again?",
+         "textQuizOut": "Do you want to play this quiz again?",
+         "btnCancel": "Cancel",
+         "btnContinute": "Continue"
       },
       "review": {
          "title": "Review Answers",
@@ -145,7 +157,9 @@
       "btnThuThach": "Challenge",
       "btnLuyenTap": "Practice",
       "desc": "Description:",
-      "textDesc": "No description here!"
+      "textDesc": "No description here!",
+      "btnSeeMore": "See more",
+      "emptyList": "Empty List!"
    },
    "teacher_homepage": {
       "searchInputPlaceholder": "Create a quiz or a lesson",
@@ -156,7 +170,12 @@
       "createFromImage": "Create from Image",
       "createFromText": "Create from Text",
       "uploadTemplate": "Upload Template",
-      "createWithHand": "Create Manually"
+      "createWithHand": "Create Manually",
+      "createdRecentQuizzes": "Recently created question sets",
+      "createdRecentRooms": "Recently created rooms",
+      "viewAll": "View all",
+      "noTestsCreated": "You haven't created any tests yet",
+      "noRoomsCreated": "You haven't created any rooms yet"
    },
    "create_title_quiz_screen": {
       "quizName": "Quiz Name",
@@ -166,6 +185,67 @@
       "promptRequest": "Please tell us your prompt",
       "quizThumbnailUploadTitle": "Upload an image file to create questions from its content",
       "startCreateQuiz": "Start Creating Quiz"
+   },
+   "room_item": {
+      "viewDetail": "View details",
+      "roomCode": "Room code",
+      "prevMinutes": "minutes ago",
+      "prevHour": "hour ago",
+      "prevDay": "day ago",
+      "prevMonth": "month ago",
+      "prevYear": "year ago",
+      "new": "Just created",
+      "processing": "In progress",
+      "ended": "Ended",
+      "findRoomLabel": "Find game room",
+      "listRoom": "List of rooms",
+      "emptyList": "Empty list",
+      "searching": "Searching..."
+   },
+   "room_wait": {
+      "userJoined": "Player {name} has joined the room",
+      "userLeft": "Player {name} has left the room",
+      "roomNotEnoughPlayers": "The room needs at least 1 player to start",
+      "copyRoomCodeSuccess": "Room code copied successfully",
+      "copyRoomCodeFail": "Failed to copy room code",
+      "cannotStartRoom": "Cannot start the room",
+      "roomAlreadyCompleted": "The room has already ended, do you want to reopen it?",
+      "roomInProgress": "The room is currently open, please go to the results screen",
+      "exitRoomConfirmation": "Are you sure you want to leave the room?",
+      "notifySent": "Notification has been sent!!!",
+      "notifyError": "Error sending notification, please try again after a few minutes",
+      "classroomSelect": "Please select a classroom",
+      "alert": "Alert",
+      "cancel": "Cancel",
+      "leave": "Leave",
+      "errorLeaveRoom": "Error leaving the room",
+      "listJoined": "List of players who have joined the room",
+      "copy": "Copy",
+      "openAgain": "Open again",
+      "followResult": "Follow the results",
+      "start": "Start",
+      "shareQr": "Share this QR code so other players can join the room",
+      "totalJoined": "Total number of participants",
+      "completed": "Completed",
+      "notFound": "Not found",
+      "full": "The number of players is full, cannot join!!!",
+      "joined": "You have joined this room!!!"
+   },
+   "room_wait_result": {
+      "correctPercent": "Accuracy",
+      "rankboard": "Leaderboard",
+      "question": "Question",
+      "userJoined": "Participants",
+      "done": "End"
+   },
+   "realtime_play": {
+      "countDownTime": "Countdown time"
+   },
+   "card_quiz": {
+      "public": "Public",
+      "private": "Private",
+      "noDescription": "No description",
+      "viewOnly": "View only"
    },
    "overview_quiz_screen": {
       "detail": "Detail",
@@ -196,12 +276,22 @@
       "mutipleChoice": "Multiple Choice",
       "fillInBlank": "Fill in the Blank",
       "blank": "Essay",
-      "logical": "Logical"
+      "logical": "Logical",
+      "back": "Back"
+   },
+   "rich_editor": {
+      "enterAnswer": "Enter the answer content",
+      "enterExplain": "Enter the explanation",
+      "enterQuestion": "Enter the question content",
+      "networkError": "Network error, please check your connection and try again",
+      "networkErrorTitle": "Error"
    },
    "profile": {
       "title": "Profile",
+      "titleSchool": "School",
       "fullname": "Fullname",
       "info": "Personal Information",
+      "selectSchool": "Select School",
       "email": "Email",
       "phone": "Phone",
       "address": "Address",
@@ -260,20 +350,66 @@
       "title": "Settings"
    },
    "home": {
-      "title": "Home"
+      "title": "Home",
+      "more": "More"
    },
    "search": {
-      "title": "Search"
+      "title": "Search",
+      "placeholder": "Search here...",
+      "filter": "Filter",
+      "btnFilter": "Filter",
+      "btnReset": "Reset",
+      "all": "All",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "status": "Status",
+      "subject": "Subject",
+      "plays": "Plays"
    },
    "classes": {
       "title": "Classes"
    },
    "account": {
       "title": "Account",
-      "buttonEdit": "Edit"
+      "buttonEdit": "Edit",
+      "recentActivity": "Recent Activity"
    },
    "report": {
-      "title": "Report"
+      "title": "Report",
+      "realtime": "Live",
+      "exercise": "Exercise",
+      "userJoin": "participants",
+      "placeholderSearch": "Search reports",
+      "btnFresh": "Reset",
+      "optionClass": "Class",
+      "optionType": "Type",
+      "optionNew": "Newest",
+      "optionOld": "Oldest",
+      "emptyReport": "No data to display",
+      "reportDetail": {
+         "title": "Report Details",
+         "starting": "In Progress",
+         "end": "Ended",
+         "questionDownload": "Download report file?",
+         "textQuestionDownload": "Do you want to continue downloading this report file?",
+         "cancel": "Cancel",
+         "continute": "Continue",
+         "btnViewQuiz": "View Quiz",
+         "text1": "Legend",
+         "text2": "Correct",
+         "text3": "Incorrect",
+         "text4": "List of Participants",
+         "titleQuiz": "Questions in Quiz"
+      },
+      "reportOverview": {
+         "questionCorrect": "Correct Questions",
+         "point": "Points",
+         "titleQues": "Question",
+         "typeCorrect": "Right",
+         "typeIncorrect": "Wrong",
+         "infoScore": "points | 1 question",
+         "infoAnswerCorrect": "Correct Answer"
+      }
    },
    "status": {
       "title": "Status",
@@ -282,11 +418,147 @@
       "reject": "Reject"
    },
    "library": {
-      "title": "Library"
+      "title": "Library",
+      "library": "Library",
+      "quizCreated": "Created Quiz",
+      "filter": "Filter",
+      "search": "Search",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "btnFresh": "Reset",
+      "quizShared": {
+         "title": "Shared Quiz"
+      },
+      "viewOnly": "View Only",
+      "noDescription": "No description",
+      "private": "Private",
+      "public": "Public",
+      "coppyQuiz": "Copy Quiz",
+      "collection": {
+         "title": "Collection",
+         "createNewCollection": "Create new collection",
+         "collectionName": "Collection Name",
+         "enterCollectionName": "Enter collection name",
+         "btnCreate": "Create",
+         "btnCancel": "Cancel",
+         "detailCollection": {
+            "editCollectionName": "Edit Collection Name",
+            "edit": "Edit",
+            "enterNewName": "Enter new name",
+            "btnSave": "Save",
+            "btnCancel": "Cancel",
+            "btnDelete": "Delete",
+            "confirmDelete": "Confirm deletion",
+            "sureQuiz": "Are you sure you want to delete this quiz?",
+            "sureCollection": "Are you sure you want to delete this collection?"
+         }
+      }
    },
    "lockFeature": {
       "title": "You do not have access to this feature",
       "desc": "Please upgrade your account to access this feature.",
       "button": "Here"
+   },
+   "classroom": {
+      "title": "Classroom",
+      "emptyClass": "No classrooms available",
+      "textTeacher": "Teacher:",
+      "textStudent": "students",
+      "textSubject": "Subject:",
+      "teacher": {
+         "btnAddClass": "Create New Classroom",
+         "titleBts": "Enter New Classroom Information",
+         "fieldSchool": "School Name",
+         "placeholderFieldSchool": "Select a school name...",
+         "fieldSubject": "Subject Name",
+         "placeholderFieldSubject": "Select a subject...",
+         "fieldClassroom": "Classroom Name",
+         "placeholderFieldClassroom": "Enter the classroom name...",
+         "btnSave": "Create",
+         "btnCancel": "Cancel",
+         "btnEdit": "Edit",
+         "titleBtsAddStudent": "Add Student List",
+         "titleSearchQuery": "Enter the classroom name to search",
+         "emptyClassroom": "Empty list classroom!",
+         "titleQuestionContinuteQUiz": "Continue the Quiz?",
+         "textQuestionContinuteQuiz": "Do you want to continue this quiz?",
+         "btnContinute": "Continue",
+         "titleDelStudent": "Confirm Delete Student?",
+         "textDelStudent": "Are you sure you want to remove this student from the class?",
+         "btnDel": "Delete",
+         "btsTitleAddStudent": "New Student Information",
+         "btsTitleEmail": "Contact Address (Email)",
+         "btsPlaceholder": "Enter email address"
+      },
+      "student": {
+         "titleScreen": "Classroom Details",
+         "titleSearchQuery": "Enter the classroom name to search",
+         "title": "Assigned Exercises",
+         "textEnd": "Ended",
+         "notiDL": "Submission Deadline Passed",
+         "notiChildDL": "You can no longer submit this exercise.",
+         "notiStart": "Not Started Yet",
+         "notiChildStart": "You cannot start this exercise yet.",
+         "textNotStartedYet": "It is not time to start the exercise yet",
+         "emptyExercise": "There are no exercises in this classroom"
+      },
+      "upload": {
+         "title": "Add Students",
+         "success": "Successfully",
+         "fail": "Fail",
+         "notification": "Notification",
+         "uploadSuccess": "The file has been successfully uploaded.",
+         "uploadError": "File upload failed.",
+         "notiError": "An error occurred during the file upload process.",
+         "existFile": "The file already exists!",
+         "permissionFile": "Access denied.",
+         "permissionMedia": "Unable to access Media Library!",
+         "downloadFileExcel": "Excel template file downloaded successfully.",
+         "deletedFiledExcel": "Excel template file deleted successfully.",
+         "errorDelFileExcel": "Error deleting file:",
+         "textAddFile": "Add a file here",
+         "textDownloadFileExcel": "Download the sample Excel file",
+         "textFieldDownloadFileExcel": "Download sample (xlsx)",
+         "textFieldDelFileExcel": "Delete sample",
+         "guildText": "Instructions for Excel file format",
+         "guildRule": "Ensure each row has a full name and a valid email address."
+      }
+   },
+   "activity": {
+      "title": "Activity",
+      "btnJoin": "Join",
+      "textRoomCODE": "Room Code",
+      "btnScan": "Scan the code to join here",
+      "textDoing": "In Progress",
+      "textCompleted": "Completed",
+      "emptyActivity": "No activities available",
+      "publish": "Public",
+      "exercise": "Assigned",
+      "room": "Room",
+      "titleQuestionContinuteQUiz": "Continue the quiz?",
+      "textQuestionContinuteQuiz": "Do you want to delete this classroom?",
+      "titleQuestionReplayQuiz": "Continue playing?",
+      "textQuestionReplayQuiz": "Do you want to delete the existing result to start a new attempt?",
+      "btnReadResult": "View",
+      "btnCancel": "Cancel",
+      "btnContinute": "Continue",
+      "notiDL": "Submission deadline has passed!",
+      "textCreated": "created by:"
+   },
+   "modal": {
+      "title": "Notification",
+      "text": "Are you sure you want to delete this item?",
+      "btnCancel": "Cancel",
+      "btnDelete": "Delete",
+      "btnSave": "Save",
+      "btnEdit": "Edit",
+      "titleDeleteSchool": "Delete School",
+      "textDeleteSchool": "Are you sure you want to delete this school?",
+      "ok": "OK"
+   },
+   "notification": {
+      "title": "Notification",
+      "emptyNotification": "No notifications available",
+      "readAll": "Mark all as read"
    }
 }

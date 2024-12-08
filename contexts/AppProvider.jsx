@@ -12,7 +12,11 @@ import vi from '../languages/vi.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const AppContext = createContext();
 import socket from '../utils/socket';
-import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
+import moment from "moment/moment";
+// if language is not set, default to vi
+import "moment/locale/vi";
+import "moment/locale/ja";
+
 
 // Example about a context provider in React Native
 const AppProvider = ({ children }) => {
@@ -25,11 +29,13 @@ const AppProvider = ({ children }) => {
       vi,
    });
    i18n.locale = language;
+   moment.locale(language);
    // Dùng cho việc chuyển đổi chủ đề
    const [theme, setTheme] = useState({
       text: "#000",
       background: "#fff",
    });
+
    // Dùng cho việc ẩn hiện thanh điều hướng
    const [isHiddenNavigationBar, setIsHiddenNavigationBar] = useState(false);
    // Dùng cho việc cập nhật tiêu đề trang
@@ -42,7 +48,6 @@ const AppProvider = ({ children }) => {
             setLanguage(key);
          }
       });
-      // console.log("AppProvider");
    }, []);
 
    // Hàm xử lý chuyển đổi ngôn ngữ
@@ -91,7 +96,7 @@ const AppProvider = ({ children }) => {
             setShowBottomSheetSaveToLibrary,
             notification,
             setNotification,
-
+             moment
          }}
       >
          {children}

@@ -11,8 +11,11 @@ import QuestionOverview from "@/components/customs/QuestionOverview";
 import * as XLSX from 'xlsx';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import Lottie from "@/components/loadings/Lottie";
+import { useAppProvider } from "@/contexts/AppProvider";
 
 export default function DetailReport() {
+    const {i18n} = useAppProvider()
     const modal = createRef();
     const { reportId, type } = useLocalSearchParams();
     const { reportData, fetchReportDetail } = useResultProvider();
@@ -38,7 +41,7 @@ export default function DetailReport() {
 
     const downloadExcel = async () => {
         if (!reportData.result_ids) return;
-    
+
         // Prepare data for Excel
         const data = reportData.result_ids.map((result) => ({
             "Họ và tên": result.user_id.user_fullname,
@@ -47,23 +50,23 @@ export default function DetailReport() {
             "Điểm số": result.result_questions.filter(q => q.correct).length + " điểm",
             "Tổng câu hỏi": result.result_questions.length + " câu",
         }));
-    
+
         // Add Title Row
         const title = [["Báo cáo Kết quả Quiz"]];
         const headers = [["Họ và tên", "Email", "Trạng thái", "Điểm số", "Tổng câu hỏi"]];
-    
+
         // Combine title, headers, and data into one sheet
         const sheetData = [...title, [], ...headers, ...data.map(Object.values)];
-    
+
         // Create worksheet and workbook
         const ws = XLSX.utils.aoa_to_sheet(sheetData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Results");
-    
+
         // Write the Excel file to the file system
         const wbout = XLSX.write(wb, { type: "base64", bookType: "xlsx" });
         const fileUri = `${FileSystem.cacheDirectory}${reportData.name || reportData.room_code}_report.xlsx`;
-    
+
         // Save and share
         try {
             await FileSystem.writeAsStringAsync(fileUri, wbout, { encoding: FileSystem.EncodingType.Base64 });
@@ -72,10 +75,10 @@ export default function DetailReport() {
             console.error("Error downloading Excel:", error);
         }
     };
-    
+
     useEffect(() => {
         if (reportData) {
-            fetchQuestions(reportData.quiz_id?._id);        
+            fetchQuestions(reportData.quiz_id?._id);
         }
     }, [reportData])
 
@@ -86,17 +89,17 @@ export default function DetailReport() {
                     <View>
                         <Text className='text-black text-base font-bold'>{reportData.quiz_id?.quiz_name}</Text>
                         <Text className={`font-medium ${getStatus() ? 'text-green-500' : 'text-red-500'}`}>
-                            {getStatus() ? 'Đang diễn ra' : 'Đã kết thúc'}
+                            {getStatus() ? i18n.t('report.reportDetail.starting') : i18n.t('report.reportDetail.end')}
                         </Text>
                     </View>
                     <TouchableOpacity onPress={() => {
                         Alert.alert(
-                            "Tải file báo cáo?",
-                            "Bạn có muốn tiếp tục tải file báo cáo này?",
+                            i18n.t('report.reportDetail.questionDownload'),
+                            i18n.t('report.reportDetail.textQuestionDownload'),
                             [
-                                { text: "Hủy", style: "cancel" },
+                                { text: i18n.t('report.reportDetail.cancel'), style: "cancel" },
                                 {
-                                    text: "Tiếp tục", onPress: () => {
+                                    text: i18n.t('report.reportDetail.continute'), onPress: () => {
                                         downloadExcel()
                                     }
                                 },
@@ -117,71 +120,65 @@ export default function DetailReport() {
                         <Text>{moment(reportData.date_end).format("MMMM Do YYYY | h:mm A")}</Text>
                     </View>
                     <TouchableOpacity className='flex-row items-center' onPress={onOpen}>
-                        <Text className='px-1 py-1 bg-green-500/60 rounded-lg'>Xem quiz</Text>
+                        <Text className='px-1 py-1 bg-green-500/60 rounded-lg'>{i18n.t('report.reportDetail.btnViewQuiz')}</Text>
                         <MaterialCommunityIcons name="menu-right" size={30} />
                     </TouchableOpacity>
                 </View>
             </View>
             <View className='flex-1 p-3'>
-                <Text className='text-base font-semibold'>Chú thích</Text>
+                <Text className='text-base font-semibold'>{i18n.t('report.reportDetail.text1')}</Text>
                 <View className='w-full flex-row items-center justify-around my-1'>
                     <View className='flex-row items-center gap-2'>
                         <View className='w-6 h-6 rounded-full bg-green-500' />
-                        <Text className='text-green-500'>Chính xác </Text>
+                        <Text className='text-green-500'>{i18n.t('report.reportDetail.text2')}</Text>
                     </View>
                     <View className='flex-row items-center gap-2'>
                         <View className='w-6 h-6 bg-red-500' />
-                        <Text className='text-red-500'>Không chính xác</Text>
+                        <Text className='text-red-500'>{i18n.t('report.reportDetail.text3')}</Text>
                     </View>
                 </View>
-                <Text className='text-base font-semibold my-1'>Danh sách người dùng đã tham gia</Text>
+                <Text className='text-base font-semibold my-1'>{i18n.t('report.reportDetail.text4')}</Text>
                 <View className='flex-1'>
-                {
-                    reportData.result_ids && reportData.result_ids.length > 0 ? 
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
-                    className="mx-4">
-                    {reportData.result_ids?.map((result) => {
-                        const correctCount = result.result_questions.filter(q => q.correct).length;
-                        const incorrectCount = result.result_questions.length - correctCount;
+                    {
+                        reportData.result_ids && reportData.result_ids.length > 0 ?
+                            <ScrollView
+                                showsVerticalScrollIndicator={false}
+                                className="mx-4">
+                                {reportData.result_ids?.map((result) => {
+                                    const correctCount = result.result_questions.filter(q => q.correct).length;
+                                    const incorrectCount = result.result_questions.length - correctCount;
 
-                        return (
-                            <Pressable key={result._id} onPress={() => {
-                                router.push({
-                                    pathname: '/(report)/overview_report',
-                                    params: {
-                                        resultId: result._id,
-                                    }
-                                });
-                            }}>
-                                <View className="flex-row items-center p-3 my-2 border rounded-lg border-slate-300 bg-white">
-                                    <Image source={{ uri: result.user_id.user_avatar }} className="w-12 h-12 rounded-full mr-4" />
-                                    <View className="flex-1">
-                                        <Text className="text-sm font-bold mb-1">{result.user_id.user_fullname}</Text>
-                                        <View className="h-4 flex-row w-full rounded-md overflow-hidden">
-                                            <View style={{ flex: correctCount / result.result_questions.length }} className="bg-green-500" />
-                                            <View style={{ flex: incorrectCount / result.result_questions.length }} className="bg-red-500" />
-                                        </View>
-                                    </View>
-                                </View>
-                            </Pressable>
-                        );
-                    })}
-                </ScrollView>
-                :
-                <View className='h-full flex items-center justify-center'>
-                            <LottieView
+                                    return (
+                                        <Pressable key={result._id} onPress={() => {
+                                            router.push({
+                                                pathname: '/(report)/overview_report',
+                                                params: {
+                                                    resultId: result._id,
+                                                }
+                                            });
+                                        }}>
+                                            <View className="flex-row items-center p-3 my-2 border rounded-lg border-slate-300 bg-white">
+                                                <Image source={{ uri: result.user_id.user_avatar }} className="w-12 h-12 rounded-full mr-4" />
+                                                <View className="flex-1">
+                                                    <Text className="text-sm font-bold mb-1">{result.user_id.user_fullname}</Text>
+                                                    <View className="h-4 flex-row w-full rounded-md overflow-hidden">
+                                                        <View style={{ flex: correctCount / result.result_questions.length }} className="bg-green-500" />
+                                                        <View style={{ flex: incorrectCount / result.result_questions.length }} className="bg-red-500" />
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </Pressable>
+                                    );
+                                })}
+                            </ScrollView>
+                            :
+                            <Lottie
                                 source={require('@/assets/jsons/empty.json')}
-                                autoPlay
-                                loop
-                                style={{
-                                    width: 200,
-                                    height: 200,
-                                }}
+                                width={200}
+                                height={200}
+                                text={'Chưa có học sinh nào tham gia'}
                             />
-                            <Text>Không có học sinh nào tham gia bài tập này</Text>
-                        </View>
-                }
+                    }
                 </View>
             </View>
             <Modalize
@@ -192,7 +189,7 @@ export default function DetailReport() {
                 withHandle={false}
                 scrollViewProps={{ showsVerticalScrollIndicator: false }}>
                 <View className="p-4">
-                    <Text className="text-lg font-bold mb-3">Câu hỏi trong Quiz</Text>
+                    <Text className="text-lg font-bold mb-3">{i18n.t('report.reportDetail.titleQuiz')}</Text>
                     {questions?.length > 0 ? (
                         <ScrollView showsVerticalScrollIndicator={false}>
                             {
@@ -206,17 +203,11 @@ export default function DetailReport() {
                             }
                         </ScrollView>
                     ) : (
-                        <View className='h-full flex items-center justify-center'>
-                            <LottieView
-                                source={require('@/assets/jsons/empty.json')}
-                                autoPlay
-                                loop
-                                style={{
-                                    width: 250,
-                                    height: 250,
-                                }}
-                            />
-                        </View>
+                        <Lottie
+                            source={require('@/assets/jsons/empty.json')}
+                            width={150}
+                            height={150}
+                        />
                     )}
                 </View>
             </Modalize>

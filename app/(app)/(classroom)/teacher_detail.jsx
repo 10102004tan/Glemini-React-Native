@@ -1,5 +1,5 @@
-import { View, Text, FlatList, Image, Modal, Pressable, TextInput, TouchableOpacity } from 'react-native';
-import React, { useState, useCallback } from 'react';
+import { View, Text, FlatList, Image, Modal, Pressable, TextInput, TouchableOpacity, Animated, Easing } from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -22,10 +22,22 @@ const TeacherDetail = () => {
     const { i18n } = useAppProvider();
     const { classroom, fetchClassroom, removeStudent, addStudent } = useClassroomProvider();
     const [email, setEmail] = useState('');
+    const [isLoading, setIsLoading] = useState(true)
 
     useFocusEffect(
         useCallback(() => {
-            fetchClassroom(classroomId);
+            const loadClassroom = async () => {
+                setIsLoading(true);
+                try {
+                    await fetchClassroom(classroomId);
+                } catch (error) {
+                    console.error('Error fetching classroom:', error);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            loadClassroom();
         }, [classroomId])
     );
 
@@ -80,6 +92,43 @@ const TeacherDetail = () => {
         }
     };
 
+    const SkeletonItem = ({ style }) => {
+        const [shimmerAnimation] = useState(new Animated.Value(0));
+
+        useEffect(() => {
+            const shimmerLoop = Animated.loop(
+                Animated.timing(shimmerAnimation, {
+                    toValue: 1,
+                    duration: 1000,
+                    easing: Easing.circle,
+                    useNativeDriver: true,
+                })
+            );
+            shimmerLoop.start();
+            return () => shimmerLoop.stop();
+        }, [shimmerAnimation]);
+
+        const shimmerBackground = shimmerAnimation.interpolate({
+            inputRange: [0, 1],
+            outputRange: ['#e0e0e0', '#f5f5f5'],
+        });
+
+        return <Animated.View style={[style, { backgroundColor: shimmerBackground }]} />;
+    };
+
+    const renderSkeletonList = (numItems) => (
+        <FlatList
+            data={Array(numItems).fill(0)}
+            keyExtractor={(_, index) => `skeleton-${index}`}
+            renderItem={() => (
+                <View className="bg-white p-4 mb-3 rounded-lg">
+                    <SkeletonItem style={{ height: 20, width: '70%', marginBottom: 8 }} />
+                    <SkeletonItem style={{ height: 14, width: '50%' }} />
+                </View>
+            )}
+        />
+    );
+
     // Tab routes
     const renderExercises = () => (
         <View className='p-5'>
@@ -93,22 +142,22 @@ const TeacherDetail = () => {
                         const now = moment();
                         const duration = moment.duration(endDate.diff(now));
                         const isExpired = duration.asMilliseconds() <= 0;
-    
+
                         const timeRemaining = isExpired
                             ? 'Đã kết thúc'
                             : duration.asDays() >= 1
-                            ? `${Math.floor(duration.asDays())} ngày nữa`
-                            : duration.asHours() >= 1
-                            ? `${Math.floor(duration.asHours() + 1)} giờ nữa`
-                            : `${Math.floor(duration.asMinutes())} phút nữa`;
-    
+                                ? `${Math.floor(duration.asDays())} ngày nữa`
+                                : duration.asHours() >= 1
+                                    ? `${Math.floor(duration.asHours() + 1)} giờ nữa`
+                                    : `${Math.floor(duration.asMinutes())} phút nữa`;
+
                         return (
                             <Pressable onPress={() => console.log(item._id)}>
                                 <View className='bg-slate-100 px-4 py-2 mb-2 rounded-md'>
                                     <View className='flex-row items-center justify-between'>
                                         <View className='flex items-start gap-2'>
                                             <Text className='text-base font-semibold'>{item.name}</Text>
-                                            <Text className={`text-base ${new Date(item.date_end) > Date.now() ? 'text-green-500' :'text-red-500'} `}>
+                                            <Text className={`text-base ${new Date(item.date_end) > Date.now() ? 'text-green-500' : 'text-red-500'} `}>
                                                 {timeRemaining}
                                             </Text>
                                         </View>
@@ -133,7 +182,6 @@ const TeacherDetail = () => {
             )}
         </View>
     );
-    
 
     const renderStudents = () => (
         <View className='p-5'>
@@ -179,19 +227,52 @@ const TeacherDetail = () => {
 
     const [index, setIndex] = useState(0);
     const [routes] = useState([
-        { key: 'exercises', title: 'Danhh sách bài tập' },
+        { key: 'exercises', title: 'Danh sách bài tập' },
         { key: 'students', title: 'Danh sách học sinh' },
     ]);
 
+    const withLoading = (renderFn, isLoading) => (props) =>
+        isLoading ? renderSkeletonList(5) : renderFn(props);
+
     const renderScene = SceneMap({
-        exercises: renderExercises,
-        students: renderStudents,
+        exercises: withLoading(renderExercises, isLoading),
+        students: withLoading(renderStudents, isLoading),
+    });
+
+    const [shimmerAnimation] = useState(new Animated.Value(0));
+
+    useEffect(() => {
+        const shimmerLoop = Animated.loop(
+            Animated.timing(shimmerAnimation, {
+                toValue: 1,
+                duration: 1200,
+                easing: Easing.circle,
+                useNativeDriver: true,
+            })
+        );
+        shimmerLoop.start();
+
+        return () => shimmerLoop.stop(); // Cleanup animation when component unmounts
+    }, [shimmerAnimation]);
+
+    const shimmerBackground = shimmerAnimation.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['#94a3b8', '#fff'],
     });
 
     return (
         <View className='flex-1 bg-white'>
-            <View className='w-full h-44 bg-red-800 flex justify-center items-center'>
-                <Text className='text-2xl text-white'>{classroom.class_name} - {classroom.subject?.name}</Text>
+            <View className='w-full h-44 bg-red-800  flex justify-center items-center'>
+                {isLoading ? (
+                    <Animated.View
+                        className='w-3/4 h-12 rounded-md'
+                        style={{ backgroundColor: shimmerBackground }}
+                    />
+                ) : (
+                    <Text className='text-2xl text-white'>
+                        {classroom.class_name} - {i18n.t(`subjects.${classroom.subject?.name}`)}
+                    </Text>
+                )}
                 <TouchableOpacity className='bg-white/70 rounded-full p-2 absolute bottom-5 right-5' onPress={() => { setShowBottomSheet(1); }}>
                     <AntDesign name='adduser' size={25} />
                 </TouchableOpacity>
@@ -242,14 +323,14 @@ const TeacherDetail = () => {
             {/* BottomSheet 2 */}
             <BottomSheet onClose={handleCloseBottomSheet} visible={showBottomSheet === 2}>
                 <View className='items-center'>
-                    <Text className='text-lg font-semibold'>Thông tin học sinh mới</Text>
+                    <Text className='text-lg font-semibold'>{i18n.t('classroom.teacher.btsTitleAddStudent')}</Text>
 
                     <View className='pt-5 w-full'>
-                        <Text className='pb-2 mt-3 text-base text-slate-700 font-semibold'>Địa chỉ liên lạc (email) </Text>
+                        <Text className='pb-2 mt-3 text-base text-slate-700 font-semibold'>{i18n.t('classroom.teacher.btsTitleEmail')}</Text>
                         <TextInput
                             value={email}
                             onChangeText={setEmail}
-                            placeholder='Nhập địa chỉ email'
+                            placeholder={i18n.t('classroom.teacher.btsPlaceholder')}
                             className='border border-slate-500 rounded-xl py-2 px-5'
                         />
 
@@ -280,14 +361,14 @@ const TeacherDetail = () => {
             >
                 <View className='flex-1 justify-center items-center bg-black/50'>
                     <View className='bg-white p-5 rounded-lg w-3/4'>
-                        <Text className='text-lg font-semibold mb-3'>Xác nhận xóa học sinh</Text>
-                        <Text>Bạn có chắc chắn muốn xóa học sinh này khỏi lớp học không?</Text>
+                        <Text className='text-lg font-semibold mb-3'>{i18n.t('classroom.teacher.titleDelStudent')}</Text>
+                        <Text>{i18n.t('classroom.teacher.textDelStudent')}</Text>
                         <View className='flex-row justify-between mt-4'>
                             <Pressable onPress={() => setModalVisible(false)}>
-                                <Text className='text-red-500 bg-red-500/30 rounded-lg font-semibold px-3 py-2'>Hủy</Text>
+                                <Text className='text-red-500 bg-red-500/30 rounded-lg font-semibold px-3 py-2'>{i18n.t('classroom.teacher.btnCancel')}</Text>
                             </Pressable>
                             <Pressable onPress={handleDeleteStudent}>
-                                <Text className='text-blue-500 bg-blue-500/30 rounded-lg font-semibold px-3 py-2'>Xóa</Text>
+                                <Text className='text-blue-500 bg-blue-500/30 rounded-lg font-semibold px-3 py-2'>{i18n.t('classroom.teacher.btnDel')}</Text>
                             </Pressable>
                         </View>
                     </View>

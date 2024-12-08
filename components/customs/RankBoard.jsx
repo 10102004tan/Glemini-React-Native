@@ -1,10 +1,11 @@
+import { useAppProvider } from '@/contexts/AppProvider';
 import React, { useEffect, useState } from 'react';
 import { View, Text, Animated, Image, StyleSheet, ScrollView } from 'react-native';
 
 const RankBoard = ({ users = [], visible = false, currentUser = {}, createdUser = '' }) => {
    const [opacity] = useState(new Animated.Value(0)); // Điều chỉnh độ mờ
    const [translateY] = useState(new Animated.Value(20)); // Điều chỉnh vị trí Y (có thể dịch chuyển từ dưới lên)
-
+   const { i18n } = useAppProvider();
    useEffect(() => {
       if (visible) {
          // Khi `visible` là true, hiệu ứng xuất hiện từ dưới lên với độ mờ dần
@@ -51,7 +52,7 @@ const RankBoard = ({ users = [], visible = false, currentUser = {}, createdUser 
          }}
          className="top-[20%] left-[14px] right-[14px] bg-white"
       >
-         <Text className="p-4 bg-green-500 text-white mb-5 rounded-2xl">Bảng xếp hạng</Text>
+         <Text className="p-4 bg-green-500 text-white mb-5 rounded-2xl">{i18n.t('room_wait_result.rankboard')}</Text>
          <ScrollView className="max-h-[400px]" showsVerticalScrollIndicator={false}>
             {users.rank && users.rank.length > 0 &&
                users.rank.map((rank, index) => {
@@ -64,7 +65,7 @@ const RankBoard = ({ users = [], visible = false, currentUser = {}, createdUser 
                         <Image source={{ uri: rank.user_id.user_avatar }} style={styles.avatar} />
                         <View style={styles.rankTextContainer}>
                            <Text style={styles.rankText}>{rank.user_id.user_fullname}</Text>
-                           <Text style={styles.scoreText}>{rank.userScore} Điểm</Text>
+                           <Text style={styles.scoreText}>{rank.userScore} {i18n.t('play.single.score')}</Text>
                         </View>
                      </View>
                   }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, useWindowDimensions, ScrollView, Alert, AppState } from 'react-native';
+import { View, Text, TouchableOpacity, useWindowDimensions, ScrollView, Alert, AppState, TextInput } from 'react-native';
 import Button from '../../../components/customs/Button';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useAppProvider } from '@/contexts/AppProvider';
@@ -45,6 +45,7 @@ const RealtimePlay = () => {
    const [confirmFn, setConfirmFn] = useState('close');
    const [alertMessage, setAlertMessage] = useState('');
    const [loading, setLoading] = useState(true);
+   const [userAnswer, setUserAnswer] = useState("");
 
    const SHOW_RANK_BOARD_TIME = 2000;
    const HIDDEN_RANK_BOARD_TIME = 6000;
@@ -194,7 +195,7 @@ const RealtimePlay = () => {
 
 
    // Hàm xử lý lưu kết quả của người dùng sau khi làm xong câu hỏi
-   const saveQuestionResult = async (questionId, answerId, correct, score) => {
+   const saveQuestionResult = async (questionId, answerId, correct, score, questionType) => {
       try {
          const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_UPDATE_RESULT}`, {
             method: 'POST',
@@ -211,6 +212,7 @@ const RealtimePlay = () => {
                answer: answerId,
                correct,
                score,
+               question_type: questionType
             }),
          })
 
@@ -326,12 +328,17 @@ const RealtimePlay = () => {
          setIsChosen(true);
          setButtonColor('bg-[#0D70D2]');
          setButtonTextColor('text-white');
-      } else {
+      } else if (questions[currentQuestionIndex].question_type === 'multiple') {
          if (selectedAnswers.includes(answerId)) {
             setSelectedAnswers(selectedAnswers.filter((id) => id !== answerId));
          } else {
             setSelectedAnswers([...selectedAnswers, answerId]);
          }
+      } else if (questions[currentQuestionIndex].question_type === 'box') {
+         // answerId will be a text answer of user
+         console.log(answerId)
+         setButtonColor('bg-[#0D70D2]')
+         setButtonTextColor("text-white")
       }
    };
 
@@ -340,16 +347,31 @@ const RealtimePlay = () => {
       if (!isProcessing) {
          setIsProcessing(true);
          const currentQuestion = questions[currentQuestionIndex];
-         const correctAnswerIds = currentQuestion.correct_answer_ids.map(answer => answer._id);
-
          let isAnswerCorrect = false;
 
-         if (currentQuestion.question_type === 'single') {
-            isAnswerCorrect = selectedAnswers[0] === correctAnswerIds[0];
+         if (currentQuestion.question_type === 'box') {
+            const normalizeText = (text) => {
+               // Loại bỏ khoảng trắng thừa và chuyển về chữ thường
+               return text
+                  .toLowerCase() // Chuyển về chữ thường
+                  .replace(/\s+/g, '') // Loại bỏ khoảng trắng thừa giữa các từ
+                  .trim();
+            };
+
+            const correctTextAnswers = currentQuestion.correct_answer_ids.map(a => normalizeText(a.text));
+            const userAnswerText = normalizeText(userAnswer || 'Không có đáp án');
+            isAnswerCorrect = correctTextAnswers.includes(userAnswerText);
          } else {
-            isAnswerCorrect =
-               selectedAnswers.length === correctAnswerIds.length &&
-               selectedAnswers.every((answerId) => correctAnswerIds.includes(answerId));
+            const correctAnswerIds = currentQuestion.correct_answer_ids.map(answer => answer._id);
+            if (currentQuestion.question_type === 'single') {
+               isAnswerCorrect = selectedAnswers[0] === correctAnswerIds[0];
+
+            } else {
+
+               isAnswerCorrect =
+                  selectedAnswers.length === correctAnswerIds.length &&
+                  selectedAnswers.every((answerId) => correctAnswerIds.includes(answerId));
+            }
          }
 
          await playSound(isAnswerCorrect);
@@ -371,9 +393,10 @@ const RealtimePlay = () => {
 
          saveQuestionResult(
             currentQuestion._id,
-            selectedAnswers,
+            currentQuestion.question_type === 'box' ? userAnswer : selectedAnswers,
             isAnswerCorrect,
-            currentQuestion.question_point
+            currentQuestion.question_point,
+            currentQuestion.question_type
          );
 
          // Lưu câu hỏi hiện tại của người dùng đang làm vào local storage
@@ -412,6 +435,7 @@ const RealtimePlay = () => {
                setButtonColor('bg-white');
                setButtonTextColor('text-black');
                setQuestionTimeCountDown(questions[currentQuestionIndex + 1].question_time);
+               setUserAnswer('');
                // setQuestionTimeCountDown(500);
             } else {
                completed();
@@ -534,7 +558,7 @@ const RealtimePlay = () => {
                   {`${i18n.t('play.single.score')}: ${score}`}
                </Text>
                <Text className="p-3 bg-[#484E54] rounded-2xl text-white self-start">
-                  Thời gian còn lại: {questionTimeCountDown}
+                  {i18n.t('realtime_play.countDownTime')}: {questionTimeCountDown}
                </Text>
             </View>
             <View className="bg-[#fff] rounded-2xl p-4 py-10">
@@ -563,9 +587,16 @@ const RealtimePlay = () => {
                </ScrollView>
             </View>
             <View>
-               {questions[currentQuestionIndex]?.question_answer_ids.map((answer, index) => {
+               {questions[currentQuestionIndex]?.question_type === 'box' ? <View className='my-3'>
+                  <TextInput
+                     placeholder={'Nhập câu trả lời'}
+                     value={userAnswer}
+                     onChangeText={(text) => setUserAnswer(text)}
+                     className="p-4 rounded-lg bg-[#484E54] text-white"
+                     placeholderTextColor="#B0B0B0"
+                  />
+               </View> : questions[currentQuestionIndex]?.question_answer_ids.map((answer, index) => {
                   let backgroundColor = '#484E54'; // Màu mặc định
-
                   if (showCorrectAnswer) {
                      if (questions[currentQuestionIndex].question_type === 'single') {
                         if (answer._id === questions[currentQuestionIndex].correct_answer_ids[0]._id) {
@@ -583,7 +614,6 @@ const RealtimePlay = () => {
                   } else if (selectedAnswers.includes(answer._id)) {
                      backgroundColor = '#0D70D2'; // Màu xanh khi người dùng chọn
                   }
-
                   return (
                      <TouchableOpacity
                         key={index}
@@ -603,8 +633,6 @@ const RealtimePlay = () => {
                   );
                })}
             </View>
-
-
             <Button
                text={buttonText}
                onPress={handleSubmit}

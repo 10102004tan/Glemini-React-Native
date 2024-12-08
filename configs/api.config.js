@@ -1,7 +1,7 @@
 'use strict';
 
 const dev = {
-	API_URL: 'http://192.168.1.16:3000/api',
+	API_URL: 'http://10.0.247.236:3000/api',
 	API_VERSION: {
 		V1: '/v1',
 	},
@@ -28,6 +28,8 @@ const dev = {
 
 		// Notification
 		UPDATE_NOTIFICATION_STATUS: '/notification',
+		READ_ALL_NOTIFICATION: '/notification/read-all',
+		NOTIFY_SHARE_ROOM: '/classroom/notify-student',
 
 		// Question
 		GET_QUIZ_BY_USER: '/quizzes/get-by-user',
@@ -60,6 +62,9 @@ const dev = {
 		GET_ALL_QUIZZES_SHARED: '/quizzes/get-all-quizzes-shared',
 		REMOVE_QUIZ_SHARED: '/quizzes/remove-quiz-shared',
 		COPY_QUIZ: '/quizzes/copy-quiz',
+		GET_ALL_USER_SHARED: '/quizzes/get-all-user-shared',
+		REVOKE_SHARED_USER: '/quizzes/remove-user-shared',
+		GET_NEWEST_QUIZZES: '/quizzes/get-newest-quizzes',
 
 		// Results
 		RESULT_STUDENT: '/result/student',
@@ -70,7 +75,9 @@ const dev = {
 		RESULT_OVERVIEW: '/result/overview',
 		RESULT_REPORT: '/result/reports',
 		RESULT_RESET: '/result/reset',
+		RESULT_RESET_V2: '/result/reset-v2',
 		RESULT_RANK: '/result/rank',
+
 		// Subjects
 		SUBJECTS: '/subjects',
 
@@ -85,6 +92,7 @@ const dev = {
 
 		// School
 		SCHOOL: '/schools',
+		SCHOOL_FILTER: '/schools/filter',
 
 		// Classroom
 		CLASSROOM: '/classroom',
@@ -111,6 +119,7 @@ const dev = {
 		ROOM_REMOVE_USER: '/room/remove-user',
 		ROOM_REPORT: '/room/report',
 		ROOM_CHECK_USER: '/room/check-joined',
+		ROOM_CODE: '/room/room-code',
 
 		// Use for realtime play
 		ROOM_GET_RESULTS: '/result/get-results',
@@ -120,7 +129,6 @@ const dev = {
 		// exercise
 		EXERCISE_REPORT: '/exercise/report',
 	},
-
 };
 
 const prod = {

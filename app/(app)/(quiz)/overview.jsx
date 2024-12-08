@@ -95,6 +95,7 @@ const QuizzOverViewScreen = () => {
       setQuestionFetching,
       isSave,
       setIsSave,
+      setIsEdited
    } = useQuizProvider();
 
    const {
@@ -172,6 +173,17 @@ const QuizzOverViewScreen = () => {
          setQuizStatusChange(data.metadata.quiz_status);
          setQuizSubjectsChange(data.metadata.subject_ids);
          setQuizThumbnailChange(data.metadata.quiz_thumb);
+
+
+         if (data.metadata.user_id === userData._id) {
+            setIsEdited(true);
+         } else {
+            const check = users.some(
+               (user) => user.user_id === userData._id && user.isEdit
+            );
+            setIsEdited(check);
+         }
+
       } else {
          if (data.statusCode === 401 && data.message === 'expired') {
             processAccessTokenExpired();
@@ -215,7 +227,7 @@ const QuizzOverViewScreen = () => {
 
    // Cập nhật thông tin của quiz
    const handleUpdateQuiz = async (id, thumbnail = quizThumbnail) => {
-      console.log(quizThumbnail)
+      // console.log(quizThumbnail)
       const quiz = {
          quiz_id: id,
          quiz_name: quizName,
@@ -227,9 +239,14 @@ const QuizzOverViewScreen = () => {
 
       // console.log(JSON.stringify(quiz, null, 2));
 
-      updateQuiz(quiz);
-      handleCloseBottomSheet();
-      router.back();
+      const success = await updateQuiz(quiz);
+      if (success) {
+         handleCloseBottomSheet();
+         router.back();
+      } else {
+         // setAlertMessage(i18n.t('overview_quiz_screen.alertNetwork'));
+         // setShowConfirmDialog(true);
+      }
    };
 
    // Lấy danh sách câu hỏi của bộ quiz hiện tại
@@ -515,7 +532,10 @@ const QuizzOverViewScreen = () => {
             message={alertMessage}
          />
 
-         <ScrollView className="mb-[80px]">
+         <ScrollView className="mb-[80px]"
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+         >
             {quizFetching ? (
                <>
                   {/* <Text>LOADING</Text> */}

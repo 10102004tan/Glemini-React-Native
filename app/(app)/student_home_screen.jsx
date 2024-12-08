@@ -12,6 +12,7 @@ import { useResultProvider } from '@/contexts/ResultProvider';
 import { router } from 'expo-router';
 import Toast from 'react-native-toast-message-custom';
 import Lottie from '@/components/loadings/Lottie';
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 const StudentHomeScreen = () => {
 	const { i18n } = useAppProvider();
@@ -21,6 +22,7 @@ const StudentHomeScreen = () => {
 	const [selectedQuiz, setSelectedQuiz] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [refreshing, setRefreshing] = useState(false);
+	const [isFetch, setIsFetch] = useState(false)
 	const width = Dimensions.get('window').width;
 	const carouselHeight = width * 2 / 3;
 	const { numberOfUnreadNoti } = useContext(AuthContext);
@@ -68,13 +70,17 @@ const StudentHomeScreen = () => {
 		}
 	};
 
+	const toggleFetch = () => {
+		setIsFetch(prev => !prev)
+	}
+
 	return (
 		<View className='flex-1 pt-10'>
 			<View className={"flex-row justify-end"}>
 				<NotificationIcon numberOfUnreadNoti={numberOfUnreadNoti} color={"black"} />
 			</View>
 
-			{loading ? (
+			{loading || refreshing ? (
 				<Lottie
 					source={require('@/assets/jsons/loading.json')}
 					width={150}
@@ -121,15 +127,18 @@ const StudentHomeScreen = () => {
 									filterQuizzes.map(({ subject, quizzes }) => {
 										return (
 											<View key={subject._id} className="mb-4">
-												<View className='flex-row justify-between mb-1'>
+												<View className='flex-row justify-between mb-2'>
 													<Text className="text-xl font-bold">{i18n.t(`subjects.${subject.name}`)}</Text>
-													<TouchableOpacity onPress={() => {
+
+													<TouchableOpacity className={"flex-row items-center rounded gap-1"} onPress={() => {
+														toggleFetch()
 														router.push({
 															pathname: '/(home)/search',
-															params: { subjectId: subject._id }
+															params: { subjectId: subject._id, load: isFetch }
 														});
 													}}>
-														<Text className="text-base">Xem thêm</Text>
+														<AntDesign name={"search1"} size={20} color={"black"} />
+														<Text className="text-base">{i18n.t('student_homepage.btnSeeMore')}</Text>
 													</TouchableOpacity>
 												</View>
 												{/* Horizontal ScrollView to display quizzes in rows of two items each */}
@@ -153,7 +162,7 @@ const StudentHomeScreen = () => {
 								source={require('@/assets/jsons/empty.json')}
 								width={150}
 								height={150}
-								text={'Danh sách trống'}
+								text={i18n.t('student_homepage.emptyList')}
 							/>
 						)}
 				</ScrollView>

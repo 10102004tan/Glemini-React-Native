@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import { useAuthContext } from './AuthContext';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
+import { Alert } from 'react-native';
 const QuestionContext = createContext();
 const QuestionProvider = ({ children }) => {
    const [isChangeData, setIsChangeData] = useState(false);
@@ -48,32 +49,32 @@ const QuestionProvider = ({ children }) => {
 
    const fetchQuestions = async (quizId) => {
       setQuestions([])
-		try {
-			const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.GET_QUIZ_QUESTIONS, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'x-client-id': userData._id,
-					authorization: userData.accessToken,
-				},
-				body: JSON.stringify({
-					quiz_id: quizId,
-				}),
-			});
+      try {
+         const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.GET_QUIZ_QUESTIONS, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+               'x-client-id': userData._id,
+               authorization: userData.accessToken,
+            },
+            body: JSON.stringify({
+               quiz_id: quizId,
+            }),
+         });
 
 
-			const data = await res.json();
-			setQuestions(data.metadata);
-		} catch (error) {
-			Toast.show({
-				type: 'error',
-				text1: 'Lỗi khi lấy câu hỏi',
-				text2: { error },
-				visibilityTime: 1000,
-				autoHide: true,
-			});
-		}
-	};
+         const data = await res.json();
+         setQuestions(data.metadata);
+      } catch (error) {
+         Toast.show({
+            type: 'error',
+            text1: 'Lỗi khi lấy câu hỏi',
+            text2: { error },
+            visibilityTime: 1000,
+            autoHide: true,
+         });
+      }
+   };
 
    // Lấy nội dung câu hỏi từ file template docx
    const getQuestionFromTemplateFile = async (questionData, quizId) => {
@@ -99,6 +100,8 @@ const QuestionProvider = ({ children }) => {
             pathname: '/(app)/(quiz)/overview/',
             params: { id: quizId },
          });
+      } else {
+         Alert.alert("Đã xảy ra lỗi trong quá trình xử lý, vui lòng thử lại sau ít phút!");
       }
    };
 
@@ -202,7 +205,7 @@ const QuestionProvider = ({ children }) => {
          question_answer_ids: [
             {
                _id: 1,
-               text: 'Đáp án 1, Đán án 2',
+               text: 'Answer1, Answer2, Answer3, Answer4',
                image: '',
                correct: true,
             },
@@ -475,25 +478,26 @@ const QuestionProvider = ({ children }) => {
    };
 
    // Lưu kết quả mỗi câu
-   const saveQuestionResult = async (exerciseId, quizId, questionId, answerId, correct, score) => {
-		await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_SAVE_QUESTION, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'x-client-id': userData._id,
-				authorization: userData.accessToken,
-			},
-			body: JSON.stringify({
-				exercise_id: exerciseId,
-				user_id: userData._id,
-				quiz_id: quizId,
-				question_id: questionId,
-				answer: answerId,
-				correct,
-				score,
-			}),
-		});
-	};
+   const saveQuestionResult = async (exerciseId, quizId, questionId, answerId, correct, score, questionType) => {
+      await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_SAVE_QUESTION, {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json',
+            'x-client-id': userData._id,
+            authorization: userData.accessToken,
+         },
+         body: JSON.stringify({
+            exercise_id: exerciseId,
+            user_id: userData._id,
+            quiz_id: quizId,
+            question_id: questionId,
+            answer: answerId,
+            correct,
+            score,
+            question_type: questionType
+         }),
+      });
+   };
    return (
       <QuestionContext.Provider
          value={{

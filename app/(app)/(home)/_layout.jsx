@@ -22,9 +22,9 @@ export default function TabLayout() {
           position: "absolute",
           bottom: 20,
           borderRadius: 200,
-          left: "5%",
-          right: "5%",
-          width: "90%",
+          left: "2%",
+          right: "2%",
+          width: "96%",
           backgroundColor: "#fff",
           shadowOpacity: 0,
           borderTopWidth: 0,
@@ -73,10 +73,15 @@ export default function TabLayout() {
         options={{
           title: i18n.t("search.title"),
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "search-circle-sharp" : "search-outline"}
-              color={color}
-            />
+              <View>
+                  {
+                      focused ? (
+                          <Ionicons name="search" size={30} color={color} />
+                      ) : (
+                          <Ionicons name="search-outline" size={30} color={color} />
+                      )
+                  }
+              </View>
           ),
         }}
       />
@@ -104,7 +109,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="activity"
         options={{
-          title: "Hoạt động",
+          title: i18n.t('activity.title'),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "analytics-sharp" : "analytics-outline"}

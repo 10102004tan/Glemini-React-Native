@@ -109,7 +109,7 @@ export const AuthProvider = ({children}) => {
         }
         throw new Error(data.message);
     };
-    const signUp = async ({email, password, fullname, type, images}) => {
+    const signUp = async ({email, password, fullname, type, images,schools}) => {
         // trim data
         email = email.trim();
         password = password.trim();
@@ -121,6 +121,9 @@ export const AuthProvider = ({children}) => {
         formData.append("fullname", fullname);
         formData.append("type", type);
         formData.append("expo_push_token", expoPushToken);
+        schools.forEach((school) => {
+            formData.append("schoolIds", school._id);
+        });
         // if type = teacher => add image to form data
         if (type === "teacher" && images.length > 0) {
             images.forEach((image, index) => {
@@ -130,6 +133,9 @@ export const AuthProvider = ({children}) => {
                     type: `${image.type}/${image.name.split(".")[1]}`,
                 });
             });
+
+            // add schools to form data
+
         }
 
         const response = await fetch(
@@ -194,6 +200,7 @@ export const AuthProvider = ({children}) => {
                 user_type,
                 user_fullname,
                 _id,
+                user_schoolIds,
                 user_avatar,
                 user_email,
                 teacher_status,
@@ -203,6 +210,7 @@ export const AuthProvider = ({children}) => {
             user_type,
             user_fullname,
             _id,
+            user_schoolIds,
             user_avatar,
             accessToken,
             refreshToken,
@@ -483,7 +491,21 @@ export const AuthProvider = ({children}) => {
         });
         const data = await response.json();
         return data.statusCode;
-    }
+    };
+
+    const readAllNotification = async () => {
+        const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.READ_ALL_NOTIFICATION}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': `${userData.accessToken}`,
+                'x-client-id': `${userData._id}`,
+            }
+        });
+        const data = await response.json();
+        console.log(data);
+        return data.statusCode;
+    };
 
     return (
         <AuthContext.Provider
@@ -512,7 +534,8 @@ export const AuthProvider = ({children}) => {
                 skipNotification,
                 setSkipNotification,
                 setIsRefreshing,
-                isRefreshing
+                isRefreshing,
+                readAllNotification
             }}
         >
             {children}
