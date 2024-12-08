@@ -157,16 +157,6 @@ const TeacherHomeScreen = () => {
             <View className="flex flex-col items-start justify-start">
                <Text className="text-lg">{i18n.t('teacher_homepage.createQuizWithAi')}</Text>
                <View className="flex items-center justify-start flex-row mt-4">
-                  {/* <QuizzCreateAction
-                     title={i18n.t('teacher_homepage.createQuizWithAi')}
-                     icon={
-                        <Ionicons
-                           name="documents-outline"
-                           size={24}
-                           color="black"
-                        />
-                     }
-                  /> */}
                   <QuizzCreateAction
                      handlePress={() => {
                         setActionQuizType('ai/prompt');

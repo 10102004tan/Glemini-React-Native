@@ -3,8 +3,7 @@ import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import {Platform} from "react-native";
 import {Redirect, router} from "expo-router";
-import {useEffect} from "react";
-
+import {useContext, useEffect} from "react";
 
 
 export async function sendPushNotification(expoPushToken) {
@@ -74,14 +73,17 @@ export async function registerForPushNotificationsAsync() {
     }
 }
 
-export function useNotificationObserver() {
+export function useNotificationObserver({setTeacherStatus}) {
     useEffect(() => {
         let isMounted = true;
-
         function redirect(notification) {
             const url = notification.request.content.data?.url;
+            const teacherStatus = notification.request.content.data?.teacherStatus;
             if (url) {
                 router.push(url);
+            }
+            if (teacherStatus) {
+                setTeacherStatus(teacherStatus);
             }
         }
 

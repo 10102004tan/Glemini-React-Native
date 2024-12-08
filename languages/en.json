@@ -40,7 +40,9 @@
     "cardIdDescription": "Card Image or ID Card",
     "descForCard": "Please provide a clear card image",
     "descForCardID": "Please take a photo of CCCD in a well-lit place",
-    "descForDocument": "Please provide a clear document confirmation image"
+    "descForDocument": "Please provide a clear document confirmation image",
+    "rejection": "Account verification failed, please provide accurate and clear information",
+    "btnResend": "Resend"
   },
   "error": {
     "notification": "Notification",
@@ -168,7 +170,12 @@
     "createFromImage": "Create from Image",
     "createFromText": "Create from Text",
     "uploadTemplate": "Upload Template",
-    "createWithHand": "Create Manually"
+    "createWithHand": "Create Manually",
+    "createdRecentQuizzes": "Recently created question sets",
+    "createdRecentRooms": "Recently created rooms",
+    "viewAll": "View all",
+    "noTestsCreated": "You haven't created any tests yet",
+    "noRoomsCreated": "You haven't created any rooms yet"
   },
   "create_title_quiz_screen": {
     "quizName": "Quiz Name",
@@ -178,6 +185,67 @@
     "promptRequest": "Please tell us your prompt",
     "quizThumbnailUploadTitle": "Upload an image file to create questions from its content",
     "startCreateQuiz": "Start Creating Quiz"
+  },
+  "room_item": {
+    "viewDetail": "View details",
+    "roomCode": "Room code",
+    "prevMinutes": "minutes ago",
+    "prevHour": "hour ago",
+    "prevDay": "day ago",
+    "prevMonth": "month ago",
+    "prevYear": "year ago",
+    "new": "Just created",
+    "processing": "In progress",
+    "ended": "Ended",
+    "findRoomLabel": "Find game room",
+    "listRoom": "List of rooms",
+    "emptyList": "Empty list",
+    "searching": "Searching..."
+  },
+  "room_wait": {
+    "userJoined": "Player {name} has joined the room",
+    "userLeft": "Player {name} has left the room",
+    "roomNotEnoughPlayers": "The room needs at least 1 player to start",
+    "copyRoomCodeSuccess": "Room code copied successfully",
+    "copyRoomCodeFail": "Failed to copy room code",
+    "cannotStartRoom": "Cannot start the room",
+    "roomAlreadyCompleted": "The room has already ended, do you want to reopen it?",
+    "roomInProgress": "The room is currently open, please go to the results screen",
+    "exitRoomConfirmation": "Are you sure you want to leave the room?",
+    "notifySent": "Notification has been sent!!!",
+    "notifyError": "Error sending notification, please try again after a few minutes",
+    "classroomSelect": "Please select a classroom",
+    "alert": "Alert",
+    "cancel": "Cancel",
+    "leave": "Leave",
+    "errorLeaveRoom": "Error leaving the room",
+    "listJoined": "List of players who have joined the room",
+    "copy": "Copy",
+    "openAgain": "Open again",
+    "followResult": "Follow the results",
+    "start": "Start",
+    "shareQr": "Share this QR code so other players can join the room",
+    "totalJoined": "Total number of participants",
+    "completed": "Completed",
+    "notFound": "Not found",
+    "full": "The number of players is full, cannot join!!!",
+    "joined": "You have joined this room!!!"
+  },
+  "room_wait_result": {
+    "correctPercent": "Accuracy",
+    "rankboard": "Leaderboard",
+    "question": "Question",
+    "userJoined": "Participants",
+    "done": "End"
+  },
+  "realtime_play": {
+    "countDownTime": "Countdown time"
+  },
+  "card_quiz": {
+    "public": "Public",
+    "private": "Private",
+    "noDescription": "No description",
+    "viewOnly": "View only"
   },
   "overview_quiz_screen": {
     "detail": "Detail",
@@ -208,7 +276,15 @@
     "mutipleChoice": "Multiple Choice",
     "fillInBlank": "Fill in the Blank",
     "blank": "Essay",
-    "logical": "Logical"
+    "logical": "Logical",
+    "back": "Back"
+  },
+  "rich_editor": {
+    "enterAnswer": "Enter the answer content",
+    "enterExplain": "Enter the explanation",
+    "enterQuestion": "Enter the question content",
+    "networkError": "Network error, please check your connection and try again",
+    "networkErrorTitle": "Error"
   },
   "profile": {
     "title": "Profile",
@@ -378,29 +454,6 @@
       }
     }
   },
-  "detailQuiz": {
-    "peopleJoined": "people joined",
-    "delete": "Delete",
-    "cancel": "Cancel",
-    "send": "Send",
-    "confirm": "Confirm",
-    "sureDeleteUser": "Are you sure you want to delete this user?",
-    "dialogTitleDelete": "Wait",
-    "sureDelete": "Are you sure you want to delete this question set?",
-    "shareTest": "Share test",
-    "giveHomework": "Give homework",
-    "saveToCollection": {
-      "title": "Save to collection"
-    },
-    "shareQuiz": "Share quiz",
-    "enterMail": "Enter the email of the teacher you want to send it to:",
-    "allowEdit": "Allow edit",
-    "no": "No",
-    "yes": "Yes",
-    "informationTeacher": "Information of teacher:",
-    "hideInformation": " Hide information",
-    "viewDetails": " View details"
-  },
   "lockFeature": {
     "title": "You do not have access to this feature",
     "desc": "Please upgrade your account to access this feature.",
@@ -484,6 +537,9 @@
     "room": "Room",
     "titleQuestionContinuteQUiz": "Continue the quiz?",
     "textQuestionContinuteQuiz": "Do you want to delete this classroom?",
+    "titleQuestionReplayQuiz": "Continue playing?",
+    "textQuestionReplayQuiz": "Do you want to delete the existing result to start a new attempt?",
+    "btnReadResult": "View",
     "btnCancel": "Cancel",
     "btnContinute": "Continue",
     "notiDL": "Submission deadline has passed!",
