@@ -9,6 +9,7 @@ import { Images } from '@/constants';
 import CustomButton from "@/components/customs/CustomButton";
 import {Ionicons} from "@expo/vector-icons";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import {router} from "expo-router";
 const QuizModal = ({
 	visible = false,
 	onClose = () => {},
@@ -17,6 +18,16 @@ const QuizModal = ({
 }) => {
 	const { userData } = useAuthContext();
 	const { i18n } = useAppProvider();
+	const handlerEditQuiz = () => {
+		// hide modal
+		onClose();
+		router.push({
+			pathname:'/(app)/(quiz)/detail_quiz',
+			params:{
+				id: quiz._id
+			}
+		});
+	};
 	return (
 		<Modal
 			animationType="fade"
@@ -64,16 +75,16 @@ const QuizModal = ({
 								</Text>
 							</View>
 						</View>
-						<View className="flex flex-row p-2 w-full justify-center">
+						<View className="flex flex-row p-2 w-full justify-center mt-2">
 							{userData.user_type === 'teacher' ? (userData._id === quiz?.user_id) ? (
-									<TouchableOpacity className={"flex-row p-2 rounded gap-2 items-center bg-green-400"}>
+									<TouchableOpacity onPress={handlerEditQuiz} className={"flex-row p-2 rounded gap-2 items-center bg-green-400"}>
 										<AntDesign name={'edit'} size={16} />
-										<Text>Chỉnh sửa</Text>
+										<Text>{i18n.t("modal.btnEdit")}</Text>
 									</TouchableOpacity>
 								) : (
 									<TouchableOpacity className={"flex-row p-2 rounded gap-2 items-center bg-green-400"}>
 										<Ionicons name={'bookmark'} size={16} />
-										<Text>Luu</Text>
+										<Text>{i18n.t("modal.btnSave")}</Text>
 									</TouchableOpacity>
 								)
 							: (

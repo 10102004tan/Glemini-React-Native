@@ -46,7 +46,11 @@ const CardQuiz = ({
             <View className={"p-2"}>
                <Text>{quiz_name}</Text>
                <Text>{quiz_description}</Text>
-               <Text>{quiz_status === "published" ? "Công khai" : "Riêng tư"}</Text>
+               <Text>
+                  {quiz_status === "published"
+                     ? i18n.t("library.public")
+                     : i18n.t("library.private")}
+               </Text>
             </View>
          </TouchableOpacity>
       );
@@ -90,11 +94,13 @@ const CardQuiz = ({
                <View className="flex flex-col p-4 w-full">
                   <Text className="text-lg font-semibold mt-2">{quiz.quiz_name}</Text>
                   <Text className="text-gray mb-2 max-w-[360px] overflow-hidden ">
-                     {quiz.quiz_description || i18n.t('card_quiz.noDescription')}
+                     {quiz.quiz_description || i18n.t("library.noDescription")}
                   </Text>
                   <View className="flex-row justify-between">
                      <Text className="text-green-600">
-                        {quiz.quiz_status === "unpublished" ? i18n.t('card_quiz.private') : i18n.t('card_quiz.public')}
+                        {quiz.quiz_status === "unpublished"
+                           ? i18n.t("library.private")
+                           : i18n.t("library.public")}
                      </Text>
                      <Text className="font-bold text-[15px]">
                         {showCheck ? isEdited ? "" : i18n.t('card_quiz.viewOnly') : ""}

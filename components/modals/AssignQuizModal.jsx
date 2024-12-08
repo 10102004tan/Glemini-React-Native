@@ -29,22 +29,32 @@ const AssignQuizModal = ({ visible, onClose, onAssign }) => {
                     type: 'error',
                     text1: 'Ngày bắt đầu không được ở quá khứ.'
                 });
+                hideDatePicker();
+
                 return;
             }
             setStartDate(date);
-            if (date > deadline) setDeadline(date); 
+            if (date > deadline) setDeadline(date);
         } else {
             if (date < startDate) {
                 Toast.show({
                     type: 'error',
                     text1: "Ngày kết thúc không thể trước ngày bắt đầu."
                 });
+                hideDatePicker();
                 return;
+            } else {
+                setDeadline(date);
             }
-            setDeadline(date);
+
         }
         hideDatePicker();
     };
+
+    const handleClose = () => {
+        onClose()
+        hideDatePicker()
+    }
 
     const handleConfirm = () => {
         if (!selectedClass || !assignmentName) {
@@ -67,7 +77,7 @@ const AssignQuizModal = ({ visible, onClose, onAssign }) => {
         setAssignmentName('');
         setStartDate(new Date());
         setDeadline(new Date());
-        onClose();
+        handleClose()
     };
 
     return (
@@ -75,7 +85,7 @@ const AssignQuizModal = ({ visible, onClose, onAssign }) => {
             visible={visible}
             transparent={true}
             animationType="slide"
-            onRequestClose={onClose}
+            onRequestClose={() => { handleClose() }}
         >
             <View className="flex-1 justify-center items-center bg-black/30">
                 <View className="bg-white rounded-lg p-6 w-4/5">
@@ -85,7 +95,7 @@ const AssignQuizModal = ({ visible, onClose, onAssign }) => {
                         placeholder="Nhập tên bài tập"
                         value={assignmentName}
                         onChangeText={setAssignmentName}
-                        className="border-b border-gray-300 mb-4 p-2"
+                        className="border-b border-slate-300 mb-4 p-2"
                     />
 
                     <Text className="text-base mb-1">Chọn lớp</Text>
@@ -99,15 +109,15 @@ const AssignQuizModal = ({ visible, onClose, onAssign }) => {
                     />
 
                     <Text className="text-base mt-4 mb-2">Ngày bắt đầu</Text>
-                    <TouchableOpacity onPress={() => showDatePicker("start")} className="border-b border-gray-300 py-2 mb-4">
-                        <Text className="text-gray-600">
+                    <TouchableOpacity onPress={() => showDatePicker("start")} className="border-b border-slate-300 py-2 mb-4">
+                        <Text className="text-slate-600">
                             {startDate ? startDate.toLocaleString() : "Chọn ngày bắt đầu"}
                         </Text>
                     </TouchableOpacity>
 
                     <Text className="text-base mt-4 mb-2">Ngày kết thúc</Text>
-                    <TouchableOpacity onPress={() => showDatePicker("end")} className="border-b border-gray-300 py-2 mb-4">
-                        <Text className="text-gray-600">
+                    <TouchableOpacity onPress={() => showDatePicker("end")} className="border-b border-slate-300 py-2 mb-4">
+                        <Text className="text-slate-600">
                             {deadline ? deadline.toLocaleString() : "Chọn ngày kết thúc"}
                         </Text>
                     </TouchableOpacity>
@@ -127,7 +137,9 @@ const AssignQuizModal = ({ visible, onClose, onAssign }) => {
                         <Text className="text-white text-center">Giao bài tập</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={onClose} className="mt-2">
+                    <TouchableOpacity onPress={() => {
+                        handleClose()
+                    }} className="mt-2">
                         <Text className="text-center text-gray-500">Đóng</Text>
                     </TouchableOpacity>
                 </View>

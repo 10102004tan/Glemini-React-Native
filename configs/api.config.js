@@ -28,6 +28,7 @@ const dev = {
 
 		// Notification
 		UPDATE_NOTIFICATION_STATUS: '/notification',
+		READ_ALL_NOTIFICATION: '/notification/read-all',
 		NOTIFY_SHARE_ROOM: '/classroom/notify-student',
 
 		// Question
@@ -74,6 +75,7 @@ const dev = {
 		RESULT_OVERVIEW: '/result/overview',
 		RESULT_REPORT: '/result/reports',
 		RESULT_RESET: '/result/reset',
+		RESULT_RESET_V2: '/result/reset-v2',
 		RESULT_RANK: '/result/rank',
 
 		// Subjects

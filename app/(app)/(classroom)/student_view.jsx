@@ -32,7 +32,7 @@ const StudentView = () => {
         });
     };
     return (
-        <View className='flex-1 bg-slate-50 mb-20'>
+        <View className='flex-1 bg-white pb-20'>
             {/* Bộ tìm kiếm */}
             <TextInput
                 value={searchQuery}

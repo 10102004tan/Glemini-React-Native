@@ -4,22 +4,17 @@ import {
    TouchableOpacity,
    TextInput,
    Animated,
-   Image,
    ScrollView,
-   FlatList,
-   ActivityIndicator,
    Alert,
-   RefreshControl,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
-import Wrapper from "@/components/customs/Wrapper";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import Button from "@/components/customs/Button";
 import { useAppProvider } from "@/contexts/AppProvider";
 import BottomSheet from "@/components/customs/BottomSheet";
 import Overlay from "@/components/customs/Overlay";
 import { useQuizProvider } from "@/contexts/QuizProvider";
-import { router, useGlobalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import { AuthContext, useAuthContext } from "@/contexts/AuthContext";
 import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -32,12 +27,10 @@ import {
 import LockFeature from "@/components/customs/LockFeature";
 import CardQuiz from "@/components/customs/CardQuiz";
 import { Dimensions } from "react-native";
-import QuizzesSharedEmpty from "@/components/customs/QuizzesSharedEmpty";
-import ConfirmDialog from "@/components/dialogs/ConfirmDialog";
 import AntiFlatList from "@/components/customs/AntiFlatList/AntiFlatList";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import QuizzCreateAction from "@/components/customs/QuizCreateAction";
 const Library = () => {
+   const { i18n } = useAppProvider();
    //biến name của bộ sưu tập
    const { setActionQuizType } = useQuizProvider();
    const [nameCollection, setNameCollection] = useState("");
@@ -127,16 +120,21 @@ const Library = () => {
    useEffect(() => {
       if (userData) {
          // check if have filter
-         if (search !== '' || status !== '' || subject.length > 0 || startDate !== null || endDate !== null) {
+         if (
+            search !== "" ||
+            status !== "" ||
+            subject.length > 0 ||
+            startDate !== null ||
+            endDate !== null
+         ) {
             console.log("FILTER");
             filter();
          } else {
-            console.log("FETCH")
+            console.log("FETCH");
             fetchQuizzes({ skip: 0 });
          }
       }
    }, [userData]);
-
 
    //hàm fetch api lấy tất cả các quiz đã được chia sẻ
    const getAllQuizzesShared = async () => {
@@ -374,7 +372,7 @@ const Library = () => {
    }
 
    const filter = async (spSkip = null) => {
-    //biến mặc định để ghi đè lên skip
+      //biến mặc định để ghi đè lên skip
       const skipLoad = spSkip === null ? skip : spSkip;
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_FILTER}`,
@@ -417,6 +415,7 @@ const Library = () => {
 
    //
    const ComponentItem = ({ data }) => {
+      // console.log("data",data)
       return (
          <CardQuiz
             quiz={data}
@@ -442,33 +441,42 @@ const Library = () => {
          return;
       }
 
-
-      if (search !== '' || status !== '' || subject.length > 0 || startDate !== null || endDate !== null) {
+      if (
+         search !== "" ||
+         status !== "" ||
+         subject.length > 0 ||
+         startDate !== null ||
+         endDate !== null
+      ) {
          console.log("LOADMORE FILTER");
          filter();
       } else {
-         console.log("LOADMORE FETCH")
-         fetchQuizzes({ skip: skip + LIMIT })
-            .then(() => {
-               setSkip((prev) => prev + LIMIT);
-            })
-      };
+         console.log("LOADMORE FETCH");
+         fetchQuizzes({ skip: skip + LIMIT }).then(() => {
+            setSkip((prev) => prev + LIMIT);
+         });
+      }
    };
 
    const handleRefresh = () => {
-      // setIsRefreshing(true);
-      setQuizzes([]); // Xóa danh sách hiện tại
-      setSkip(0); // Đặt lại skip
-      setHasMore(true); // Reset trạng thái load more
+      setQuizzes([]);
+      setSkip(0);
+      setHasMore(true);
       // Kiểm tra nếu đang lọc thì gọi lại hàm filter
-      if (search !== '' || status !== '' || subject.length > 0 || startDate !== null || endDate !== null) {
+      if (
+         search !== "" ||
+         status !== "" ||
+         subject.length > 0 ||
+         startDate !== null ||
+         endDate !== null
+      ) {
          console.log("REFESH FILTER");
          filter(0);
       } else {
-         console.log("REFESH FETCH")
-         fetchQuizzes({ skip: 0 })
-      };
-   }
+         console.log("REFESH FETCH");
+         fetchQuizzes({ skip: 0 });
+      }
+   };
 
    // Load more và refresh của quizzes đã nhận
    const handleLoadMoreQuizShared = () => {
@@ -499,48 +507,56 @@ const Library = () => {
             onClose={handleCloseBottomSheet}
          >
             <View className="flex flex-col items-start justify-start">
-               <Text className="text-lg">Tạo bài kiểm tra với AI</Text>
+               <Text className="text-lg">{i18n.t('teacher_homepage.createQuizWithAi')}</Text>
                <View className="flex items-center justify-start flex-row mt-4">
                   <QuizzCreateAction
-                     title={"Tạo bài kiểm tra"}
-                     icon={
-                        <Ionicons name="documents-outline" size={24} color="black" />
-                     }
-                  />
-                  <QuizzCreateAction
                      handlePress={() => {
-                        setActionQuizType("ai/prompt");
+                        setActionQuizType('ai/prompt');
                         handleCloseBottomSheet();
-                        router.push("/(app)/(quiz)/create_title");
+                        router.push('/(app)/(quiz)/create_title');
                      }}
                      otherStyles="ml-2"
-                     title={"Tạo từ văn bản"}
-                     icon={<Ionicons name="text-outline" size={24} color="black" />}
+                     title={i18n.t('teacher_homepage.createFromText')}
+                     icon={
+                        <Ionicons
+                           name="text-outline"
+                           size={24}
+                           color="black"
+                        />
+                     }
                   />
                </View>
-               <Text className="text-lg mt-8">Tạo thủ công</Text>
+               <Text className="text-lg mt-8">{i18n.t('teacher_homepage.createWithHand')}</Text>
                <View className="flex items-center justify-start flex-row mt-4">
                   <QuizzCreateAction
                      handlePress={() => {
-                        setActionQuizType("template");
+                        setActionQuizType('template');
                         handleCloseBottomSheet();
-                        router.push("/(app)/(quiz)/create_title");
+                        router.push('/(app)/(quiz)/create_title');
                      }}
-                     title={"Tải lên mẫu"}
+                     title={i18n.t('teacher_homepage.uploadTemplate')}
                      icon={
-                        <Ionicons name="documents-outline" size={24} color="black" />
+                        <Ionicons
+                           name="documents-outline"
+                           size={24}
+                           color="black"
+                        />
                      }
                   />
                   <QuizzCreateAction
                      handlePress={() => {
-                        setActionQuizType("create");
+                        setActionQuizType('create');
                         handleCloseBottomSheet();
-                        router.push("(app)/(quiz)/create_title");
+                        router.push('(app)/(quiz)/create_title');
                      }}
                      otherStyles="ml-2"
-                     title={"Tạo bằng tay"}
+                     title={i18n.t('teacher_homepage.createWithHand')}
                      icon={
-                        <Ionicons name="hand-left-outline" size={24} color="black" />
+                        <Ionicons
+                           name="hand-left-outline"
+                           size={24}
+                           color="black"
+                        />
                      }
                   />
                </View>
@@ -553,23 +569,25 @@ const Library = () => {
             onClose={handleCloseBottomSheet}
          >
             <View className="m-3">
-               <Text className="text-gray mb-2">Tên bộ sưu tập</Text>
+               <Text className="text-gray mb-2">
+                  {i18n.t("library.collection.collectionName")}
+               </Text>
                <TextInput
                   value={nameCollection}
                   onChangeText={setNameCollection}
-                  placeholder="Nhập tên bộ sưu tập"
+                  placeholder={i18n.t("library.collection.enterCollectionName")}
                   className="border border-gray w-[350px] h-[50px] rounded-xl px-4"
                />
             </View>
             <View className="flex flex-row justify-between m-3">
                <Button
-                  text="Hủy"
-                  otherStyles="w-[45%] bg-gray-200 p-2 rounded-xl flex justify-center"
+                  text={i18n.t("library.collection.btnCancel")}
+                  otherStyles="w-[45%] bg-gray-200 p-3 rounded-xl flex justify-center"
                   onPress={handleCloseBottomSheet}
                />
                <Button
-                  text="Tạo"
-                  otherStyles="w-[50%] bg-blue-500 p-2 rounded-xl flex justify-center"
+                  text={i18n.t("library.collection.btnCreate")}
+                  otherStyles="w-[50%] bg-blue-500 p-3 rounded-xl flex justify-center"
                   textStyles="text-white text-center"
                   onPress={() => {
                      createCollection(); // Tạo bộ sưu tập
@@ -591,7 +609,7 @@ const Library = () => {
                   <View className="border border-gray rounded-xl p-2 w-full flex-row items-center">
                      <AntDesign name="search1" size={18} color="black" />
                      <TextInput
-                        placeholder="Tìm kiếm"
+                        placeholder={i18n.t("library.search")}
                         className="ml-2"
                         onChangeText={(e) => {
                            setSearch(e);
@@ -626,7 +644,7 @@ const Library = () => {
                      <Text className="ml-2 text-gray">
                         {startDate
                            ? startDate.toLocaleDateString()
-                           : "Thời gian bắt đầu"}
+                           : i18n.t("library.startTime")}
                      </Text>
                      <View className="mr-1">
                         <AntDesign name="caretdown" size={12} color="black" />
@@ -645,7 +663,9 @@ const Library = () => {
                         onCancel={hideEndDatePicker}
                      />
                      <Text className="ml-2 text-gray">
-                        {endDate ? endDate.toLocaleDateString() : "Thời gian kết thúc"}
+                        {endDate
+                           ? endDate.toLocaleDateString()
+                           : i18n.t("library.endTime")}
                      </Text>
                      <View className="mr-1">
                         <AntDesign name="caretdown" size={12} color="black" />
@@ -655,7 +675,7 @@ const Library = () => {
             </View>
 
             <Button
-               text="Lọc"
+               text={i18n.t("library.filter")}
                otherStyles="w-full bg-gray-200 p-3 rounded-xl flex justify-center mt-4 mb-2"
                onPress={() => {
                   // setQuizzes([]); // Xóa danh sách hiện tại
@@ -664,7 +684,7 @@ const Library = () => {
                }}
             />
             <Button
-               text="Đặt lại"
+               text={i18n.t("library.btnFresh")}
                onPress={resetFilters}
                otherStyles={
                   "bg-primary p-3 rounded-xl flex items-center justify-center"
@@ -683,7 +703,7 @@ const Library = () => {
                         : "text-gray-500"
                         }`}
                   >
-                     Thư viện của tôi
+                     {i18n.t("library.library")}
                   </Text>
                </TouchableOpacity>
 
@@ -695,7 +715,7 @@ const Library = () => {
                         : "text-gray-500"
                         }`}
                   >
-                     Bộ sưu tập
+                     {i18n.t("library.collection.title")}
                   </Text>
                </TouchableOpacity>
 
@@ -706,7 +726,7 @@ const Library = () => {
                         : "text-gray-500"
                         }`}
                   >
-                     Quizzes đã nhận
+                     {i18n.t("library.quizShared.title")}
                   </Text>
                </TouchableOpacity>
             </View>
@@ -731,16 +751,16 @@ const Library = () => {
                   <View className="flex flex-row justify-between items-center p-3 ml-2">
                      <Button
                         onPress={CreateNewBottomSheet}
-                        text={"Tạo mới"}
+                        text={i18n.t("library.quizCreated")}
                         icon={<AntDesign name="plus" size={16} color="white" />}
-                        otherStyles={"w-1/4 justify-center p-4"}
+                        otherStyles={"justify-center p-4"}
                         textStyles={"text-center text-white"}
                      />
 
                      <View className="flex-row items-center justify-center mr-2">
                         {/* bộ lọc */}
                         <Button
-                           text="Bộ lọc"
+                           text={i18n.t("library.filter")}
                            icon={
                               <Ionicons name="options-outline" size={16} color="white" />
                            }
@@ -755,15 +775,17 @@ const Library = () => {
                         padding: 12,
                      }}
                   >
-                     {quizzes.length > 0 && <AntiFlatList
-                        colSpan={2}
-                        isRefreshing={isRefreshing}
-                        componentItem={ComponentItem}
-                        loading={quizFetching}
-                        handleLoadMore={handleLoadMore}
-                        data={quizzes}
-                        handleRefresh={handleRefresh}
-                     />}
+                     {quizzes.length > 0 && (
+                        <AntiFlatList
+                           colSpan={2}
+                           isRefreshing={isRefreshing}
+                           componentItem={ComponentItem}
+                           loading={quizFetching}
+                           handleLoadMore={handleLoadMore}
+                           data={quizzes}
+                           handleRefresh={handleRefresh}
+                        />
+                     )}
                   </View>
                </View>
             )}
@@ -771,8 +793,9 @@ const Library = () => {
                <View className="p-3">
                   {/* Danh sách các bộ sưu tập */}
                   <Button
+                     icon={<AntDesign name="plus" size={16} color="white" />}
                      onPress={OpenBottomSheet}
-                     text={"Tạo bộ sưu tập mới"}
+                     text={i18n.t("library.collection.createNewCollection")}
                      otherStyles={"w-1/2 justify-center p-4"}
                      textStyles={"text-center text-white"}
                   />

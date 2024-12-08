@@ -26,7 +26,7 @@ const COL_SPAN = 2;
 export default function SearchScreen() {
    const LIMIT = 10;
    const { subjectId, load } = useLocalSearchParams();
-   const { setIsHiddenNavigationBar } = useAppProvider();
+   const { setIsHiddenNavigationBar, i18n } = useAppProvider();
    const [key, setKey] = useState("");
    const modalizeRef = useRef(null);
    const [quizList, setQuizList] = useState([]);
@@ -51,7 +51,7 @@ export default function SearchScreen() {
    const dataQuizOn = [
       {
          key: -1,
-         value: "Tất cả",
+         value: i18n.t("search.all"),
       },
       {
          key: 10,
@@ -59,7 +59,7 @@ export default function SearchScreen() {
       },
       {
          key: 100,
-         value: "100+",
+         value: "100+"
       },
       {
          key: 500,
@@ -73,17 +73,18 @@ export default function SearchScreen() {
    const dataStatus = [
       {
          key: -1,
-         value: "Mới nhất",
+         value: i18n.t("search.newest"),
       },
       {
          key: 1,
-         value: "Cũ nhất",
+         value: i18n.t("search.oldest"),
       },
    ];
    const [filterModalize, setFilterModalize] = useState(filter);
 
 
    // for subjectId from home page to search page
+
    useEffect(() => {
       setIsFirstLoad(true);
       if (!isFirstLoad) {
@@ -98,7 +99,7 @@ export default function SearchScreen() {
             subjectIds: [subjectId],
          }));
       }
-   }, [load])
+   }, [load]);
    // convert subject data to key value in mutiple dropdown
    useEffect(() => {
       const dataConvert = convertSubjectToDataKeyValue(subjects);
@@ -106,7 +107,6 @@ export default function SearchScreen() {
    }, []);
    // for multi filter in  subjectIds
    useEffect(() => {
-
       if (!isFirstLoad) {
          setFilterModalize((prev) => ({
             ...prev,
@@ -115,11 +115,10 @@ export default function SearchScreen() {
       }
    }, [selectedSubject]);
    // optimize for filter v2
+
    useEffect(() => {
-      console.log(filter.skip)
       handleFilterAndSearch(filter);
    }, [filter]);
-
 
    // process modal
    const onClose = async () => {
@@ -153,6 +152,7 @@ export default function SearchScreen() {
    * filter in Modalize
    * */
    const handleFilterAndSearch = (filter) => {
+
       fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_SEARCH}`, {
          method: "POST",
          headers: {
@@ -163,7 +163,7 @@ export default function SearchScreen() {
          .then((res) => res.json())
          .then((data) => {
 
-            //
+
             if (data.statusCode !== 200) return;
 
             // set isFirstLoad
@@ -172,8 +172,6 @@ export default function SearchScreen() {
             isRefreshing && setIsRefreshing(false);
 
             filter.skip === 0 ? setQuizList(data.metadata) : setQuizList((prevQuizList) => [...prevQuizList, ...data.metadata]);
-
-            console.log("skip::", filter.skip);
          })
          .catch((err) => {
             console.error(err);
@@ -224,7 +222,7 @@ export default function SearchScreen() {
       setFilter({
          quiz_on: -1,
          subjectIds: [],
-         key: "",
+         key,
          sortStatus: -1,
          skip: 0,
          limit: LIMIT,
@@ -272,7 +270,7 @@ export default function SearchScreen() {
          <View className={"py-2 flex-row items-center justify-between"}>
             <View className={"flex-row items-center gap-1 mb-3"}>
                <AntDesign name={"filter"} size={20} />
-               <Text className={"text-xl"}>Bộ lọc </Text>
+               <Text className={"text-xl"}>{i18n.t("search.filter")} </Text>
             </View>
             <AntDesign onPress={closeModalize} name={"closesquareo"} size={24} />
          </View>
@@ -295,7 +293,7 @@ export default function SearchScreen() {
       <View className={"px-3 pt-2 pb-[80px] h-full"}>
          <View className={"flex-row items-center mb-3"}>
             <SearchBar
-               placeholder="Search here"
+               placeholder={i18n.t("search.placeholder")}
                onClearPress={handleClearSearchBar}
                onSearchPress={handleSearchBar}
                onBlur={handleSearchBar}
@@ -329,8 +327,7 @@ export default function SearchScreen() {
             ref={modalizeRef}
          >
             <View className={"mb-3"}>
-               {/*data quiz on*/}
-               <Text className={"mb-2 px-1 font-semibold"}>Lượt chơi</Text>
+               <Text className={"mb-2 px-1 font-semibold"}>{i18n.t("search.plays")}</Text>
                <SelectList
                   defaultOption={dataQuizOn.find(
                      (item) => item.key === filterModalize.quiz_on
@@ -352,7 +349,7 @@ export default function SearchScreen() {
             </View>
             <View className={"mb-3"}>
                {/*data quiz on*/}
-               <Text className={"mb-2 px-1 font-semibold"}>Trạng thái</Text>
+               <Text className={"mb-2 px-1 font-semibold"}>{i18n.t("search.status")}</Text>
                <SelectList
                   defaultOption={dataStatus.find(
                      (item) => item.key === filterModalize.sortStatus
@@ -373,7 +370,7 @@ export default function SearchScreen() {
                />
             </View>
             <View className={"mb-3"}>
-               <Text className={"mb-2 px-1 font-semibold"}>Chủ đề</Text>
+               <Text className={"mb-2 px-1 font-semibold"}>{i18n.t("search.subject")}</Text>
                <MultipleSelectList
                   save="key"
                   data={dataSubject}
@@ -390,17 +387,18 @@ export default function SearchScreen() {
             <View className={"flex-row gap-2"}>
                <CustomButton
                   className={"flex-1"}
-                  title={"Lọc"}
+                  title={i18n.t("search.btnFilter")}
                   bg={"#fff"}
                   color={"#000"}
                   onPress={handleFilter}
                />
                <CustomButton
                   className={"flex-1"}
-                  title={"Đặt lại"}
+                  title={i18n.t("search.btnReset")}
                   onPress={handleResetFilter}
                />
             </View>
+
          </Modalize>
          <QuizModal
             visible={isOpenModal}
