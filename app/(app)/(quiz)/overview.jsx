@@ -677,7 +677,7 @@ const QuizzOverViewScreen = () => {
                </View>
             )}
          </ScrollView>
-         <View className="p-4 absolute bg-white bottom-0 w-full border-t border border-gray">
+         <View className="p-4 absolute bg-white bottom-0 w-full border-t border-gray">
             <Button
                onPress={handleShowCreateQuizQuestionBottomSheet}
                text={i18n.t('overview_quiz_screen.btnAddQuestion')}

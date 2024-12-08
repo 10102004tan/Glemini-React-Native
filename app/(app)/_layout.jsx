@@ -26,7 +26,7 @@ export default function AppRootLayout() {
 
    const { isEdited } = useQuizProvider();
 
-   useNotificationObserver({setTeacherStatus});
+   useNotificationObserver({ setTeacherStatus });
 
    if (isLoading) {
       return <View className="h-[100%] bg-white items-center justify-center">
@@ -118,7 +118,7 @@ export default function AppRootLayout() {
          />
 
          <Stack.Screen
-            name="(quiz)/demo_create_quiz_by_template"
+            name="(quiz)/create_quiz_by_template"
             options={{
                headerTitle: "Tải file câu hỏi",
             }}
