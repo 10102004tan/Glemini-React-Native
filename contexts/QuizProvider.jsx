@@ -161,6 +161,32 @@ const QuizProvider = ({ children }) => {
       }
    }, [needUpdate]);
 
+
+   /**
+    * Description: Duplicate quiz
+    * @param {String} quiz_id
+    * @returns {Boolean}
+    * */
+
+    const duplicateQuiz = async (quiz_id) => {
+        console.log(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`);
+        const response = await fetch(
+             `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`,
+             {
+                method: "POST",
+                headers: {
+                 "Content-Type": "application/json",
+                 "x-client-id": userData._id,
+                 authorization: userData.accessToken,
+                },
+                body: JSON.stringify({ quiz_id }),
+             }
+        );
+
+        const data = await response.json();
+        return data.statusCode === 200;
+   };
+
    return (
       <QuizContext.Provider
          value={{
@@ -186,6 +212,7 @@ const QuizProvider = ({ children }) => {
             LIMIT,
             isEdited,
             setIsEdited,
+             duplicateQuiz
          }}
       >
          {children}
