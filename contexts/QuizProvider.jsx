@@ -15,6 +15,8 @@ const QuizProvider = ({ children }) => {
    const { userData } = useAuthContext();
    const LIMIT = 10;
    const [isEdited, setIsEdited] = useState(false);
+   const [sharedQuizzes, setSharedQuizzes] = useState([]);
+
 
 
    // Get all quizzes of the user
@@ -59,6 +61,29 @@ const QuizProvider = ({ children }) => {
          }
          setQuizFetching(false);
          setNeedUpdate(false);
+      }
+   };
+
+   // hàm xóa quiz đã chia sẻ
+   const removeQuizShared = async (quiz_id) => {
+      const response = await fetch(
+         `${API_URL}${API_VERSION.V1}${END_POINTS.REMOVE_QUIZ_SHARED}`,
+         {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json",
+               "x-client-id": userData._id,
+               authorization: userData.accessToken,
+            },
+            body: JSON.stringify({
+               user_id: userData._id,
+               quiz_id: quiz_id,
+            }),
+         }
+      );
+      const data = await response.json();
+      if (data.statusCode === 200) {
+         setSharedQuizzes(sharedQuizzes.filter((quiz) => quiz._id !== quiz_id));
       }
    };
 
@@ -168,23 +193,23 @@ const QuizProvider = ({ children }) => {
     * @returns {Boolean}
     * */
 
-    const duplicateQuiz = async (quiz_id) => {
-        console.log(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`);
-        const response = await fetch(
-             `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`,
-             {
-                method: "POST",
-                headers: {
-                 "Content-Type": "application/json",
-                 "x-client-id": userData._id,
-                 authorization: userData.accessToken,
-                },
-                body: JSON.stringify({ quiz_id }),
-             }
-        );
+   const duplicateQuiz = async (quiz_id) => {
+      console.log(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`);
+      const response = await fetch(
+         `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`,
+         {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json",
+               "x-client-id": userData._id,
+               authorization: userData.accessToken,
+            },
+            body: JSON.stringify({ quiz_id }),
+         }
+      );
 
-        const data = await response.json();
-        return data.statusCode === 200;
+      const data = await response.json();
+      return data.statusCode === 200;
    };
 
    return (
@@ -212,7 +237,10 @@ const QuizProvider = ({ children }) => {
             LIMIT,
             isEdited,
             setIsEdited,
-             duplicateQuiz
+            removeQuizShared,
+            sharedQuizzes,
+            setSharedQuizzes,
+            duplicateQuiz
          }}
       >
          {children}
