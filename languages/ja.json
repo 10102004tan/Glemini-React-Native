@@ -442,11 +442,11 @@
       "btnEdit": "編集",
       "titleDeleteSchool": "学校を削除",
       "textDeleteSchool": "この学校を削除してもよろしいですか？",
-      "ok": "OK",
+      "ok": "OK"
    },
    "notification": {
       "title": "通知",
       "emptyNotification": "通知がありません",
-      "readAll": "すべてを読む",
+      "readAll": "すべてを読む"
    }
 }
