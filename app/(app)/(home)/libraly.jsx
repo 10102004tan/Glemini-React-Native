@@ -111,9 +111,8 @@ const Library = () => {
    const [isRefreshing, setIsRefreshing] = useState(false);
    const [isRefreshingShared, setIsRefreshingShared] = useState(false);
    // lấy list thông tin của quiz, thông tin name, description, status,...
-   const { quizzes, fetchQuizzes, quizFetching, setQuizzes, LIMIT } =
+   const { quizzes, fetchQuizzes, quizFetching, setQuizzes, LIMIT, sharedQuizzes, setSharedQuizzes } =
       useQuizProvider();
-   const [sharedQuizzes, setSharedQuizzes] = useState([]);
    const [quizLoading, setQuizLoading] = useState(false);
 
    // Get all quizzes of the user
@@ -171,28 +170,6 @@ const Library = () => {
       }
    };
 
-   // hàm xóa quiz đã chia sẻ
-   const removeQuizShared = async (quiz_id) => {
-      const response = await fetch(
-         `${API_URL}${API_VERSION.V1}${END_POINTS.REMOVE_QUIZ_SHARED}`,
-         {
-            method: "POST",
-            headers: {
-               "Content-Type": "application/json",
-               "x-client-id": userData._id,
-               authorization: userData.accessToken,
-            },
-            body: JSON.stringify({
-               user_id: userData._id,
-               quiz_id: quiz_id,
-            }),
-         }
-      );
-      const data = await response.json();
-      if (data.statusCode === 200) {
-         setSharedQuizzes(sharedQuizzes.filter((quiz) => quiz._id !== quiz_id));
-      }
-   };
 
    const handleDeleteQuizShared = (quiz_id) => {
       Alert.alert(
