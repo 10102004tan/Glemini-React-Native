@@ -14,6 +14,7 @@ import * as MediaLibrary from 'expo-media-library';
 import * as IntentLauncher from 'expo-intent-launcher';
 import { Platform, Linking } from 'react-native';
 import { shareAsync } from 'expo-sharing';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 const DemoCreateQuizByTemplate = () => {
    const { id } = useGlobalSearchParams();
@@ -21,6 +22,7 @@ const DemoCreateQuizByTemplate = () => {
    const { userData, processAccessTokenExpired } = useAuthContext();
    const { getQuestionFromTemplateFile } = useQuestionProvider();
    const router = useRouter();
+   const { i18n } = useAppProvider();
 
    const openFile = async (uri) => {
       if (Platform.OS === 'android') {
@@ -258,35 +260,21 @@ const DemoCreateQuizByTemplate = () => {
                />
                <TouchableOpacity onPress={pickDocument}>
                   <Text className="font-semibold">
-                     Ấn vào đây để tải lên file câu hỏi của bạn
+                     {i18n.t('create_quiz_template.upload.prompt')}
                   </Text>
                </TouchableOpacity>
             </View>
             <View className="mt-4">
                <Text className="text-center font-semibold">
-                  Bước 1: Tải file mẫu tại đây
+                  {i18n.t('create_quiz_template.upload.step1')}
                </Text>
                <View className="flex items-center justify-center mt-2 flex-col">
-                  {/* <Button
-                     onPress={() => {
-                        downloadAndOpenFile('docx');
-                     }}
-                     otherStyles="p-4 mb-2 w-full"
-                     text="Tải File mẫu (docx)"
-                     icon={
-                        <SimpleLineIcons
-                           name="docs"
-                           size={18}
-                           color="white"
-                        />
-                     }
-                  /> */}
                   <Button
                      onPress={() => {
                         downloadAndOpenFile('txt');
                      }}
                      otherStyles="p-4 mb-2 w-full"
-                     text="Tải File mẫu (txt)"
+                     text={i18n.t('create_quiz_template.buttons.downloadTxt')}
                      icon={
                         <AntDesign name="filetext1" size={18} color="white" />
                      }
@@ -296,7 +284,7 @@ const DemoCreateQuizByTemplate = () => {
                         downloadAndOpenFile('md');
                      }}
                      otherStyles="p-4 mb-2 w-full"
-                     text="Tải File mẫu (md)"
+                     text={i18n.t('create_quiz_template.buttons.downloadMd')}
                      icon={
                         <AntDesign
                            name="file-markdown"
@@ -307,25 +295,23 @@ const DemoCreateQuizByTemplate = () => {
                   />
                </View>
                <Text className="text-center font-semibold mt-4">
-                  Bước 2: Đọc các hướng dẫn tại đây
+                  {i18n.t('create_quiz_template.upload.step2')}
                </Text>
                {/* Docx */}
                <View>
                   <Text className="text-start font-semibold mt-2 px-4">
-                     1. Đối với file định dạng docx:
+                     {i18n.t('create_quiz_template.templates.forDocx')}
                   </Text>
                   <View className="ml-4 px-4">
                      <Text className="text-start mt-2">
-                        - File mẫu docx sẽ cung cấp cho bạn một vài mẫu
-                        câu hỏi đã được tạo theo đúng định dạng.
+                        - {i18n.t('create_quiz_template.templates.docxInstruction')}
                      </Text>
                      <Text className="text-start mt-2">
-                        - Lưu ý chỉ copy và paste các câu hỏi vào file
-                        mẫu, không sửa đổi cấu trúc của file.
+                        - {i18n.t('create_quiz_template.templates.docxNote')}
                      </Text>
                   </View>
                   <Text className="text-start font-semibold mt-2 px-4">
-                     File mẫu sẽ có dạng như sau:
+                     {i18n.t('create_quiz_template.templates.forTemplate')}
                   </Text>
                   <View
                      className="mt-2 p-4 rounded-xl"
@@ -336,40 +322,18 @@ const DemoCreateQuizByTemplate = () => {
                      }}
                   >
                      <Text>
-                        <Text className="font-semibold">Title</Text>:
-                        Đây sẽ là tiêu đề của bộ câu hỏi
+                        {i18n.t('create_quiz_template.templates.docxExampleTitle')}
                      </Text>
                      <View className="mt-2">
                         <Text>
-                           <Text className="font-semibold">
-                              Question:
-                           </Text>{' '}
-                           Các câu hỏi sẽ bắt đầu bằng “Question:” sau
-                           đó đến nội dung của câu hỏi 1
+                           {i18n.t('create_quiz_template.templates.docxExampleQuestion')}
                         </Text>
-                        <Text>A. Đáp án thứ 1</Text>
-                        <Text>B. Đáp án thứ 2</Text>
-                        <Text>C. Đáp án thứ 3</Text>
-                        <Text>D. Đáp án thứ 4</Text>
+                        <Text>{i18n.t('create_quiz_template.templates.docxAnswerA')}</Text>
+                        <Text>{i18n.t('create_quiz_template.templates.docxAnswerB')}</Text>
+                        <Text>{i18n.t('create_quiz_template.templates.docxAnswerC')}</Text>
+                        <Text>{i18n.t('create_quiz_template.templates.docxAnswerD')}</Text>
                         <Text className="font-semibold">
-                           Correct Answer: D
-                        </Text>
-                     </View>
-
-                     <View className="mt-2">
-                        <Text>
-                           <Text className="font-semibold">
-                              Question:
-                           </Text>{' '}
-                           Các câu hỏi sẽ bắt đầu bằng “Question:” sau
-                           đó đến nội dung của câu hỏi 2
-                        </Text>
-                        <Text>A. Đáp án thứ 1</Text>
-                        <Text>B. Đáp án thứ 2</Text>
-                        <Text>C. Đáp án thứ 3</Text>
-                        <Text>D. Đáp án thứ 4</Text>
-                        <Text className="font-semibold">
-                           Correct Answer: D
+                           {i18n.t('create_quiz_template.templates.docxExampleAnswer')}
                         </Text>
                      </View>
                   </View>
@@ -377,11 +341,11 @@ const DemoCreateQuizByTemplate = () => {
                {/* Markdown */}
                <View>
                   <Text className="text-start font-semibold mt-2 px-4">
-                     2. Đối với file định dạng md:
+                     {i18n.t('create_quiz_template.templates.forMd')}
                   </Text>
                   <View className="ml-4 px-4"></View>
                   <Text className="text-start font-semibold mt-2 px-4">
-                     File mẫu sẽ có dạng như sau:
+                     {i18n.t('create_quiz_template.templates.forTemplate')}
                   </Text>
                   <View
                      className="mt-2 p-4 rounded-xl"
@@ -392,32 +356,24 @@ const DemoCreateQuizByTemplate = () => {
                      }}
                   >
                      <Text>
-                        <Text className="font-semibold">
-                           # Quiz Title:
-                        </Text>
-                        : Đây sẽ là tiêu đề của bộ câu hỏi
+                        {i18n.t('create_quiz_template.templates.mdExampleTitle')}
                      </Text>
                      <View className="mt-2">
                         <Text>
-                           <Text className="font-semibold">
-                              ## Question:
-                           </Text>{' '}
-                           Các câu hỏi sẽ bắt đầu bằng "## Question:”
-                           sau đó đến nội dung của câu hỏi
+                           {i18n.t('create_quiz_template.templates.mdInstruction')}
                         </Text>
-                        <Text>- A. Đáp án thứ 1</Text>
-                        <Text>- B. Đáp án thứ 2</Text>
-                        <Text>- C. Đáp án thứ 3</Text>
-                        <Text>- D. Đáp án thứ 4</Text>
+                        <Text>{i18n.t('create_quiz_template.templates.mdAnswerA')}</Text>
+                        <Text>{i18n.t('create_quiz_template.templates.mdAnswerB')}</Text>
+                        <Text>{i18n.t('create_quiz_template.templates.mdAnswerC')}</Text>
+                        <Text>{i18n.t('create_quiz_template.templates.mdAnswerD')}</Text>
                         <Text className="font-semibold">
-                           **Correct Answer:** D
+                           {i18n.t('create_quiz_template.templates.mdExampleAnswer')}
                         </Text>
                      </View>
                   </View>
                </View>
                <Text className="text-start font-semibold mt-2 px-4">
-                  Sau khi đã tải file và chỉnh sửa các câu hỏi, bạn hãy
-                  tải file lên để tạo bài kiểm tra.
+                  {i18n.t('create_quiz_template.templates.uploadPrompt')}
                </Text>
 
                <Button
@@ -425,7 +381,7 @@ const DemoCreateQuizByTemplate = () => {
                      clearTemplatedDownload();
                   }}
                   otherStyles="p-4 mt-4 mb-4"
-                  text="Xóa file mẫu đã tải"
+                  text={i18n.t('create_quiz_template.buttons.clearDownload')}
                   icon={
                      <SimpleLineIcons
                         name="trash"

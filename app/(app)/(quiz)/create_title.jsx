@@ -149,7 +149,7 @@ const CreateTitleQuizzScreen = () => {
                case 'template':
                   router.replace({
                      pathname:
-                        '/(app)/(quiz)/demo_create_quiz_by_template',
+                        '/(app)/(quiz)/create_quiz_by_template',
                      params: { id: data.metadata._id },
                   });
                   break;
@@ -241,8 +241,8 @@ const CreateTitleQuizzScreen = () => {
 
    return (
       <Wrapper>
-         <View className="flex-1 items-center justify-center flex">
-            <ScrollView className="pt-4 px-4">
+         <View className="flex-1 items-center justify-start flex">
+            <View className="pt-4 px-4">
                <Field
                   label={i18n.t('create_title_quiz_screen.quizName')}
                   value={quizName}
@@ -251,7 +251,6 @@ const CreateTitleQuizzScreen = () => {
                   wrapperStyles="w-full"
                   inputStyles="p-4"
                />
-
                {actionQuizType === 'ai/prompt' && (
                   <Field
                      label={'Promt'}
@@ -263,56 +262,16 @@ const CreateTitleQuizzScreen = () => {
                   />
                )}
 
-               {actionQuizType === 'ai/images' && (
-                  <>
-                     <Field
-                        label={i18n.t('create_title_quiz_screen.prompt')}
-                        value={prompt}
-                        onChange={(text) => setPrompt(text)}
-                        placeholder={i18n.t('create_title_quiz_screen.promptRequest')}
-                        wrapperStyles="w-full mt-4"
-                        inputStyles="p-4"
-                     />
-
-                     <TouchableOpacity onPress={pickImage} className="p-4 flex flex-1 items-center justify-center rounded-2xl mt-6"
-                        style={{
-                           borderWidth: 2,
-                           borderStyle: 'dashed',
-                           borderColor: '#757575',
-                        }}
-                     >
-                        <View
-                           className="items-center justify-center flex flex-1 min-h-[300px]"
-                        >
-                           {uploadedImage ? <Image className="mt-4 w-[300px] h-[500px] object-center rounded-2xl" source={{ uri: uploadedImage.uri }} /> : <>
-                              <LottieView
-                                 source={require('@/assets/jsons/clound-upload.json')}
-                                 autoPlay
-                                 loop
-                                 style={{
-                                    width: 200,
-                                    height: 120,
-                                 }}
-                              />
-                              <Text className="font-semibold text-center">
-                                 {i18n.t('create_title_quiz_screen.quizThumbnailUploadTitle')}
-                              </Text>
-                           </>}
-
-                        </View>
-                     </TouchableOpacity>
-                  </>
-               )}
-            </ScrollView>
-         </View>
-         <View className="p-4 absolute bottom-0 left-0 right-0">
-            <Button
-               loading={generating}
-               onPress={handleCreateQuizTitle}
-               text={i18n.t('create_title_quiz_screen.startCreateQuiz')}
-               otherStyles={'p-4 justify-center'}
-               textStyles={'text-center'}
-            />
+               <View className="mt-4">
+                  <Button
+                     loading={generating}
+                     onPress={handleCreateQuizTitle}
+                     text={i18n.t('create_title_quiz_screen.startCreateQuiz')}
+                     otherStyles={'p-4 justify-center'}
+                     textStyles={'text-center'}
+                  />
+               </View>
+            </View>
          </View>
       </Wrapper>
    );

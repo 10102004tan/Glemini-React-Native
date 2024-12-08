@@ -44,9 +44,9 @@ const CardQuiz = ({
                />
             </View>
             <View className={"p-2"}>
-               <Text>{quiz_name}</Text>
-               <Text>{quiz_description}</Text>
-               <Text>
+               <Text>{quiz_name.length > 50 ? `${quiz_name.substring(0, 20)}...` : quiz_name}</Text>
+               <Text className="text-gray text-[12px]">{quiz_description.length > 50 ? `${quiz_description.substring(0, 20)}...` : quiz_description}</Text>
+               <Text className={`${quiz_status === "published" ? 'text-green-500' : 'text-yellow-500'} text-[12px]`}>
                   {quiz_status === "published"
                      ? i18n.t("library.public")
                      : i18n.t("library.private")}
@@ -92,12 +92,14 @@ const CardQuiz = ({
                   ></Image>
                </View>
                <View className="flex flex-col p-4 w-full">
-                  <Text className="text-lg font-semibold mt-2">{quiz.quiz_name}</Text>
+                  <Text className="text-lg font-semibold mt-2">
+                     {quiz.quiz_name.length > 50 ? `${quiz.quiz_name.substring(0, 50)}...` : quiz.quiz_name}
+                  </Text>
                   <Text className="text-gray mb-2 max-w-[360px] overflow-hidden ">
                      {quiz.quiz_description || i18n.t("library.noDescription")}
                   </Text>
                   <View className="flex-row justify-between">
-                     <Text className="text-green-600">
+                     <Text className={`${quiz.quiz_status === "published" ? 'text-green-500' : 'text-yellow-500'} text-[12px]`}>
                         {quiz.quiz_status === "unpublished"
                            ? i18n.t("library.private")
                            : i18n.t("library.public")}

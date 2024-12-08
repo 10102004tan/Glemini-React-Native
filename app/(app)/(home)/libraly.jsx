@@ -799,7 +799,10 @@ const Library = () => {
                      otherStyles={"w-1/2 justify-center p-4"}
                      textStyles={"text-center text-white"}
                   />
-                  <ScrollView className="mb-[180px]">
+                  <ScrollView className="mb-[180px]"
+                     showsHorizontalScrollIndicator={false}
+                     showsVerticalScrollIndicator={false}
+                  >
                      {collections.length > 0 &&
                         collections.map((name) => (
                            <TouchableOpacity
