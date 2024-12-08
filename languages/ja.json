@@ -420,8 +420,8 @@
   },
   "library": {
     "title": "ライブラリ",
-    "library": "ライブラリ",
-    "quizCreated": "作成されたクイズ",
+    "library": "私のライブラリ",
+    "quizCreated": "作成",
     "filter": "フィルター",
     "search": "検索",
     "startTime": "開始時間",
@@ -454,6 +454,29 @@
         "sureCollection": "このコレクションを削除してもよろしいですか？"
       }
     }
+  },
+  "detailQuiz": {
+    "peopleJoined": "参加者",
+    "delete": "削除",
+    "cancel": "キャンセル",
+    "send": "送信",
+    "confirm": "確認",
+    "sureDeleteUser": "このユーザーを削除してもよろしいですか？",
+    "dialogTitleDelete": "お待ちください",
+    "sureDelete": "この質問セットを削除してもよろしいですか？",
+    "shareTest": "テストを共有する",
+    "giveHomework": "宿題を出す",
+    "saveToCollection": {
+      "title": "コレクションに保存"
+    },
+    "shareQuiz": "クイズを共有する",
+    "enterMail": "送信先の教師のメールアドレスを入力してください：",
+    "allowEdit": "編集を許可する",
+    "no": "いいえ",
+    "yes": "はい",
+    "informationTeacher": "教師の情報：",
+    "hideInformation": "情報を非表示",
+    "viewDetails": "詳細を見る"
   },
   "lockFeature": {
     "title": "機能をロック",

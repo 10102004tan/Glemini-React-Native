@@ -270,7 +270,7 @@ const detail_collection = () => {
 
         <View className="flex-row">
           <TouchableOpacity onPress={handleEditPress}>
-            <View className="w-[90px] rounded-lg bg-slate-400 flex flex-row justify-between p-1">
+            <View className="w-fit rounded-lg bg-slate-400 flex flex-row justify-between p-1">
               <View className="flex justify-center">
                 <FontAwesome name="pencil" size={14} color="black" />
               </View>

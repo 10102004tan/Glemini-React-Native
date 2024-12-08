@@ -418,7 +418,7 @@
   "library": {
     "title": "Thư viện",
     "library": "Thư viện của tôi",
-    "quizCreated": "Tạo",
+    "quizCreated": "Tạo Quiz",
     "filter": "Bộ lọc",
     "search": "Tìm kiếm",
     "startTime": "Thời gian bắt đầu",
@@ -451,6 +451,29 @@
         "sureCollection": "Bạn có chắc chắn muốn xóa bộ sưu tập này không?"
       }
     }
+  },
+  "detailQuiz": {
+    "peopleJoined": "Người đã tham gia",
+    "delete": "Xóa",
+    "cancel": "Hủy",
+    "send": "Gửi",
+    "confirm": "Xác nhận",
+    "sureDeleteUser": "Bạn có chắc chắn muốn xóa người dùng này không?",
+    "dialogTitleDelete": "Chờ đã",
+    "sureDelete": "Bạn có chắc chắn muốn xóa bộ câu hỏi này không?",
+    "shareTest": "Chia sẻ bài kiểm tra",
+    "giveHomework": "Giao bài tập về nhà",
+    "saveToCollection": {
+      "title": "Lưu vào bộ sưu tập"
+    },
+    "shareQuiz": "Chia sẻ bài kiểm tra",
+    "enterMail": "Nhập email của giáo viên bạn muốn gửi đến:",
+    "allowEdit": "Cho phép chỉnh sửa",
+    "no": "Không",
+    "yes": "Có",
+    "informationTeacher": "Thông tin giáo viên:",
+    "hideInformation": "Ẩn thông tin",
+    "viewDetails": "Xem chi tiết"
   },
   "lockFeature": {
     "title": "Bạn chưa có quyền truy cập chức năng này",

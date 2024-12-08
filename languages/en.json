@@ -454,6 +454,29 @@
       }
     }
   },
+  "detailQuiz": {
+    "peopleJoined": "people joined",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "send": "Send",
+    "confirm": "Confirm",
+    "sureDeleteUser": "Are you sure you want to delete this user?",
+    "dialogTitleDelete": "Wait",
+    "sureDelete": "Are you sure you want to delete this question set?",
+    "shareTest": "Share test",
+    "giveHomework": "Give homework",
+    "saveToCollection": {
+      "title": "Save to collection"
+    },
+    "shareQuiz": "Share quiz",
+    "enterMail": "Enter the email of the teacher you want to send it to:",
+    "allowEdit": "Allow edit",
+    "no": "No",
+    "yes": "Yes",
+    "informationTeacher": "Information of teacher:",
+    "hideInformation": " Hide information",
+    "viewDetails": " View details"
+  },
   "lockFeature": {
     "title": "You do not have access to this feature",
     "desc": "Please upgrade your account to access this feature.",
