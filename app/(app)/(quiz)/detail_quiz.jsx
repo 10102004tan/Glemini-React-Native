@@ -55,7 +55,7 @@ const detailquizz = () => {
    const { deleteQuiz, questionFetching, setQuestionFetching } =
       useQuizProvider();
 
-   const { id } = useGlobalSearchParams();
+   const { id,user_id } = useGlobalSearchParams();
 
    const { userData } = useAuthContext();
    const [quizId, setQuizId] = useState("");
@@ -403,14 +403,18 @@ const detailquizz = () => {
          visible={showBottomSheetMoreOptions}
          onClose={closeBottomSheet}
        >
-         <Button
-           text={i18n.t("detailQuiz.delete")}
-           otherStyles={"m-2 flex-row p-4"}
-           icon={<MaterialIcons name="delete" size={16} color="white" />}
-           onPress={() => {
-             setShowConfirmDialog(true);
-           }}
-         />
+           {
+               (userData.user_type === 'teacher' && !user_id) && (
+                   <Button
+                       text={i18n.t("detailQuiz.delete")}
+                       otherStyles={"m-2 flex-row p-4"}
+                       icon={<MaterialIcons name="delete" size={16} color="white" />}
+                       onPress={() => {
+                           setShowConfirmDialog(true);
+                       }}
+                   />
+               )
+           }
          {isEdited && quiz_user === userData._id && (
            <Button
              text={i18n.t("detailQuiz.shareTest")}

@@ -14,6 +14,7 @@ const CardQuiz = ({
    handleDelete,
    showCheck = true
 }) => {
+   console.log(quiz);
    const router = useRouter();
    const { isEdited } = useQuizProvider();
    const { i18n } = useAppProvider();
@@ -44,8 +45,8 @@ const CardQuiz = ({
                />
             </View>
             <View className={"p-2"}>
-               <Text>{quiz_name}</Text>
-               <Text>{quiz_description}</Text>
+               <Text>{quiz_name.length > 20 ? quiz_name.substring(0,20)+"...":quiz_name}</Text>
+               <Text className={"text-[12px]"}>{quiz_description.length > 20 ? quiz_description.substring(0,20)+"...":quiz_description}</Text>
                <Text>
                   {quiz_status === "published"
                      ? i18n.t("library.public")
@@ -74,6 +75,8 @@ const CardQuiz = ({
          <TouchableOpacity
             className="w-full"
             onPress={() => {
+               // check if the quiz is edited
+               if (!isEdited) return;
                router.push({
                   pathname: routerPath,
                   params: params,
