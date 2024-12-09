@@ -110,7 +110,7 @@ const Library = () => {
   visibleBottomSheet;
 
   // biến  refresh
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(true);
   const [isRefreshingShared, setIsRefreshingShared] = useState(false);
   // lấy list thông tin của quiz, thông tin name, description, status,...
   const {
@@ -139,7 +139,9 @@ const Library = () => {
         filter();
       } else {
         console.log("FETCH");
-        fetchQuizzes({ skip: 0 });
+        fetchQuizzes({ skip: 0 }).then(() => {
+          setIsRefreshing(false);
+        });
       }
     }
   }, [userData]);
@@ -382,6 +384,8 @@ const Library = () => {
     );
     const data = await response.json();
     if (data.statusCode === 200) {
+      console.log("abc");
+      isRefreshing && setIsRefreshing(false);
       if (skipLoad === 0) {
         setQuizzes(data.metadata.quizzes);
       } else {
@@ -444,6 +448,7 @@ const Library = () => {
   };
 
   const handleRefresh = () => {
+    setIsRefreshing(true);
     setQuizzes([]);
     setSkip(0);
     setHasMore(true);
@@ -455,11 +460,13 @@ const Library = () => {
       startDate !== null ||
       endDate !== null
     ) {
-      console.log("REFESH FILTER");
+      console.log("REFESH FILTER 1");
       filter(0);
     } else {
-      console.log("REFESH FETCH");
-      fetchQuizzes({ skip: 0 });
+      console.log("REFESH FETCH 2");
+      fetchQuizzes({ skip: 0 }).then(() => {
+        setIsRefreshing(false);
+      });
     }
   };
 
@@ -750,19 +757,15 @@ const Library = () => {
                 padding: 12,
               }}
             >
-              {quizzes.length > 0 ? (
-                <AntiFlatList
-                  colSpan={2}
-                  isRefreshing={isRefreshing}
-                  componentItem={ComponentItem}
-                  loading={quizFetching}
-                  handleLoadMore={handleLoadMore}
-                  data={quizzes}
-                  handleRefresh={handleRefresh}
-                />
-              ) : (
-                <QuizEmptyLottie />
-              )}
+              <AntiFlatList
+                colSpan={2}
+                isRefreshing={isRefreshing}
+                componentItem={ComponentItem}
+                loading={quizFetching}
+                handleLoadMore={handleLoadMore}
+                data={quizzes}
+                handleRefresh={handleRefresh}
+              />
             </View>
           </View>
         )}
@@ -809,20 +812,16 @@ const Library = () => {
               padding: 12,
             }}
           >
-            {sharedQuizzes.length > 0 ? (
-              <AntiFlatList
-                colSpan={2}
-                isRefreshing={isRefreshingShared}
-                componentItem={ComponentItem}
-                loading={quizLoading}
-                handleLoadMore={handleLoadMoreQuizShared}
-                data={sharedQuizzes}
-                handleRefresh={handleRefreshQuizShared}
-                handleDelete={(quiz) => handleDeleteQuizShared(quiz._id)}
-              />
-            ) : (
-              <QuizEmptyLottie />
-            )}
+            <AntiFlatList
+              colSpan={2}
+              isRefreshing={isRefreshingShared}
+              componentItem={ComponentItem}
+              loading={quizLoading}
+              handleLoadMore={handleLoadMoreQuizShared}
+              data={sharedQuizzes}
+              handleRefresh={handleRefreshQuizShared}
+              handleDelete={(quiz) => handleDeleteQuizShared(quiz._id)}
+            />
           </View>
         )}
       </View>

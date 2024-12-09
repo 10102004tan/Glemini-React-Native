@@ -475,6 +475,9 @@
     "hideInformation": "Ẩn thông tin",
     "viewDetails": "Xem chi tiết"
   },
+  "empty": {
+    "title": "Không tìm thấy kết quả!!!"
+  },
   "lockFeature": {
     "title": "Bạn chưa có quyền truy cập chức năng này",
     "desc": "Xem trạng thái hồ sơ của bạn",
