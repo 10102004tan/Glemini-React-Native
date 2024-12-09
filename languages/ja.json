@@ -477,7 +477,8 @@
       "yes": "はい",
       "informationTeacher": "教師の情報：",
       "hideInformation": "情報を非表示",
-      "viewDetails": "詳細を見る"
+      "viewDetails": "詳細を見る",
+      "createRoom": "ルームを作成"
    },
    "lockFeature": {
       "title": "機能をロック",

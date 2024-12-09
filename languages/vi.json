@@ -474,7 +474,8 @@
       "yes": "Có",
       "informationTeacher": "Thông tin giáo viên:",
       "hideInformation": "Ẩn thông tin",
-      "viewDetails": "Xem chi tiết"
+      "viewDetails": "Xem chi tiết",
+      "createRoom": "Tạo phòng"
    },
    "empty": {
       "title": "Không tìm thấy kết quả!!!"
