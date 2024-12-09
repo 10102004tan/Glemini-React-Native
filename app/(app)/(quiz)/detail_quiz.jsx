@@ -407,17 +407,17 @@ const detailquizz = () => {
 
          {/* Bottom Sheet */}
          <BottomSheet
-            visible={showBottomSheetMoreOptions}
+            visible={showBottomSheetMoreOptions && !user_id}
             onClose={closeBottomSheet}
          >
-            <Button
-               text={i18n.t("detailQuiz.delete")}
-               otherStyles={"m-2 flex-row p-4"}
-               icon={<MaterialIcons name="delete" size={16} color="white" />}
-               onPress={() => {
-                  setShowConfirmDialog(true);
-               }}
-            />
+             <Button
+                 text={i18n.t("detailQuiz.delete")}
+                 otherStyles={"m-2 flex-row p-4"}
+                 icon={<MaterialIcons name="delete" size={16} color="white" />}
+                 onPress={() => {
+                     setShowConfirmDialog(true);
+                 }}
+             />
             {isEdited && quiz_user === userData._id && (
                <Button
                   text={i18n.t("detailQuiz.shareTest")}
