@@ -159,6 +159,7 @@ export default function SearchScreen() {
    * filter in Modalize
    * */
   const handleFilterAndSearch = (filter) => {
+    console.log("filter", filter);
     fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_SEARCH}`, {
       method: "POST",
       headers: {

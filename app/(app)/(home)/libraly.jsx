@@ -79,7 +79,6 @@ const Library = () => {
       alert("Ngày bắt đầu không thể lớn hơn ngày kết thúc");
     } else {
       setStartDate(date);
-      console.log("Ngày bắt đầu:", date);
     }
     hideStartDatePicker();
   };
@@ -135,10 +134,8 @@ const Library = () => {
         startDate !== null ||
         endDate !== null
       ) {
-        console.log("FILTER");
         filter();
       } else {
-        console.log("FETCH");
         fetchQuizzes({ skip: 0 }).then(() => {
           setIsRefreshing(false);
         });
@@ -204,7 +201,6 @@ const Library = () => {
   useEffect(() => {
     if (isRefreshingShared) {
       getAllQuizzesShared().then(() => {
-        console.log("Quizzes shared loaded");
         setIsRefreshingShared(false);
       });
     }
@@ -465,10 +461,8 @@ const Library = () => {
       startDate !== null ||
       endDate !== null
     ) {
-      console.log("REFESH FILTER 1");
       filter(0);
     } else {
-      console.log("REFESH FETCH 2");
       fetchQuizzes({ skip: 0 }).then(() => {
         setIsRefreshing(false);
       });
@@ -477,12 +471,10 @@ const Library = () => {
 
   // Load more và refresh của quizzes đã nhận
   const handleLoadMoreQuizShared = () => {
-    console.log("loadmore::", skip);
     setSkip((prev) => prev + LIMIT);
   };
 
   const handleRefreshQuizShared = () => {
-    console.log("Refreshing data...");
     setIsRefreshingShared(true);
     setSkip(0);
   };

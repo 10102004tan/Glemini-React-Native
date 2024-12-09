@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Pressable, TextInput, RefreshControl } from 'react-native';
+import {View, Text, FlatList, Pressable, TextInput, RefreshControl, ScrollView} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import ClassroomCard from '@/components/customs/ClassroomCard';
@@ -63,12 +63,20 @@ const StudentView = () => {
                     }
                 />
             ) : (
-                <Lottie
-                    source={require('@/assets/jsons/empty.json')}
-                    width={250}
-                    height={250}
-                    text={'Không có lớp học'}
-                />
+               <ScrollView
+               refreshControl={
+                   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+               }
+               >
+                  <View className={"h-[600px]"}>
+                      <Lottie
+                          source={require('@/assets/jsons/empty.json')}
+                          width={250}
+                          height={250}
+                          text={'Không có lớp học'}
+                      />
+                  </View>
+               </ScrollView>
             )}
         </View>
 
