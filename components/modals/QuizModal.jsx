@@ -7,9 +7,10 @@ import { truncateDescription } from '@/utils';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { Images } from '@/constants';
 import CustomButton from "@/components/customs/CustomButton";
-import {Ionicons} from "@expo/vector-icons";
+import {Entypo, Ionicons} from "@expo/vector-icons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import {router} from "expo-router";
+import {useQuizProvider} from "@/contexts/QuizProvider";
 const QuizModal = ({
 	visible = false,
 	onClose = () => {},
@@ -18,6 +19,7 @@ const QuizModal = ({
 }) => {
 	const { userData } = useAuthContext();
 	const { i18n } = useAppProvider();
+	const {duplicateQuiz} = useQuizProvider();
 	const handlerEditQuiz = () => {
 		// hide modal
 		onClose();
@@ -27,6 +29,27 @@ const QuizModal = ({
 				id: quiz._id
 			}
 		});
+	};
+	const handlerSaveQuiz = async () => {
+		// hide modal
+		await duplicateQuiz(quiz._id).then((status) => {
+			if (status) {
+				router.push({
+					pathname: '/(home)/libraly',
+				});
+			}
+			onClose();
+		}).catch(e=>console.log(e));};
+	const handlerDetailQuiz = () => {
+		// hide modal
+		router.push({
+			pathname: '/(app)/(quiz)/detail_quiz',
+			params: {
+				id: quiz._id,
+				user_id: quiz?.user_id,
+			},
+		})
+		onClose();
 	};
 	return (
 		<Modal
@@ -59,7 +82,7 @@ const QuizModal = ({
 							</Text>
 							<Text className="text-sm font-medium">
 								<Text>{i18n.t('student_homepage.author')}</Text>{' '}
-								{quiz?.user?.user_fullname}
+								{quiz?.user_fullname ? quiz?.user_fullname : quiz?.user?.user_fullname}
 							</Text>
 							<View className="flex-col mt-3 text-base">
 								<Text className="text-slate-600 font-medium underline">
@@ -82,10 +105,16 @@ const QuizModal = ({
 										<Text>{i18n.t("modal.btnEdit")}</Text>
 									</TouchableOpacity>
 								) : (
-									<TouchableOpacity className={"flex-row p-2 rounded gap-2 items-center bg-green-400"}>
-										<Ionicons name={'bookmark'} size={16} />
-										<Text>{i18n.t("modal.btnSave")}</Text>
-									</TouchableOpacity>
+									<View className={"flex-row gap-2"}>
+										<TouchableOpacity onPress={handlerSaveQuiz} className={"flex-row p-2 rounded gap-2 items-center bg-green-400"}>
+											<Ionicons name={'bookmark'} size={16} />
+											<Text>{i18n.t("modal.btnSave")}</Text>
+										</TouchableOpacity>
+										<TouchableOpacity onPress={handlerDetailQuiz} className={"flex-row p-2 rounded gap-2 items-center bg-amber-600"}>
+											<Entypo name={'eye'} size={16} />
+											<Text>{"Xem chi tiet"}</Text>
+										</TouchableOpacity>
+									</View>
 								)
 							: (
 								<View className='flex-row items-center'>

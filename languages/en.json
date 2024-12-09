@@ -229,7 +229,8 @@
       "completed": "Completed",
       "notFound": "Not found",
       "full": "The number of players is full, cannot join!!!",
-      "joined": "You have joined this room!!!"
+      "joined": "You have joined this room!!!",
+      "kicked": "You have been kicked out of the room!!!"
    },
    "room_wait_result": {
       "correctPercent": "Accuracy",
@@ -277,7 +278,8 @@
       "fillInBlank": "Fill in the Blank",
       "blank": "Essay",
       "logical": "Logical",
-      "back": "Back"
+      "back": "Back",
+      "search": "Search"
    },
    "rich_editor": {
       "enterAnswer": "Enter the answer content",
@@ -304,6 +306,9 @@
       "school": "School",
       "editNow": "Edit Now",
       "infoAuth": "Authentication Information"
+   },
+   "empty": {
+      "title": "No results found!!!"
    },
    "subjects": {
       "math": "Math",
@@ -454,6 +459,30 @@
          }
       }
    },
+   "detailQuiz": {
+      "peopleJoined": "people joined",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "send": "Send",
+      "confirm": "Confirm",
+      "sureDeleteUser": "Are you sure you want to delete this user?",
+      "dialogTitleDelete": "Wait",
+      "sureDelete": "Are you sure you want to delete this question set?",
+      "shareTest": "Share test",
+      "giveHomework": "Give homework",
+      "saveToCollection": {
+         "title": "Save to collection"
+      },
+      "shareQuiz": "Share quiz",
+      "enterMail": "Enter the email of the teacher you want to send it to:",
+      "allowEdit": "Allow edit",
+      "no": "No",
+      "yes": "Yes",
+      "informationTeacher": "Information of teacher:",
+      "hideInformation": " Hide information",
+      "viewDetails": " View details",
+      "createRoom": "Create room",
+   },
    "lockFeature": {
       "title": "You do not have access to this feature",
       "desc": "Please upgrade your account to access this feature.",
@@ -560,5 +589,42 @@
       "title": "Notification",
       "emptyNotification": "No notifications available",
       "readAll": "Mark all as read"
+   },
+   "create_quiz_template": {
+      "upload": {
+         "prompt": "Click here to upload your question file",
+         "step1": "Step 1: Download the template file here",
+         "step2": "Step 2: Read the instructions here",
+         "deleteTemplateFiles": "Delete downloaded template files"
+      },
+      "templates": {
+         "forDocx": "For the format (docx)",
+         "forMd": "For the format (md)",
+         "forTxt": "For the format (txt)",
+         "forTemplate": "The template file will have the following format:",
+         "docxInstruction": "The docx template provides several example questions created in the correct format.",
+         "docxNote": "Only copy and paste questions into the template file without altering its structure.",
+         "docxExampleTitle": "Title: This will be the title of the question set",
+         "docxExampleQuestion": "Question: Questions start with 'Question:' followed by the content of the question",
+         "docxExampleAnswer": "Correct Answer: D",
+         "docxAnswerA": "Answer: A. Answer A",
+         "docxAnswerB": "Answer: B. Answer B",
+         "docxAnswerC": "Answer: C. Answer C",
+         "docxAnswerD": "Answer: D. Answer D",
+         "mdAnswerA": "- A. Answer A",
+         "mdAnswerB": "- B. Answer B",
+         "mdAnswerC": "- C. Answer C",
+         "mdAnswerD": "- D. Answer D",
+         "mdInstruction": "Questions start with '## Question:' followed by the content of the question",
+         "mdExampleTitle": "# Quiz Title: This will be the title of the question set",
+         "mdExampleAnswer": "### Correct Answer: D",
+         "uploadPrompt": "After downloading and editing your questions, upload the file to create the quiz."
+      },
+      "buttons": {
+         "downloadDocx": "Download Template (docx)",
+         "downloadTxt": "Download Template (txt)",
+         "downloadMd": "Download Template (md)",
+         "clearDownload": "Clear Downloaded Files"
+      }
    }
 }

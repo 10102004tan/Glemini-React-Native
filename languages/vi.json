@@ -220,7 +220,8 @@
       "completed": "Bạn đã hoàn thành phòng chơi này !!!",
       "notFound": "Phòng chơi không tồn tại !!!",
       "full": "Số lượng người chơi đã đầy không thể tham gia !!!",
-      "joined": "Bạn đã tham gia vào phòng chơi này !!!"
+      "joined": "Bạn đã tham gia vào phòng chơi này !!!",
+      "kicked": "Bạn đã bị đuổi khỏi phòng chơi này !!!",
    },
    "room_wait_result": {
       "correctPercent": "Độ chính xác",
@@ -274,7 +275,8 @@
       "fillInBlank": "Điền từ",
       "blank": "Tự luận",
       "logical": "Tư duy",
-      "back": "Quay lại"
+      "back": "Quay lại",
+      "search": "Tìm kiếm..."
    },
    "rich_editor": {
       "enterAnswer": "Nhập nội dung đáp án",
@@ -418,7 +420,7 @@
    "library": {
       "title": "Thư viện",
       "library": "Thư viện của tôi",
-      "quizCreated": "Tạo",
+      "quizCreated": "Tạo Quiz",
       "filter": "Bộ lọc",
       "search": "Tìm kiếm",
       "startTime": "Thời gian bắt đầu",
@@ -451,6 +453,33 @@
             "sureCollection": "Bạn có chắc chắn muốn xóa bộ sưu tập này không?"
          }
       }
+   },
+   "detailQuiz": {
+      "peopleJoined": "Người đã tham gia",
+      "delete": "Xóa",
+      "cancel": "Hủy",
+      "send": "Gửi",
+      "confirm": "Xác nhận",
+      "sureDeleteUser": "Bạn có chắc chắn muốn xóa người dùng này không?",
+      "dialogTitleDelete": "Chờ đã",
+      "sureDelete": "Bạn có chắc chắn muốn xóa bộ câu hỏi này không?",
+      "shareTest": "Chia sẻ bài kiểm tra",
+      "giveHomework": "Giao bài tập về nhà",
+      "saveToCollection": {
+         "title": "Lưu vào bộ sưu tập"
+      },
+      "shareQuiz": "Chia sẻ bài kiểm tra",
+      "enterMail": "Nhập email của giáo viên bạn muốn gửi đến:",
+      "allowEdit": "Cho phép chỉnh sửa",
+      "no": "Không",
+      "yes": "Có",
+      "informationTeacher": "Thông tin giáo viên:",
+      "hideInformation": "Ẩn thông tin",
+      "viewDetails": "Xem chi tiết",
+      "createRoom": "Tạo phòng"
+   },
+   "empty": {
+      "title": "Không tìm thấy kết quả!!!"
    },
    "lockFeature": {
       "title": "Bạn chưa có quyền truy cập chức năng này",
@@ -561,5 +590,42 @@
       "title": "Thông báo",
       "emptyNotification": "Không có thông báo",
       "readAll": "Đánh dấu tất cả đã đọc"
+   },
+   "create_quiz_template": {
+      "upload": {
+         "prompt": "Ấn vào đây để tải lên file câu hỏi của bạn",
+         "step1": "Bước 1: Tải file mẫu tại đây",
+         "step2": "Bước 2: Đọc các hướng dẫn tại đây",
+         "deleteTemplateFiles": "Xóa file mẫu đã tải"
+      },
+      "templates": {
+         "forDocx": "Đối với định dạng (docx)",
+         "forMd": "Đối với định dạng (md)",
+         "forTxt": "Đối với định dạng (txt)",
+         "forTemplate": "file mẫu sẽ có định dạng như sau:",
+         "docxInstruction": "File mẫu docx sẽ cung cấp cho bạn một vài mẫu câu hỏi đã được tạo theo đúng định dạng.",
+         "docxNote": "Lưu ý chỉ copy và paste các câu hỏi vào file mẫu, không sửa đổi cấu trúc của file.",
+         "docxExampleTitle": "Title: Đây sẽ là tiêu đề của bộ câu hỏi",
+         "docxExampleQuestion": "Question: Các câu hỏi sẽ bắt đầu bằng “Question:” sau đó đến nội dung của câu hỏi",
+         "docxExampleAnswer": "Correct Answer: D",
+         "docxAnswerA": "Answer: A. Đáp án A",
+         "docxAnswerB": "Answer: B. Đáp án B",
+         "docxAnswerC": "Answer: C. Đáp án C",
+         "docxAnswerD": "Answer: D. Đáp án D",
+         "mdAnswerA": "- A. Đáp án A",
+         "mdAnswerB": "- B. Đáp án B",
+         "mdAnswerC": "- C. Đáp án C",
+         "mdAnswerD": "- D. Đáp án D",
+         "mdInstruction": "Các câu hỏi sẽ bắt đầu bằng '## Question:' sau đó đến nội dung của câu hỏi",
+         "mdExampleTitle": "# Quiz Title: Đây sẽ là tiêu đề của bộ câu hỏi",
+         "mdExampleAnswer": "### Correct Answer: D",
+         "uploadPrompt": "Sau khi đã tải file và chỉnh sửa các câu hỏi, bạn hãy tải file lên để tạo bài kiểm tra."
+      },
+      "buttons": {
+         "downloadDocx": "Tải File mẫu (docx)",
+         "downloadTxt": "Tải File mẫu (txt)",
+         "downloadMd": "Tải File mẫu (md)",
+         "clearDownload": "Xóa tất cả file đã tải"
+      }
    }
 }

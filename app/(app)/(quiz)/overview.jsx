@@ -178,6 +178,7 @@ const QuizzOverViewScreen = () => {
          if (data.metadata.user_id === userData._id) {
             setIsEdited(true);
          } else {
+            const users = data.metadata.shared_user_ids;
             const check = users.some(
                (user) => user.user_id === userData._id && user.isEdit
             );
@@ -611,10 +612,10 @@ const QuizzOverViewScreen = () => {
                      <View className="flex items-center justify-between flex-row">
                         <View className="max-w-[300px]">
                            <Text className="text-lg font-semibold">
-                              {quizName || i18n.t('overview_quiz_screen.quizName')}
+                              {(quizName.length > 25 ? quizName.substring(0, 25) + "..." : quizName) || i18n.t('overview_quiz_screen.quizName')}
                            </Text>
                            <Text className="text-gray max-w-[300px]">
-                              {quizDescription ||
+                              {(quizDescription.length > 25 ? quizDescription.substring(0, 25) + "..." : quizDescription) ||
                                  i18n.t('overview_quiz_screen.quizDescription')}
                            </Text>
                         </View>
@@ -677,7 +678,7 @@ const QuizzOverViewScreen = () => {
                </View>
             )}
          </ScrollView>
-         <View className="p-4 absolute bg-white bottom-0 w-full border-t border border-gray">
+         <View className="p-4 absolute bg-white bottom-0 w-full border-t border-gray">
             <Button
                onPress={handleShowCreateQuizQuestionBottomSheet}
                text={i18n.t('overview_quiz_screen.btnAddQuestion')}

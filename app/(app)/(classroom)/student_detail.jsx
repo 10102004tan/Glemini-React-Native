@@ -17,6 +17,7 @@ const StudentDetail = () => {
    const { fetchResultData } = useResultProvider()
    const [isLoading, setIsLoading] = useState(false)
    const [refreshing, setRefreshing] = useState(null)
+   const {moment} = useAppProvider();
    useFocusEffect(
       useCallback(() => {
          const loadClassroom = async () => {
@@ -76,14 +77,6 @@ const StudentDetail = () => {
                      const isExpired = duration.asMilliseconds() <= 0;
                      const isNotStartedYet = startDate.isAfter(now);
 
-                     const timeRemaining = isExpired
-                        ? i18n.t('classroom.student.textEnd')
-                        : duration.asDays() >= 1
-                           ? `${Math.floor(duration.asDays())} ngày nữa`
-                           : duration.asHours() >= 1
-                              ? `${Math.floor(duration.asHours() + 1)} giờ nữa`
-                              : `${Math.floor(duration.asMinutes())} phút nữa`;
-
                      return (
                         <Pressable
                            onPress={() => {
@@ -133,9 +126,14 @@ const StudentDetail = () => {
                                           {i18n.t('classroom.student.textNotStartedYet')}
                                        </Text>
                                     ) : (
-                                       <Text className='text-green-600 mt-2'>
-                                          {timeRemaining}
-                                       </Text>
+                                        <View>
+                                           <Text className='text-green-600 mt-2'>
+                                              {moment(item.date_end).format('LLLL')}
+                                           </Text>
+                                           <Text className='text-green-600 text-[10px]'>
+                                              {moment(item.date_end).fromNow()}
+                                           </Text>
+                                        </View>
                                     )}
                                  </View>
                               </View>

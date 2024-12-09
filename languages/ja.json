@@ -221,7 +221,8 @@
       "completed": "完了",
       "notFound": "部屋が存在しません!!!",
       "full": "プレイヤーの人数が満員です、参加できません!!!",
-      "joined": "あなたはこの部屋に参加しました!!!"
+      "joined": "あなたはこの部屋に参加しました!!!",
+      "kicked": "あなたはこの部屋から追放されました!!!"
    },
    "room_wait_result": {
       "correctPercent": "正確さ",
@@ -269,7 +270,8 @@
       "fillInBlank": "空欄を埋める",
       "blank": "記述",
       "logical": "論理",
-      "back": "戻る"
+      "back": "戻る",
+      "search": "検索"
    },
    "rich_editor": {
       "enterAnswer": "答えの内容を入力してください",
@@ -420,8 +422,8 @@
    },
    "library": {
       "title": "ライブラリ",
-      "library": "ライブラリ",
-      "quizCreated": "作成されたクイズ",
+      "library": "私のライブラリ",
+      "quizCreated": "作成",
       "filter": "フィルター",
       "search": "検索",
       "startTime": "開始時間",
@@ -454,6 +456,30 @@
             "sureCollection": "このコレクションを削除してもよろしいですか？"
          }
       }
+   },
+   "detailQuiz": {
+      "peopleJoined": "参加者",
+      "delete": "削除",
+      "cancel": "キャンセル",
+      "send": "送信",
+      "confirm": "確認",
+      "sureDeleteUser": "このユーザーを削除してもよろしいですか？",
+      "dialogTitleDelete": "お待ちください",
+      "sureDelete": "この質問セットを削除してもよろしいですか？",
+      "shareTest": "テストを共有する",
+      "giveHomework": "宿題を出す",
+      "saveToCollection": {
+         "title": "コレクションに保存"
+      },
+      "shareQuiz": "クイズを共有する",
+      "enterMail": "送信先の教師のメールアドレスを入力してください：",
+      "allowEdit": "編集を許可する",
+      "no": "いいえ",
+      "yes": "はい",
+      "informationTeacher": "教師の情報：",
+      "hideInformation": "情報を非表示",
+      "viewDetails": "詳細を見る",
+      "createRoom": "ルームを作成"
    },
    "lockFeature": {
       "title": "機能をロック",
@@ -557,9 +583,49 @@
       "textDeleteSchool": "この学校を削除してもよろしいですか？",
       "ok": "OK"
    },
+   "empty": {
+      "title": "結果が見つかりませんでした!!!"
+   },
    "notification": {
       "title": "通知",
       "emptyNotification": "通知がありません",
       "readAll": "すべてを読む"
+   },
+   "create_quiz_template": {
+      "upload": {
+         "prompt": "ここをクリックして質問ファイルをアップロードしてください",
+         "step1": "ステップ1: ここからテンプレートファイルをダウンロード",
+         "step2": "ステップ2: ここで手順を読む",
+         "deleteTemplateFiles": "ダウンロードしたテンプレートファイルを削除する"
+      },
+      "templates": {
+         "forDocx": "形式 (docx) の場合",
+         "forMd": "形式 (md) の場合",
+         "forTxt": "形式 (txt) の場合",
+         "forTemplate": "テンプレートファイルの形式は以下の通りです:",
+         "docxInstruction": "docxテンプレートには、正しい形式で作成されたいくつかの質問の例が含まれています。",
+         "docxNote": "テンプレートファイルに質問をコピーして貼り付けるだけで、構造を変更しないでください。",
+         "docxExampleTitle": "タイトル: これは質問セットのタイトルになります",
+         "docxExampleQuestion": "Question: 質問は「質問:」で始まり、その後に質問の内容が続きます",
+         "docxExampleAnswer": "Correct Answer: D",
+         "docxAnswerA": "Answer: A. 回答 A",
+         "docxAnswerB": "Answer: B. 回答 B",
+         "docxAnswerC": "Answer: C. 回答 C",
+         "docxAnswerD": "Answer: D. 回答 D",
+         "mdAnswerA": "- A. 回答 A",
+         "mdAnswerB": "- B. 回答 B",
+         "mdAnswerC": "- C. 回答 C",
+         "mdAnswerD": "- D. 回答 D",
+         "mdInstruction": "質問は「## 質問:」で始まり、その後に質問の内容が続きます",
+         "mdExampleTitle": "# クイズタイトル: これは質問セットのタイトルになります",
+         "mdExampleAnswer": "### Correct Answer: D",
+         "uploadPrompt": "質問をダウンロードして編集した後、ファイルをアップロードしてクイズを作成してください。"
+      },
+      "buttons": {
+         "downloadDocx": "テンプレートをダウンロード (docx)",
+         "downloadTxt": "テンプレートをダウンロード (txt)",
+         "downloadMd": "テンプレートをダウンロード (md)",
+         "clearDownload": "ダウンロードをクリア"
+      }
    }
 }
