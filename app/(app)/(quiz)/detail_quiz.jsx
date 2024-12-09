@@ -514,11 +514,11 @@ const detailquizz = () => {
 
          <View className="w-full h-[1px] bg-gray"></View>
          <View className="p-2 flex-row justify-between">
-            <Button
+            {/* <Button
                text={"Thi thử"}
                otherStyles={"p-4 w-1/2 justify-center"}
                textStyles={"text-center"}
-            />
+            /> */}
             <Button
                text={"Tạo phòng"}
                otherStyles={"p-4 flex-1 ml-2 justify-center"}
