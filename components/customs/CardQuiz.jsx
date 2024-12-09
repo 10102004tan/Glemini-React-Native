@@ -74,6 +74,7 @@ const CardQuiz = ({
       <TouchableOpacity
         className="w-full"
         onPress={() => {
+          if (!isEdited) return;
           router.push({
             pathname: routerPath,
             params: params,
