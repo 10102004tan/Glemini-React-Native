@@ -4,7 +4,7 @@ import { useResultProvider } from "@/contexts/ResultProvider";
 import { Link, useFocusEffect, useRouter } from "expo-router";
 import LottieView from "lottie-react-native";
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, Dimensions, FlatList, Image, Alert } from "react-native";
+import {View, Text, Dimensions, FlatList, Image, Alert, ScrollView, RefreshControl} from "react-native";
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Button from "@/components/customs/Button";
@@ -278,12 +278,22 @@ const CompletedResults = ({ results, refreshing, onRefresh, i18n, fetchResetResu
    }
 
    if (results.length === 0) {
-      return <Lottie
-         source={require('@/assets/jsons/empty.json')}
-         width={150}
-         height={150}
-         text={i18n.t('activity.emptyActivity')}
-      />
+      return(
+      <ScrollView
+          refreshControl={
+             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+      >
+         <View className={"h-[400px]"}>
+            <Lottie
+                source={require('@/assets/jsons/empty.json')}
+                width={150}
+                height={150}
+                text={i18n.t('activity.emptyActivity')}
+            />
+         </View>
+      </ScrollView>
+      )
    }
    return (
       <FlatList
@@ -378,12 +388,21 @@ const DoingResults = ({ results, refreshing, onRefresh, i18n }) => {
    }
 
    if (results.length === 0) {
-      return <Lottie
-         source={require('@/assets/jsons/empty.json')}
-         width={150}
-         height={150}
-         text={i18n.t('activity.emptyActivity')}
-      />
+      return (<ScrollView
+              refreshControl={
+                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+          >
+             <View className={"h-[400px]"}>
+                <Lottie
+                    source={require('@/assets/jsons/empty.json')}
+                    width={150}
+                    height={150}
+                    text={i18n.t('activity.emptyActivity')}
+                />
+             </View>
+          </ScrollView>
+      )
    }
 
    return (
