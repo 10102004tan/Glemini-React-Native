@@ -410,14 +410,14 @@ const detailquizz = () => {
             visible={showBottomSheetMoreOptions && !user_id}
             onClose={closeBottomSheet}
          >
-             <Button
-                 text={i18n.t("detailQuiz.delete")}
-                 otherStyles={"m-2 flex-row p-4"}
-                 icon={<MaterialIcons name="delete" size={16} color="white" />}
-                 onPress={() => {
-                     setShowConfirmDialog(true);
-                 }}
-             />
+            <Button
+               text={i18n.t("detailQuiz.delete")}
+               otherStyles={"m-2 flex-row p-4"}
+               icon={<MaterialIcons name="delete" size={16} color="white" />}
+               onPress={() => {
+                  setShowConfirmDialog(true);
+               }}
+            />
             {isEdited && quiz_user === userData._id && (
                <Button
                   text={i18n.t("detailQuiz.shareTest")}
@@ -514,11 +514,6 @@ const detailquizz = () => {
 
          <View className="w-full h-[1px] bg-gray"></View>
          <View className="p-2 flex-row justify-between">
-            {/* <Button
-               text={"Thi thử"}
-               otherStyles={"p-4 w-1/2 justify-center"}
-               textStyles={"text-center"}
-            /> */}
             <Button
                text={"Tạo phòng"}
                otherStyles={"p-4 flex-1 ml-2 justify-center"}
