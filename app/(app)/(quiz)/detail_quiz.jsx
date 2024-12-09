@@ -515,7 +515,7 @@ const detailquizz = () => {
          <View className="w-full h-[1px] bg-gray"></View>
          <View className="p-2 flex-row justify-between">
             <Button
-               text={"Tạo phòng"}
+               text={i18n.t("detailQuiz.createRoom")}
                otherStyles={"p-4 flex-1 ml-2 justify-center"}
                textStyles={"text-center"}
                onPress={() => {
