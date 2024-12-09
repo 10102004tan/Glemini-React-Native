@@ -202,8 +202,13 @@ const Library = () => {
 
   // skip useEffect for quizzes shared
   useEffect(() => {
-    getAllQuizzesShared();
-  }, [skip]);
+    if (isRefreshingShared) {
+      getAllQuizzesShared().then(() => {
+        console.log("Quizzes shared loaded");
+        setIsRefreshingShared(false);
+      });
+    }
+  }, [skip, isRefreshingShared]);
 
   // Bộ sưu tập
   const OpenBottomSheet = () => {
