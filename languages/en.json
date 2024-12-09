@@ -305,6 +305,9 @@
     "editNow": "Edit Now",
     "infoAuth": "Authentication Information"
   },
+  "empty": {
+    "title": "No results found!!!"
+  },
   "subjects": {
     "math": "Math",
     "literature": "Literature",

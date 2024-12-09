@@ -3,7 +3,7 @@ import LottieView from "lottie-react-native";
 
 export default function QuizEmptyLottie() {
   return (
-    <View className={"justify-center items-center h-[90%]"}>
+    <View className={"justify-center items-center h-[80%]"}>
       <LottieView
         loop={true}
         autoPlay={true}
@@ -11,9 +11,9 @@ export default function QuizEmptyLottie() {
           width: 200,
           height: 200,
         }}
-        source={require("@/assets/jsons/quiz_empty.json")}
+        source={require("@/assets/jsons/empty.json")}
       />
-      <Text>Chưa có quizzes nào!!!</Text>
+      <Text>Không có bộ sưu tập nào!!!</Text>
     </View>
   );
 }

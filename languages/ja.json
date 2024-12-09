@@ -580,6 +580,9 @@
     "textDeleteSchool": "この学校を削除してもよろしいですか？",
     "ok": "OK"
   },
+  "empty": {
+    "title": "結果が見つかりませんでした!!!"
+  },
   "notification": {
     "title": "通知",
     "emptyNotification": "通知がありません",
