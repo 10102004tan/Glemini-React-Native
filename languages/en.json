@@ -479,7 +479,8 @@
       "yes": "Yes",
       "informationTeacher": "Information of teacher:",
       "hideInformation": " Hide information",
-      "viewDetails": " View details"
+      "viewDetails": " View details",
+      "createRoom": "Create room"
    },
    "lockFeature": {
       "title": "You do not have access to this feature",
