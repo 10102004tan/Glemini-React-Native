@@ -444,6 +444,7 @@ const Library = () => {
   };
 
   const handleRefresh = () => {
+    console.log("Refreshing data...");
     setQuizzes([]);
     setSkip(0);
     setHasMore(true);
@@ -455,10 +456,8 @@ const Library = () => {
       startDate !== null ||
       endDate !== null
     ) {
-      console.log("REFESH FILTER");
       filter(0);
     } else {
-      console.log("REFESH FETCH");
       fetchQuizzes({ skip: 0 });
     }
   };
