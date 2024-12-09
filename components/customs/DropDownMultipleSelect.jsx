@@ -97,7 +97,7 @@ const DropDownMultipleSelect = ({
          {visibleOptions && (
             <Animated.View style={[{ overflow: 'hidden' }]}>
                <Field
-                  placeholder="Tìm kiếm lĩnh vực, môn học..."
+                  placeholder={i18n.t('overview_quiz_screen.search')}
                   value={search}
                   onChange={handleSearch}
                   wrapperStyles="my-4"
