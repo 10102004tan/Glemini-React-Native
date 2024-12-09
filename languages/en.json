@@ -229,7 +229,8 @@
       "completed": "Completed",
       "notFound": "Not found",
       "full": "The number of players is full, cannot join!!!",
-      "joined": "You have joined this room!!!"
+      "joined": "You have joined this room!!!",
+      "kicked": "You have been kicked out of the room!!!"
    },
    "room_wait_result": {
       "correctPercent": "Accuracy",
@@ -480,7 +481,7 @@
       "informationTeacher": "Information of teacher:",
       "hideInformation": " Hide information",
       "viewDetails": " View details",
-      "createRoom": "Create room"
+      "createRoom": "Create room",
    },
    "lockFeature": {
       "title": "You do not have access to this feature",
