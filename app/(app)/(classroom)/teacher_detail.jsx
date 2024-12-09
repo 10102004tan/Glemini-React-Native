@@ -19,7 +19,7 @@ const TeacherDetail = () => {
     const [showBottomSheet, setShowBottomSheet] = useState(0);
     const [modalVisible, setModalVisible] = useState(false);
     const [studentToRemove, setStudentToRemove] = useState(null);
-    const { i18n } = useAppProvider();
+    const { i18n,moment } = useAppProvider();
     const { classroom, fetchClassroom, removeStudent, addStudent } = useClassroomProvider();
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(true)
@@ -143,22 +143,19 @@ const TeacherDetail = () => {
                         const duration = moment.duration(endDate.diff(now));
                         const isExpired = duration.asMilliseconds() <= 0;
 
-                        const timeRemaining = isExpired
-                            ? 'Đã kết thúc'
-                            : duration.asDays() >= 1
-                                ? `${Math.floor(duration.asDays())} ngày nữa`
-                                : duration.asHours() >= 1
-                                    ? `${Math.floor(duration.asHours() + 1)} giờ nữa`
-                                    : `${Math.floor(duration.asMinutes())} phút nữa`;
+
 
                         return (
                             <Pressable onPress={() => console.log(item._id)}>
                                 <View className='bg-slate-100 px-4 py-2 mb-2 rounded-md'>
                                     <View className='flex-row items-center justify-between'>
-                                        <View className='flex items-start gap-2'>
+                                        <View className='flex items-start gap-1'>
                                             <Text className='text-base font-semibold'>{item.name}</Text>
                                             <Text className={`text-base ${new Date(item.date_end) > Date.now() ? 'text-green-500' : 'text-red-500'} `}>
-                                                {timeRemaining}
+                                                {moment(item.date_end).format('LLLL')}
+                                            </Text>
+                                            <Text className={`text-[12px] ${new Date(item.date_end) > Date.now() ? 'text-green-500' : 'text-red-500'} `}>
+                                                {moment(item.date_end).fromNow()}
                                             </Text>
                                         </View>
                                     </View>
