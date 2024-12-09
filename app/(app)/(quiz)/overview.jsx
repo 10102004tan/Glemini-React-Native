@@ -178,6 +178,7 @@ const QuizzOverViewScreen = () => {
          if (data.metadata.user_id === userData._id) {
             setIsEdited(true);
          } else {
+            const users = data.metadata.shared_user_ids;
             const check = users.some(
                (user) => user.user_id === userData._id && user.isEdit
             );
