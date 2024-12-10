@@ -60,6 +60,42 @@ const TeacherRoomWaitScreen = () => {
          setTotalJoindUsers(users.length);
       });
 
+      socket.on("kicked", async (data) => {
+         // Remove user
+         const removed = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_REMOVE_USER}`, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+               'x-client-id': userData._id,
+               authorization: userData.accessToken,
+            },
+            body: JSON.stringify({
+               room_code: roomCode,
+               user_id: userData._id,
+            }),
+         });
+
+         const resultRemoved = await removed.json();
+         if (resultRemoved.statusCode === 200) {
+            Toast.show({
+               type: 'info',
+               text1: i18n.t('room_wait.kicked').replace('{name}', data.userName),
+               visibilityTime: 3000,
+               autoHide: true,
+            });
+
+            router.replace({
+               pathname: '/(app)/(home)',
+               params: {}
+            })
+         }
+
+         router.replace({
+            pathname: '/(app)/(home)',
+            params: {}
+         })
+      })
+
       // Lắng nghe khi người dùng rời phòng
       socket.on('userLeft', (data) => {
          setJoinedUsers((prev) => prev.filter((user) => user._id !== data.user._id));
@@ -78,6 +114,7 @@ const TeacherRoomWaitScreen = () => {
          socket.off('userJoined');
          socket.off('userLeft');
          socket.off('updateUserList');
+         socket.off('kicked');
       };
    }, []);
 
@@ -426,10 +463,36 @@ const TeacherRoomWaitScreen = () => {
                            // console.log(data)
                            if (data.statusCode === 200) {
                               socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
-                              router.replace({
-                                 pathname: '/(app)/(home)',
-                                 params: {}
-                              })
+
+                              // Remove user
+                              const removed = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_REMOVE_USER}`, {
+                                 method: 'POST',
+                                 headers: {
+                                    'Content-Type': 'application/json',
+                                    'x-client-id': userData._id,
+                                    authorization: userData.accessToken,
+                                 },
+                                 body: JSON.stringify({
+                                    room_code: roomCode,
+                                    user_id: userData._id,
+                                 }),
+                              });
+
+                              const resultRemoved = await removed.json();
+                              if (resultRemoved.statusCode === 200) {
+                                 router.replace({
+                                    pathname: '/(app)/(home)',
+                                    params: {}
+                                 })
+                              } else {
+                                 Toast.show({
+                                    type: 'info',
+                                    text1: i18n.t('room_wait.errorLeaveRoom'),
+                                    visibilityTime: 3000,
+                                    autoHide: true,
+                                 });
+                              }
+
                            } else {
                               Toast.show({
                                  type: 'info',
@@ -489,11 +552,10 @@ const TeacherRoomWaitScreen = () => {
                   {roomData && joinedUsers.length > 0 && joinedUsers.map((user) => {
                      if (user._id !== roomData.user_created_id) {
                         return <UserJoinedRoomItem
+                           roomCode={roomCode}
+                           showDelete={userData && roomData && userData._id === roomData.user_created_id}
                            key={user._id}
-                           user={{
-                              user_fullname: user.user_fullname,
-                              user_avatar: user.user_avatar,
-                           }} />
+                           user={user} />
                      }
                   })}
                </View>

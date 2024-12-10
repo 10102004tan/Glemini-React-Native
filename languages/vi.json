@@ -220,7 +220,8 @@
       "completed": "Bạn đã hoàn thành phòng chơi này !!!",
       "notFound": "Phòng chơi không tồn tại !!!",
       "full": "Số lượng người chơi đã đầy không thể tham gia !!!",
-      "joined": "Bạn đã tham gia vào phòng chơi này !!!"
+      "joined": "Bạn đã tham gia vào phòng chơi này !!!",
+      "kicked": "Bạn đã bị đuổi khỏi phòng chơi này !!!",
    },
    "room_wait_result": {
       "correctPercent": "Độ chính xác",

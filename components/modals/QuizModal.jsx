@@ -82,7 +82,7 @@ const QuizModal = ({
 							</Text>
 							<Text className="text-sm font-medium">
 								<Text>{i18n.t('student_homepage.author')}</Text>{' '}
-								{quiz?.user?.user_fullname}
+								{quiz?.user_fullname ? quiz?.user_fullname : quiz?.user?.user_fullname}
 							</Text>
 							<View className="flex-col mt-3 text-base">
 								<Text className="text-slate-600 font-medium underline">
