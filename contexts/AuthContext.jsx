@@ -40,47 +40,47 @@ export const AuthProvider = ({children}) => {
     }, [userData]);
 
     // fix bug notification
-    useEffect(() => {
-        if (userData) {
-            console.log("reconnect socket");
-            // reconnect socket
-            socket.connect();
-            fetchNotification({skip:skipNotification,limit:LIMIT_NOTIFICATION});
-            socket.emit('init', userData._id);
-        }
-    }, [userData,skipNotification]);
+    // useEffect(() => {
+    //     if (userData) {
+    //         console.log("reconnect socket");
+    //         // reconnect socket
+    //         socket.connect();
+    //         fetchNotification({skip:skipNotification,limit:LIMIT_NOTIFICATION});
+    //         socket.emit('init', userData._id);
+    //     }
+    // }, [userData,skipNotification]);
 
-    useEffect(() => {
-        if (isRefreshing){
-            fetchNotification({skip:skipNotification,limit:LIMIT_NOTIFICATION});
-        }
-    }, [isRefreshing]);
-
-
-    useEffect(() => {
-        // socket notification
-        socket.on('notification', (noti) => {
-            const {noti_type} = noti;
-            // check type notification ::: if type is SYS-003 => check teacher status
-            if (noti_type === "SYS-003") {
-                const {noti_options:{teacher_status}} = noti;
-                setTeacherStatus(teacher_status);
-            }
-
-            setNotification((prev) => {
-                return [noti, ...prev];
-            });
-            setNumberOfUnreadNoti((prev) => {
-                return prev + 1;
-            });
-        });
-
-        socket.on("disconnect", () => {
-            console.log("Socket disconnected");
-        });
+    // useEffect(() => {
+    //     if (isRefreshing){
+    //         fetchNotification({skip:skipNotification,limit:LIMIT_NOTIFICATION});
+    //     }
+    // }, [isRefreshing]);
 
 
-    }, []);
+    // useEffect(() => {
+    //     // socket notification
+    //     socket.on('notification', (noti) => {
+    //         const {noti_type} = noti;
+    //         // check type notification ::: if type is SYS-003 => check teacher status
+    //         if (noti_type === "SYS-003") {
+    //             const {noti_options:{teacher_status}} = noti;
+    //             setTeacherStatus(teacher_status);
+    //         }
+
+    //         setNotification((prev) => {
+    //             return [noti, ...prev];
+    //         });
+    //         setNumberOfUnreadNoti((prev) => {
+    //             return prev + 1;
+    //         });
+    //     });
+
+    //     socket.on("disconnect", () => {
+    //         console.log("Socket disconnected");
+    //     });
+
+
+    // }, []);
 
     // fetch access token from local storage
     const fetchAccessToken = async () => {
@@ -133,9 +133,6 @@ export const AuthProvider = ({children}) => {
                     type: `${image.type}/${image.name.split(".")[1]}`,
                 });
             });
-
-            // add schools to form data
-
         }
 
         const response = await fetch(

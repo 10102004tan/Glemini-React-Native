@@ -265,6 +265,7 @@ const QuestionProvider = ({ children }) => {
       );
 
       const data = await response.json();
+      console.log(data);
       if (data.statusCode === 200) {
          const newQuestions = questions.filter((question) => question._id !== questionId);
          setQuestions(newQuestions);
