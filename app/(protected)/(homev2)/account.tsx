@@ -4,6 +4,7 @@ import MainLayout from "@/components/layouts/MainLayout";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Entypo, FontAwesome } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
+import { useCallback } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 const Account = () => {
   const { user, signOut, error } = useAuthStore();
@@ -74,6 +75,33 @@ const Account = () => {
       }
     }
   ]
+
+  const renderActions = useCallback(() => {
+    return actions.map((action, index) => (
+      <TouchableOpacity
+        key={index}
+        onPress={action.onPress}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingVertical: 15,
+          borderBottomWidth: 1,
+          borderBottomColor: "#E5E7EB",
+        }}
+      >
+        {action.icon}
+        <Text
+          style={{
+            fontSize: 16,
+            color: "#374151",
+            marginLeft: 10,
+          }}
+        >
+          {action.title}
+        </Text>
+      </TouchableOpacity>
+    ));
+  }, [actions]);
   return (
     <MainLayout>
       <View
@@ -126,30 +154,7 @@ const Account = () => {
             paddingHorizontal: 20,
           }}
         >
-          {actions.map((action, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={action.onPress}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                paddingVertical: 15,
-                borderBottomWidth: 1,
-                borderBottomColor: "#E5E7EB",
-              }}
-            >
-              {action.icon}
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: "#374151",
-                  marginLeft: 10,
-                }}
-              >
-                {action.title}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          {renderActions()}
         </View>
       </View>
     </MainLayout>

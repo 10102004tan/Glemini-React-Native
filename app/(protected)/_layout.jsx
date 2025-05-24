@@ -22,9 +22,9 @@ export default function AppRootLayout() {
    } = useAppProvider();
 
 
-   const { isSignedIn, setIsSignedIn } = useAuthStore();
+   const { isSignedIn, user } = useAuthStore();
 
-  if (!isSignedIn) {
+  if (!isSignedIn && !user) {
     return <Redirect href={'/login'} />
   }
 

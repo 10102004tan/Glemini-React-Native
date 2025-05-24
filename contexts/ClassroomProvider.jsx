@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useAuthContext } from './AuthContext';
 import Toast from 'react-native-toast-message-custom';
+import { useAuthStore } from '@/store/useAuthStore';
+import api from '@/libs/axios';
 
 const ClassroomContext = createContext();
 
@@ -11,27 +13,18 @@ const ClassroomProvider = ({ children }) => {
 	const [selectDistrict, setSelectDistrict] = useState('');
     const [classrooms, setClassrooms] = useState([]);
     const [classroom, setClassroom] = useState([]);
-    const { userData } = useAuthContext();
+    // const { userData } = useAuthContext();
+    const {user} = useAuthStore();
 
     const fetchClassrooms = async () => {
-        const path = userData.user_type === 'teacher' ?
-            `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_GET_BY_TEACHER}` :
-            `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_GET_BY_STUDENT}`
-        const response = await fetch(
-            path,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-client-id': userData._id,
-                    authorization: userData.accessToken,
-                },
-                body: JSON.stringify({ user_id: userData._id })
-            }
-        );
-
-        const data = await response.json();
-
+        const path = user.user_role === 'teacher' ?
+            `${API_VERSION.V1}${END_POINTS.CLASSROOM_GET_BY_TEACHER}` :
+            `${API_VERSION.V1}${END_POINTS.CLASSROOM_GET_BY_STUDENT}`
+        const body = {
+            user_id: user.user_id
+        }
+        const response = await api.post(path, body);
+        const data = response.data;
         if (data.statusCode === 200) {
             setClassrooms(data.metadata);
         } else {
@@ -40,21 +33,12 @@ const ClassroomProvider = ({ children }) => {
     }
 
     const fetchClassroom = async (classroomId) => {
-        const response = await fetch(
-            `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_INFO}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-client-id': userData._id,
-                    authorization: userData.accessToken,
-                },
-                body: JSON.stringify({ _id: classroomId })
-            }
-        );
-
-        const data = await response.json();
-
+        const path = `${API_VERSION.V1}${END_POINTS.CLASSROOM_INFO}`
+        const body = {
+            _id: classroomId
+        }   
+        const response = await api.post(path, body);
+        const data = response.data;
         if (data.statusCode === 200) {
             setClassroom(data.metadata);
         } else {
@@ -261,7 +245,6 @@ const ClassroomProvider = ({ children }) => {
     };
 
 	const fetchDistrictQuery = async (provinceId) => {
-        
 		const body = {
 			"operationName": "fetchDistrictQ",
 			"variables": {
@@ -301,22 +284,12 @@ const ClassroomProvider = ({ children }) => {
 		setSchools(data)
 	}
 
-    useEffect(() => {
-        if (userData) {
-            fetchClassrooms();
-        }
-    }, [userData]);
+
 
 
     const fetchFilterSchool = async ({keyword}) => {
-        const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.SCHOOL_FILTER}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({keyword})
-        });
-        const data = await response.json();
+        const response = await api.post(`${API_VERSION.V1}${END_POINTS.SCHOOL_FILTER}`, {keyword});
+        const data = response.data;
         if (data.statusCode === 200) {
             return data.metadata;
         }

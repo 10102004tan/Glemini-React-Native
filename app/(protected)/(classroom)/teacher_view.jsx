@@ -15,9 +15,11 @@ import { Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Lottie from '@/components/loadings/Lottie';
 import SkeletonClassroomCard from '@/components/loadings/SkeletonClassroomCard';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const TeacherView = () => {
-   const { userData, fetchDetailUser } = useAuthContext();
+   const {fetchDetailUser } = useAuthContext();
+   const {user} = useAuthStore();
    const [first, setFirst] = useState(false);
    const [selectedSchool, setSelectedSchool] = useState(null);
    const [selectedSubject, setSelectedSubject] = useState(null);
@@ -35,14 +37,17 @@ const TeacherView = () => {
       setIsHiddenNavigationBar(false);
    };
 
+   useEffect(()=>{
+      fetchClassrooms();
+   },[])
+
    useEffect(() => {
       fetchDetailUser().then(data => {
          setSchools(data.schools);
       }).catch(err => {
-         console.log(err);
+         console.log('Error fetching user details:', err);
       });
-
-   }, [userData])
+   }, [fetchDetailUser]);
 
    const handleCreateClass = async () => {
       if (!selectedSchool || !selectedSubject || !className) {
@@ -58,7 +63,7 @@ const TeacherView = () => {
 
       const classData = {
          class_name: className,
-         user_id: userData._id,
+         user_id: user.user_id,
          school_id: selectedSchool,
          subject_id: selectedSubject,
       };

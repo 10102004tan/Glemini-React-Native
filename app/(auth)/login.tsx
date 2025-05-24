@@ -9,19 +9,17 @@ import { useAuthStore } from '@/store/useAuthStore'
 const Login = () => {
     const { signIn,error } = useAuthStore();
 
-    const handleSubmit = async(values: any,{
+    const handleLogin = (values: any,{
         setSubmitting
     }:{
         setSubmitting: (isSubmitting: boolean) => void
     }) => {
-        signIn(values.email, values.password)
-            .then(() => {
-                setSubmitting(false);
-                if (!error){
-                    console.log("/(auth)/(login) => /(protected)/(homev2)")
-                    router.push('/(protected)/(homev2)')
-                }
-            })
+        signIn(values.email, values.password).then(() => {
+            if (!error) {
+                console.log("Login successful");
+            }
+            setSubmitting(false);
+        })
     }
     return (
         <AuthLayout>
@@ -42,7 +40,7 @@ const Login = () => {
                 <Formik
                     initialValues={{ email: '', password: '' }}
                     validationSchema={loginSchema}
-                    onSubmit={handleSubmit}
+                    onSubmit={handleLogin}
                 >
                     {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting }) => (
                         <View style={{ marginBottom: 20 }}>
@@ -119,10 +117,7 @@ const Login = () => {
                 </View>
             </View>
         </AuthLayout>
-
     )
 }
-
-
 
 export default Login
