@@ -1,9 +1,10 @@
 'use strict';
 
 const dev = {
-	API_URL: 'http://192.168.178.179:3000/api',
+	API_URL: 'http://10.0.252.102:3000/api',
 	API_VERSION: {
 		V1: '/v1',
+		V2: '/v2',
 	},
 
 	END_POINTS: {
@@ -36,7 +37,7 @@ const dev = {
 		GET_QUIZ_QUESTIONS: '/quizzes/get-questions',
 		GET_QUESTION_DETAIL: '/questions/get-details',
 		QUESTION_UPDATE: '/questions/update',
-		QUESTION_CREATE: '/questions/create',
+		QUESTION_CREATE: '/questions/update',
 		QUESTION_CREATE_MANY: '/questions/creates',
 		QUESTION_UPLOAD_IMAGE: '/questions/upload',
 		QUESTION_DELETE: '/questions/delete',
