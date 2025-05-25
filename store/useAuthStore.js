@@ -4,11 +4,12 @@ import * as SecureStore from 'expo-secure-store'
 
 export const useAuthStore = create((set, get) => ({
     user: null,
-    isLoading: false,
+    isLoading: true,
     error: null,
     isSignedIn: false,
     signIn: async (email, password) => {
-        set({ isLoading: true })
+        console.log("signIn=>email::::", email)
+        set({ isLoading: true , error: null })
         try {
             const response = await api.post('/v2/auth/login', {
                 email, password,
@@ -23,8 +24,8 @@ export const useAuthStore = create((set, get) => ({
             api.defaults.headers.common['Authorization'] = tokens.accessToken
             api.defaults.headers.common['x-client-id'] = user.user_id
             set({ user, isSignedIn: true, isLoading: false })
-
         } catch (error) {
+            console.log("signIn=>error::::", error)
             // check if error is 401
             if (error.response && error.response.status === 401) {
                 set({ error: 'Invalid email or password', isLoading: false })
@@ -81,9 +82,6 @@ export const useAuthStore = create((set, get) => ({
             set({ user: metadata, isSignedIn: true, isLoading: false })
         } catch (error) {
             console.log("/me=>error::::", error)
-            // remove token from Async storage
-            set({ error: error.response.data.message, isLoading: false, isSignedIn: false })
-            // await SecureStore.removeItemAsync('Authorization')
             await SecureStore.deleteItemAsync('Authorization')
             await SecureStore.deleteItemAsync('refreshToken')
             await SecureStore.deleteItemAsync('x-client-id')

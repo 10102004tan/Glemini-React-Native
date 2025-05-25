@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useAuthContext } from './AuthContext';
 import Toast from 'react-native-toast-message-custom';
+import api from '@/libs/axios';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const ResultContext = createContext();
 
@@ -10,13 +12,14 @@ const ResultProvider = ({ children }) => {
    const [result, setResult] = useState([]);
    const [reportData, setReportData] = useState([]);
    const [overViewData, setOverviewData] = useState([]);
-   const { userData } = useAuthContext();
+   // const { userData } = useAuthContext();
+   const {user} = useAuthStore();
    // Lấy dữ liệu từ API
    // Fetch results for teachers with optional filters
    const fetchResultsForTeacher = async (page = 1, sortOrder = "newest", identifier = "", class_name = "", type = "") => {
-      const path = `${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_REPORT}`;
+      const path = `${API_VERSION.V1}${END_POINTS.RESULT_REPORT}`;
       const requestBody = {
-         userId: userData._id,
+         userId: user.user_id,
          page,
          sortOrder,
          identifier,
@@ -25,49 +28,53 @@ const ResultProvider = ({ children }) => {
       };
 
       try {
-         const response = await fetch(path, {
-            method: "POST",
-            headers: {
-               "Content-Type": "application/json",
-               "x-client-id": userData._id,
-               authorization: userData.accessToken,
-            },
-            body: JSON.stringify(requestBody),
-         });
+         // const response = await fetch(path, {
+         //    method: "POST",
+         //    headers: {
+         //       "Content-Type": "application/json",
+         //       "x-client-id": userData._id,
+         //       authorization: userData.accessToken,
+         //    },
+         //    body: JSON.stringify(requestBody),
+         // });
 
-         const data = await response.json();
+         // const data = await response.json();
 
+         // if (data.statusCode === 200) {
+         //    setResults(data.metadata);
+         //    return data.metadata
+         // }
+         const response = await api.post(path, requestBody);
+         const data = response.data;
          if (data.statusCode === 200) {
+            console.log("[CONTEXT]:Result teacher=>", data.metadata);
             setResults(data.metadata);
             return data.metadata
          }
       } catch (error) {
-         console.error("Failed to fetch results for teacher:", error);
+         // console.error("Failed to fetch results for teacher:", error);
+         console.log("[CONTEXT]:Result=>", error);
       }
    };
 
    // Fetch results for students without filters
    const fetchResultsForStudent = async () => {
-      const path = `${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_STUDENT}`;
-
+      const path = `${API_VERSION.V1}${END_POINTS.RESULT_STUDENT}`;
       try {
-         const response = await fetch(path, {
-            method: "POST",
-            headers: {
-               "Content-Type": "application/json",
-               "x-client-id": userData._id,
-               authorization: userData.accessToken,
-            },
-            body: JSON.stringify({ userId: userData._id }),
-         });
-
-         const data = await response.json();
-
+         console.log("User ID:", user); // Use user._id from useAuthStore
+         const body = {
+            userId: user?.user_id, // Use user._id from useAuthStore
+         }
+         const response = await api.post(path, body)
+         const data = response.data;
          if (data.statusCode === 200) {
+            console.log("[CONTEXT]:Result=>", data.metadata);
             setResults(data.metadata);
+            return data.metadata
          }
       } catch (error) {
-         console.error("Failed to fetch results for student:", error);
+         // console.error("Failed to fetch results for student:", error);
+         console.log("[CONTEXT]:Result=>", error);
       }
    };
 
@@ -195,6 +202,11 @@ const ResultProvider = ({ children }) => {
       }
    };
 
+   /**
+    * Fetch report detail for a specific result
+    * @param {*} id 
+    * @param {*} type 
+    */
    const fetchReportDetail = async (id, type) => {
       const path = type === 'room' ? API_URL + API_VERSION.V1 + END_POINTS.ROOM_REPORT : API_URL + API_VERSION.V1 + END_POINTS.EXERCISE_REPORT;
       try {
@@ -222,11 +234,12 @@ const ResultProvider = ({ children }) => {
       }
    };
 
+
    useEffect(() => {
-      if (userData) {
-         fetchResultsForStudent();
-      }
-   }, [userData]);
+     if (user){
+      fetchResultsForStudent();
+     }
+   }, []);
 
 
    return (

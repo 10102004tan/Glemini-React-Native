@@ -45,6 +45,7 @@ const Home = () => {
         return <Redirect href={'/(homev2)'} />
     }
 
+
     return (
         <View
             style={{

@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useAuthContext } from "./AuthContext";
+// import { useAuthContext } from "./AuthContext";
 import { API_URL, API_VERSION, END_POINTS } from "../configs/api.config";
 import { router } from "expo-router";
+import api from "@/libs/axios";
+import { useAuthStore } from "@/store/useAuthStore";
 const QuizContext = createContext();
 const QuizProvider = ({ children }) => {
    const [quizzes, setQuizzes] = useState([]); // By User
@@ -12,7 +14,8 @@ const QuizProvider = ({ children }) => {
    const [questionFetching, setQuestionFetching] = useState(false);
    const [actionQuizType, setActionQuizType] = useState("create");
    const [isSave, setIsSave] = useState(false);
-   const { userData } = useAuthContext();
+   // const { userData } = useAuthContext();
+   const {user} = useAuthStore();
    const LIMIT = 10;
    const [isEdited, setIsEdited] = useState(false);
    const [sharedQuizzes, setSharedQuizzes] = useState([]);
@@ -21,31 +24,18 @@ const QuizProvider = ({ children }) => {
 
    // Get all quizzes of the user
    const fetchQuizzes = async ({ skip = 0, limit = LIMIT }) => {
-      if (!userData) {
-         setQuizzes([]);
-         return;
-      }
-
       if (!quizFetching) {
          setQuizFetching(true);
-         const response = await fetch(
-            `${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`,
-            {
-               method: "POST",
-               headers: {
-                  "Content-Type": "application/json",
-                  "x-client-id": userData._id,
-                  authorization: userData.accessToken,
-               },
-               body: JSON.stringify({
-                  user_id: userData._id,
-                  skip,
-                  limit,
-               }),
-            }
-         );
-         const data = await response.json();
-
+         const body = {
+            user_id: user.user_id,
+            skip,
+            limit,
+         }
+         const response = await api.post(
+            `${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`,
+            body,
+         )
+         const data = response.data;
          if (data.statusCode === 200) {
             if (data.metadata.length > 0) {
                if (skip === 0) {
@@ -89,41 +79,56 @@ const QuizProvider = ({ children }) => {
 
    // Get Quiz Published
    const getQuizzesPublished = async () => {
-      const response = await fetch(
-         `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`,
-         {
-            method: "POST",
-            headers: {
-               "Content-Type": "application/json",
-               "x-client-id": userData._id,
-               authorization: userData.accessToken,
-            },
-         }
-      );
+      // const response = await fetch(
+      //    `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`,
+      //    {
+      //       method: "POST",
+      //       headers: {
+      //          "Content-Type": "application/json",
+      //          "x-client-id": userData._id,
+      //          authorization: userData.accessToken,
+      //       },
+      //    }
+      // );
 
-      const data = await response.json();
-      if (data.statusCode === 200) {
-         setFilterQuizzes(data.metadata);
-      } else {
-         setFilterQuizzes([]);
-      }
+      // const data = await response.json();
+      // if (data.statusCode === 200) {
+      //    setFilterQuizzes(data.metadata);
+      // } else {
+      //    setFilterQuizzes([]);
+      // }
    };
 
-   // Get 3 item load to banner
+   /**
+    * Description: Get quizzes for banner
+    * @returns {Promise<void>}
+    */
    const getQuizzesBanner = async () => {
-      const response = await fetch(
-         `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_BANNER}`,
+      // const response = await fetch(
+      //    `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_BANNER}`,
+      //    {
+      //       method: "POST",
+      //       headers: {
+      //          "Content-Type": "application/json",
+      //          "x-client-id": userData._id,
+      //          authorization: userData.accessToken,
+      //       },
+      //    }
+      // );
+
+      // const data = await response.json();
+      // if (data.statusCode === 200) {
+      //    setBannerQuizzes(data.metadata);
+      // } else {
+      //    setBannerQuizzes([]);
+      // }
+      const response = await api.post(
+         `${API_VERSION.V1}${END_POINTS.QUIZ_BANNER}`,
          {
-            method: "POST",
-            headers: {
-               "Content-Type": "application/json",
-               "x-client-id": userData._id,
-               authorization: userData.accessToken,
-            },
+            user_id: user.user_id,
          }
       );
-
-      const data = await response.json();
+      const data = response.data;
       if (data.statusCode === 200) {
          setBannerQuizzes(data.metadata);
       } else {

@@ -11,13 +11,14 @@ import {Entypo, Ionicons} from "@expo/vector-icons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import {router} from "expo-router";
 import {useQuizProvider} from "@/contexts/QuizProvider";
+import { useAuthStore } from '@/store/useAuthStore';
 const QuizModal = ({
 	visible = false,
 	onClose = () => {},
 	onStartQuiz = () => {},
 	quiz,
 }) => {
-	const { userData } = useAuthContext();
+	const { user } = useAuthStore();
 	const { i18n } = useAppProvider();
 	const {duplicateQuiz} = useQuizProvider();
 	const handlerEditQuiz = () => {
@@ -51,6 +52,7 @@ const QuizModal = ({
 		})
 		onClose();
 	};
+	if (!user) return <></>
 	return (
 		<Modal
 			animationType="fade"
@@ -99,7 +101,7 @@ const QuizModal = ({
 							</View>
 						</View>
 						<View className="flex flex-row p-2 w-full justify-center mt-2">
-							{userData.user_type === 'teacher' ? (userData._id === quiz?.user_id) ? (
+							{user.user_role === 'teacher' ? (user.user_id === quiz?.user_id) ? (
 									<TouchableOpacity onPress={handlerEditQuiz} className={"flex-row p-2 rounded gap-2 items-center bg-green-400"}>
 										<AntDesign name={'edit'} size={16} />
 										<Text>{i18n.t("modal.btnEdit")}</Text>

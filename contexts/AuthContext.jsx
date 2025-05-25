@@ -8,6 +8,8 @@ import {API_URL, END_POINTS, API_VERSION} from '../configs/api.config';
 import {registerForPushNotificationsAsync} from "@/helpers/notification";
 import socket from "@/utils/socket";
 import {useAppProvider} from "@/contexts/AppProvider";
+import { useAuthStore } from '@/store/useAuthStore';
+import api from '@/libs/axios';
 
 const LIMIT_NOTIFICATION = 8;
 export const AuthContext = createContext();
@@ -23,21 +25,21 @@ export const AuthProvider = ({children}) => {
 
     const {socket} = useAppProvider();
 
-    useEffect(() => {
-        fetchAccessToken();
-    }, []);
+    // useEffect(() => {
+    //     fetchAccessToken();
+    // }, []);
 
-    useEffect(() => {
-        registerForPushNotificationsAsync()
-            .then(token => setExpoPushToken(token ?? ''))
-            .catch((error) => setExpoPushToken(`${error}`));
-    }, []);
+    // useEffect(() => {
+    //     registerForPushNotificationsAsync()
+    //         .then(token => setExpoPushToken(token ?? ''))
+    //         .catch((error) => setExpoPushToken(`${error}`));
+    // }, []);
 
-    useEffect(() => {
-        if (userData) {
-           fetchStatus();
-        }
-    }, [userData]);
+    // useEffect(() => {
+    //     if (userData) {
+    //        fetchStatus();
+    //     }
+    // }, [userData]);
 
     // fix bug notification
     // useEffect(() => {
@@ -342,18 +344,10 @@ export const AuthProvider = ({children}) => {
      * @returns {Promise<*>}
      */
     const fetchDetailUser = async () => {
-        const response = await fetch(
-            `${API_URL}${API_VERSION.V1}${END_POINTS.PROFILE}`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    authorization: `${userData.accessToken}`,
-                    "x-client-id": userData._id,
-                },
-            }
+        const repsonse = await api.post(
+            `${API_VERSION.V1}${END_POINTS.PROFILE}`,
         );
-        const data = await response.json();
+        const data = repsonse.data;
         const {statusCode, metadata} = data;
         if (statusCode !== 200) return;
         return metadata;

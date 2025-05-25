@@ -12,7 +12,7 @@ const PressAction = ({ icon = null, title = '', onPress = () => { } }) => {
          >
             {icon}
          </TouchableOpacity>
-         <Text className="text-white text-sm text-center">{title}</Text>
+         <Text className="text-sm text-center">{title}</Text>
       </View>
    );
 };
