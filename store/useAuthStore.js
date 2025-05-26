@@ -8,13 +8,12 @@ export const useAuthStore = create((set, get) => ({
     error: null,
     isSignedIn: false,
     signIn: async (email, password) => {
-        console.log("signIn=>email::::", email)
-        set({ isLoading: true , error: null })
+        set({ error: null })
         try {
             const response = await api.post('/v2/auth/login', {
                 email, password,
             })
-            const { tokens,user} = response.data.metadata
+            const { tokens, user } = response.data.metadata
             console.log("/login=>tokens::::", tokens)
             await SecureStore.setItemAsync('Authorization', tokens.accessToken)
             await SecureStore.setItemAsync('refreshToken', tokens.refreshToken)
@@ -23,15 +22,20 @@ export const useAuthStore = create((set, get) => ({
             api.defaults.withCredentials = true
             api.defaults.headers.common['Authorization'] = tokens.accessToken
             api.defaults.headers.common['x-client-id'] = user.user_id
-            set({ user, isSignedIn: true, isLoading: false })
+            set({ user, isSignedIn: true })
+            return { success: true }
         } catch (error) {
-            console.log("signIn=>error::::", error)
-            // check if error is 401
-            if (error.response && error.response.status === 401) {
-                set({ error: 'Invalid email or password', isLoading: false })
-            } else {
-                set({ error: 'An error occurred. Please try again.', isLoading: false })
+            let message = 'An error occurred. Please try again.'
+            if (error.response) {
+                if (error.response.status === 400) {
+                    message = 'Invalid email or password'
+                } else if (error.response.status === 500) {
+                    message = 'Server error. Please try again later.'
+                } else if (error.response.status === 401) {
+                    message = 'Unauthorized. Please check your credentials.'
+                }
             }
+            return { success: false, error: message }
         }
     },
     signOut: async () => {
@@ -41,18 +45,29 @@ export const useAuthStore = create((set, get) => ({
         await SecureStore.deleteItemAsync('x-client-id')
         set({ user: null, isSignedIn: false, isLoading: false })
     },
-    signUp: async (email, password, username) => {
-        set({ isLoading: true })
+    signUp: async ({
+        email, password, fullname
+    }) => {
         try {
-            const response = await api.post('/auth/sign-up', {
-                email, password, username
-
+            // set({ isLoading: true, error: null })
+            const response = await api.post('/v2/auth/signup', {
+                email, password, fullname
             })
-            set({ user: response.data.user, isSignedIn: true, isLoading: false })
-            // set to Async storage to persist user data
+            console.log("[STORE] signUp: => " + response.data.metadata)
+            set({ user: response.data.metadata })
+            return { success: true }
         } catch (error) {
-            console.error(error)
-            set({ error: error.response.data.message, isLoading: false })
+            let message = 'An error occurred. Please try again.'
+            if (error.response) {
+                if (error.response.status === 400) {
+                    message = 'Invalid input. Please check your details.'
+                } else if (error.response.status === 500) {
+                    message = 'Server error. Please try again later.'
+                } else if (error.response.status === 409) {
+                    message = 'Email already exists. Please use a different email.'
+                }
+            }
+            return { success: false, error: message }
         }
     },
     checkAuth: async () => {
