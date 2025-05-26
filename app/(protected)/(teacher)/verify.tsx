@@ -1,12 +1,13 @@
 import MainLayout from "@/components/layouts/MainLayout"
+import api from "@/libs/axios"
 import { Entypo } from "@expo/vector-icons"
 import { Stack } from "expo-router"
-import { Image, ScrollView, Text, View } from "react-native"
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native"
+import Toast from "react-native-toast-message"
 
 const VerifyTeacher = () => {
     const user = {
-        user_role: "teacher",
-        is_verified: false,
+        status: "pending", // pending, active, verified
     }
     return (
         <MainLayout>
@@ -23,13 +24,78 @@ const VerifyTeacher = () => {
             />
             <ScrollView
             >
-                {
-                    user.is_verified ? (
-                        <Verified />
-                    ) : (
-                        <UploadVerify />
-                    )
-                }
+                <View
+                    style={{
+                        padding: 20,
+                    }}
+                >
+                    <Text
+                        style={{
+                            fontSize: 18,
+                            fontWeight: "bold",
+                            marginBottom: 10,
+                        }}
+                    >
+                        Xác thực tài khoản giáo viên
+                    </Text>
+                    <Text
+                        style={{
+                            fontSize: 14,
+                            color: "#6B7280",
+                            marginBottom: 20,
+                        }}
+                    >
+                        Để sử dụng các tính năng dành riêng cho giáo viên, bạn cần xác thực tài khoản của mình. Vui lòng tải lên các giấy tờ cần thiết để chúng tôi có thể xác thực tài khoản của bạn.
+                    </Text>
+
+                    {
+                        user.status === "pending" ? (
+                            <View
+                                style={{
+                                    backgroundColor: "#FBBF24",
+                                    padding: 15,
+                                    borderRadius: 5,
+                                    marginBottom: 20,
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        color: "#000",
+                                        fontSize: 14,
+                                    }}
+                                >
+                                    Yêu cầu xác thực của bạn đang được xử lý. Vui lòng chờ đợi.
+                                </Text>
+                            </View>
+                        ) : user.status === "active" ? (
+                            <View
+                                style={{
+                                    backgroundColor: "#34D399",
+                                    padding: 15,
+                                    borderRadius: 5,
+                                    marginBottom: 20,
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        color: "#000",
+                                        fontSize: 14,
+                                    }}
+                                >
+                                    Tài khoản của bạn đã được xác thực thành công.
+                                </Text>
+                            </View>
+                        ) : (
+                            <UploadVerify />
+                        )
+                    }
+
+                    {
+                        user.status === "verified" ? (
+                            <Verified />
+                        ) : null
+                    }
+                </View>
             </ScrollView>
         </MainLayout>
     )
@@ -291,7 +357,49 @@ const Verified = () => {
 }
 
 const UploadVerify = () => {
-
+    const verifyTeacherHandler = async () => {
+        try {
+            const body = {};
+            const response = await api.post("/v2/auth/teacher/create", body)
+            const data = response.data;
+            if (data){
+                Toast.show({
+                    type: "success",
+                    text1: "Thành công",
+                    text2: "Yêu cầu xác thực đã được gửi thành công.",
+                });
+            }
+        } catch (error: any) {
+            if (error.response) {
+                if (error.response.status === 400) {
+                    Toast.show({
+                        type: "error",
+                        text1: "Lỗi",
+                        text2: error.response.data.message || "Vui lòng kiểm tra lại thông tin.",
+                    });
+                }
+                else if (error.response.status === 401) {
+                    Toast.show({
+                        type: "error",
+                        text1: "Lỗi",
+                        text2: "Bạn không có quyền truy cập vào chức năng này.",
+                    });
+                } else {
+                    Toast.show({
+                        type: "error",
+                        text1: "Lỗi",
+                        text2: "Đã có lỗi xảy ra, vui lòng thử lại sau.",
+                    });
+                }
+            } else {
+                Toast.show({
+                    type: "error",
+                    text1: "Lỗi",
+                    text2: "Đã có lỗi xảy ra, vui lòng thử lại sau.",
+                });
+            }
+        }
+    }
     return (
         <View>
             <Text
@@ -306,21 +414,22 @@ const UploadVerify = () => {
                 Tải lên giấy tờ xác thực
             </Text>
             <View>
-                <UploadItem 
+                <UploadItem
                     title="Căn cước công dân"
                     description="Tải lên ảnh giấy xác nhận của bạn"
                 />
-                <UploadItem 
-                title="Giấy xác nhận"
-                description="Giấy chứng thực hoạt động nghề nghiệp của bạn"
+                <UploadItem
+                    title="Giấy xác nhận"
+                    description="Giấy chứng thực hoạt động nghề nghiệp của bạn"
                 />
-                <UploadItem 
-                title="Ảnh thẻ"
-                description="Tải lên ảnh thẻ của bạn, kích thước 3x4"
+                <UploadItem
+                    title="Ảnh thẻ"
+                    description="Tải lên ảnh thẻ của bạn, kích thước 3x4"
                 />
             </View>
             {/* button */}
-            <View
+            <TouchableOpacity
+                onPress={verifyTeacherHandler}
                 style={{
                     backgroundColor: "#1E77CC",
                     padding: 15,
@@ -338,7 +447,7 @@ const UploadVerify = () => {
                 >
                     Gửi yêu cầu xác thực
                 </Text>
-            </View>
+            </TouchableOpacity>
         </View>
     )
 }

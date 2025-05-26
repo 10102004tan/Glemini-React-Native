@@ -3,6 +3,7 @@ import { Redirect, Slot, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message-custom";
+import ToastV2 from "react-native-toast-message";
 import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
 import { Dimensions, FlatList, LogBox, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Providers from "@/contexts/Providers";
@@ -13,7 +14,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 
 // // Prevent the splash screen from auto-hiding before asset loading is complete.
 // SplashScreen.preventAutoHideAsync();
-// // Bỏ qua cảnh báo chứa chuỗi "defaultProps"
+// // // Bỏ qua cảnh báo chứa chuỗi "defaultProps"
 // LogBox.ignoreLogs(["defaultProps"]);
 
 // Notifications.setNotificationHandler({
@@ -61,6 +62,7 @@ export default function RootLayout() {
       <Providers>
         <Slot />
         <Toast />
+        <ToastV2 />
       </Providers>
     </GestureHandlerRootView>
   );

@@ -1,8 +1,9 @@
 import { useAuthStore } from '@/store/useAuthStore';
-import { Redirect } from 'expo-router';
+import { Redirect, useLocalSearchParams } from 'expo-router';
 import { Link } from 'expo-router';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { View, Text, Image, FlatList, TouchableOpacity, Dimensions } from 'react-native'
+import Toast from 'react-native-toast-message';
 
 const { width } = Dimensions.get('window');
 const Home = () => {
@@ -21,6 +22,7 @@ const Home = () => {
             value: "日本語",
         },
     ];
+    const {message} = useLocalSearchParams()
 
     const banners = [
         {
@@ -41,9 +43,22 @@ const Home = () => {
     ]
 
 
+    useEffect(() => {
+        if (message) {
+            Toast.show({
+                type: 'success',
+                text1: message,
+                position: 'bottom',
+                visibilityTime: 3000,
+                autoHide: true,
+            });
+        }
+    }, [message])
     if (isSignedIn) {
         return <Redirect href={'/(homev2)'} />
     }
+
+    
 
 
     return (
