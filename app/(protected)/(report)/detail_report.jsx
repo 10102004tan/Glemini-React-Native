@@ -83,11 +83,30 @@ export default function DetailReport() {
     }, [reportData])
 
     return (
-        <View className="flex-1 bg-slate-50">
-            <View className="mx-4 my-3 p-3 rounded-md border-[1px] border-slate-300 flex-col">
-                <View className='border-b-[1px] border-slate-300 pb-3 flex-row justify-between items-center'>
+        <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+            <View style={{ 
+                marginHorizontal: 16, 
+                marginVertical: 12, 
+                padding: 12, 
+                borderWidth: 1, 
+                borderRadius: 6, 
+                borderColor: '#cbd5e1', 
+                flexDirection: 'column' 
+            }}>
+                <View
+                    style={{ 
+                        borderBottomWidth: 1, 
+                        borderColor: '#cbd5e1', 
+                        paddingBottom: 12,
+                        flexDirection: 'row', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center' 
+                    }}
+                >
                     <View>
-                        <Text className='text-black text-base font-bold'>{reportData.quiz_id?.quiz_name}</Text>
+                        <Text style={{ color: '#000', fontSize: 16, lineHeight: 24, fontWeight: 'bold' }}>
+                            {reportData.quiz_id?.quiz_name}
+                        </Text>
                         <Text className={`font-medium ${getStatus() ? 'text-green-500' : 'text-red-500'}`}>
                             {getStatus() ? i18n.t('report.reportDetail.starting') : i18n.t('report.reportDetail.end')}
                         </Text>
@@ -114,25 +133,38 @@ export default function DetailReport() {
                         />
                     </TouchableOpacity>
                 </View>
-                <View className='mt-2 flex-row justify-between items-center'>
-                    <View className='flex-row gap-1 items-center'>
+                <View
+                    style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+                    <View style={{ alignItems: 'center', flexDirection: 'row', gap: 4 }}>
                         <MaterialCommunityIcons name="clock-time-four-outline" size={20} color={'gray'} />
                         <Text>{moment(reportData.date_end).format("MMMM Do YYYY | h:mm A")}</Text>
                     </View>
-                    <TouchableOpacity className='flex-row items-center' onPress={onOpen}>
-                        <Text className='px-1 py-1 bg-green-500/60 rounded-lg'>{i18n.t('report.reportDetail.btnViewQuiz')}</Text>
+                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={onOpen}>
+                        <Text style={{ padding: 4, backgroundColor: rgb(34,197,94 / 0.6), borderRadius: 8 }} >{i18n.t('report.reportDetail.btnViewQuiz')}</Text>
                         <MaterialCommunityIcons name="menu-right" size={30} />
                     </TouchableOpacity>
                 </View>
             </View>
-            <View className='flex-1 p-3'>
-                <Text className='text-base font-semibold'>{i18n.t('report.reportDetail.text1')}</Text>
-                <View className='w-full flex-row items-center justify-around my-1'>
-                    <View className='flex-row items-center gap-2'>
-                        <View className='w-6 h-6 rounded-full bg-green-500' />
-                        <Text className='text-green-500'>{i18n.t('report.reportDetail.text2')}</Text>
+            <View style={{ flex: 1, padding: 12 }}>
+                <Text style={{ fontSize: 16, lineHeight: 24, fontWeight: 600 }}>{i18n.t('report.reportDetail.text1')}</Text>
+                <View 
+                    style={{ 
+                        width: '100%', 
+                        flexDirection: 'row', 
+                        alignItems: 'center',
+                        marginVertical: 4,
+                        justifyContent: 'space-around' 
+                    }}>
+                    <View
+                        style={{
+                            flexDirection: 'row', 
+                            alignItems: 'center', 
+                            gap: 8 
+                        }}>
+                        <View style={{ borderRadius: 50, width: 24, height: 24, backgroundColor: '#22c55e' }} />
+                        <Text style={{ color: '#22c55e' }}>{i18n.t('report.reportDetail.text2')}</Text>
                     </View>
-                    <View className='flex-row items-center gap-2'>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }} >
                         <View className='w-6 h-6 bg-red-500' />
                         <Text className='text-red-500'>{i18n.t('report.reportDetail.text3')}</Text>
                     </View>

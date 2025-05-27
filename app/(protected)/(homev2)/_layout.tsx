@@ -51,7 +51,7 @@ export default function TabLayout() {
                         />
                     ),
                     tabBarButton: (props) => (
-                        user.user_role === "teacher" ? (
+                        user.user_role === "user" ? (
                             <TouchableOpacity {...props} />
                         ) : (
                             null

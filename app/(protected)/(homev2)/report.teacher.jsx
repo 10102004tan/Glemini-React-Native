@@ -121,25 +121,89 @@ export default function Report() {
             }}
             key={item.id}
          >
-            <View className="flex-row items-center justify-between bg-transparent rounded-md mb-2">
-               <View className='flex-row w-full'>
-                  <View className='w-1/3 flex items-center justify-center px-5'>
-                     <Text className='text-white p-3 bg-black rounded-md w-full text-center'>
+            <View
+               style={{
+                  dísplay: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'between',
+                  backgroundColor: 'transparent',
+                  borderRadius: 6,
+                  marginBottom: 8
+               }}
+            >
+               <View
+                  style={{
+                     display: 'flex',
+                     flexDirection: 'row',
+                     width: '100%'
+                  }}>
+                  <View
+                     style={{
+                        width: '1/3', // Adjusted to fit the layout 33.33% (checking)
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingHorizontal: 10
+                     }}
+                  >
+                     <Text
+                        style={{
+                           color: '#fff',
+                           padding: 12,
+                           backgroundColor: '#000',
+                           borderRadius: 6,
+                           width: '100%',
+                           textAlign: 'center',
+                        }}>
                         {item.type === 'room' ? i18n.t('report.realtime') : i18n.t('report.exercise')}
                      </Text>
                   </View>
-                  <View className='w-2/3 h-auto flex-row items-center py-5 border-b-[1px] border-slate-300'>
-                     <View className='w-4/5'>
-                        <Text className="text-slate-500 text-base font-bold">{item.identifier}</Text>
-                        <Text className="text-slate-500">{item.class_name || item.description}</Text>
-                        <View className="flex-row items-center">
+                  <View
+                     style={{
+                        width: '2/3', // Adjusted to fit the layout 66.67% (checking)
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        paddingVertical: 20,
+                        borderBottomWidth: 1,
+                        borderBottomColor: '#e5e7eb',
+                     }}
+                  >
+                     <View
+                        style={{
+                           width: '80%'
+                        }}>
+                        <Text
+                           style={{
+                              color: '#1f2937',
+                              fontSize: 16,
+                              lineHeight: 24,
+                              fontWeight: 'bold'
+                           }}
+                        >
+                           {item.identifier}
+                        </Text>
+                        <Text
+                           style={{
+                              color: '#64748b'
+                           }}>
+                           {item.class_name || item.description}
+                        </Text>
+                        <View
+                           style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                           }}>
                            <Feather name="users" size={16} color={'gray'} />
-                           <Text className='ml-2 text-slate-500'>
+                           <Text style={{ color: '#64748b', marginLeft: 8 }}>
                               {item.results?.length} {i18n.t('report.userJoin')}
                            </Text>
                         </View>
                      </View>
-                     <View className='w-1/5 flex items-center'>
+                     <View style={{ width: '20%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <Text className={`${completionPercentage < 30 ? 'bg-red-500/50 text-red-500' : completionPercentage < 65 ? 'bg-yellow-500/40 text-yellow-500' : 'bg-green-500/50 text-green-500'} px-1 py-2 w-12 text-center rounded-md font-bold`}>
                            {completionPercentage}%
                         </Text>
@@ -154,10 +218,22 @@ export default function Report() {
    return (
       <MainLayout>
          <View
-         style={{ flex: 1, backgroundColor: '#fff',marginTop: 20 }}
+            style={{ flex: 1, backgroundColor: '#fff', marginTop: 20 }}
          >
-            <View className="px-4 pt-2 pb-4 shadow-lg">
-               <View className="flex-row items-center rounded-md mb-4 gap-4">
+            <View className="shadow-lg" style={{
+               paddingHorizontal: 16,
+               paddingTop: 8,
+               paddingBottom: 16,
+            }}>
+               <View
+                  style={{
+                     display: 'flex',
+                     flexDirection: 'row',
+                     alignItems: 'center',
+                     borderRadius: 6,
+                     marginBottom: 16,
+                     gap: 16
+                  }}>
                   <TextInput
                      placeholder={i18n.t('report.placeholderSearch')}
                      value={searchTermMockup}
@@ -165,17 +241,37 @@ export default function Report() {
                         setSearchTermMockup(text);
                         handleSearchChange(text);
                      }}
-                     className="flex-1 p-3 text-slate-700 border-[1px] rounded-lg"
+                     style={{
+                        flex: 1,
+                        padding: 12,
+                        color: '#334155',
+                        borderWidth: 1,
+                        borderRadius: 8
+                     }}
                   />
                   <TouchableOpacity
-                     className="bg-black p-4 border-[1px] rounded-lg"
+                     style={{
+                        padding: 16,
+                        borderWidth: 1,
+                        borderRadius: 8,
+                        backgroundColor: '#000',
+                     }}
                      onPress={handleResetFilters}
                   >
-                     <Text className="text-slate-50 ">{i18n.t('report.btnFresh')}</Text>
+                     <Text style={{ color: '#f8fafc' }}>{i18n.t('report.btnFresh')}</Text>
                   </TouchableOpacity>
                </View>
-               <View className="flex-row gap-4 justify-around items-center mb-4">
-                  <View className='flex-1 bg-transparent rounded-lg border-[1px]'>
+               <View
+                  style={{
+                     display: 'flex',
+                     flexDirection: 'row',
+                     alignItems: 'center',
+                     justifyContent: 'space-around',
+                     gap: 16,
+                     marginBottom: 16,
+                  }}>
+                  <View
+                     style={{ flex: 1, borderWidth: 1, borderRadius: 8, backgroundColor: 'transparent' }}>
                      <Picker
                         selectedValue={classFilter}
                         onValueChange={(itemValue) => setClassFilter(itemValue)}
@@ -187,7 +283,8 @@ export default function Report() {
                      </Picker>
                   </View>
 
-                  <View className='flex-1 bg-transparent rounded-lg border-[1px]'>
+                  <View
+                     style={{ flex: 1, borderWidth: 1, borderRadius: 8, backgroundColor: 'transparent' }}>
                      <Picker
                         selectedValue={typeFilter}
                         onValueChange={(itemValue) => setTypeFilter(itemValue)}
@@ -199,17 +296,17 @@ export default function Report() {
                   </View>
 
                   <TouchableOpacity
-                     className="bg-transparent px-4 py-4 min-w-[100px] border-[1px] rounded-lg"
+                     style={{ backgroundColor: 'transparent', borderRadius: 8, borderWidth: 1, padding: 16, minWidth: 100 }}
                      onPress={handleSortOrderToggle}
                   >
-                     <Text className="text-gray-700 text-center">{sortOrder === "newest" ? i18n.t('report.optionNew') : i18n.t('report.optionOld')}</Text>
+                     <Text style={{ color: '#334155', textAlign: 'center' }}>{sortOrder === "newest" ? i18n.t('report.optionNew') : i18n.t('report.optionOld')}</Text>
                   </TouchableOpacity>
                </View>
-               <View className='w-full h-[1px] bg-slate-300' />
+               <View style={{ width: '100%', height: 1, backgroundColor: '#cbd5e1' }} />
             </View>
-            <View className='px-4 mb-20'>
+            <View style={{ paddingHorizontal: 16, paddingBottom: 80 }}>
                <FlatList
-                  className='mb-20'
+                  style={{ marginBottom: 80 }}
                   showsVerticalScrollIndicator={false}
                   data={resultsData}
                   renderItem={renderItem}
@@ -218,8 +315,9 @@ export default function Report() {
                   onEndReachedThreshold={0.1}
                   ListFooterComponent={isFetchingMore ? <ActivityIndicator size="large" color="#0000ff" /> : null}
                   ListEmptyComponent={
-                     <View className="flex items-center justify-center mt-10">
-                        <Text className="text-slate-500">{i18n.t('report.emptyReport')}</Text>
+                     <View
+                        style={{ display: flex, alignItems: 'center', justifyContent: 'center', marginTop: 40 }}>
+                        <Text style={{ color: '#64748b' }}>{i18n.t('report.emptyReport')}</Text>
                      </View>
                   }
                />
