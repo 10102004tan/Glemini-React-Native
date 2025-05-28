@@ -138,7 +138,7 @@ const HomeStudent = () => {
                             onRefresh={onRefresh}
                         />
                     }
-                    className='mb-20'>
+                    >
                     <View className={bannerQuizzes.length > 0 ? `flex h-[${carouselHeight}px]` : `hidden`}>
                         <Carousel
                             loop

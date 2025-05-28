@@ -123,7 +123,7 @@ export default function Report() {
          >
             <View
                style={{
-                  dísplay: 'flex',
+                  display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'between',
@@ -316,7 +316,7 @@ export default function Report() {
                   ListFooterComponent={isFetchingMore ? <ActivityIndicator size="large" color="#0000ff" /> : null}
                   ListEmptyComponent={
                      <View
-                        style={{ display: flex, alignItems: 'center', justifyContent: 'center', marginTop: 40 }}>
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 40 }}>
                         <Text style={{ color: '#64748b' }}>{i18n.t('report.emptyReport')}</Text>
                      </View>
                   }

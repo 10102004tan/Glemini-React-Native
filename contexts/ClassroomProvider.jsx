@@ -49,20 +49,13 @@ const ClassroomProvider = ({ children }) => {
     // Hàm tạo lớp học
     const createClassroom = async (classData) => {
         try {
-            const response = await fetch(
-                `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_CREATE}`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-client-id': userData._id,
-                        authorization: userData.accessToken,
-                    },
-                    body: JSON.stringify(classData),
+            const response = await api.post(
+                `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_CREATE}`, {
+                    classData
                 }
             );
 
-            const data = await response.json();
+            const data = await response.data;
 
             if (data.statusCode === 200) {
                 setClassrooms((prevClassrooms) => [...prevClassrooms, data.metadata]);
@@ -145,25 +138,14 @@ const ClassroomProvider = ({ children }) => {
 
     const addStudent = async (classroomId, studentEmail) => {
         try {
-            const response = await fetch(
-                `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_ADD_STUDENT}`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-client-id': userData._id,
-                        authorization: userData.accessToken,
-                    },
-                    body: JSON.stringify(
-                        {
+            const response = await api.post(
+                `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_ADD_STUDENT}`, {
+                    
                             classroomId: classroomId,
                             user_email: studentEmail
-                        }
-                    )
-                }
-            );
-
-            const data = await response.json();
+                        
+                });
+            const data = await response.data;
 
             if (data.statusCode === 200) {                
                 if (data.metadata === true) {
@@ -196,27 +178,15 @@ const ClassroomProvider = ({ children }) => {
     const addQuizToClassroom = async (name, classroomId, quizId, start, deadline) => {
         try {
             const response = await fetch(
-                `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_ADD_QUIZ}`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-client-id': userData._id,
-                        authorization: userData.accessToken,
-                    },
-                    body: JSON.stringify(
-                        {
+                `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_ADD_QUIZ}`, {
                             name: name,
                             classroomId: classroomId,
                             quizId: quizId,
                             start: start,
                             deadline: deadline
-                        }
-                    )
-                }
-            );
+                        });
 
-            const data = await response.json();
+            const data = await response.data;
 
             if (data.statusCode === 200) {
                 Toast.show({

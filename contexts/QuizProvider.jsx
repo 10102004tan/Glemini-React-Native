@@ -79,24 +79,17 @@ const QuizProvider = ({ children }) => {
 
    // Get Quiz Published
    const getQuizzesPublished = async () => {
-      // const response = await fetch(
-      //    `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`,
-      //    {
-      //       method: "POST",
-      //       headers: {
-      //          "Content-Type": "application/json",
-      //          "x-client-id": userData._id,
-      //          authorization: userData.accessToken,
-      //       },
-      //    }
-      // );
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`, {
+            user_id: user.user_id,
+         });
 
-      // const data = await response.json();
-      // if (data.statusCode === 200) {
-      //    setFilterQuizzes(data.metadata);
-      // } else {
-      //    setFilterQuizzes([]);
-      // }
+      const data = response.data;
+      
+      if (data.statusCode === 200) {
+         setFilterQuizzes(data.metadata);
+      } else {
+         setFilterQuizzes([]);
+      }
    };
 
    /**
@@ -199,7 +192,7 @@ const QuizProvider = ({ children }) => {
     * */
 
    const duplicateQuiz = async (quiz_id) => {
-      console.log(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`);
+      // console.log(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`);
       const response = await fetch(
          `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`,
          {

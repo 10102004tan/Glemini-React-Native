@@ -12,7 +12,6 @@ const ResultProvider = ({ children }) => {
    const [result, setResult] = useState([]);
    const [reportData, setReportData] = useState([]);
    const [overViewData, setOverviewData] = useState([]);
-   // const { userData } = useAuthContext();
    const {user} = useAuthStore();
    // Lấy dữ liệu từ API
    // Fetch results for teachers with optional filters
@@ -80,7 +79,7 @@ const ResultProvider = ({ children }) => {
 
    const fetchResultData = async ({ quizId, exerciseId, roomId, type }) => {
       const query = {
-         user_id: userData._id,
+         user_id: user._id,
          quiz_id: quizId,
          type,
          ...(exerciseId && { exercise_id: exerciseId }),
@@ -90,17 +89,9 @@ const ResultProvider = ({ children }) => {
       // console.log(query);
 
       try {
-         const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_REVIEW, {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
-               authorization: userData.accessToken,
-            },
-            body: JSON.stringify(query),
-         });
+         const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_REVIEW, query);
 
-         const data = await res.json();
+         const data = await res.data;
          setResult(data.metadata);
          return data.metadata;
       } catch (error) {
@@ -116,17 +107,9 @@ const ResultProvider = ({ children }) => {
 
    const fetchOverViewData = async (id) => {
       try {
-         const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_OVERVIEW, {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
-               authorization: userData.accessToken,
-            },
-            body: JSON.stringify({ id }),
-         });
+         const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_OVERVIEW, {id});
 
-         const data = await res.json();
+         const data = await res.data;
          setOverviewData(data.metadata);
       } catch (error) {
          Toast.show({
@@ -141,17 +124,9 @@ const ResultProvider = ({ children }) => {
    const fetchResetResultOfQuiz = async (resultId) => {
       console.log(resultId);
       
-      const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_RESET_V2, {
-         method: 'POST',
-         headers: {
-            'Content-Type': 'application/json',
-            'x-client-id': userData._id,
-            authorization: userData.accessToken,
-         },
-         body: JSON.stringify({ resultId }),
-      });
+      const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_RESET_V2, {resultId});
 
-      const data = await res.json();
+      const data = await res.data;
       if (data.statusCode === 200) {
          return data.metadata
       } else {
@@ -167,22 +142,14 @@ const ResultProvider = ({ children }) => {
 
    const completed = async (exerciseId, quizId) => {
       try {
-         const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
-               authorization: userData.accessToken,
-            },
-            body: JSON.stringify({
+         const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
                exercise_id: exerciseId,
                user_id: userData._id,
                quiz_id: quizId,
                status: 'completed',
-            }),
-         });
+            });
 
-         const data = await res.json();
+         const data = await res.data;
 
          if (data.statusCode === 200) {
             return data.metadata
@@ -210,19 +177,9 @@ const ResultProvider = ({ children }) => {
    const fetchReportDetail = async (id, type) => {
       const path = type === 'room' ? API_URL + API_VERSION.V1 + END_POINTS.ROOM_REPORT : API_URL + API_VERSION.V1 + END_POINTS.EXERCISE_REPORT;
       try {
-         const res = await fetch(path, {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
-               authorization: userData.accessToken,
-            },
-            body: JSON.stringify({
-               id: id
-            }),
-         });
+         const res = await api.post(path, {id});
 
-         const data = await res.json();
+         const data = await res.data;
          setReportData(data.metadata);
       } catch (error) {
          Toast.show({

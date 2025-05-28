@@ -50,20 +50,13 @@ const QuestionProvider = ({ children }) => {
    const fetchQuestions = async (quizId) => {
       setQuestions([])
       try {
-         const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.GET_QUIZ_QUESTIONS, {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
-               authorization: userData.accessToken,
-            },
-            body: JSON.stringify({
+         const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.GET_QUIZ_QUESTIONS, {
                quiz_id: quizId,
-            }),
-         });
+            });
 
 
-         const data = await res.json();
+         const data = await res.data;
+         
          setQuestions(data.metadata);
       } catch (error) {
          Toast.show({

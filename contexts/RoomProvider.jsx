@@ -20,26 +20,16 @@ const RoomProvider = ({ children }) => {
 
 
    const createRoom = async (room_code, quiz_id, user_created_id, user_max, description) => {
-      const response = await fetch(
-         `${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_CREATE}`,
-         {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json',
-               'x-client-id': userData._id,
-               authorization: userData.accessToken,
-            },
-            body: JSON.stringify({
+      const response = await api.post(
+         `${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_CREATE}`,{
                room_code,
                quiz_id,
                user_created_id,
                user_max,
                description: description || 'no desc'
-            })
-         }
-      );
+            });
 
-      const data = await response.json();
+      const data = await response.data;
       if (data.statusCode === 200) {
          setRoom(data.metadata);
          setCurrentRoom(data.metadata.room_code);
@@ -52,39 +42,23 @@ const RoomProvider = ({ children }) => {
    };
 
    const checkRoom = async (roomCode) => {
-      const res = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_DETAIL}`, {
-         method: 'POST',
-         headers: {
-            'Content-Type': 'application/json',
-            'x-client-id': userData._id,
-            authorization: userData.accessToken,
-         },
-         body: JSON.stringify({
+      const res = await api.post(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_DETAIL}`, {
             room_code: roomCode,
-         }),
-      })
+         })
 
       const notAccepted = ['completed', 'deleted'];
 
-      const data = await res.json();
+      const data = await res.data;
       if (data.statusCode === 200) {
          if (notAccepted.includes(data.metadata.status)) {
             Alert.alert(i18n.t('room_wait.alert'), i18n.t('room_wait.cannotStartRoom'));
          } else if (data.metadata.status === 'doing') {
-            const res = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_CHECK_USER}`, {
-               method: 'POST',
-               headers: {
-                  'Content-Type': 'application/json',
-                  'x-client-id': userData._id,
-                  authorization: userData.accessToken,
-               },
-               body: JSON.stringify({
+            const res = await api.post(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_CHECK_USER}`, {
                   room_code: roomCode,
                   user_id: userData._id
-               }),
-            });
+               });
 
-            const dt = await res.json();
+            const dt = await res.data;
             if (dt.statusCode === 200 && dt.metadata) {
                setCurrentRoom(data.metadata._id);
                socket.emit('joinRoom', { roomCode, user: userData });

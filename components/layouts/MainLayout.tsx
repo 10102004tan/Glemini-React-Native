@@ -8,14 +8,15 @@ const MainLayout = ({
   children: React.ReactNode
 }) => {
   return (
-    <KeyboardAvoidingView 
-    style={{ backgroundColor: "#FFFFFF", flex: 1 }}
-    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 30}
+    <KeyboardAvoidingView
+      style={{ backgroundColor: "#FFFFFF", flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 30}
     >
-     <View style={{ flex: 1, paddingVertical: 20, paddingHorizontal: 10 
-       , backgroundColor: "#FFFFFF"
-     }}>
+      <View style={{
+        flex: 1, paddingVertical: 20, paddingHorizontal: 10
+        , backgroundColor: "#FFFFFF"
+      }}>
         {children}
       </View>
     </KeyboardAvoidingView>

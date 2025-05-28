@@ -28,9 +28,22 @@ const CardQuiz = ({
                   params: params,
                });
             }}
-            className={
-               "flex-1 mx-1 mb-3 shadow pb-2 border border-gray-200 rounded-xl overflow-hidden"
-            }
+
+            style={{
+               flex: 1,
+               marginHorizontal: 4,
+               marginBottom: 12,
+               paddingBottom: 8,
+               borderWidth: 1,
+               borderColor: "#E5E7EB",
+               borderRadius: 12,
+               overflow: "hidden",
+               shadowColor: "#000",
+               shadowOffset: {
+                  width: 0,
+                  height: 2,
+               },
+            }}
          >
             <View>
                <Image
@@ -39,13 +52,13 @@ const CardQuiz = ({
                         ? quiz_thumb
                         : "https://elearningindustry.com/wp-content/uploads/2021/10/Shareable-Quizzes-In-Online-Training-7-Reasons.jpg"
                   }
-                  className={"w-full h-[100px] rounded-b-[10px]"}
+                  style={{ width: "100%", height: 100, borderBottomWidth: 10 }}
                   alt={quiz_name}
                />
             </View>
             <View className={"p-2"}>
                <Text>{quiz_name.length > 20 ? quiz_name.substring(0, 20) + "..." : quiz_name}</Text>
-               <Text className={"text-[12px]"}>{quiz_description.length > 20 ? quiz_description.substring(0, 20) + "..." : quiz_description}</Text>
+               <Text style={{fontSize: 12}}>{quiz_description.length > 20 ? quiz_description.substring(0, 20) + "..." : quiz_description}</Text>
                <Text>
                   {quiz_status === "published"
                      ? i18n.t("library.public")

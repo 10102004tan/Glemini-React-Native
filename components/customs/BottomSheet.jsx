@@ -33,11 +33,26 @@ const BottomSheet = ({ children, visible = false, onClose = () => { } }) => {
 
    return (
       <Animated.View
-         className="absolute left-0 right-0 bottom-0 p-6 rounded-t-3xl bg-white z-10"
-         style={[animatedStyle]}
+         style={[animatedStyle, {
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 10,
+            padding: 40,
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+            backgroundColor: 'white'
+         }]}
       >
          <TouchableOpacity
-            className="flex items-center justify-end flex-row mb-2"
+            style={{
+               display: 'flex',
+               alignItems: 'center',
+               justifyContent: 'flex-end',
+               flexDirection: 'row',
+               marginBottom: 8
+            }}
             onPress={() => {
                onClose();
             }}

@@ -54,9 +54,15 @@ const ResultReview = () => {
    };
 
    return (
-      <View className='flex-1 bg-slate-50 px-5 pb-4 pt-10'>
-         <View className='flex-col'>
-            <View className='items-end'>
+      <View style={{
+         paddingBottom: 20,
+         flex: 1,
+         backgroundColor: '#f8fafc',
+         paddingHorizontal: 20,
+         paddingTop: 40
+      }}>
+         <View style={{ flexDirection: 'column' }}>
+            <View style={{ alignItems: 'flex-end' }}>
                <Button
                   text={<Icon name='close' size={20} />}
                   onPress={() => {
@@ -68,9 +74,17 @@ const ResultReview = () => {
                   textStyles={'text-sm text-black'}
                />
             </View>
-            <Text className='text-2xl text-slate-800 font-semibold text-center'>{i18n.t('result.review.title')}</Text>
+            <Text
+               style={{
+                  fontSize: 24,
+                  lineHeight: 32,
+                  color: '#1e293b',
+                  fontWeight: 600,
+                  textAlign: 'center'
+               }}>
+               {i18n.t('result.review.title')}</Text>
          </View>
-         <ScrollView className='py-4' showsVerticalScrollIndicator={false}>
+         <ScrollView style={{ paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
             {resultData && resultData.result_questions.map((question, index) => (
                <TouchableOpacity key={index} onPress={() => openModal(index)}>
                   <QuestionResultItem question={question} />
@@ -86,9 +100,22 @@ const ResultReview = () => {
                visible={modalVisible}
                onRequestClose={closeModal}
             >
-               <View className='flex-1 justify-center items-center bg-black/50'>
-                  <View className={`bg-white p-5 rounded-md w-11/12 border-l-8 ${currentQuestion.correct ? ' border-green-500' : ' border-red-500'}`}>
-                     <View className='items-end'>
+               <View style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)' 
+               }}>
+                  <View 
+                     style={{
+                        backgroundColor: '#fff',
+                        padding: 20,
+                        borderRadius: 6,
+                        borderLeftWidth: 8,
+                        borderColor: currentQuestion.correct ? '#22c55e' : '#ef4444',
+                        width: '90%'
+                     }}>
+                     <View style={{ alignItems: 'flex-end' }}>
                         <Button
                            text={<Icon name='close' size={20} />}
                            onPress={closeModal}
@@ -99,13 +126,27 @@ const ResultReview = () => {
                         />
                      </View>
 
-                     <View className='flex-row justify-start mb-4 items-center gap-4'>
-                        <Text className='text-xl font-pregular'>{i18n.t('result.review.indexQuestion')} {selectedIndex + 1}</Text>
-                        <Text className='bg-slate-200 rounded-md px-3 py-1 font-pregular text-slate-500'>{currentQuestion.question_id.question_point} {i18n.t('result.review.point')}</Text>
+                     <View style={{ 
+                        flexDirection: 'row', 
+                        justifyContent: 'flex-start',
+                        marginBottom: 20,
+                        alignItems: 'center',
+                        gap: 16
+                        }}>
+                        <Text style={{ fontSize: 20, lineHeight: 24, fontFamily: 'Poppins-Regular, sans-serif'}}>{i18n.t('result.review.indexQuestion')} {selectedIndex + 1}</Text>
+                        <Text style={{ backgroundColor: '#e2e8f0', borderRadius: 6, paddingHorizontal: 12, paddingVertical: 4, fontFamily: 'Poppins-Regular, sans-serif', color: '#64748b' }}>{currentQuestion.question_id.question_point} {i18n.t('result.review.point')}</Text>
                      </View>
 
-                     <View className='flex'>
-                        <Text className='text-lg font-pregular mb-4 border-b-[1px] border-slate-300'>
+                     <View style={{ display: 'flex' }}>
+                        <Text
+                        style={{ 
+                           fontSize: 18, 
+                           lineHeight: 28,
+                           fontFamily: 'Poppins-Regular, sans-serif',
+                           marginBottom: 16,
+                           borderBottomWidth: 1,
+                           color: '#cbd5e1',
+                           }}>
                            {currentQuestion.question_id.question_excerpt}
                         </Text>
 
@@ -117,9 +158,9 @@ const ResultReview = () => {
                               const isAnswerCorrect = correctTextAnswers.includes(userAnswerText);
 
                               return (
-                                 <View key={ansIndex} className='flex-row items-center mb-2'>
-                                    <View className={`w-3 h-3 rounded-full mr-2`} />
-                                    <Text className={`text-base ${isAnswerCorrect ? 'text-green-500' : 'text-red-500'}`}>
+                                 <View key={ansIndex} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }} >
+                                    <View style={{ width: 12, height: 12, borderRadius: 999, marginRight: 8 }} />
+                                    <Text style={{ fontSize: 16, lineHeight: 24, color: isAnswerCorrect ? '#22c55e' : '#ef4444', }} >
                                        {answer.text}
                                     </Text>
                                  </View>
@@ -149,7 +190,7 @@ const ResultReview = () => {
                                        : 'text-slate-400 font-regular'; // Các câu trả lời khác
 
                               return (
-                                 <View key={ansIndex} className='flex-row items-center mb-2'>
+                                 <View key={ansIndex} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8}}>
                                     <View className={`w-3 h-3 rounded-full mr-2 ${bulletStyle}`} />
                                     <Text className={`text-base ${textStyle}`}>
                                        {answer.text}

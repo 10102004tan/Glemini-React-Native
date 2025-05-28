@@ -26,12 +26,23 @@ const SkeletonItem = () => {
    });
 
    return (
-      <View className='bg-slate-100 mb-4 rounded-lg overflow-hidden mx-[2px]'>
-         <Animated.View className='bg-slate-300 h-32 w-full' style={{ opacity: opacityInterpolate }} />
-         <View className='p-4'>
-            <Animated.View className='bg-slate-300 h-4 mb-2' style={{ opacity: opacityInterpolate }} />
-            <Animated.View className='bg-slate-300 h-4 mb-2 w-3/4' style={{ opacity: opacityInterpolate }} />
-            <Animated.View className='bg-slate-300 h-4 mb-2 w-1/2' style={{ opacity: opacityInterpolate }} />
+      <View style={{
+         backgroundColor: '#f1f5f9',
+         marginBottom: 12,
+         borderRadius: 12,
+         overflow: 'hidden',
+         marginHorizontal: 2
+      }} >
+         <Animated.View style={{
+            opacity: opacityInterpolate,
+            backgroundColor: '#cbd5e1',
+            height: 128,
+            width: '100%'
+         }} />
+         <View style={{ padding: 16 }}>
+            <Animated.View style={{ opacity: opacityInterpolate, backgroundColor: '#cbd5e1', height: 16, marginBottom: 8 }} />
+            <Animated.View style={{ opacity: opacityInterpolate, backgroundColor: '#cbd5e1', height: 16, marginBottom: 8, width: '75%' }} />
+            <Animated.View style={{ opacity: opacityInterpolate, backgroundColor: '#cbd5e1', height: 16, marginBottom: 8, width: '50%' }} />
          </View>
       </View>
    );
@@ -39,9 +50,13 @@ const SkeletonItem = () => {
 
 const SkeletonList = ({ count = 6 }) => {
    return (
-      <View className='p-2'>
+      <View style={{ padding: 8 }}>
          {/* Sử dụng flex row và flex-wrap để tạo khoảng cách đều giữa các ô */}
-         <View className='flex-row flex-wrap justify-between'>
+         <View style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+         }}>
             {Array.from({ length: count }).map((_, index) => (
                <View key={index} style={{ width: itemWidth }}>
                   <SkeletonItem />
