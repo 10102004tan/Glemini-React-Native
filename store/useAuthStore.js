@@ -25,6 +25,7 @@ export const useAuthStore = create((set, get) => ({
             set({ user, isSignedIn: true })
             return { success: true }
         } catch (error) {
+            console.log("/login=>error::::", error)
             let message = 'An error occurred. Please try again.'
             if (error.response) {
                 if (error.response.status === 400) {

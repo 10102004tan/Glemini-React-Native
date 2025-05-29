@@ -154,7 +154,25 @@ const Account = () => {
             paddingHorizontal: 20,
           }}
         >
-          {renderActions()}
+           <TouchableOpacity
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingVertical: 15,
+          borderBottomWidth: 1,
+          borderBottomColor: "#E5E7EB",
+        }}
+      >
+        
+        <Text
+          style={{
+            fontSize: 16,
+            color: "#374151",
+            marginLeft: 10,
+          }}
+        >
+        </Text>
+      </TouchableOpacity>
         </View>
       </View>
     </MainLayout>

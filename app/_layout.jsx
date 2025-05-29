@@ -10,6 +10,7 @@ import Providers from "@/contexts/Providers";
 import * as Notifications from "expo-notifications";
 import { Image,Animated} from "react-native";
 import { useAuthStore } from "@/store/useAuthStore";
+import ModalContainer from "@/components/customs/ModalContainer";
 
 
 // // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -63,6 +64,7 @@ export default function RootLayout() {
         <Slot />
         <Toast />
         <ToastV2 />
+        <ModalContainer/>
       </Providers>
     </GestureHandlerRootView>
   );
