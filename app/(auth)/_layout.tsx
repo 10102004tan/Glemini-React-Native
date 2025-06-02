@@ -1,5 +1,4 @@
-import { Stack } from "expo-router";
-
+import { Stack } from 'expo-router';
 
 export default function AuthLayout() {
   return (
@@ -13,36 +12,36 @@ export default function AuthLayout() {
       <Stack.Screen
         name="login"
         options={{
-          headerTitle:""
+          headerTitle: '',
         }}
-        />
+      />
 
       <Stack.Screen
         name="register"
         options={{
-          headerTitle:""
+          headerTitle: '',
         }}
       />
 
       <Stack.Screen
         name="forgot"
         options={{
-          headerTitle:""
+          headerTitle: '',
         }}
-        />
+      />
       <Stack.Screen
         name="reset"
         options={{
-          headerTitle:""
+          headerTitle: '',
         }}
-        />
+      />
 
       <Stack.Screen
         name="otp"
         options={{
-          headerTitle:""
+          headerTitle: '',
         }}
-        />
+      />
     </Stack>
   );
 }

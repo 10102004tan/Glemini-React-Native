@@ -4,25 +4,25 @@ import Wrapper from '../../../components/customs/Wrapper';
 import { router } from 'expo-router';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
 const ListQuizz = () => {
-	const { quizzes } = useQuizProvider();
-	return (
-		<Wrapper>
-			{quizzes.length > 0 &&
-				quizzes.map((quiz) => (
-					<TouchableOpacity
-						key={quiz._id}
-						onPress={() => {
-							router.push({
-								pathname: '/(app)/(quiz)/overview',
-								params: { id: quiz._id },
-							});
-						}}
-					>
-						<Text>{quiz.quiz_name}</Text>
-					</TouchableOpacity>
-				))}
-		</Wrapper>
-	);
+  const { quizzes } = useQuizProvider();
+  return (
+    <Wrapper>
+      {quizzes.length > 0 &&
+        quizzes.map((quiz) => (
+          <TouchableOpacity
+            key={quiz._id}
+            onPress={() => {
+              router.push({
+                pathname: '/(app)/(quiz)/overview',
+                params: { id: quiz._id },
+              });
+            }}
+          >
+            <Text>{quiz.quiz_name}</Text>
+          </TouchableOpacity>
+        ))}
+    </Wrapper>
+  );
 };
 
 export default ListQuizz;

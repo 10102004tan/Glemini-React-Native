@@ -1,760 +1,820 @@
-import MainLayout from "@/components/layouts/MainLayout"
-import { Images } from "@/constants";
-import { useAuthContext } from "@/contexts/AuthContext";
-import { useResultProvider } from "@/contexts/ResultProvider";
-import { Link, useFocusEffect, useRouter } from "expo-router";
-import LottieView from "lottie-react-native";
-import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, Dimensions, FlatList, Image, Alert, ScrollView, RefreshControl } from "react-native";
+import MainLayout from '@/components/layouts/MainLayout';
+import { Images } from '@/constants';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { useResultProvider } from '@/contexts/ResultProvider';
+import { Link, useFocusEffect, useRouter } from 'expo-router';
+import LottieView from 'lottie-react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  Dimensions,
+  FlatList,
+  Image,
+  Alert,
+  ScrollView,
+  RefreshControl,
+} from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
-import Button from "@/components/customs/Button";
-import Field from "@/components/customs/Field";
-import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
-import { useRoomProvider } from "@/contexts/RoomProvider";
-import socket from "@/libs/socket";
-import { Pressable } from "react-native";
-import moment from "moment";
-import Toast from "react-native-toast-message-custom";
-import Lottie from "@/components/loadings/Lottie";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Button from '@/components/customs/Button';
+import Field from '@/components/customs/Field';
+import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
+import { useRoomProvider } from '@/contexts/RoomProvider';
+import socket from '@/libs/socket';
+import { Pressable } from 'react-native';
+import moment from 'moment';
+import Toast from 'react-native-toast-message-custom';
+import Lottie from '@/components/loadings/Lottie';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useCameraPermissions } from "expo-camera";
-import { useAppProvider } from "@/contexts/AppProvider";
+import { useCameraPermissions } from 'expo-camera';
+import { useAppProvider } from '@/contexts/AppProvider';
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 16;
-import SkeletonList from "@/components/loadings/SkeletonListActivity";
-import { useAuthStore } from "@/store/useAuthStore";
-import api from "@/libs/axios";
+import SkeletonList from '@/components/loadings/SkeletonListActivity';
+import { useAuthStore } from '@/store/useAuthStore';
+import api from '@/libs/axios';
 
 const ActivityStudent = () => {
-    const { i18n } = useAppProvider()
-    const { results, fetchResultsForStudent, fetchResetResultOfQuiz } = useResultProvider();
-    const [roomCode, setRoomCode] = useState(null);
-    const [roomTemp, setRoomTemp] = useState(null);
-    // const { userData } = useAuthContext();
-    const { user } = useAuthStore();
-    const { setCurrentRoom } = useRoomProvider();
-    const [permission, requestPermission] = useCameraPermissions();
-    const isPermissionGranted = Boolean(permission?.granted);
-    const router = useRouter();
-    const [index, setIndex] = useState(0);
-    const [refreshing, setRefreshing] = useState(false);
-    const [isFirstLoad, setIsFirstLoad] = useState(null);
-    const [routes] = useState([
-        { key: 'doing', title: i18n.t("activity.textDoing") },
-        { key: 'completed', title: i18n.t("activity.textCompleted") },
-    ]);
+  const { i18n } = useAppProvider();
+  const { results, fetchResultsForStudent, fetchResetResultOfQuiz } = useResultProvider();
+  const [roomCode, setRoomCode] = useState(null);
+  const [roomTemp, setRoomTemp] = useState(null);
+  // const { userData } = useAuthContext();
+  const { user } = useAuthStore();
+  const { setCurrentRoom } = useRoomProvider();
+  const [permission, requestPermission] = useCameraPermissions();
+  const isPermissionGranted = Boolean(permission?.granted);
+  const router = useRouter();
+  const [index, setIndex] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isFirstLoad, setIsFirstLoad] = useState(null);
+  const [routes] = useState([
+    { key: 'doing', title: i18n.t('activity.textDoing') },
+    { key: 'completed', title: i18n.t('activity.textCompleted') },
+  ]);
 
-    useEffect(() => {
-        if (!isPermissionGranted) {
-            requestPermission();
-        }
-        const loadData = async () => {
-            setRefreshing(true)
-            try {
-                await fetchResultsForStudent();
-            } catch (error) {
-                // console.error('Error fetching classroom:', error);
-                console.log("[ActivityStudent] Error fetching results:", error);
-            } finally {
-                setRefreshing(false)
-            }
-        }
-        loadData()
-    }, [])
-
-
-    useEffect(() => {
-        const checkRoom = async () => {
-            const body = {
-                room_code: roomTemp,
-            }
-            const res = await api.post(`${API_VERSION.V1}${END_POINTS.ROOM_DETAIL}`, body);
-
-            const notAccepted = ['completed', 'deleted'];
-
-            const data = res.data;
-            if (data.statusCode === 200) {
-                if (notAccepted.includes(data.metadata.status)) {
-                    Alert.alert('Thông báo', 'Không thể tham gia vào phòng chơi lúc này !!!');
-                } else if (data.metadata.status === 'doing') {
-                    const body = {
-                        room_code: roomTemp,
-                        user_id: user.user_id
-                    }
-                    const res = await api.post(`${API_VERSION.V1}${END_POINTS.ROOM_CHECK_USER}`, body);
-
-                    const dt = res.data;
-                    if (dt.statusCode === 200 && dt.metadata) {
-                        setCurrentRoom(data.metadata._id);
-                        socket.emit('joinRoom', { roomCode, user });
-                        // Người dùng đang chơi bị out, khi join lại chuyển thẳng tới màn hình chơi
-
-                        router.replace({
-                            pathname: '/(play)/realtime',
-                            params:
-                            {
-                                roomCode: data.metadata.room_code, quizId: data.metadata.quiz_id, roomId: data.metadata._id, createdUserId: data.metadata.user_created_id
-                            }
-                        });
-                    } else {
-                        Alert.alert('Thông báo', 'Bạn đã hoàn thành phòng chơi này !!!');
-                    }
-                } else {
-                    try {
-                        // Xóa kết quả cũ nếu có
-                        // const responseDeleteOldResult = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_RESET}`, {
-                        //     method: 'POST',
-                        //     headers: {
-                        //         'Content-Type': 'application/json',
-                        //         'x-client-id': userData._id,
-                        //         authorization: userData.accessToken,
-                        //     },
-                        //     body: JSON.stringify({
-                        //         room_id: data.metadata._id,
-                        //         user_id: userData._id,
-                        //     }),
-                        // });
-                        const body = {
-                            room_id: data.metadata._id,
-                            user_id: user.user_id,
-                        }
-                        await api.post(`${API_VERSION.V1}${END_POINTS.RESULT_RESET}`, body);
-                    } catch (error) {
-                        console.log("[ActivityStudent] Error resetting result:", error);
-                    } finally {
-                        // const checkAdded = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_ADD_USER}`, {
-                        //     method: 'POST',
-                        //     headers: {
-                        //         'Content-Type': 'application/json',
-                        //         'x-client-id': userData._id,
-                        //         authorization: userData.accessToken,
-                        //     },
-                        //     body: JSON.stringify({
-                        //         room_code: data.metadata.room_code,
-                        //         user_id: userData._id,
-                        //     }),
-                        // });
-                        const body = {
-                            room_code: data.metadata.room_code,
-                            user_id: user.user_id,
-                        }
-                        const checkAdded = await api.post(`${API_VERSION.V1}${END_POINTS.ROOM_ADD_USER}`, body);
-                        const checkData = checkAdded.data;
-                        if (checkData.statusCode === 200) {
-                            setCurrentRoom(data.metadata._id);
-                            socket.emit('joinRoom', { roomCode, user });
-                            router.replace({
-                                pathname: "/(protected)/(teacher)/teacher_room_wait",
-                                params: { roomCode: roomTemp }
-                            });
-                        } else {
-                            if (checkData.message === "No room found") {
-                                Alert.alert('Thông báo', 'Phòng chơi không tồn tại !!!');
-                            } else if (checkData.message === "Room is full") {
-                                Alert.alert('Thông báo', 'Số lượng người chơi đã đầy không thể tham gia !!!');
-                            } else if (checkData.message === "User already joined room") {
-                                Alert.alert('Thông báo', 'Bạn đã tham gia vào phòng chơi này !!!');
-                            }
-                        }
-                    }
-                }
-                setRoomTemp(null);
-            } else {
-                Alert.alert('Thông báo', 'Mã phòng không tồn tại');
-            }
-        }
-
-        if (roomTemp) {
-            checkRoom()
-        }
-    }, [roomTemp])
-
-    const fetchResults = async () => {
-        try {
-            setRefreshing(true);
-            await fetchResultsForStudent();
-        } catch (error) {
-            setRefreshing(false);
-        } finally {
-            setRefreshing(false);
-        }
+  useEffect(() => {
+    if (!isPermissionGranted) {
+      requestPermission();
+    }
+    const loadData = async () => {
+      setRefreshing(true);
+      try {
+        await fetchResultsForStudent();
+      } catch (error) {
+        // console.error('Error fetching classroom:', error);
+        console.log('[ActivityStudent] Error fetching results:', error);
+      } finally {
+        setRefreshing(false);
+      }
     };
-    return (
-        <MainLayout>
-            <View 
-            //className="flex-1 bg-white pb-20"
-            style={{
-                flex: 1,
-                backgroundColor: '#FFF', // bg-white
-                paddingBottom: 80, // pb-20
-            }}
-            >
-                <View
-                style={{
-                    //className="p-4"
-                    padding: 16, // p-4
-                }}
-                >
-                    <Field placeholder={i18n.t('activity.textRoomCODE')} wrapperStyles="mb-3" value={roomCode} onChange={(text) => {
-                        setRoomCode(text);
-                    }} />
+    loadData();
+  }, []);
 
-                    <Button text={i18n.t('activity.btnJoin')} otherStyles='p-4 justify-center' onPress={() => {
-                        setRoomTemp(roomCode);
-                    }} />
+  useEffect(() => {
+    const checkRoom = async () => {
+      const body = {
+        room_code: roomTemp,
+      };
+      const res = await api.post(`${API_VERSION.V1}${END_POINTS.ROOM_DETAIL}`, body);
 
-                    {
-                        isPermissionGranted && <Button text={i18n.t('activity.btnScan')}
-                            otherStyles="p-4 mt-3 justify-center"
-                            icon={<Ionicons name="qr-code-outline" size={20} color="white" />
-                        }
-                            onPress={() => {
-                                router.push({
-                                    //(app)/(room)/scanner
-                                    pathname: '/(protected)/(room)/scanner',
-                                    params: { type: 'join' }
-                                })
-                            }}
-                        />
-                    }
+      const notAccepted = ['completed', 'deleted'];
 
-                </View>
+      const data = res.data;
+      if (data.statusCode === 200) {
+        if (notAccepted.includes(data.metadata.status)) {
+          Alert.alert('Thông báo', 'Không thể tham gia vào phòng chơi lúc này !!!');
+        } else if (data.metadata.status === 'doing') {
+          const body = {
+            room_code: roomTemp,
+            user_id: user.user_id,
+          };
+          const res = await api.post(`${API_VERSION.V1}${END_POINTS.ROOM_CHECK_USER}`, body);
 
-                <TabView
-                    navigationState={{ index, routes }}
-                    renderScene={SceneMap({
-                        doing: () => <DoingResults results={results.doing} onRefresh={fetchResults} i18n={i18n}
-                            refreshing={refreshing} />,
-                        completed: () => <CompletedResults results={results.completed} onRefresh={fetchResults} i18n={i18n} fetchResetResultOfQuiz={fetchResetResultOfQuiz}
-                            refreshing={refreshing} />,
-                    })}
-                    onIndexChange={setIndex}
-                    initialLayout={{ width: Dimensions.get('window').width }}
-                    renderTabBar={(props) => (
-                        <TabBar
-                            {...props}
-                            // className='bg-[#813b3b] text-white'
-                            style={{ backgroundColor: '#813b3b'}}
-                            indicatorStyle={{ backgroundColor: 'white' }}
-                        />
-                    )}
-                />
-            </View>
-        </MainLayout>
-    )
-}
+          const dt = res.data;
+          if (dt.statusCode === 200 && dt.metadata) {
+            setCurrentRoom(data.metadata._id);
+            socket.emit('joinRoom', { roomCode, user });
+            // Người dùng đang chơi bị out, khi join lại chuyển thẳng tới màn hình chơi
 
-
-const ResultCompletedItem = ({ result, i18n }: {
-    result: any,
-    i18n: any
-}) => {
-    // const correctCount = result.result_questions.filter(q => q.correct).length;
-    const correctCount = result.result_questions.filter((q:any) => q.correct === true).length;
-    const totalQuestions = result.result_questions?.length || 0;
-    const accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
-    return (
-        // <View style={{ width: itemWidth }} className="m-2 bg-slate-200/50 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
-        //     <Image
-        //         source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
-        //         className="w-full h-28"
-        //         style={{ resizeMode: 'cover' }}
-        //     />
-        //     <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
-        //         <FontAwesome6 name="chalkboard-user" color='white' />
-        //         <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? i18n.t('activity.exercise') : result.room_id ? i18n.t('activity.room') : i18n.t('activity.publish')}</Text>
-        //     </View>
-        //     <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
-        //         <Text className="text-sm text-slate-50 ml-1">{result?.quiz_id?.questionCount} Qs</Text>
-        //     </View>
-        //     <View className='absolute top-2 right-2'>
-        //         {totalQuestions < result.quiz_id?.questionCount ? <MaterialCommunityIcons name="clock-alert" size={25} color="red" /> : ''}
-        //     </View>
-        //     <View className='px-4 py-2'>
-        //         <Text className="text-sm font-pmedium">
-        //             {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
-        //         </Text>
-        //         <Text className="text-sm font-light">
-        //             {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
-        //         </Text>
-        //         <Text className="text-xs font-light">
-        //             {i18n.t('activity.textCreated')} {result.quiz_id?.user_id?.user_fullname}
-        //         </Text>
-
-        //         <Text className={`${accuracy < 40 ? 'bg-red-600' : accuracy < 70 ? 'bg-yellow-400' : 'bg-green-500'} text-sm mt-4 font-light text-slate-50 rounded-full px-2`}>
-        //             {accuracy.toFixed(0)}% độ chính xác
-        //         </Text>
-        //     </View>
-        // </View>
-        <View
-            style={{
-                width: itemWidth,
-                margin: 8, // m-2
-                backgroundColor: 'rgba(226,232,240,0.5)', // bg-slate-200/50
-                borderRadius: 12, // rounded-lg
-                borderColor: '#E5E7EB', // border-slate-200
-                borderBottomWidth: 6, // border-b-[6px]
-                overflow: 'hidden',
-                position: 'relative',
-            }}
-        >
-            <Image
-                source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
-                style={{
-                    width: '100%',
-                    height: 112, // h-28
-                    resizeMode: 'cover',
-                }}
-            />
-            <View
-                style={{
-                    backgroundColor: 'rgba(0,0,0,0.5)', // bg-black/50
-                    paddingHorizontal: 4, // px-1
-                    borderRadius: 8, // rounded-lg
-                    position: 'absolute',
-                    top: 8, // top-2
-                    left: 8, // left-2
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                }}
-            >
-                <FontAwesome6 name="chalkboard-user" color="white" />
-                <Text
-                    style={{
-                        fontSize: 14, // text-sm
-                        color: '#F8FAFC', // text-slate-50
-                        marginLeft: 4, // ml-1
-                        fontWeight: '500',
-                    }}
-                >
-                    {result.exercise_id?._id
-                        ? i18n.t('activity.exercise')
-                        : result.room_id
-                            ? i18n.t('activity.room')
-                            : i18n.t('activity.publish')}
-                </Text>
-            </View>
-            <View
-                style={{
-                    backgroundColor: 'rgba(148,163,184,0.8)', // bg-slate-400/80
-                    paddingHorizontal: 4, // px-1
-                    borderRadius: 6, // rounded-md
-                    position: 'absolute',
-                    top: 80, // top-20
-                    right: 8, // right-2
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                }}
-            >
-                <Text
-                    style={{
-                        fontSize: 14, // text-sm
-                        color: '#F8FAFC', // text-slate-50
-                        marginLeft: 4, // ml-1
-                        fontWeight: '500',
-                    }}
-                >
-                    {result?.quiz_id?.questionCount} Qs
-                </Text>
-            </View>
-            <View
-                style={{
-                    position: 'absolute',
-                    top: 8, // top-2
-                    right: 8, // right-2
-                }}
-            >
-                {totalQuestions < result.quiz_id?.questionCount ? (
-                    <MaterialCommunityIcons name="clock-alert" size={25} color="red" />
-                ) : null}
-            </View>
-            <View
-                style={{
-                    paddingHorizontal: 16, // px-4
-                    paddingVertical: 8, // py-2
-                }}
-            >
-                <Text
-                    style={{
-                        fontSize: 14, // text-sm
-                        fontWeight: '500', // font-pmedium
-                        color: '#0F172A',
-                    }}
-                >
-                    {(result.exercise_id?.name?.length > 20
-                        ? result.exercise_id?.name.substring(0, 20) + '...'
-                        : result.exercise_id?.name) || result.room_id?.room_code}
-                </Text>
-                <Text
-                    style={{
-                        fontSize: 14, // text-sm
-                        fontWeight: '300', // font-light
-                        color: '#334155',
-                    }}
-                >
-                    {(result.quiz_id?.quiz_name?.length > 20
-                        ? result.quiz_id?.quiz_name.substring(0, 20) + '...'
-                        : result.quiz_id?.quiz_name)}
-                </Text>
-                <Text
-                    style={{
-                        fontSize: 12, // text-xs
-                        fontWeight: '300', // font-light
-                        color: '#64748B',
-                    }}
-                >
-                    {i18n.t('activity.textCreated')} {result.quiz_id?.user_id?.user_fullname}
-                </Text>
-                <Text
-                    style={{
-                        fontSize: 14, // text-sm
-                        marginTop: 16, // mt-4
-                        fontWeight: '300', // font-light
-                        color: '#F8FAFC', // text-slate-50
-                        borderRadius: 9999, // rounded-full
-                        paddingHorizontal: 8, // px-2
-                        alignSelf: 'flex-start',
-                        backgroundColor:
-                            accuracy < 40
-                                ? '#dc2626' // bg-red-600
-                                : accuracy < 70
-                                    ? '#facc15' // bg-yellow-400
-                                    : '#22c55e', // bg-green-500
-                    }}
-                >
-                    {accuracy.toFixed(0)}% độ chính xác
-                </Text>
-            </View>
-        </View>
-    );
-};
-
-const CompletedResults = ({ results, refreshing, onRefresh, i18n, fetchResetResultOfQuiz }: {
-    results: any[],
-    refreshing: boolean,
-    onRefresh: () => void,
-    i18n: any,
-    fetchResetResultOfQuiz: (resultId: string) => Promise<void>
-}) => {
-    const router = useRouter();
-
-    if (refreshing || !results) {
-        return <SkeletonList count={6} />;
-    }
-
-    if (results.length === 0) {
-        return (
-            <ScrollView
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                }
-            >
-                <View
-                    style={{
-                        height: 400,
-                    }}
-                >
-                    <Lottie
-                        source={require('@/assets/jsons/empty.json')}
-                        width={150}
-                        height={150}
-                        text={i18n.t('activity.emptyActivity')}
-                    />
-                </View>
-            </ScrollView>
-        )
-    }
-    return (
-        <FlatList
-            showsVerticalScrollIndicator={false}
-            data={results}
-            renderItem={({ item }) => (
-                <Pressable onPress={() => {
-                    if (item.type === 'publish' && !item.room_id && !item.exercise_id) {
-                        Alert.alert(
-                            i18n.t('activity.titleQuestionReplayQUiz'),
-                            i18n.t('activity.textQuestionReplayQuiz'),
-                            [
-                                { text: i18n.t('activity.btnCancel'), style: "cancel" },
-                                {
-                                    text: i18n.t('activity.btnReadResult'), onPress: async () => {
-                                        router.push({
-                                            pathname: '(report)/overview_report',
-                                            params: { resultId: item._id },
-                                        });
-                                    }
-                                },
-                                {
-                                    text: i18n.t('activity.btnContinute'), onPress: async () => {
-                                        await fetchResetResultOfQuiz(item._id)
-                                        router.push({
-                                            pathname: '(play)/single',
-                                            params: { quizId: item.quiz_id._id, type: 'publish' }
-                                        });
-                                    }
-                                },
-                            ]
-                        );
-                    } else {
-                        router.push({
-                            pathname: '(report)/overview_report',
-                            params: { resultId: item._id },
-                        });
-                    }
-                }}>
-                    <ResultCompletedItem result={item} i18n={i18n} />
-                </Pressable>
-            )}
-            keyExtractor={item => item._id}
-            numColumns={2}
-            columnWrapperStyle="flex-row justify-between"
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-        />
-    );
-};
-
-const ResultDoingItem = ({ result, i18n }: {
-    result: any,
-    i18n: any
-}) => {
-    return <View
-        style={{
-            //m-2 bg-slate-200/70 rounded-lg border-slate-200 border-b-[6px] overflow-hidden
-            margin: 8, // m-2
-            backgroundColor: 'rgba(229, 231, 235, 0.7)', // bg-slate-200/70
-            borderRadius: 8, // rounded-lg
-            borderBottomWidth: 6, // border-b-[6px]
-            borderColor: '#E5E7EB', // border-slate-200
-            overflow: 'hidden', // overflow-hidden
-            width: itemWidth, // width: itemWidth
-            position: 'relative', // position relative for absolute children
-
-        }}
-    >
-        <Image
-            source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
-            style={{
-                //w-full h-28
-                width: '100%', // w-full
-                height: 112, // h-28
-                // aspectRatio: 16 / 9, // Optional: maintain aspect ratio
-                resizeMode: 'cover'
-            }}
-        // style={{ resizeMode: 'cover' }}
-        />
-
-        <View
-            style={{
-                //bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center
-                backgroundColor: 'rgba(0, 0, 0, 0.5)', // bg-black/50
-                paddingHorizontal: 4, // px-1
-                borderRadius: 8, // rounded-lg
-                position: 'absolute',
-                top: 8, // top-2
-                left: 8, // left-2
-                flexDirection: 'row',
-                alignItems: 'center',
-            }}
-        >
-            <FontAwesome6 name="chalkboard-user" color='white' />
-            <Text
-                style={{
-                    //text-sm text-slate-50 ml-1
-                    fontSize: 14,
-                    fontWeight: '500',
-                    color: '#fff', // text-slate-50
-                    marginLeft: 4, // ml-1
-                }}
-            >{result.exercise_id?._id ? i18n.t('activity.exercise') : result.room_id ? i18n.t('activity.room') : i18n.t('activity.publish')}</Text>
-        </View>
-        <View
-            style={{
-                //bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center
-                backgroundColor: 'rgba(107, 114, 128, 0.8)', // bg-slate-400/80
-                paddingHorizontal: 4, // px-1
-                borderRadius: 4, // rounded-md
-                position: 'absolute',
-                top: 80, // top-20
-                right: 8, // right-2
-                flexDirection: 'row',
-                alignItems: 'center',
-            }}
-        >
-            <Text
-                style={{
-                    //text-sm text-slate-50 ml-1
-                    fontSize: 14,
-                    fontWeight: '500',
-                    color: '#fff', // text-slate-50
-                    marginLeft: 4, // ml-1
-                }}
-            >{result.quiz_id?.questionCount} Qs</Text>
-        </View>
-        <View
-            style={{
-                //px-4 py-2
-                paddingHorizontal: 16,
-                paddingVertical: 8,
-            }}
-        >
-            <Text
-                style={{
-                    //text-base font-pmedium
-                    fontSize: 16,
-                    fontWeight: '500',
-                    color: '#fff', // text-slate-50
-                }}
-            >
-                {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
-            </Text>
-            <Text
-                style={{
-                    //text-base font-light
-                    fontSize: 14,
-                    fontWeight: '300',
-                    color: '#fff', // text-slate-50
-                }}
-            >
-                {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
-            </Text>
-            <Text
-                style={{
-                    //text-xs font-light
-                    fontSize: 12,
-                    fontWeight: '300',
-                    color: '#fff', // text-slate-50
-                }}
-            >
-                {result.type !== 'publish' ? `hạn: ${moment(result.exercise_id?.date_end).format('DD/MM/YYYY')}` : 'Không thời hạn'}
-            </Text>
-
-            <Text
-                style={{
-                    //text-sm mt-4 font-light text-center text-slate-50 bg-violet-300 rounded-full px-2
-                    textAlign: 'center',
-                    marginTop: 4,
-                    fontSize: 12,
-                    fontWeight: '300',
-                    color: '#fff',
-                    backgroundColor: '#8B5CF6', // violet-300
-                    borderRadius: 9999, // full rounded
-                    paddingHorizontal: 8, // px-2
-                    paddingVertical: 4, // py-1
-                }}
-            >
-                {result.result_questions?.length}/{result.quiz_id?.questionCount} câu hỏi
-            </Text>
-        </View>
-    </View>
-}
-
-const DoingResults = ({ results, refreshing, onRefresh, i18n }: {
-    results: any[],
-    refreshing: boolean,
-    onRefresh: () => void,
-    i18n: any
-}) => {
-    // const { userData } = useAuthContext();
-    const { user } = useAuthStore();
-    const router = useRouter();
-    const { completed } = useResultProvider()
-
-    if (refreshing || !results) {
-        return <SkeletonList count={6} />;
-    }
-
-    if (results.length === 0) {
-        return (<ScrollView
-            refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            router.replace({
+              pathname: '/(play)/realtime',
+              params: {
+                roomCode: data.metadata.room_code,
+                quizId: data.metadata.quiz_id,
+                roomId: data.metadata._id,
+                createdUserId: data.metadata.user_created_id,
+              },
+            });
+          } else {
+            Alert.alert('Thông báo', 'Bạn đã hoàn thành phòng chơi này !!!');
+          }
+        } else {
+          try {
+            // Xóa kết quả cũ nếu có
+            // const responseDeleteOldResult = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_RESET}`, {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         'x-client-id': userData._id,
+            //         authorization: userData.accessToken,
+            //     },
+            //     body: JSON.stringify({
+            //         room_id: data.metadata._id,
+            //         user_id: userData._id,
+            //     }),
+            // });
+            const body = {
+              room_id: data.metadata._id,
+              user_id: user.user_id,
+            };
+            await api.post(`${API_VERSION.V1}${END_POINTS.RESULT_RESET}`, body);
+          } catch (error) {
+            console.log('[ActivityStudent] Error resetting result:', error);
+          } finally {
+            // const checkAdded = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_ADD_USER}`, {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         'x-client-id': userData._id,
+            //         authorization: userData.accessToken,
+            //     },
+            //     body: JSON.stringify({
+            //         room_code: data.metadata.room_code,
+            //         user_id: userData._id,
+            //     }),
+            // });
+            const body = {
+              room_code: data.metadata.room_code,
+              user_id: user.user_id,
+            };
+            const checkAdded = await api.post(`${API_VERSION.V1}${END_POINTS.ROOM_ADD_USER}`, body);
+            const checkData = checkAdded.data;
+            if (checkData.statusCode === 200) {
+              setCurrentRoom(data.metadata._id);
+              socket.emit('joinRoom', { roomCode, user });
+              router.replace({
+                pathname: '/(protected)/(teacher)/teacher_room_wait',
+                params: { roomCode: roomTemp },
+              });
+            } else {
+              if (checkData.message === 'No room found') {
+                Alert.alert('Thông báo', 'Phòng chơi không tồn tại !!!');
+              } else if (checkData.message === 'Room is full') {
+                Alert.alert('Thông báo', 'Số lượng người chơi đã đầy không thể tham gia !!!');
+              } else if (checkData.message === 'User already joined room') {
+                Alert.alert('Thông báo', 'Bạn đã tham gia vào phòng chơi này !!!');
+              }
             }
-        >
-            <View
-                style={{
-                    height: 400,
-                }}
-            >
-                <Lottie
-                    source={require('@/assets/jsons/empty.json')}
-                    width={150}
-                    height={150}
-                    text={i18n.t('activity.emptyActivity')}
-                />
-            </View>
-        </ScrollView>
-        )
+          }
+        }
+        setRoomTemp(null);
+      } else {
+        Alert.alert('Thông báo', 'Mã phòng không tồn tại');
+      }
+    };
+
+    if (roomTemp) {
+      checkRoom();
     }
+  }, [roomTemp]);
 
-    return (
-        <FlatList
-            showsVerticalScrollIndicator={false}
-            data={results}
-            renderItem={({ item }) => (
-                <Pressable onPress={() => {
-                    Alert.alert(
-                        i18n.t('activity.titleQuestionContinuteQUiz'),
-                        i18n.t('activity.textQuestionContinuteQuiz'),
-                        [
-                            { text: i18n.t('activity.btnCancel'), style: "cancel" },
-                            {
-                                text: i18n.t('activity.btnContinute'), onPress: async () => {
+  const fetchResults = async () => {
+    try {
+      setRefreshing(true);
+      await fetchResultsForStudent();
+    } catch (error) {
+      setRefreshing(false);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+  return (
+    <MainLayout>
+      <View
+        //className="flex-1 bg-white pb-20"
+        style={{
+          flex: 1,
+          backgroundColor: '#FFF', // bg-white
+          paddingBottom: 80, // pb-20
+        }}
+      >
+        <View
+          style={{
+            //className="p-4"
+            padding: 16, // p-4
+          }}
+        >
+          <Field
+            placeholder={i18n.t('activity.textRoomCODE')}
+            wrapperStyles="mb-3"
+            value={roomCode}
+            onChange={(text) => {
+              setRoomCode(text);
+            }}
+          />
 
-                                    if (item.type === 'publish') {
-                                        router.push({
-                                            //(play)/single
-                                            pathname: '/(protected)/(play)/single',
-                                            params: { quizId: item.quiz_id?._id, type: item.type }
-                                        })
-                                    } else if (item.type === 'exercise') {
-                                        const now = moment();
-                                        const deadline = moment(item.exercise_id?.date_end);
-                                        if (now.isBefore(deadline)) {
-                                            router.push({
-                                                //(play)/single
-                                                pathname: '/(protected)/(play)/single',
-                                                params: { quizId: item.quiz_id?._id, exerciseId: item.exercise_id?._id, type: item.type }
-                                            })
-                                        } else {
-                                            Toast.show({
-                                                type: 'info',
-                                                text1: i18n.t('activity.notiDL'),
-                                                visibilityTime: 2000
-                                            })
+          <Button
+            text={i18n.t('activity.btnJoin')}
+            otherStyles="p-4 justify-center"
+            onPress={() => {
+              setRoomTemp(roomCode);
+            }}
+          />
 
-                                            const completedResult = await completed(item.exercise_id?._id, item.quiz_id?._id);
-                                            router.push({
-                                                //(report)/overview_report
-                                                pathname: '/(protected)/(report)/overview_report',
-                                                params: { resultId: completedResult._id },
-                                            });
-                                        }
-                                    } else if (item.type === 'room') {
-                                        socket.emit('joinRoom', { roomCode: item.room_id.room_code, user });
-                                        router.push({
-                                            //(play)/realtime
-                                            pathname: '/(protected)/(play)/realtime',
-                                            params: { roomCode: item.room_id.room_code, quizId: item.quiz_id._id, roomId: item.room_id._id, createdUserId: item.room_id.user_created_id }
-                                        })
+          {isPermissionGranted && (
+            <Button
+              text={i18n.t('activity.btnScan')}
+              otherStyles="p-4 mt-3 justify-center"
+              icon={<Ionicons name="qr-code-outline" size={20} color="white" />}
+              onPress={() => {
+                router.push({
+                  //(app)/(room)/scanner
+                  pathname: '/(protected)/(room)/scanner',
+                  params: { type: 'join' },
+                });
+              }}
+            />
+          )}
+        </View>
 
-                                    }
-                                }
-                            },
-                        ]
-                    );
-                }}>
-                    <ResultDoingItem result={item} i18n={i18n} />
-                </Pressable>
-            )}
-            keyExtractor={item => item._id}
-            numColumns={2}
-            columnWrapperStyle={{ flexDirection: 'row', justifyContent: 'space-between' }}
-            refreshing={refreshing}
-            onRefresh={onRefresh}
+        <TabView
+          navigationState={{ index, routes }}
+          renderScene={SceneMap({
+            doing: () => (
+              <DoingResults
+                results={results.doing}
+                onRefresh={fetchResults}
+                i18n={i18n}
+                refreshing={refreshing}
+              />
+            ),
+            completed: () => (
+              <CompletedResults
+                results={results.completed}
+                onRefresh={fetchResults}
+                i18n={i18n}
+                fetchResetResultOfQuiz={fetchResetResultOfQuiz}
+                refreshing={refreshing}
+              />
+            ),
+          })}
+          onIndexChange={setIndex}
+          initialLayout={{ width: Dimensions.get('window').width }}
+          renderTabBar={(props) => (
+            <TabBar
+              {...props}
+              // className='bg-[#813b3b] text-white'
+              style={{ backgroundColor: '#813b3b' }}
+              indicatorStyle={{ backgroundColor: 'white' }}
+            />
+          )}
         />
-    );
+      </View>
+    </MainLayout>
+  );
 };
 
-export default ActivityStudent
+const ResultCompletedItem = ({ result, i18n }: { result: any; i18n: any }) => {
+  // const correctCount = result.result_questions.filter(q => q.correct).length;
+  const correctCount = result.result_questions.filter((q: any) => q.correct === true).length;
+  const totalQuestions = result.result_questions?.length || 0;
+  const accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
+  return (
+    // <View style={{ width: itemWidth }} className="m-2 bg-slate-200/50 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
+    //     <Image
+    //         source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
+    //         className="w-full h-28"
+    //         style={{ resizeMode: 'cover' }}
+    //     />
+    //     <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
+    //         <FontAwesome6 name="chalkboard-user" color='white' />
+    //         <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? i18n.t('activity.exercise') : result.room_id ? i18n.t('activity.room') : i18n.t('activity.publish')}</Text>
+    //     </View>
+    //     <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
+    //         <Text className="text-sm text-slate-50 ml-1">{result?.quiz_id?.questionCount} Qs</Text>
+    //     </View>
+    //     <View className='absolute top-2 right-2'>
+    //         {totalQuestions < result.quiz_id?.questionCount ? <MaterialCommunityIcons name="clock-alert" size={25} color="red" /> : ''}
+    //     </View>
+    //     <View className='px-4 py-2'>
+    //         <Text className="text-sm font-pmedium">
+    //             {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
+    //         </Text>
+    //         <Text className="text-sm font-light">
+    //             {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
+    //         </Text>
+    //         <Text className="text-xs font-light">
+    //             {i18n.t('activity.textCreated')} {result.quiz_id?.user_id?.user_fullname}
+    //         </Text>
+
+    //         <Text className={`${accuracy < 40 ? 'bg-red-600' : accuracy < 70 ? 'bg-yellow-400' : 'bg-green-500'} text-sm mt-4 font-light text-slate-50 rounded-full px-2`}>
+    //             {accuracy.toFixed(0)}% độ chính xác
+    //         </Text>
+    //     </View>
+    // </View>
+    <View
+      style={{
+        width: itemWidth,
+        margin: 8, // m-2
+        backgroundColor: 'rgba(226,232,240,0.5)', // bg-slate-200/50
+        borderRadius: 12, // rounded-lg
+        borderColor: '#E5E7EB', // border-slate-200
+        borderBottomWidth: 6, // border-b-[6px]
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
+      <Image
+        source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
+        style={{
+          width: '100%',
+          height: 112, // h-28
+          resizeMode: 'cover',
+        }}
+      />
+      <View
+        style={{
+          backgroundColor: 'rgba(0,0,0,0.5)', // bg-black/50
+          paddingHorizontal: 4, // px-1
+          borderRadius: 8, // rounded-lg
+          position: 'absolute',
+          top: 8, // top-2
+          left: 8, // left-2
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
+        <FontAwesome6 name="chalkboard-user" color="white" />
+        <Text
+          style={{
+            fontSize: 14, // text-sm
+            color: '#F8FAFC', // text-slate-50
+            marginLeft: 4, // ml-1
+            fontWeight: '500',
+          }}
+        >
+          {result.exercise_id?._id
+            ? i18n.t('activity.exercise')
+            : result.room_id
+              ? i18n.t('activity.room')
+              : i18n.t('activity.publish')}
+        </Text>
+      </View>
+      <View
+        style={{
+          backgroundColor: 'rgba(148,163,184,0.8)', // bg-slate-400/80
+          paddingHorizontal: 4, // px-1
+          borderRadius: 6, // rounded-md
+          position: 'absolute',
+          top: 80, // top-20
+          right: 8, // right-2
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 14, // text-sm
+            color: '#F8FAFC', // text-slate-50
+            marginLeft: 4, // ml-1
+            fontWeight: '500',
+          }}
+        >
+          {result?.quiz_id?.questionCount} Qs
+        </Text>
+      </View>
+      <View
+        style={{
+          position: 'absolute',
+          top: 8, // top-2
+          right: 8, // right-2
+        }}
+      >
+        {totalQuestions < result.quiz_id?.questionCount ? (
+          <MaterialCommunityIcons name="clock-alert" size={25} color="red" />
+        ) : null}
+      </View>
+      <View
+        style={{
+          paddingHorizontal: 16, // px-4
+          paddingVertical: 8, // py-2
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 14, // text-sm
+            fontWeight: '500', // font-pmedium
+            color: '#0F172A',
+          }}
+        >
+          {(result.exercise_id?.name?.length > 20
+            ? result.exercise_id?.name.substring(0, 20) + '...'
+            : result.exercise_id?.name) || result.room_id?.room_code}
+        </Text>
+        <Text
+          style={{
+            fontSize: 14, // text-sm
+            fontWeight: '300', // font-light
+            color: '#334155',
+          }}
+        >
+          {result.quiz_id?.quiz_name?.length > 20
+            ? result.quiz_id?.quiz_name.substring(0, 20) + '...'
+            : result.quiz_id?.quiz_name}
+        </Text>
+        <Text
+          style={{
+            fontSize: 12, // text-xs
+            fontWeight: '300', // font-light
+            color: '#64748B',
+          }}
+        >
+          {i18n.t('activity.textCreated')} {result.quiz_id?.user_id?.user_fullname}
+        </Text>
+        <Text
+          style={{
+            fontSize: 14, // text-sm
+            marginTop: 16, // mt-4
+            fontWeight: '300', // font-light
+            color: '#F8FAFC', // text-slate-50
+            borderRadius: 9999, // rounded-full
+            paddingHorizontal: 8, // px-2
+            alignSelf: 'flex-start',
+            backgroundColor:
+              accuracy < 40
+                ? '#dc2626' // bg-red-600
+                : accuracy < 70
+                  ? '#facc15' // bg-yellow-400
+                  : '#22c55e', // bg-green-500
+          }}
+        >
+          {accuracy.toFixed(0)}% độ chính xác
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+const CompletedResults = ({
+  results,
+  refreshing,
+  onRefresh,
+  i18n,
+  fetchResetResultOfQuiz,
+}: {
+  results: any[];
+  refreshing: boolean;
+  onRefresh: () => void;
+  i18n: any;
+  fetchResetResultOfQuiz: (resultId: string) => Promise<void>;
+}) => {
+  const router = useRouter();
+
+  if (refreshing || !results) {
+    return <SkeletonList count={6} />;
+  }
+
+  if (results.length === 0) {
+    return (
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+        <View
+          style={{
+            height: 400,
+          }}
+        >
+          <Lottie
+            source={require('@/assets/jsons/empty.json')}
+            width={150}
+            height={150}
+            text={i18n.t('activity.emptyActivity')}
+          />
+        </View>
+      </ScrollView>
+    );
+  }
+  return (
+    <FlatList
+      showsVerticalScrollIndicator={false}
+      data={results}
+      renderItem={({ item }) => (
+        <Pressable
+          onPress={() => {
+            if (item.type === 'publish' && !item.room_id && !item.exercise_id) {
+              Alert.alert(
+                i18n.t('activity.titleQuestionReplayQUiz'),
+                i18n.t('activity.textQuestionReplayQuiz'),
+                [
+                  { text: i18n.t('activity.btnCancel'), style: 'cancel' },
+                  {
+                    text: i18n.t('activity.btnReadResult'),
+                    onPress: async () => {
+                      router.push({
+                        pathname: '(report)/overview_report',
+                        params: { resultId: item._id },
+                      });
+                    },
+                  },
+                  {
+                    text: i18n.t('activity.btnContinute'),
+                    onPress: async () => {
+                      await fetchResetResultOfQuiz(item._id);
+                      router.push({
+                        pathname: '(play)/single',
+                        params: { quizId: item.quiz_id._id, type: 'publish' },
+                      });
+                    },
+                  },
+                ],
+              );
+            } else {
+              router.push({
+                pathname: '(report)/overview_report',
+                params: { resultId: item._id },
+              });
+            }
+          }}
+        >
+          <ResultCompletedItem result={item} i18n={i18n} />
+        </Pressable>
+      )}
+      keyExtractor={(item) => item._id}
+      numColumns={2}
+      columnWrapperStyle="flex-row justify-between"
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+    />
+  );
+};
+
+const ResultDoingItem = ({ result, i18n }: { result: any; i18n: any }) => {
+  return (
+    <View
+      style={{
+        //m-2 bg-slate-200/70 rounded-lg border-slate-200 border-b-[6px] overflow-hidden
+        margin: 8, // m-2
+        backgroundColor: 'rgba(229, 231, 235, 0.7)', // bg-slate-200/70
+        borderRadius: 8, // rounded-lg
+        borderBottomWidth: 6, // border-b-[6px]
+        borderColor: '#E5E7EB', // border-slate-200
+        overflow: 'hidden', // overflow-hidden
+        width: itemWidth, // width: itemWidth
+        position: 'relative', // position relative for absolute children
+      }}
+    >
+      <Image
+        source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
+        style={{
+          //w-full h-28
+          width: '100%', // w-full
+          height: 112, // h-28
+          // aspectRatio: 16 / 9, // Optional: maintain aspect ratio
+          resizeMode: 'cover',
+        }}
+        // style={{ resizeMode: 'cover' }}
+      />
+
+      <View
+        style={{
+          //bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center
+          backgroundColor: 'rgba(0, 0, 0, 0.5)', // bg-black/50
+          paddingHorizontal: 4, // px-1
+          borderRadius: 8, // rounded-lg
+          position: 'absolute',
+          top: 8, // top-2
+          left: 8, // left-2
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
+        <FontAwesome6 name="chalkboard-user" color="white" />
+        <Text
+          style={{
+            //text-sm text-slate-50 ml-1
+            fontSize: 14,
+            fontWeight: '500',
+            color: '#fff', // text-slate-50
+            marginLeft: 4, // ml-1
+          }}
+        >
+          {result.exercise_id?._id
+            ? i18n.t('activity.exercise')
+            : result.room_id
+              ? i18n.t('activity.room')
+              : i18n.t('activity.publish')}
+        </Text>
+      </View>
+      <View
+        style={{
+          //bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center
+          backgroundColor: 'rgba(107, 114, 128, 0.8)', // bg-slate-400/80
+          paddingHorizontal: 4, // px-1
+          borderRadius: 4, // rounded-md
+          position: 'absolute',
+          top: 80, // top-20
+          right: 8, // right-2
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
+        <Text
+          style={{
+            //text-sm text-slate-50 ml-1
+            fontSize: 14,
+            fontWeight: '500',
+            color: '#fff', // text-slate-50
+            marginLeft: 4, // ml-1
+          }}
+        >
+          {result.quiz_id?.questionCount} Qs
+        </Text>
+      </View>
+      <View
+        style={{
+          //px-4 py-2
+          paddingHorizontal: 16,
+          paddingVertical: 8,
+        }}
+      >
+        <Text
+          style={{
+            //text-base font-pmedium
+            fontSize: 16,
+            fontWeight: '500',
+            color: '#fff', // text-slate-50
+          }}
+        >
+          {(result.exercise_id?.name.length > 20
+            ? result.exercise_id?.name.substring(0, 20) + '...'
+            : result.exercise_id?.name) || result.room_id?.room_code}
+        </Text>
+        <Text
+          style={{
+            //text-base font-light
+            fontSize: 14,
+            fontWeight: '300',
+            color: '#fff', // text-slate-50
+          }}
+        >
+          {result.quiz_id?.quiz_name.length > 20
+            ? result.quiz_id?.quiz_name.substring(0, 20) + '...'
+            : result.quiz_id?.quiz_name}
+        </Text>
+        <Text
+          style={{
+            //text-xs font-light
+            fontSize: 12,
+            fontWeight: '300',
+            color: '#fff', // text-slate-50
+          }}
+        >
+          {result.type !== 'publish'
+            ? `hạn: ${moment(result.exercise_id?.date_end).format('DD/MM/YYYY')}`
+            : 'Không thời hạn'}
+        </Text>
+
+        <Text
+          style={{
+            //text-sm mt-4 font-light text-center text-slate-50 bg-violet-300 rounded-full px-2
+            textAlign: 'center',
+            marginTop: 4,
+            fontSize: 12,
+            fontWeight: '300',
+            color: '#fff',
+            backgroundColor: '#8B5CF6', // violet-300
+            borderRadius: 9999, // full rounded
+            paddingHorizontal: 8, // px-2
+            paddingVertical: 4, // py-1
+          }}
+        >
+          {result.result_questions?.length}/{result.quiz_id?.questionCount} câu hỏi
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+const DoingResults = ({
+  results,
+  refreshing,
+  onRefresh,
+  i18n,
+}: {
+  results: any[];
+  refreshing: boolean;
+  onRefresh: () => void;
+  i18n: any;
+}) => {
+  // const { userData } = useAuthContext();
+  const { user } = useAuthStore();
+  const router = useRouter();
+  const { completed } = useResultProvider();
+
+  if (refreshing || !results) {
+    return <SkeletonList count={6} />;
+  }
+
+  if (results.length === 0) {
+    return (
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+        <View
+          style={{
+            height: 400,
+          }}
+        >
+          <Lottie
+            source={require('@/assets/jsons/empty.json')}
+            width={150}
+            height={150}
+            text={i18n.t('activity.emptyActivity')}
+          />
+        </View>
+      </ScrollView>
+    );
+  }
+
+  return (
+    <FlatList
+      showsVerticalScrollIndicator={false}
+      data={results}
+      renderItem={({ item }) => (
+        <Pressable
+          onPress={() => {
+            Alert.alert(
+              i18n.t('activity.titleQuestionContinuteQUiz'),
+              i18n.t('activity.textQuestionContinuteQuiz'),
+              [
+                { text: i18n.t('activity.btnCancel'), style: 'cancel' },
+                {
+                  text: i18n.t('activity.btnContinute'),
+                  onPress: async () => {
+                    if (item.type === 'publish') {
+                      router.push({
+                        //(play)/single
+                        pathname: '/(protected)/(play)/single',
+                        params: { quizId: item.quiz_id?._id, type: item.type },
+                      });
+                    } else if (item.type === 'exercise') {
+                      const now = moment();
+                      const deadline = moment(item.exercise_id?.date_end);
+                      if (now.isBefore(deadline)) {
+                        router.push({
+                          //(play)/single
+                          pathname: '/(protected)/(play)/single',
+                          params: {
+                            quizId: item.quiz_id?._id,
+                            exerciseId: item.exercise_id?._id,
+                            type: item.type,
+                          },
+                        });
+                      } else {
+                        Toast.show({
+                          type: 'info',
+                          text1: i18n.t('activity.notiDL'),
+                          visibilityTime: 2000,
+                        });
+
+                        const completedResult = await completed(
+                          item.exercise_id?._id,
+                          item.quiz_id?._id,
+                        );
+                        router.push({
+                          //(report)/overview_report
+                          pathname: '/(protected)/(report)/overview_report',
+                          params: { resultId: completedResult._id },
+                        });
+                      }
+                    } else if (item.type === 'room') {
+                      socket.emit('joinRoom', { roomCode: item.room_id.room_code, user });
+                      router.push({
+                        //(play)/realtime
+                        pathname: '/(protected)/(play)/realtime',
+                        params: {
+                          roomCode: item.room_id.room_code,
+                          quizId: item.quiz_id._id,
+                          roomId: item.room_id._id,
+                          createdUserId: item.room_id.user_created_id,
+                        },
+                      });
+                    }
+                  },
+                },
+              ],
+            );
+          }}
+        >
+          <ResultDoingItem result={item} i18n={i18n} />
+        </Pressable>
+      )}
+      keyExtractor={(item) => item._id}
+      numColumns={2}
+      columnWrapperStyle={{ flexDirection: 'row', justifyContent: 'space-between' }}
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+    />
+  );
+};
+
+export default ActivityStudent;

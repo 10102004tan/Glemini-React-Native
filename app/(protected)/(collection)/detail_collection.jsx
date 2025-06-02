@@ -1,28 +1,20 @@
-import {
-  View,
-  Text,
-  Image,
-  FlatList,
-  Alert,
-  Modal,
-  TextInput,
-} from "react-native";
-import React, { useEffect, useState } from "react";
-import Wrapper from "@/components/customs/Wrapper";
-import Button from "@/components/customs/Button";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { API_URL, API_VERSION, END_POINTS } from "@/configs/api.config";
-import { router, useGlobalSearchParams } from "expo-router";
-import { useAuthContext } from "@/contexts/AuthContext";
-import Overlay from "@/components/customs/Overlay";
-import { I18n } from "i18n-js";
-import { useAppProvider } from "@/contexts/AppProvider";
+import { View, Text, Image, FlatList, Alert, Modal, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import Wrapper from '@/components/customs/Wrapper';
+import Button from '@/components/customs/Button';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
+import { router, useGlobalSearchParams } from 'expo-router';
+import { useAuthContext } from '@/contexts/AuthContext';
+import Overlay from '@/components/customs/Overlay';
+import { I18n } from 'i18n-js';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 const detail_collection = () => {
   const { i18n } = useAppProvider();
   // chỉnh sửa tên của collection
-  const [newCollectionName, setNewCollectionName] = useState("");
+  const [newCollectionName, setNewCollectionName] = useState('');
   const [isEditModalVisible, setEditModalVisible] = useState(false);
   // Hàm hiển thị modal để nhập tên mới
   const handleEditPress = () => {
@@ -32,7 +24,7 @@ const detail_collection = () => {
 
   const [quizzes, setQuizzes] = useState([]);
   // Tạo biến để lưu tên bộ sưu tập
-  const [collectionName, setCollectionName] = useState("");
+  const [collectionName, setCollectionName] = useState('');
   const { id } = useGlobalSearchParams();
   const { userData } = useAuthContext();
 
@@ -42,17 +34,17 @@ const detail_collection = () => {
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_GET_DETAILS}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
+          'Content-Type': 'application/json',
+          'x-client-id': userData._id,
           authorization: userData.accessToken,
         },
         body: JSON.stringify({
           user_id: userData._id,
           collection_id,
         }),
-      }
+      },
     );
     const data = await response.json();
     if (data.statusCode === 200) {
@@ -70,21 +62,18 @@ const detail_collection = () => {
 
   const getQuizById = async (quiz_id) => {
     console.log(quiz_id);
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_id: userData._id,
-          quiz_id,
-        }),
-      }
-    );
+    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-client-id': userData._id,
+        authorization: userData.accessToken,
+      },
+      body: JSON.stringify({
+        user_id: userData._id,
+        quiz_id,
+      }),
+    });
     const data = await response.json();
     console.log(data);
     if (data.statusCode === 200) {
@@ -95,45 +84,38 @@ const detail_collection = () => {
   };
 
   const deleteCollection = async (collection_id) => {
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_DELETE}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_id: userData._id,
-          collection_id,
-        }),
-      }
-    );
+    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_DELETE}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-client-id': userData._id,
+        authorization: userData.accessToken,
+      },
+      body: JSON.stringify({
+        user_id: userData._id,
+        collection_id,
+      }),
+    });
     const data = await response.json();
     console.log(data);
     if (data.statusCode === 200) {
       // khi xóa xong thì chuyển lại về trang thư viện
       router.push({
-        pathname: "/(app)/(home)/libraly",
+        pathname: '/(app)/(home)/libraly',
       });
     }
   };
 
   //fetch api để cập nhật tên mới của collection từ backend server về database của collection
-  const updateCollectionName = async (
-    collection_id,
-    collection_name,
-    quiz_ids
-  ) => {
-    console.log("Updating collection name...");
+  const updateCollectionName = async (collection_id, collection_name, quiz_ids) => {
+    console.log('Updating collection name...');
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_UPDATE_NAME}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
+          'Content-Type': 'application/json',
+          'x-client-id': userData._id,
           authorization: userData.accessToken,
         },
         body: JSON.stringify({
@@ -142,7 +124,7 @@ const detail_collection = () => {
           collection_name,
           quiz_ids,
         }),
-      }
+      },
     );
     const data = await response.json();
     console.log(data);
@@ -151,27 +133,27 @@ const detail_collection = () => {
       setCollectionName(collection_name);
       setEditModalVisible(false);
     } else {
-      console.log("Error: Could not update collection name");
-      Alert.alert("Error", "Không thể cập nhật tên bộ sưu tập.");
+      console.log('Error: Could not update collection name');
+      Alert.alert('Error', 'Không thể cập nhật tên bộ sưu tập.');
     }
   };
 
   const deleteQuizInCollection = async (quiz_id) => {
-    console.log("Deleting quiz with ID:", quiz_id);
+    console.log('Deleting quiz with ID:', quiz_id);
     const response = await fetch(
       `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_REMOVE_QUIZ}`,
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          "x-client-id": userData._id,
+          'Content-Type': 'application/json',
+          'x-client-id': userData._id,
           authorization: userData.accessToken,
         },
         body: JSON.stringify({
           quiz_id,
           collection_id: id,
         }),
-      }
+      },
     );
     const data = await response.json();
     console.log(data);
@@ -179,45 +161,45 @@ const detail_collection = () => {
       // Cập nhật danh sách quiz sau khi xóa thành công
       setQuizzes((prev) => prev.filter((quiz) => quiz._id !== quiz_id));
     } else {
-      console.log("Error: Quiz does not exist or could not be deleted");
-      Alert.alert("Error", "Quiz không tồn tại hoặc không thể xóa.");
+      console.log('Error: Quiz does not exist or could not be deleted');
+      Alert.alert('Error', 'Quiz không tồn tại hoặc không thể xóa.');
     }
   };
 
   const handleDeleteQuiz = (quiz_id) => {
     Alert.alert(
-      i18n.t("library.collection.detailCollection.confirmDelete"),
-      i18n.t("library.collection.detailCollection.sureQuiz"),
+      i18n.t('library.collection.detailCollection.confirmDelete'),
+      i18n.t('library.collection.detailCollection.sureQuiz'),
       [
         {
-          text: i18n.t("library.collection.detailCollection.btnCancel"),
-          style: "cancel",
+          text: i18n.t('library.collection.detailCollection.btnCancel'),
+          style: 'cancel',
         },
         {
-          text: i18n.t("library.collection.detailCollection.btnDelete"),
+          text: i18n.t('library.collection.detailCollection.btnDelete'),
           onPress: () => deleteQuizInCollection(quiz_id),
-          style: "destructive",
+          style: 'destructive',
         },
-      ]
+      ],
     );
   };
 
   // hiển thị nút xác nhận xóa cho bộ sưu tập
   const handleDeletePress = () => {
     Alert.alert(
-      i18n.t("library.collection.detailCollection.confirmDelete"),
-      i18n.t("library.collection.detailCollection.sureCollection"),
+      i18n.t('library.collection.detailCollection.confirmDelete'),
+      i18n.t('library.collection.detailCollection.sureCollection'),
       [
         {
-          text: i18n.t("library.collection.detailCollection.btnCancel"),
-          style: "cancel",
+          text: i18n.t('library.collection.detailCollection.btnCancel'),
+          style: 'cancel',
         },
         {
-          text: i18n.t("library.collection.detailCollection.btnDelete"),
+          text: i18n.t('library.collection.detailCollection.btnDelete'),
           onPress: () => deleteCollection(id),
-          style: "destructive",
+          style: 'destructive',
         },
-      ]
+      ],
     );
   };
   // khi dữ liệu bị thay đổi thì useEffect này sẽ dc gọi
@@ -228,32 +210,26 @@ const detail_collection = () => {
   return (
     <Wrapper>
       <Overlay visible={isEditModalVisible}></Overlay>
-      <Modal
-        transparent={true}
-        visible={isEditModalVisible}
-        animationType="slide"
-      >
+      <Modal transparent={true} visible={isEditModalVisible} animationType="slide">
         <View className="flex-1 justify-center items-center bg-opacity-50">
           <View className="bg-white rounded-lg p-4 shadow-lg w-11/12 max-w-md border border-black">
             <Text className="text-lg font-semibold mb-2">
-              {i18n.t("library.collection.detailCollection.editCollectionName")}
+              {i18n.t('library.collection.detailCollection.editCollectionName')}
             </Text>
             <TextInput
               className="border border-gray-300 rounded-md p-2 mb-2"
-              placeholder={i18n.t(
-                "library.collection.detailCollection.enterNewName"
-              )}
+              placeholder={i18n.t('library.collection.detailCollection.enterNewName')}
               value={newCollectionName}
               onChangeText={setNewCollectionName}
             />
             <View className="flex-row justify-end">
               <Button
-                text={i18n.t("library.collection.detailCollection.btnCancel")}
+                text={i18n.t('library.collection.detailCollection.btnCancel')}
                 onPress={() => setEditModalVisible(false)}
                 otherStyles="bg-black text-white rounded-md px-4 py-2 mr-2"
               />
               <Button
-                text={i18n.t("library.collection.detailCollection.btnSave")}
+                text={i18n.t('library.collection.detailCollection.btnSave')}
                 onPress={() => updateCollectionName(id, newCollectionName)}
                 otherStyles="bg-blue-500 text-white rounded-md px-4 py-2"
               />
@@ -264,9 +240,7 @@ const detail_collection = () => {
 
       <View className="m-2">
         {/* Hiển thị tên của bộ sưu tập */}
-        <Text className="mt-2 font-bold text-[18px] mb-4">
-          {collectionName}
-        </Text>
+        <Text className="mt-2 font-bold text-[18px] mb-4">{collectionName}</Text>
 
         <View className="flex-row">
           <TouchableOpacity onPress={handleEditPress}>
@@ -276,7 +250,7 @@ const detail_collection = () => {
               </View>
 
               <Text className="mr-1 flex items-center">
-                {i18n.t("library.collection.detailCollection.edit")}
+                {i18n.t('library.collection.detailCollection.edit')}
               </Text>
             </View>
           </TouchableOpacity>
@@ -298,7 +272,7 @@ const detail_collection = () => {
               </View>
 
               <Text className="mr-2 flex items-center">
-                {i18n.t("library.collection.detailCollection.btnDelete")}
+                {i18n.t('library.collection.detailCollection.btnDelete')}
               </Text>
             </View>
           </TouchableOpacity>
@@ -319,7 +293,7 @@ const detail_collection = () => {
                       source={{
                         uri:
                           name.quiz_thumb ||
-                          "https://www.shutterstock.com/image-vector/quiz-time-3d-editable-text-260nw-2482374583.jpg",
+                          'https://www.shutterstock.com/image-vector/quiz-time-3d-editable-text-260nw-2482374583.jpg',
                       }}
                       className="w-[80px] h-[80px] rounded-xl"
                     ></Image>
@@ -327,13 +301,11 @@ const detail_collection = () => {
                   <View className="flex flex-col ml-4 justify-around">
                     <Text className="text-lg font-bold">{name.quiz_name}</Text>
 
+                    <Text className="text-gray-500">{name.quiz_description}</Text>
                     <Text className="text-gray-500">
-                      {name.quiz_description}
-                    </Text>
-                    <Text className="text-gray-500">
-                      {name.quiz_status === "unpublished"
-                        ? i18n.t("library.public")
-                        : i18n.t("library.public")}
+                      {name.quiz_status === 'unpublished'
+                        ? i18n.t('library.public')
+                        : i18n.t('library.public')}
                     </Text>
                   </View>
                 </View>

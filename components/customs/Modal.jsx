@@ -1,17 +1,12 @@
-import { Text, View } from "react-native"
-import Overlay from "./OverlayV2"
+import { Text, View } from 'react-native';
+import Overlay from './OverlayV2';
 
-const Modal = ({
-  children,
-  modalTitle = "Modal Title",
-  height = "40%",
-  onClose = () => { },
-}) => {
+const Modal = ({ children, modalTitle = 'Modal Title', height = '40%', onClose = () => {} }) => {
   return (
     <Overlay>
       <View
         style={{
-          backgroundColor: "white",
+          backgroundColor: 'white',
           padding: 20,
           borderRadius: 10,
           margin: 20,
@@ -21,13 +16,11 @@ const Modal = ({
         }}
       >
         {/* title */}
-        <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>
-          {modalTitle}
-        </Text>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>{modalTitle}</Text>
         <View
           style={{
             flex: 1,
-            alignItems: "center",
+            alignItems: 'center',
             padding: 10,
             borderRadius: 5,
           }}
@@ -36,7 +29,7 @@ const Modal = ({
         </View>
       </View>
     </Overlay>
-  )
-}
+  );
+};
 
-export default Modal
+export default Modal;

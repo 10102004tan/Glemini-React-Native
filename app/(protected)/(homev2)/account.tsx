@@ -1,80 +1,78 @@
-import AccoutntStatusItem from "@/components/customs/AccountStatusItem";
-import NotificationCard from "@/components/customs/NotificationCard";
-import MainLayout from "@/components/layouts/MainLayout";
-import { useAuthStore } from "@/store/useAuthStore";
-import { Entypo, FontAwesome } from "@expo/vector-icons";
-import { Link, router } from "expo-router";
-import { useCallback } from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import AccoutntStatusItem from '@/components/customs/AccountStatusItem';
+import NotificationCard from '@/components/customs/NotificationCard';
+import MainLayout from '@/components/layouts/MainLayout';
+import { useAuthStore } from '@/store/useAuthStore';
+import { Entypo, FontAwesome } from '@expo/vector-icons';
+import { Link, router } from 'expo-router';
+import { useCallback } from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 const Account = () => {
   const { user, signOut, error } = useAuthStore();
 
   const handleLogout = async () => {
     signOut().then(() => {
       if (!error) {
-        router.push('/(auth)/login')
+        router.push('/(auth)/login');
       }
-    })
-  }
+    });
+  };
 
   const actions = [
     {
-      title: "Change Password",
+      title: 'Change Password',
       icon: <FontAwesome name="lock" size={24} color="#4f46e5" />,
       onPress: () => {
         router.push({
-          pathname: "/(protected)/change-password"
+          pathname: '/(protected)/change-password',
         });
       },
     },
     {
-      title: "Edit Profile",
+      title: 'Edit Profile',
       icon: <FontAwesome name="user" size={24} color="#4f46e5" />,
       onPress: () => {
-        router.push("/(protected)/profile-edit");
+        router.push('/(protected)/profile-edit');
       },
     },
     {
-      title: "Nâng cấp lên tài khoản Giáo viên",
+      title: user.user_role === 'teacher' ? 'Thông tin giáo viên' : 'Nâng cấp tài khoản',
       icon: <FontAwesome name="users" size={24} color="#4f46e5" />,
       onPress: () => {
         router.push({
-          pathname:"/(protected)/(teacher)/verify"
+          pathname: '/(protected)/(teacher)/verify',
         });
       },
     },
     {
-      title: "Notification",
+      title: 'Notification',
       icon: <Entypo name="notification" size={24} color="#4f46e5" />,
       onPress: () => {
-        router.push("/(protected)/notification");
+        router.push('/(protected)/notification');
       },
     },
     {
-      title: "Privacy Policy",
+      title: 'Privacy Policy',
       icon: <FontAwesome name="shield" size={24} color="#4f46e5" />,
       onPress: () => {
         // router.push("/(protected)/(homev2)/privacy-policy");
       },
     },
     {
-      title: "Terms of Service",
+      title: 'Terms of Service',
       icon: <FontAwesome name="file-text" size={24} color="#4f46e5" />,
       onPress: () => {
         // router.push("/(protected)/(homev2)/terms-of-service");
       },
     },
     {
-      title: "Logout",
+      title: 'Logout',
       icon: <FontAwesome name="sign-out" size={24} color="#4f46e5" />,
       onPress: () => {
         handleLogout();
       },
-      style: {
-
-      }
-    }
-  ]
+      style: {},
+    },
+  ];
 
   const renderActions = useCallback(() => {
     return actions.map((action, index) => (
@@ -82,18 +80,18 @@ const Account = () => {
         key={index}
         onPress={action.onPress}
         style={{
-          flexDirection: "row",
-          alignItems: "center",
+          flexDirection: 'row',
+          alignItems: 'center',
           paddingVertical: 15,
           borderBottomWidth: 1,
-          borderBottomColor: "#E5E7EB",
+          borderBottomColor: '#E5E7EB',
         }}
       >
         {action.icon}
         <Text
           style={{
             fontSize: 16,
-            color: "#374151",
+            color: '#374151',
             marginLeft: 10,
           }}
         >
@@ -112,8 +110,8 @@ const Account = () => {
         {/* profile */}
         <View
           style={{
-            marginHorizontal: "auto",
-            alignItems: "center",
+            marginHorizontal: 'auto',
+            alignItems: 'center',
           }}
         >
           <Image
@@ -128,17 +126,17 @@ const Account = () => {
           <Text
             style={{
               fontSize: 24,
-              fontWeight: "bold",
-              color: "#374151",
+              fontWeight: 'bold',
+              color: '#374151',
               marginBottom: 10,
             }}
           >
-            {"Nguyen Van A"}
+            {user?.fullname}
           </Text>
           <Text
             style={{
               fontSize: 16,
-              color: "#6B7280",
+              color: '#6B7280',
               marginBottom: 20,
             }}
           >
@@ -146,36 +144,9 @@ const Account = () => {
           </Text>
         </View>
 
-        {/* logout */}
-
-        <View
-          style={{
-            marginBottom: 20,
-            paddingHorizontal: 20,
-          }}
-        >
-           <TouchableOpacity
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          paddingVertical: 15,
-          borderBottomWidth: 1,
-          borderBottomColor: "#E5E7EB",
-        }}
-      >
-        
-        <Text
-          style={{
-            fontSize: 16,
-            color: "#374151",
-            marginLeft: 10,
-          }}
-        >
-        </Text>
-      </TouchableOpacity>
-        </View>
+        {renderActions()}
       </View>
     </MainLayout>
   );
-}
+};
 export default Account;

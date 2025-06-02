@@ -7,7 +7,7 @@
 // import { FontAwesome } from "@expo/vector-icons";
 // import { useQuizProvider } from "@/contexts/QuizProvider";
 
-import { Text, View } from "react-native";
+import { Text, View } from 'react-native';
 
 // export default function SettingsScreen() {
 //    const [isOpenedModal, setIsOpenedModal] = useState(false);
@@ -52,9 +52,9 @@ import { Text, View } from "react-native";
 // }
 
 export default function SettingsScreen() {
-   return (
-      <View className="px-2 mt-3 h-[100%]">
-         <Text>Settings Screen</Text>
-      </View>
-   )
+  return (
+    <View className="px-2 mt-3 h-[100%]">
+      <Text>Settings Screen</Text>
+    </View>
+  );
 }

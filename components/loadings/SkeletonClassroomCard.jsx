@@ -17,7 +17,7 @@ const SkeletonClassroomCard = () => {
           duration: 800,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
 
     animate.start();

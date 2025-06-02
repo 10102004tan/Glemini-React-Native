@@ -59,7 +59,6 @@
 //       loadData()
 //    }, [])
 
-
 //    useEffect(() => {
 //       const checkRoom = async () => {
 //          const res = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_DETAIL}`, {
@@ -470,7 +469,5 @@
 //    );
 // };
 export default function AccountScreen() {
-   return (
-      <></>
-   )
+  return <></>;
 }
