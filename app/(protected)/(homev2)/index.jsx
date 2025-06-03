@@ -279,44 +279,35 @@ const Play = () => {
   };
 
   const renderOptions = () => {
-    const {options, type, image='',question} = item;
+    const { options, type, image = '', question } = item;
     switch (type) {
       case 'single':
         return (
-         <View
-         style={{
-            flexWrap: 'wrap',
-            gap: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-            height:600,
-          }}
-         >
-          <Onechoice
-            options={options}
-            onClick={handleClickOption}
-            image={image}
-          />
-         </View>
+          <View
+            style={{
+              flexWrap: 'wrap',
+              gap: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: 600,
+            }}
+          >
+            <Onechoice options={options} onClick={handleClickOption} image={image} />
+          </View>
         );
       case 'multiple':
-           return (
-         <View
-         style={{
-            flexWrap: 'wrap',
-            gap: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-            height:600,
-          }}
-         >
-          <MultipleChoice
-            options={options}
-            onClick={handleClickOption}
-            image={image}
-            
-          />
-         </View>
+        return (
+          <View
+            style={{
+              flexWrap: 'wrap',
+              gap: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: 600,
+            }}
+          >
+            <MultipleChoice options={options} onClick={handleClickOption} image={image} />
+          </View>
         );
       case 'fill':
         return (
@@ -328,13 +319,9 @@ const Play = () => {
           />
         );
       case 'order':
-        return (
-          <OrderInput options={options} onClick={handleClickOption} />
-        );
+        return <OrderInput options={options} onClick={handleClickOption} />;
       case 'match':
-        return (
-         <MatchItems options={options} onClick={handleClickOption} />
-        );
+        return <MatchItems options={options} onClick={handleClickOption} />;
       default:
         return null;
     }
@@ -438,9 +425,7 @@ const Play = () => {
                   ],
                 }}
               >
-                {
-                  item.type === 'fill' ? 'Fill in the blank ' : item.question
-                }
+                {item.type === 'fill' ? 'Fill in the blank ' : item.question}
               </Animated.Text>
               <Animated.View
                 style={{
@@ -649,6 +634,3 @@ const Play = () => {
     </>
   );
 };
-
-
-

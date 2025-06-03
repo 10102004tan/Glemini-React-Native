@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 
@@ -42,6 +41,6 @@ const MatchItems = ({ options, onClick }) => {
       ))}
     </View>
   );
-}
+};
 
 export default MatchItems;

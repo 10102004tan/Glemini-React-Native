@@ -136,93 +136,93 @@ const HomeStudent = () => {
           <NotificationIcon numberOfUnreadNoti={3} />
         </View>
 
-            {loading || refreshing ? (
-                <Lottie
-                    source={require('@/assets/jsons/loading.json')}
-                    width={150}
-                    height={150}
-                />
-            ) : (
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={onRefresh}
-                        />
-                    }
-                    >
-                    <View className={bannerQuizzes.length > 0 ? `flex h-[${carouselHeight}px]` : `hidden`}>
-                        <Carousel
-                            loop
-                            width={width}
-                            height={carouselHeight}
-                            autoPlay={true}
-                            data={bannerQuizzes}
-                            mode='parallax'
-                            scrollAnimationDuration={2500}
-                            renderItem={({ item, index }) => (
-                                <TouchableOpacity onPress={() => handlePressQuizItem(item)}>
-                                    <View className='absolute z-10 top-5 left-5 px-3 py-1 rounded bg-blue-500/80'>
-                                        <Text className='text-xl font-bold text-white'>{index + 1}</Text>
-                                    </View>
-                                    <Image
-                                        source={item.quiz_thumb ? { uri: item.quiz_thumb } : Images.banner1}
-                                        className="w-full h-full rounded-2xl"
-                                        style={{ resizeMode: 'cover' }}
-                                    />
-                                </TouchableOpacity>
-                            )}
-                        />
+        {loading || refreshing ? (
+          <Lottie source={require('@/assets/jsons/loading.json')} width={150} height={150} />
+        ) : (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          >
+            <View className={bannerQuizzes.length > 0 ? `flex h-[${carouselHeight}px]` : `hidden`}>
+              <Carousel
+                loop
+                width={width}
+                height={carouselHeight}
+                autoPlay={true}
+                data={bannerQuizzes}
+                mode="parallax"
+                scrollAnimationDuration={2500}
+                renderItem={({ item, index }) => (
+                  <TouchableOpacity onPress={() => handlePressQuizItem(item)}>
+                    <View className="absolute z-10 top-5 left-5 px-3 py-1 rounded bg-blue-500/80">
+                      <Text className="text-xl font-bold text-white">{index + 1}</Text>
                     </View>
-                    {
-                        filterQuizzes && filterQuizzes.length > 0 ? (
-                            <View className="px-4 mt-4 flex-1">
-                                {/* Display subjects and their quizzes */}
-                                {
-                                    filterQuizzes.map(({ subject, quizzes }) => {
-                                        return (
-                                            <View key={subject._id} className="mb-4">
-                                                <View className='flex-row justify-between mb-2'>
-                                                    <Text className="text-xl font-bold">{i18n.t(`subjects.${subject.name}`)}</Text>
+                    <Image
+                      source={item.quiz_thumb ? { uri: item.quiz_thumb } : Images.banner1}
+                      className="w-full h-full rounded-2xl"
+                      style={{ resizeMode: 'cover' }}
+                    />
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+            {filterQuizzes && filterQuizzes.length > 0 ? (
+              <View className="px-4 mt-4 flex-1">
+                {/* Display subjects and their quizzes */}
+                {filterQuizzes.map(({ subject, quizzes }) => {
+                  return (
+                    <View key={subject._id} className="mb-4">
+                      <View className="flex-row justify-between mb-2">
+                        <Text className="text-xl font-bold">
+                          {i18n.t(`subjects.${subject.name}`)}
+                        </Text>
 
-                                                    <TouchableOpacity className={"flex-row items-center rounded gap-1"} onPress={() => {
-                                                        toggleFetch()
-                                                        router.push({
-                                                            pathname: '/(home)/search',
-                                                            params: { subjectId: subject._id, load: isFetch }
-                                                        });
-                                                    }}>
-                                                        <AntDesign name={"search1"} size={20} color={"black"} />
-                                                        <Text className="text-base">{i18n.t('student_homepage.btnSeeMore')}</Text>
-                                                    </TouchableOpacity>
-                                                </View>
-                                                {/* Horizontal ScrollView to display quizzes in rows of two items each */}
-                                                <ScrollView horizontal showsHorizontalScrollIndicator={false} className='w-full'>
-                                                    {quizzes.map((quiz) => (
-                                                        <View key={quiz._id} className="flex-row px-[6px]">
-                                                            <TouchableOpacity onPress={() => handlePressQuizItem(quiz)} className="flex-1 w-40">
-                                                                <QuizItem quiz={quiz} />
-                                                            </TouchableOpacity>
-                                                        </View>
-                                                    ))}
-                                                </ScrollView>
-                                            </View>
-                                        );
-                                    })
-                                }
-                            </View>
-                        ) : (
-                            // Empty state
-                            <Lottie
-                                source={require('@/assets/jsons/empty.json')}
-                                width={150}
-                                height={150}
-                                text={i18n.t('student_homepage.emptyList')}
-                            />
-                        )}
-                </ScrollView>
+                        <TouchableOpacity
+                          className={'flex-row items-center rounded gap-1'}
+                          onPress={() => {
+                            toggleFetch();
+                            router.push({
+                              pathname: '/(home)/search',
+                              params: { subjectId: subject._id, load: isFetch },
+                            });
+                          }}
+                        >
+                          <AntDesign name={'search1'} size={20} color={'black'} />
+                          <Text className="text-base">{i18n.t('student_homepage.btnSeeMore')}</Text>
+                        </TouchableOpacity>
+                      </View>
+                      {/* Horizontal ScrollView to display quizzes in rows of two items each */}
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        className="w-full"
+                      >
+                        {quizzes.map((quiz) => (
+                          <View key={quiz._id} className="flex-row px-[6px]">
+                            <TouchableOpacity
+                              onPress={() => handlePressQuizItem(quiz)}
+                              className="flex-1 w-40"
+                            >
+                              <QuizItem quiz={quiz} />
+                            </TouchableOpacity>
+                          </View>
+                        ))}
+                      </ScrollView>
+                    </View>
+                  );
+                })}
+              </View>
+            ) : (
+              // Empty state
+              <Lottie
+                source={require('@/assets/jsons/empty.json')}
+                width={150}
+                height={150}
+                text={i18n.t('student_homepage.emptyList')}
+              />
             )}
+          </ScrollView>
+        )}
 
         {/* Quiz Modal */}
         <QuizModal

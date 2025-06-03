@@ -69,20 +69,20 @@ const QuizProvider = ({ children }) => {
     }
   };
 
-   // Get Quiz Published
-   const getQuizzesPublished = async () => {
-      const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`, {
-            user_id: user.user_id,
-         });
+  // Get Quiz Published
+  const getQuizzesPublished = async () => {
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`, {
+      user_id: user.user_id,
+    });
 
-      const data = response.data;
-      
-      if (data.statusCode === 200) {
-         setFilterQuizzes(data.metadata);
-      } else {
-         setFilterQuizzes([]);
-      }
-   };
+    const data = response.data;
+
+    if (data.statusCode === 200) {
+      setFilterQuizzes(data.metadata);
+    } else {
+      setFilterQuizzes([]);
+    }
+  };
 
   /**
    * Description: Get quizzes for banner
@@ -173,20 +173,17 @@ const QuizProvider = ({ children }) => {
    * @returns {Boolean}
    * */
 
-   const duplicateQuiz = async (quiz_id) => {
-      // console.log(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`);
-      const response = await fetch(
-         `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`,
-         {
-            method: "POST",
-            headers: {
-               "Content-Type": "application/json",
-               "x-client-id": userData._id,
-               authorization: userData.accessToken,
-            },
-            body: JSON.stringify({ quiz_id }),
-         }
-      );
+  const duplicateQuiz = async (quiz_id) => {
+    // console.log(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`);
+    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-client-id': userData._id,
+        authorization: userData.accessToken,
+      },
+      body: JSON.stringify({ quiz_id }),
+    });
 
     const data = await response.json();
     return data.statusCode === 200;

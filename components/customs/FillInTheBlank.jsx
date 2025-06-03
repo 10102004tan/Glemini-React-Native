@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
 
-const FillInTheBlank = ({ options, onClick, image ,question}) => {
-  const countFill = question.split("_").length - 1;
+const FillInTheBlank = ({ options, onClick, image, question }) => {
+  const countFill = question.split('_').length - 1;
   const [selectedOptions, setSelectedOptions] = useState(Array(countFill).fill(''));
   const [optionsState, setOptionsState] = useState(options);
   const handleToggleSelect = (option) => {
     const newOptionsState = optionsState.filter((item) => item.id !== option.id);
     setOptionsState(newOptionsState);
-  }
+  };
 
   const renderQuestionWithBlanks = () => {
     const parts = question.split('_');
@@ -17,32 +17,31 @@ const FillInTheBlank = ({ options, onClick, image ,question}) => {
         return (
           <Text key={index} style={{ fontSize: 16, color: '#4B4B4B' }}>
             {part}
-           <Pressable
-           style={{
-            paddingHorizontal: 20,
-            backgroundColor: '#d7ffb8',
-            borderRadius: 4,
-            paddingVertical: 5,
-           }}
-           onPress={() => {
-             // Handle press to select option
-             console.log('Selected option at index:', index);
-           }}>
-             <Text >
-              {selectedOptions[index] || '____'}
-            </Text>
-           </Pressable>
+            <Pressable
+              style={{
+                paddingHorizontal: 20,
+                backgroundColor: '#d7ffb8',
+                borderRadius: 4,
+                paddingVertical: 5,
+              }}
+              onPress={() => {
+                // Handle press to select option
+                console.log('Selected option at index:', index);
+              }}
+            >
+              <Text>{selectedOptions[index] || '____'}</Text>
+            </Pressable>
           </Text>
         );
       }
       return <Text key={index}>{part}</Text>;
     });
-  }
+  };
   return (
     <View
-    style={{
-      marginTop: 20,
-    }}
+      style={{
+        marginTop: 20,
+      }}
     >
       {image && (
         <Image
@@ -76,6 +75,6 @@ const FillInTheBlank = ({ options, onClick, image ,question}) => {
       </View>
     </View>
   );
-}
+};
 
 export default FillInTheBlank;

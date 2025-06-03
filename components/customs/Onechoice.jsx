@@ -6,10 +6,10 @@ const Onechoice = ({ options, onClick }) => {
   const handleToggleSelect = (option) => {
     if (selected === option) {
       setSelected(null);
-    }else {
+    } else {
       setSelected(option);
     }
-  }
+  };
 
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
@@ -24,7 +24,7 @@ const Onechoice = ({ options, onClick }) => {
             shadowColor: '#000',
             borderColor: selected && selected === option ? '#4CAF50' : '#e5e5e5',
             borderWidth: 2,
-            height:200,
+            height: 200,
             borderBottomWidth: 4,
             borderStyle: 'solid',
             width: '48%',
@@ -42,6 +42,6 @@ const Onechoice = ({ options, onClick }) => {
       ))}
     </View>
   );
-}
+};
 
 export default Onechoice;

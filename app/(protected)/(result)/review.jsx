@@ -52,102 +52,132 @@ const ResultReview = () => {
       .trim(); // Loại bỏ khoảng trắng đầu và cuối
   };
 
-   return (
-      <View style={{
-         paddingBottom: 20,
-         flex: 1,
-         backgroundColor: '#f8fafc',
-         paddingHorizontal: 20,
-         paddingTop: 40
-      }}>
-         <View style={{ flexDirection: 'column' }}>
-            <View style={{ alignItems: 'flex-end' }}>
-               <Button
-                  text={<Icon name='close' size={20} />}
-                  onPress={() => {
-                     router.back()
-                  }}
+  return (
+    <View
+      style={{
+        paddingBottom: 20,
+        flex: 1,
+        backgroundColor: '#f8fafc',
+        paddingHorizontal: 20,
+        paddingTop: 40,
+      }}
+    >
+      <View style={{ flexDirection: 'column' }}>
+        <View style={{ alignItems: 'flex-end' }}>
+          <Button
+            text={<Icon name="close" size={20} />}
+            onPress={() => {
+              router.back();
+            }}
+            loading={false}
+            type="fill"
+            otherStyles={'bg-slate-300 rounded-full'}
+            textStyles={'text-sm text-black'}
+          />
+        </View>
+        <Text
+          style={{
+            fontSize: 24,
+            lineHeight: 32,
+            color: '#1e293b',
+            fontWeight: 600,
+            textAlign: 'center',
+          }}
+        >
+          {i18n.t('result.review.title')}
+        </Text>
+      </View>
+      <ScrollView style={{ paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
+        {resultData &&
+          resultData.result_questions.map((question, index) => (
+            <TouchableOpacity key={index} onPress={() => openModal(index)}>
+              <QuestionResultItem question={question} />
+            </TouchableOpacity>
+          ))}
+      </ScrollView>
+
+      {/* Modal hiển thị thông tin chi tiết */}
+      {currentQuestion && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={closeModal}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: '#fff',
+                padding: 20,
+                borderRadius: 6,
+                borderLeftWidth: 8,
+                borderColor: currentQuestion.correct ? '#22c55e' : '#ef4444',
+                width: '90%',
+              }}
+            >
+              <View style={{ alignItems: 'flex-end' }}>
+                <Button
+                  text={<Icon name="close" size={20} />}
+                  onPress={closeModal}
                   loading={false}
                   type="fill"
-                  otherStyles={'bg-slate-300 rounded-full'}
-                  textStyles={'text-sm text-black'}
-               />
-            </View>
-            <Text
-               style={{
-                  fontSize: 24,
-                  lineHeight: 32,
-                  color: '#1e293b',
-                  fontWeight: 600,
-                  textAlign: 'center'
-               }}>
-               {i18n.t('result.review.title')}</Text>
-         </View>
-         <ScrollView style={{ paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
-            {resultData && resultData.result_questions.map((question, index) => (
-               <TouchableOpacity key={index} onPress={() => openModal(index)}>
-                  <QuestionResultItem question={question} />
-               </TouchableOpacity>
-            ))}
-         </ScrollView>
+                  otherStyles={'bg-slate-300/50 rounded-full'}
+                  textStyles={'text-sm text-black/50'}
+                />
+              </View>
 
-         {/* Modal hiển thị thông tin chi tiết */}
-         {currentQuestion && (
-            <Modal
-               animationType="slide"
-               transparent={true}
-               visible={modalVisible}
-               onRequestClose={closeModal}
-            >
-               <View style={{
-                  flex: 1,
-                  justifyContent: 'center',
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  marginBottom: 20,
                   alignItems: 'center',
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)' 
-               }}>
-                  <View 
-                     style={{
-                        backgroundColor: '#fff',
-                        padding: 20,
-                        borderRadius: 6,
-                        borderLeftWidth: 8,
-                        borderColor: currentQuestion.correct ? '#22c55e' : '#ef4444',
-                        width: '90%'
-                     }}>
-                     <View style={{ alignItems: 'flex-end' }}>
-                        <Button
-                           text={<Icon name='close' size={20} />}
-                           onPress={closeModal}
-                           loading={false}
-                           type="fill"
-                           otherStyles={'bg-slate-300/50 rounded-full'}
-                           textStyles={'text-sm text-black/50'}
-                        />
-                     </View>
+                  gap: 16,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 20,
+                    lineHeight: 24,
+                    fontFamily: 'Poppins-Regular, sans-serif',
+                  }}
+                >
+                  {i18n.t('result.review.indexQuestion')} {selectedIndex + 1}
+                </Text>
+                <Text
+                  style={{
+                    backgroundColor: '#e2e8f0',
+                    borderRadius: 6,
+                    paddingHorizontal: 12,
+                    paddingVertical: 4,
+                    fontFamily: 'Poppins-Regular, sans-serif',
+                    color: '#64748b',
+                  }}
+                >
+                  {currentQuestion.question_id.question_point} {i18n.t('result.review.point')}
+                </Text>
+              </View>
 
-                     <View style={{ 
-                        flexDirection: 'row', 
-                        justifyContent: 'flex-start',
-                        marginBottom: 20,
-                        alignItems: 'center',
-                        gap: 16
-                        }}>
-                        <Text style={{ fontSize: 20, lineHeight: 24, fontFamily: 'Poppins-Regular, sans-serif'}}>{i18n.t('result.review.indexQuestion')} {selectedIndex + 1}</Text>
-                        <Text style={{ backgroundColor: '#e2e8f0', borderRadius: 6, paddingHorizontal: 12, paddingVertical: 4, fontFamily: 'Poppins-Regular, sans-serif', color: '#64748b' }}>{currentQuestion.question_id.question_point} {i18n.t('result.review.point')}</Text>
-                     </View>
-
-                     <View style={{ display: 'flex' }}>
-                        <Text
-                        style={{ 
-                           fontSize: 18, 
-                           lineHeight: 28,
-                           fontFamily: 'Poppins-Regular, sans-serif',
-                           marginBottom: 16,
-                           borderBottomWidth: 1,
-                           color: '#cbd5e1',
-                           }}>
-                           {currentQuestion.question_id.question_excerpt}
-                        </Text>
+              <View style={{ display: 'flex' }}>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    lineHeight: 28,
+                    fontFamily: 'Poppins-Regular, sans-serif',
+                    marginBottom: 16,
+                    borderBottomWidth: 1,
+                    color: '#cbd5e1',
+                  }}
+                >
+                  {currentQuestion.question_id.question_excerpt}
+                </Text>
 
                 {currentQuestion &&
                   currentQuestion.question_id.question_answer_ids.map((answer, ansIndex) => {
@@ -159,21 +189,34 @@ const ResultReview = () => {
 
                       const isAnswerCorrect = correctTextAnswers.includes(userAnswerText);
 
-                              return (
-                                 <View key={ansIndex} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }} >
-                                    <View style={{ width: 12, height: 12, borderRadius: 999, marginRight: 8 }} />
-                                    <Text style={{ fontSize: 16, lineHeight: 24, color: isAnswerCorrect ? '#22c55e' : '#ef4444', }} >
-                                       {answer.text}
-                                    </Text>
-                                 </View>
-                              );
-                           } else {
-                              // Kiểm tra xem đây có phải là câu trả lời của người dùng hay không
-                              const isUserAnswer = currentQuestion.answer.some(userAns => userAns._id === answer._id);
-                              // Kiểm tra xem đây có phải là câu trả lời đúng hay không
-                              const isCorrectAnswer = currentQuestion.question_id.correct_answer_ids.some(
-                                 correctAns => correctAns._id === answer._id
-                              );
+                      return (
+                        <View
+                          key={ansIndex}
+                          style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}
+                        >
+                          <View
+                            style={{ width: 12, height: 12, borderRadius: 999, marginRight: 8 }}
+                          />
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              lineHeight: 24,
+                              color: isAnswerCorrect ? '#22c55e' : '#ef4444',
+                            }}
+                          >
+                            {answer.text}
+                          </Text>
+                        </View>
+                      );
+                    } else {
+                      // Kiểm tra xem đây có phải là câu trả lời của người dùng hay không
+                      const isUserAnswer = currentQuestion.answer.some(
+                        (userAns) => userAns._id === answer._id,
+                      );
+                      // Kiểm tra xem đây có phải là câu trả lời đúng hay không
+                      const isCorrectAnswer = currentQuestion.question_id.correct_answer_ids.some(
+                        (correctAns) => correctAns._id === answer._id,
+                      );
 
                       const bulletStyle =
                         isCorrectAnswer && isUserAnswer
@@ -193,18 +236,18 @@ const ResultReview = () => {
                               ? 'text-red-500 font-regular' // Chỉ là câu trả lời của bạn
                               : 'text-slate-400 font-regular'; // Các câu trả lời khác
 
-                              return (
-                                 <View key={ansIndex} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8}}>
-                                    <View className={`w-3 h-3 rounded-full mr-2 ${bulletStyle}`} />
-                                    <Text className={`text-base ${textStyle}`}>
-                                       {answer.text}
-                                    </Text>
-                                 </View>
-                              );
-                           }
-                        })}
-
-                     </View>
+                      return (
+                        <View
+                          key={ansIndex}
+                          style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}
+                        >
+                          <View className={`w-3 h-3 rounded-full mr-2 ${bulletStyle}`} />
+                          <Text className={`text-base ${textStyle}`}>{answer.text}</Text>
+                        </View>
+                      );
+                    }
+                  })}
+              </View>
 
               {!currentQuestion.correct && (
                 <View className="mt-4">

@@ -25,46 +25,75 @@ const SkeletonItem = () => {
     outputRange: [0.1, 0.5],
   });
 
-   return (
-      <View style={{
-         backgroundColor: '#f1f5f9',
-         marginBottom: 12,
-         borderRadius: 12,
-         overflow: 'hidden',
-         marginHorizontal: 2
-      }} >
-         <Animated.View style={{
+  return (
+    <View
+      style={{
+        backgroundColor: '#f1f5f9',
+        marginBottom: 12,
+        borderRadius: 12,
+        overflow: 'hidden',
+        marginHorizontal: 2,
+      }}
+    >
+      <Animated.View
+        style={{
+          opacity: opacityInterpolate,
+          backgroundColor: '#cbd5e1',
+          height: 128,
+          width: '100%',
+        }}
+      />
+      <View style={{ padding: 16 }}>
+        <Animated.View
+          style={{
             opacity: opacityInterpolate,
             backgroundColor: '#cbd5e1',
-            height: 128,
-            width: '100%'
-         }} />
-         <View style={{ padding: 16 }}>
-            <Animated.View style={{ opacity: opacityInterpolate, backgroundColor: '#cbd5e1', height: 16, marginBottom: 8 }} />
-            <Animated.View style={{ opacity: opacityInterpolate, backgroundColor: '#cbd5e1', height: 16, marginBottom: 8, width: '75%' }} />
-            <Animated.View style={{ opacity: opacityInterpolate, backgroundColor: '#cbd5e1', height: 16, marginBottom: 8, width: '50%' }} />
-         </View>
+            height: 16,
+            marginBottom: 8,
+          }}
+        />
+        <Animated.View
+          style={{
+            opacity: opacityInterpolate,
+            backgroundColor: '#cbd5e1',
+            height: 16,
+            marginBottom: 8,
+            width: '75%',
+          }}
+        />
+        <Animated.View
+          style={{
+            opacity: opacityInterpolate,
+            backgroundColor: '#cbd5e1',
+            height: 16,
+            marginBottom: 8,
+            width: '50%',
+          }}
+        />
       </View>
-   );
+    </View>
+  );
 };
 
 const SkeletonList = ({ count = 6 }) => {
-   return (
-      <View style={{ padding: 8 }}>
-         {/* Sử dụng flex row và flex-wrap để tạo khoảng cách đều giữa các ô */}
-         <View style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            justifyContent: 'space-between',
-         }}>
-            {Array.from({ length: count }).map((_, index) => (
-               <View key={index} style={{ width: itemWidth }}>
-                  <SkeletonItem />
-               </View>
-            ))}
-         </View>
+  return (
+    <View style={{ padding: 8 }}>
+      {/* Sử dụng flex row và flex-wrap để tạo khoảng cách đều giữa các ô */}
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+        }}
+      >
+        {Array.from({ length: count }).map((_, index) => (
+          <View key={index} style={{ width: itemWidth }}>
+            <SkeletonItem />
+          </View>
+        ))}
       </View>
-   );
+    </View>
+  );
 };
 
 export default SkeletonList;
