@@ -1,8 +1,7 @@
-import SearchBar from 'react-native-dynamic-search-bar';
-import { FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
-import SchoolItem from '@/components/customs/SchoolItem';
-import { useAppProvider } from '@/contexts/AppProvider';
+import {FlatList, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import React, {useState} from "react";
+import SchoolItem from "@/components/customs/SchoolItem";
+import {useAppProvider} from "@/contexts/AppProvider";
 
 export default function DropdownSchoolSelected({
   isOpenDropdownSchool,
