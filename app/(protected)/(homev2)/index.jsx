@@ -9,13 +9,18 @@ import { useState, useRef, useEffect } from 'react';
 import ThoBayMauGif from '@/assets/images/congratulations.1.webp';
 import InCorrectGif from '@/assets/images/incorrect.1.webp';
 import api from '@/libs/axios';
+import OrderInput from '@/components/customs/OrderInput';
+import Onechoice from '@/components/customs/Onechoice';
+import FillInTheBlank from '@/components/customs/FillInTheBlank';
+import MatchItems from '@/components/customs/MatchItems';
+import MultipleChoice from '@/components/customs/MultipleChoice';
 
 export default function Home() {
   const { user } = useAuthStore();
   return (
     <>
       {/* {user.user_role === 'user' ? <HomeStudent /> : <HomeTeacher />} */}
-      <Play /> 
+      <Play />
     </>
   );
 }
@@ -240,19 +245,19 @@ const Play = () => {
   }, [index]);
 
   useEffect(() => {
-   const fetchData = async () => {
-    try {
-      const response = await api.post("/v2/quizzes/683e465299f227ed48405984/questions")
-      const data = response.data;
-      const {items} = data.metadata;
-      console.log('Fetched data:', items);
-      setData(items);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-   }
+    const fetchData = async () => {
+      try {
+        const response = await api.post('/v2/quizzes/683e465299f227ed48405984/questions');
+        const data = response.data;
+        const { items } = data.metadata;
+        console.log('Fetched data:', items);
+        setData(items);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
     fetchData();
-  },[]);
+  }, []);
 
   // Animate modal result
   useEffect(() => {
@@ -273,384 +278,93 @@ const Play = () => {
     // setIsNext(true);
   };
 
-  const renderOptions = (options, type, image) => {
+  const renderOptions = () => {
+    const {options, type, image='',question} = item;
     switch (type) {
       case 'single':
         return (
-          <View
-            style={{
-              height: 600,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <View
-              style={{
-                flexDirection: options.length < 4 ? 'column' : 'row',
-                flexWrap: options.length < 4 ? 'nowrap' : 'wrap',
-                width: '100%',
-                gap: 10,
-              }}
-            >
-              {options.map((option, idx) => (
-                <Pressable
-                  key={idx}
-                  onPress={() => handleClickOption(option)}
-                  style={{
-                    padding: 10,
-                    borderRadius: 8,
-                    marginVertical: 5,
-                    backgroundColor: '#fff',
-                    shadowColor: '#000',
-                    borderColor: '#e5e5e5',
-                    borderWidth: 2,
-                    borderBottomWidth: 4,
-                    borderStyle: 'solid',
-                    width: options.length < 4 ? '100%' : '48%',
-                    minHeight: options.length < 4 ? 60 : 200,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {option.image && options.length === 4 ? (
-                    <View
-                      style={{
-                        minHeight: options.length < 4 ? 60 : 200,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Image
-                        source={{ uri: option.image }}
-                        style={{
-                          width: 150,
-                          height: 150,
-                          borderRadius: 8,
-                          marginBottom: 10,
-                        }}
-                      />
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          fontSize: 18,
-                          color: '#4B4B4B',
-                        }}
-                      >
-                        {option.text}
-                      </Text>
-                    </View>
-                  ) : (
-                    <Pressable onPress={() => handleClickOption(option)}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          fontSize: 18,
-                          color: '#4B4B4B',
-                        }}
-                      >
-                        {option.text}
-                      </Text>
-                    </Pressable>
-                  )}
-                </Pressable>
-              ))}
-            </View>
-          </View>
+         <View
+         style={{
+            flexWrap: 'wrap',
+            gap: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+            height:600,
+          }}
+         >
+          <Onechoice
+            options={options}
+            onClick={handleClickOption}
+            image={image}
+          />
+         </View>
         );
-      case "multiple":
+      case 'multiple':
+           return (
+         <View
+         style={{
+            flexWrap: 'wrap',
+            gap: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+            height:600,
+          }}
+         >
+          <MultipleChoice
+            options={options}
+            onClick={handleClickOption}
+            image={image}
+            
+          />
+         </View>
+        );
+      case 'fill':
         return (
-           <View
-            style={{
-              height: 600,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <View
-              style={{
-                flexDirection: options.length < 4 ? 'column' : 'row',
-                flexWrap: options.length < 4 ? 'nowrap' : 'wrap',
-                width: '100%',
-                gap: 10,
-              }}
-            >
-              {options.map((option, idx) => (
-                <Pressable
-                  key={idx}
-                  onPress={() => handleClickOption(option)}
-                  style={{
-                    padding: 10,
-                    borderRadius: 8,
-                    marginVertical: 5,
-                    backgroundColor: '#fff',
-                    shadowColor: '#000',
-                    borderColor: '#e5e5e5',
-                    borderWidth: 2,
-                    borderBottomWidth: 4,
-                    borderStyle: 'solid',
-                    width: options.length < 4 ? '100%' : '48%',
-                    minHeight: options.length < 4 ? 60 : 200,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {option.image && options.length === 4 ? (
-                    <View
-                      style={{
-                        minHeight: options.length < 4 ? 60 : 200,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Image
-                        source={{ uri: option.image }}
-                        style={{
-                          width: 150,
-                          height: 150,
-                          borderRadius: 8,
-                          marginBottom: 10,
-                        }}
-                      />
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          fontSize: 18,
-                          color: '#4B4B4B',
-                        }}
-                      >
-                        {option.text}
-                      </Text>
-                    </View>
-                  ) : (
-                    <Pressable onPress={() => handleClickOption(option)}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          fontSize: 18,
-                          color: '#4B4B4B',
-                        }}
-                      >
-                        {option.text}
-                      </Text>
-                    </Pressable>
-                  )}
-                </Pressable>
-              ))}
-            </View>
-          </View>
-        )
-        case 'fill':
-        return (
-          <View style={{}}>
-            {/* image */}
-            {image && (
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginBottom: 20,
-                }}
-              >
-                <Image
-                  source={{ uri: image }}
-                  style={{ width: 150, height: 150, borderRadius: 8, marginBottom: 10 }}
-                />
-              </View>
-            )}
-            {/* fill in the blank */}
-            {/* question */}
-            <Text
-              style={{
-                fontSize: 18,
-                color: '#4B4B4B',
-                marginBottom: 10,
-              }}
-            >
-              The capital of France is ___ and it is known for the ___ Tower.
-            </Text>
-
-            {/* list fill */}
-            <View
-              style={{
-                flexDirection: 'row',
-                gap: 10,
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-              }}
-            >
-              {options.map((option, idx) => (
-                <Pressable
-                  key={idx}
-                  onPress={() => handleClickOption(option)}
-                  style={{
-                    padding: 8,
-                    borderRadius: 15,
-                    backgroundColor: '#fff',
-                    shadowColor: '#000',
-                    borderColor: '#e5e5e5',
-                    borderWidth: 2,
-                    borderBottomWidth: 4,
-                    borderStyle: 'solid',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      fontSize: 16,
-                      color: '#4B4B4B',
-                    }}
-                  >
-                    {option.text}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
+          <FillInTheBlank
+            options={options}
+            onClick={handleClickOption}
+            image={image}
+            question={question}
+          />
         );
       case 'order':
         return (
-          <View>
-            {/* order input */}
-            <View
-              style={{
-                minHeight: 60,
-                flexDirection: 'row',
-                borderTopWidth: 2,
-                borderColor: '#e5e5e5',
-                borderBottomWidth: 2,
-                borderStyle: 'solid',
-                marginBottom: 20,
-              }}
-            ></View>
-
-            {/* options */}
-            <View
-              style={{
-                flexDirection: 'row',
-                gap: 10,
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-              }}
-            >
-              {options.map((option, idx) => (
-                <Pressable
-                  key={idx}
-                  onPress={() => handleClickOption(option)}
-                  style={{
-                    padding: 8,
-                    borderRadius: 15,
-                    backgroundColor: '#fff',
-                    shadowColor: '#000',
-                    borderColor: '#e5e5e5',
-                    borderWidth: 2,
-                    borderBottomWidth: 4,
-                    borderStyle: 'solid',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      fontSize: 16,
-                      color: '#4B4B4B',
-                    }}
-                  >
-                    {option.text}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
+          <OrderInput options={options} onClick={handleClickOption} />
         );
       case 'match':
         return (
-          <View
-            style={{
-              flexDirection: 'row',
-              gap: 10,
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-            }}
-          >
-            {options.map((option, idx) => (
-              <View
-                key={idx}
-                style={{
-                  padding: 10,
-                  borderRadius: 8,
-                  marginVertical: 5,
-                  width: '48%',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 10,
-                }}
-              >
-                {option.items.map((item, itemIdx) => (
-                  <Pressable
-                    key={itemIdx}
-                    onPress={() => handleClickOption(item)}
-                    style={{
-                      padding: 10,
-                      borderRadius: 10,
-                      backgroundColor: '#fff',
-                      shadowColor: '#000',
-                      borderColor: '#e5e5e5',
-                      borderWidth: 2,
-                      width: '100%',
-                      borderBottomWidth: 4,
-                      borderStyle: 'solid',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Text
-                      style={{
-                        textAlign: 'center',
-                        fontSize: 16,
-                        color: '#4B4B4B',
-                      }}
-                    >
-                      {item.text}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            ))}
-          </View>
+         <MatchItems options={options} onClick={handleClickOption} />
         );
       default:
         return null;
     }
   };
 
-  const handleCheck = async() => {
+  const handleCheck = async () => {
     setIsNext(true);
     try {
       const body = {
         questionId: item.id,
-        answersId: ["683e45e599f227ed48405981"], 
-      }
-      const response = await api.post("/v2/questions/check", body);
+        answersId: ['683e45e599f227ed48405981'],
+      };
+      const response = await api.post('/v2/questions/check', body);
       const data = response.data;
-      const {isCorrect=true} = data.metadata;
+      const { isCorrect = true } = data.metadata;
       setIsCorrect(isCorrect);
     } catch (error) {
       console.error('Error checking answer:', error);
     }
-  }
+  };
 
   const handleNext = () => {
-   if (index < data.length - 1) {
-                setIndex(index + 1);
-              } else {
-                alert('Game Over');
-                setIndex(0);
-              }
-              setIsNext(false);
-  }
+    if (index < data.length - 1) {
+      setIndex(index + 1);
+    } else {
+      alert('Game Over');
+      setIndex(0);
+    }
+    setIsNext(false);
+  };
 
   if (!data.length) {
     return (
@@ -724,7 +438,9 @@ const Play = () => {
                   ],
                 }}
               >
-                {item.question}
+                {
+                  item.type === 'fill' ? 'Fill in the blank ' : item.question
+                }
               </Animated.Text>
               <Animated.View
                 style={{
@@ -739,7 +455,7 @@ const Play = () => {
                   ],
                 }}
               >
-                {renderOptions(item.options, item.type, item?.image)}
+                {renderOptions()}
               </Animated.View>
             </View>
           ) : (
@@ -760,9 +476,7 @@ const Play = () => {
               }}
             >
               <Image
-                source={
-                  isCorrect ? ThoBayMauGif : InCorrectGif
-                }
+                source={isCorrect ? ThoBayMauGif : InCorrectGif}
                 resizeMode="contain"
                 style={{ width: 150, height: 150, borderRadius: 8, marginBottom: 10 }}
               />
@@ -827,112 +541,114 @@ const Play = () => {
         </View>
       </MainLayout>
       {/* modal result */}
-      {isNext && (
-        isCorrect ? (
+      {isNext &&
+        (isCorrect ? (
           <Animated.View
-          style={{
-            position: 'absolute',
-            zIndex: 1000,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "#d7ffb8",
-            justifyContent: 'center',
-            padding: 20,
-            transform: [
-              { translateY: modalAnim.interpolate({ inputRange: [0, 1], outputRange: [100, 0] }) },
-            ],
-          }}
-        >
-          <Text
             style={{
-              fontSize: 24,
-              fontWeight: 'bold',
-              color: '#4CAF50',
-              // color: isCorrect ? '#4CAF50' : '#F44336',
-              marginBottom: 20,
+              position: 'absolute',
+              zIndex: 1000,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: '#d7ffb8',
+              justifyContent: 'center',
+              padding: 20,
+              transform: [
+                {
+                  translateY: modalAnim.interpolate({ inputRange: [0, 1], outputRange: [100, 0] }),
+                },
+              ],
             }}
-          >
-            Correct!
-          </Text>
-          <Pressable
-            onPress={handleNext}
           >
             <Text
               style={{
-                backgroundColor: '#4CAF50',
-                // backgroundColor: isCorrect ? '#4CAF50' : '#F44336',
-                color: '#fff',
-                padding: 10,
-                borderRadius: 8,
-                textAlign: 'center',
-                fontSize: 18,
+                fontSize: 24,
                 fontWeight: 'bold',
-                textTransform: 'uppercase',
-                borderTopWidth: 2,
-                borderColor: '#eee',
-                borderBottomWidth: 4,
-                borderStyle: 'solid',
-                shadowColor: '#000',
+                color: '#4CAF50',
+                // color: isCorrect ? '#4CAF50' : '#F44336',
+                marginBottom: 20,
               }}
             >
-              Confirm
+              Correct!
             </Text>
-          </Pressable>
-        </Animated.View>
-        ):(
+            <Pressable onPress={handleNext}>
+              <Text
+                style={{
+                  backgroundColor: '#4CAF50',
+                  // backgroundColor: isCorrect ? '#4CAF50' : '#F44336',
+                  color: '#fff',
+                  padding: 10,
+                  borderRadius: 8,
+                  textAlign: 'center',
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                  borderTopWidth: 2,
+                  borderColor: '#eee',
+                  borderBottomWidth: 4,
+                  borderStyle: 'solid',
+                  shadowColor: '#000',
+                }}
+              >
+                Confirm
+              </Text>
+            </Pressable>
+          </Animated.View>
+        ) : (
           <Animated.View
-          style={{
-            position: 'absolute',
-            zIndex: 1000,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "#FFCDD2",
-            justifyContent: 'center',
-            padding: 20,
-            transform: [
-              { translateY: modalAnim.interpolate({ inputRange: [0, 1], outputRange: [100, 0] }) },
-            ],
-          }}
-        >
-          <Text
             style={{
-              fontSize: 24,
-              fontWeight: 'bold',
-              color: '#F44336',
-              marginBottom: 20,
+              position: 'absolute',
+              zIndex: 1000,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: '#FFCDD2',
+              justifyContent: 'center',
+              padding: 20,
+              transform: [
+                {
+                  translateY: modalAnim.interpolate({ inputRange: [0, 1], outputRange: [100, 0] }),
+                },
+              ],
             }}
-          >
-            Incorrect!
-          </Text>
-          <Pressable
-            onPress={handleNext}
           >
             <Text
               style={{
-                backgroundColor: '#F44336',
-                // backgroundColor: isCorrect ? '#4CAF50' : '#F44336',
-                color: '#fff',
-                padding: 10,
-                borderRadius: 8,
-                textAlign: 'center',
-                fontSize: 18,
+                fontSize: 24,
                 fontWeight: 'bold',
-                textTransform: 'uppercase',
-                borderTopWidth: 2,
-                borderColor: '#eee',
-                borderBottomWidth: 4,
-                borderStyle: 'solid',
-                shadowColor: '#000',
+                color: '#F44336',
+                marginBottom: 20,
               }}
             >
-              Confirm
+              Incorrect!
             </Text>
-          </Pressable>
-        </Animated.View>
-        )
-      )}
+            <Pressable onPress={handleNext}>
+              <Text
+                style={{
+                  backgroundColor: '#F44336',
+                  // backgroundColor: isCorrect ? '#4CAF50' : '#F44336',
+                  color: '#fff',
+                  padding: 10,
+                  borderRadius: 8,
+                  textAlign: 'center',
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                  borderTopWidth: 2,
+                  borderColor: '#eee',
+                  borderBottomWidth: 4,
+                  borderStyle: 'solid',
+                  shadowColor: '#000',
+                }}
+              >
+                Confirm
+              </Text>
+            </Pressable>
+          </Animated.View>
+        ))}
     </>
   );
 };
+
+
+
