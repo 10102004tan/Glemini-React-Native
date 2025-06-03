@@ -1,8 +1,8 @@
 // teacher status code
 const teacherStatusCode = {
-    ACTIVE:"active",
-}
+  ACTIVE: 'active',
+};
 
 module.exports = {
-    teacherStatusCode
-}
+  teacherStatusCode,
+};
