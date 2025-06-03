@@ -5,25 +5,25 @@ const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 16; // Tính kích thước mỗi ô
 
 const SkeletonItem = () => {
-   const animation = new Animated.Value(0);
+  const animation = new Animated.Value(0);
 
-   // Tạo hiệu ứng nhấp nháy cho Skeleton
-   React.useEffect(() => {
-      Animated.loop(
-         Animated.timing(animation, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true,
-            easing: Easing.inOut(Easing.ease),
-         })
-      ).start();
-   }, []);
+  // Tạo hiệu ứng nhấp nháy cho Skeleton
+  React.useEffect(() => {
+    Animated.loop(
+      Animated.timing(animation, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+        easing: Easing.inOut(Easing.ease),
+      }),
+    ).start();
+  }, []);
 
-   // Hiệu ứng màu nhấp nháy
-   const opacityInterpolate = animation.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0.1, 0.5],
-   });
+  // Hiệu ứng màu nhấp nháy
+  const opacityInterpolate = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.1, 0.5],
+  });
 
    return (
       <View style={{

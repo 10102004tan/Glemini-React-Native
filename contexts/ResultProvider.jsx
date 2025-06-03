@@ -26,56 +26,56 @@ const ResultProvider = ({ children }) => {
          type,
       };
 
-      try {
-         // const response = await fetch(path, {
-         //    method: "POST",
-         //    headers: {
-         //       "Content-Type": "application/json",
-         //       "x-client-id": userData._id,
-         //       authorization: userData.accessToken,
-         //    },
-         //    body: JSON.stringify(requestBody),
-         // });
+    try {
+      // const response = await fetch(path, {
+      //    method: "POST",
+      //    headers: {
+      //       "Content-Type": "application/json",
+      //       "x-client-id": userData._id,
+      //       authorization: userData.accessToken,
+      //    },
+      //    body: JSON.stringify(requestBody),
+      // });
 
-         // const data = await response.json();
+      // const data = await response.json();
 
-         // if (data.statusCode === 200) {
-         //    setResults(data.metadata);
-         //    return data.metadata
-         // }
-         const response = await api.post(path, requestBody);
-         const data = response.data;
-         if (data.statusCode === 200) {
-            console.log("[CONTEXT]:Result teacher=>", data.metadata);
-            setResults(data.metadata);
-            return data.metadata
-         }
-      } catch (error) {
-         // console.error("Failed to fetch results for teacher:", error);
-         console.log("[CONTEXT]:Result=>", error);
+      // if (data.statusCode === 200) {
+      //    setResults(data.metadata);
+      //    return data.metadata
+      // }
+      const response = await api.post(path, requestBody);
+      const data = response.data;
+      if (data.statusCode === 200) {
+        console.log('[CONTEXT]:Result teacher=>', data.metadata);
+        setResults(data.metadata);
+        return data.metadata;
       }
-   };
+    } catch (error) {
+      // console.error("Failed to fetch results for teacher:", error);
+      console.log('[CONTEXT]:Result=>', error);
+    }
+  };
 
-   // Fetch results for students without filters
-   const fetchResultsForStudent = async () => {
-      const path = `${API_VERSION.V1}${END_POINTS.RESULT_STUDENT}`;
-      try {
-         console.log("User ID:", user); // Use user._id from useAuthStore
-         const body = {
-            userId: user?.user_id, // Use user._id from useAuthStore
-         }
-         const response = await api.post(path, body)
-         const data = response.data;
-         if (data.statusCode === 200) {
-            console.log("[CONTEXT]:Result=>", data.metadata);
-            setResults(data.metadata);
-            return data.metadata
-         }
-      } catch (error) {
-         // console.error("Failed to fetch results for student:", error);
-         console.log("[CONTEXT]:Result=>", error);
+  // Fetch results for students without filters
+  const fetchResultsForStudent = async () => {
+    const path = `${API_VERSION.V1}${END_POINTS.RESULT_STUDENT}`;
+    try {
+      console.log('User ID:', user); // Use user._id from useAuthStore
+      const body = {
+        userId: user?.user_id, // Use user._id from useAuthStore
+      };
+      const response = await api.post(path, body);
+      const data = response.data;
+      if (data.statusCode === 200) {
+        console.log('[CONTEXT]:Result=>', data.metadata);
+        setResults(data.metadata);
+        return data.metadata;
       }
-   };
+    } catch (error) {
+      // console.error("Failed to fetch results for student:", error);
+      console.log('[CONTEXT]:Result=>', error);
+    }
+  };
 
    const fetchResultData = async ({ quizId, exerciseId, roomId, type }) => {
       const query = {
@@ -86,7 +86,7 @@ const ResultProvider = ({ children }) => {
          ...(roomId && { room_id: roomId })
       };
 
-      // console.log(query);
+    // console.log(query);
 
       try {
          const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_REVIEW, query);
@@ -151,23 +151,21 @@ const ResultProvider = ({ children }) => {
 
          const data = await res.data;
 
-         if (data.statusCode === 200) {
-            return data.metadata
-
-         } else {
-            return null
-         }
-
-      } catch (error) {
-         Toast.show({
-            type: 'error',
-            text1: 'Lỗi khi cập nhật trạng thái hoàn thành.',
-            text2: { error },
-            visibilityTime: 1000,
-            autoHide: true,
-         });
+      if (data.statusCode === 200) {
+        return data.metadata;
+      } else {
+        return null;
       }
-   };
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi khi cập nhật trạng thái hoàn thành.',
+        text2: { error },
+        visibilityTime: 1000,
+        autoHide: true,
+      });
+    }
+  };
 
    /**
     * Fetch report detail for a specific result
@@ -192,30 +190,31 @@ const ResultProvider = ({ children }) => {
    };
 
 
-   useEffect(() => {
-     if (user){
+  useEffect(() => {
+    if (user) {
       fetchResultsForStudent();
-     }
-   }, []);
+    }
+  }, []);
 
-
-   return (
-      <ResultContext.Provider value={{
-         results,
-         fetchResultsForStudent,
-         fetchResultsForTeacher,
-         fetchResultData,
-         result,
-         completed,
-         reportData,
-         fetchReportDetail,
-         overViewData,
-         fetchOverViewData,
-         fetchResetResultOfQuiz
-      }}>
-         {children}
-      </ResultContext.Provider>
-   );
+  return (
+    <ResultContext.Provider
+      value={{
+        results,
+        fetchResultsForStudent,
+        fetchResultsForTeacher,
+        fetchResultData,
+        result,
+        completed,
+        reportData,
+        fetchReportDetail,
+        overViewData,
+        fetchOverViewData,
+        fetchResetResultOfQuiz,
+      }}
+    >
+      {children}
+    </ResultContext.Provider>
+  );
 };
 
 export const useResultProvider = () => useContext(ResultContext);

@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import { View, Text, Dimensions, RefreshControl } from "react-native";
+import React, { Component } from 'react';
+import { View, Text, Dimensions, RefreshControl } from 'react-native';
 import {
   RecyclerListView,
   DataProvider,
   LayoutProvider,
   GridLayoutProvider,
-} from "recyclerlistview";
-import LayoutProviderCustom from "./LayoutProvider";
-import LoadMoreFooter from "@/components/customs/LoadMoreFooter";
-import QuizEmpty from "@/components/customs/QuizEmpty";
-import NotificationEmpty from "@/components/customs/NotificationEmpty";
-import QuizListSkeleton from "../QuizListSkeleton";
+} from 'recyclerlistview';
+import LayoutProviderCustom from './LayoutProvider';
+import LoadMoreFooter from '@/components/customs/LoadMoreFooter';
+import QuizEmpty from '@/components/customs/QuizEmpty';
+import NotificationEmpty from '@/components/customs/NotificationEmpty';
+import QuizListSkeleton from '../QuizListSkeleton';
 
 export default class AntiFlatList extends React.Component {
   constructor(args) {
@@ -74,7 +74,7 @@ export default class AntiFlatList extends React.Component {
   };
 
   _onRefresh = () => {
-    console.log("refreshing");
+    console.log('refreshing');
     console.log(this.state.refreshing);
     if (!this.state.refreshing) {
       this.props.handleRefresh();
@@ -91,13 +91,10 @@ export default class AntiFlatList extends React.Component {
 
     return (
       <RecyclerListView
-        style={{ minWidth: 1, height: "100%" }}
+        style={{ minWidth: 1, height: '100%' }}
         scrollViewProps={{
           refreshControl: (
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh}
-            />
+            <RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh} />
           ),
         }}
         onEndReachedThreshold={0.8}

@@ -1,127 +1,140 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, Image, ScrollView, RefreshControl, TextInput } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+  Image,
+  ScrollView,
+  RefreshControl,
+  TextInput,
+} from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { Images } from '@/constants';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import QuizItem from '@/components/customs/QuizItem';
 import QuizModal from '@/components/modals/QuizModal';
-import NotificationIcon from "@/components/customs/NotificationIcon";
-import { AuthContext } from "@/contexts/AuthContext";
+import NotificationIcon from '@/components/customs/NotificationIcon';
+import { AuthContext } from '@/contexts/AuthContext';
 import { useResultProvider } from '@/contexts/ResultProvider';
 import { router } from 'expo-router';
 import Toast from 'react-native-toast-message-custom';
 import Lottie from '@/components/loadings/Lottie';
-import AntDesign from "@expo/vector-icons/AntDesign";
+import AntDesign from '@expo/vector-icons/AntDesign';
 import NotificationCard from '@/components/customs/NotificationCard';
+import MainLayout from '../layouts/MainLayout';
+import TestThoBayMau from './TestThoBayMau';
 
 const width = Dimensions.get('window').width;
 const HomeStudent = () => {
-    const { i18n } = useAppProvider();
-    const { fetchResultData } = useResultProvider();
-    const { filterQuizzes, getQuizzesPublished, bannerQuizzes, getQuizzesBanner } = useQuizProvider();
-    const [modalVisible, setModalVisible] = useState(false);
-    const [selectedQuiz, setSelectedQuiz] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
-    const [isFetch, setIsFetch] = useState(false)
-    const carouselHeight = width * 2 / 3;
-    // const { numberOfUnreadNoti } = useContext(AuthContext);
+  const { i18n } = useAppProvider();
+  const { fetchResultData } = useResultProvider();
+  const { filterQuizzes, getQuizzesPublished, bannerQuizzes, getQuizzesBanner } = useQuizProvider();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isFetch, setIsFetch] = useState(false);
+  const carouselHeight = (width * 2) / 3;
+  // const { numberOfUnreadNoti } = useContext(AuthContext);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            await getQuizzesPublished();
-            await getQuizzesBanner();
-            setLoading(false);
-        };
-
-        fetchData();
-    }, [])
-
-    const onRefresh = async () => {
-        setRefreshing(true);
-        await getQuizzesPublished();
-        await getQuizzesBanner();
-        setRefreshing(false);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      await getQuizzesPublished();
+      await getQuizzesBanner();
+      setLoading(false);
     };
 
-    const handlePressQuizItem = (quiz) => {
-        setSelectedQuiz(quiz);
-        setModalVisible(true);
-    };
+    fetchData();
+  }, []);
 
-    const handleNavigateToQuiz = async () => {
-        setModalVisible(false);
-        const fetchedResult = await fetchResultData({ quizId: selectedQuiz._id, type: 'publish' });
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await getQuizzesPublished();
+    await getQuizzesBanner();
+    setRefreshing(false);
+  };
 
-        if (fetchedResult) {
-            Toast.show({
-                type: 'info',
-                text1: 'Bạn đã chơi bộ câu hỏi này.'
-            });
-            router.push({
-                pathname: '/(home)/activity',
-            });
-        } else {
-            router.push({
-                pathname: '(play)/single',
-                params: { quizId: selectedQuiz._id, type: 'publish' }
-            });
-        }
-    };
+  const handlePressQuizItem = (quiz) => {
+    setSelectedQuiz(quiz);
+    setModalVisible(true);
+  };
 
-    const toggleFetch = () => {
-        setIsFetch(prev => !prev)
+  const handleNavigateToQuiz = async () => {
+    setModalVisible(false);
+    const fetchedResult = await fetchResultData({ quizId: selectedQuiz._id, type: 'publish' });
+
+    if (fetchedResult) {
+      Toast.show({
+        type: 'info',
+        text1: 'Bạn đã chơi bộ câu hỏi này.',
+      });
+      router.push({
+        pathname: '/(home)/activity',
+      });
+    } else {
+      router.push({
+        pathname: '(play)/single',
+        params: { quizId: selectedQuiz._id, type: 'publish' },
+      });
     }
+  };
 
-    const handleRedirectSearch = () => {
-        console.log("Redirecting to search page");
-        // router.push("/(protected)/search")
-        router.push({
-            pathname: "/(protected)/search",
-        }
-        )
+  const toggleFetch = () => {
+    setIsFetch((prev) => !prev);
+  };
 
-    }
+  const handleRedirectSearch = () => {
+    console.log('Redirecting to search page');
+    // router.push("/(protected)/search")
+    router.push({
+      pathname: '/(protected)/search',
+    });
+  };
 
-    return (
+  return (
+    <MainLayout>
+      <View
+        style={{
+          //className='flex-1 pt-10'
+          flex: 1,
+          paddingTop: 30,
+        }}
+      >
         <View
-            style={{
-                //className='flex-1 pt-10'
-                flex: 1,
-                paddingTop: 30,
-            }}
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 14,
+          }}
         >
-            <View
-                style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: 14,
-                }}
+          <View>
+            <TouchableOpacity
+              onPress={handleRedirectSearch}
+              style={{
+                width: 300,
+              }}
             >
-                <View>
-                    <TouchableOpacity onPress={handleRedirectSearch} style={{
-                        width: 300
-                    }}>
-                        <TextInput
-                            editable={false}
-                            style={{
-                                borderWidth: 1,
-                                borderColor: "#D1D5DB",
-                                borderRadius: 15,
-                                paddingVertical: 10,
-                                paddingHorizontal: 20,
-                                backgroundColor: "#F9FAFB",
-                            }}
-                            placeholder="Gần đây có gì mới? Tìm kiếm ngay!"
-                            placeholderTextColor="#9CA3AF"
-                        />
-                    </TouchableOpacity>
-                </View>
-                <NotificationIcon numberOfUnreadNoti={3} />
-            </View>
+              <TextInput
+                editable={false}
+                style={{
+                  borderWidth: 1,
+                  borderColor: '#D1D5DB',
+                  borderRadius: 15,
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  backgroundColor: '#F9FAFB',
+                }}
+                placeholder="Gần đây có gì mới? Tìm kiếm ngay!"
+                placeholderTextColor="#9CA3AF"
+              />
+            </TouchableOpacity>
+          </View>
+          <NotificationIcon numberOfUnreadNoti={3} />
+        </View>
 
             {loading || refreshing ? (
                 <Lottie
@@ -211,15 +224,16 @@ const HomeStudent = () => {
                 </ScrollView>
             )}
 
-            {/* Quiz Modal */}
-            <QuizModal
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
-                onStartQuiz={handleNavigateToQuiz}
-                quiz={selectedQuiz}
-            />
-        </View>
-    );
+        {/* Quiz Modal */}
+        <QuizModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onStartQuiz={handleNavigateToQuiz}
+          quiz={selectedQuiz}
+        />
+      </View>
+    </MainLayout>
+  );
 };
 
 export default HomeStudent;

@@ -1,6 +1,6 @@
-import LottieView from 'lottie-react-native'
-import React from 'react'
-import { Text, View } from 'react-native'
+import LottieView from 'lottie-react-native';
+import React from 'react';
+import { Text, View } from 'react-native';
 
 function Lottie({ source, width, height, text }) {
     return (
@@ -23,4 +23,4 @@ function Lottie({ source, width, height, text }) {
     )
 }
 
-export default Lottie
+export default Lottie;

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
-import { useResultProvider } from "@/contexts/ResultProvider";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import moment from "moment";
-import LottieView from "lottie-react-native";
-import { useAppProvider } from "@/contexts/AppProvider";
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useResultProvider } from '@/contexts/ResultProvider';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import moment from 'moment';
+import LottieView from 'lottie-react-native';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 export default function DetailReport() {
     const { i18n } = useAppProvider()

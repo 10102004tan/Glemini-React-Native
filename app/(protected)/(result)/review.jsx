@@ -7,51 +7,50 @@ import QuestionResultItem from '@/components/customs/QuestionResultItem';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 
 const ResultReview = () => {
-   const router = useRouter();
-   const { result } = useGlobalSearchParams();
-   const resultData = JSON.parse(result);
-   const { i18n } = useAppProvider();
+  const router = useRouter();
+  const { result } = useGlobalSearchParams();
+  const resultData = JSON.parse(result);
+  const { i18n } = useAppProvider();
 
+  // console.log("RESULT DATA")
+  // console.log(resultData)
 
-   // console.log("RESULT DATA")
-   // console.log(resultData)
+  // Trạng thái để lưu chỉ số câu hỏi được chọn và trạng thái hiển thị của Modal
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
-   // Trạng thái để lưu chỉ số câu hỏi được chọn và trạng thái hiển thị của Modal
-   const [selectedIndex, setSelectedIndex] = useState(null);
-   const [modalVisible, setModalVisible] = useState(false);
+  const openModal = (index) => {
+    setSelectedIndex(index);
+    setModalVisible(true);
+  };
 
-   const openModal = (index) => {
-      setSelectedIndex(index);
-      setModalVisible(true);
-   };
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedIndex(null);
+  };
 
-   const closeModal = () => {
-      setModalVisible(false);
-      setSelectedIndex(null);
-   };
+  const currentQuestion = resultData.result_questions[selectedIndex];
+  console.log(currentQuestion);
 
-   const currentQuestion = resultData.result_questions[selectedIndex];
-   console.log(currentQuestion)
+  const goToNextQuestion = () => {
+    if (selectedIndex < resultData.result_questions.length - 1) {
+      setSelectedIndex((prevIndex) => prevIndex + 1);
+    }
+  };
 
-   const goToNextQuestion = () => {
-      if (selectedIndex < resultData.result_questions.length - 1) {
-         setSelectedIndex(prevIndex => prevIndex + 1);
-      }
-   };
+  const goToPreviousQuestion = () => {
+    if (selectedIndex > 0) {
+      setSelectedIndex((prevIndex) => prevIndex - 1);
+    }
+  };
 
-   const goToPreviousQuestion = () => {
-      if (selectedIndex > 0) {
-         setSelectedIndex(prevIndex => prevIndex - 1);
-      }
-   };
-
-   // Hàm chuẩn hóa chuỗi văn bản
-   const normalizeText = (text) => {
-      return text
-         .toLowerCase() // Chuyển về chữ thường
-         .replace(/\s+/g, ' ') // Loại bỏ khoảng trắng thừa giữa các từ
-         .trim(); // Loại bỏ khoảng trắng đầu và cuối
-   };
+  // Hàm chuẩn hóa chuỗi văn bản
+  const normalizeText = (text) => {
+    return text
+      .toLowerCase() // Chuyển về chữ thường
+      .replace(/\s+/g, ' ') // Loại bỏ khoảng trắng thừa giữa các từ
+      .trim(); // Loại bỏ khoảng trắng đầu và cuối
+  };
 
    return (
       <View style={{
@@ -150,12 +149,15 @@ const ResultReview = () => {
                            {currentQuestion.question_id.question_excerpt}
                         </Text>
 
-                        {currentQuestion && currentQuestion.question_id.question_answer_ids.map((answer, ansIndex) => {
-                           if (currentQuestion.question_id.question_type === 'box') {
-                              const correctTextAnswers = normalizeText(currentQuestion.question_id.correct_answer_ids[0].text);
-                              const userAnswerText = normalizeText(answer.text);
+                {currentQuestion &&
+                  currentQuestion.question_id.question_answer_ids.map((answer, ansIndex) => {
+                    if (currentQuestion.question_id.question_type === 'box') {
+                      const correctTextAnswers = normalizeText(
+                        currentQuestion.question_id.correct_answer_ids[0].text,
+                      );
+                      const userAnswerText = normalizeText(answer.text);
 
-                              const isAnswerCorrect = correctTextAnswers.includes(userAnswerText);
+                      const isAnswerCorrect = correctTextAnswers.includes(userAnswerText);
 
                               return (
                                  <View key={ansIndex} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }} >
@@ -173,21 +175,23 @@ const ResultReview = () => {
                                  correctAns => correctAns._id === answer._id
                               );
 
-                              const bulletStyle = isCorrectAnswer && isUserAnswer
-                                 ? 'bg-yellow-500' // Cả câu trả lời của bạn và câu trả lời đúng
-                                 : isCorrectAnswer
-                                    ? 'bg-green-500' // Chỉ là câu trả lời đúng
-                                    : isUserAnswer
-                                       ? 'bg-red-500' // Chỉ là câu trả lời của bạn
-                                       : 'bg-slate-400/50'; // Các câu trả lời khác
+                      const bulletStyle =
+                        isCorrectAnswer && isUserAnswer
+                          ? 'bg-yellow-500' // Cả câu trả lời của bạn và câu trả lời đúng
+                          : isCorrectAnswer
+                            ? 'bg-green-500' // Chỉ là câu trả lời đúng
+                            : isUserAnswer
+                              ? 'bg-red-500' // Chỉ là câu trả lời của bạn
+                              : 'bg-slate-400/50'; // Các câu trả lời khác
 
-                              const textStyle = isCorrectAnswer && isUserAnswer
-                                 ? 'text-yellow-500 font-semibold' // Cả câu trả lời của bạn và câu trả lời đúng
-                                 : isCorrectAnswer
-                                    ? 'text-green-500 font-semibold' // Chỉ là câu trả lời đúng
-                                    : isUserAnswer
-                                       ? 'text-red-500 font-regular' // Chỉ là câu trả lời của bạn
-                                       : 'text-slate-400 font-regular'; // Các câu trả lời khác
+                      const textStyle =
+                        isCorrectAnswer && isUserAnswer
+                          ? 'text-yellow-500 font-semibold' // Cả câu trả lời của bạn và câu trả lời đúng
+                          : isCorrectAnswer
+                            ? 'text-green-500 font-semibold' // Chỉ là câu trả lời đúng
+                            : isUserAnswer
+                              ? 'text-red-500 font-regular' // Chỉ là câu trả lời của bạn
+                              : 'text-slate-400 font-regular'; // Các câu trả lời khác
 
                               return (
                                  <View key={ansIndex} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8}}>
@@ -202,49 +206,54 @@ const ResultReview = () => {
 
                      </View>
 
-                     {!currentQuestion.correct && (
-                        <View className='mt-4'>
-                           <Text className='text-base text-slate-600 font-pregular'>
-                              {i18n.t('result.review.userAnswer')} {currentQuestion && (typeof currentQuestion.answer) === 'string' ? currentQuestion.answer : currentQuestion.answer.map(userAns => userAns.text).join(', ') || i18n.t('result.review.noAnswer')}
-                           </Text>
-                        </View>
-                     )}
-                     <View>
-                        <Text className='text-base text-slate-600 font-pregular mt-4 underline'>
-                           {i18n.t('result.review.explanation')}
-                        </Text>
-                        <Text className='text-sm text-slate-600/90 font-pextralight'>
-                           {currentQuestion.question_id.question_explanation || i18n.t('result.review.textExplanation')}
-                        </Text>
-                     </View>
+              {!currentQuestion.correct && (
+                <View className="mt-4">
+                  <Text className="text-base text-slate-600 font-pregular">
+                    {i18n.t('result.review.userAnswer')}{' '}
+                    {currentQuestion && typeof currentQuestion.answer === 'string'
+                      ? currentQuestion.answer
+                      : currentQuestion.answer.map((userAns) => userAns.text).join(', ') ||
+                        i18n.t('result.review.noAnswer')}
+                  </Text>
+                </View>
+              )}
+              <View>
+                <Text className="text-base text-slate-600 font-pregular mt-4 underline">
+                  {i18n.t('result.review.explanation')}
+                </Text>
+                <Text className="text-sm text-slate-600/90 font-pextralight">
+                  {currentQuestion.question_id.question_explanation ||
+                    i18n.t('result.review.textExplanation')}
+                </Text>
+              </View>
 
-                     <View className="mt-4 flex flex-row items-center justify-center">
-                        <Button
-                           text={i18n.t('result.review.btnNext')}
-                           onPress={goToPreviousQuestion}
-                           loading={false}
-                           type="fill"
-                           otherStyles={`bg-pink-600 rounded-lg px-4 ${selectedIndex === 0 ? 'opacity-50' : ''}`}
-                           textStyles={'text-base font-pregular'}
-                           disabled={selectedIndex === 0}
-                        />
+              <View className="mt-4 flex flex-row items-center justify-center">
+                <Button
+                  text={i18n.t('result.review.btnNext')}
+                  onPress={goToPreviousQuestion}
+                  loading={false}
+                  type="fill"
+                  otherStyles={`bg-pink-600 rounded-lg px-4 ${selectedIndex === 0 ? 'opacity-50' : ''}`}
+                  textStyles={'text-base font-pregular'}
+                  disabled={selectedIndex === 0}
+                />
 
-                        <Button
-                           text={i18n.t('result.review.btnPrev')}
-                           onPress={goToNextQuestion}
-                           loading={false}
-                           type="fill"
-                           otherStyles={`bg-pink-600 rounded-lg px-4  ml-3 ${resultData && selectedIndex === resultData.result_questions.length - 1 ? 'opacity-50' : ''}`}
-                           textStyles={'text-base font-pregular'}
-                           disabled={selectedIndex === resultData.result_questions.length - 1}
-                        />
-                     </View>
-                  </View>
-               </View>
-            </Modal>
-         )}
-      </View>
-   );
+                <Button
+                  text={i18n.t('result.review.btnPrev')}
+                  onPress={goToNextQuestion}
+                  loading={false}
+                  type="fill"
+                  otherStyles={`bg-pink-600 rounded-lg px-4  ml-3 ${resultData && selectedIndex === resultData.result_questions.length - 1 ? 'opacity-50' : ''}`}
+                  textStyles={'text-base font-pregular'}
+                  disabled={selectedIndex === resultData.result_questions.length - 1}
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
+    </View>
+  );
 };
 
 export default ResultReview;

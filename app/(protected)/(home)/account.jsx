@@ -21,7 +21,7 @@
 // import socket from "@/utils/socket";
 // import { useRoomProvider } from "@/contexts/RoomProvider";
 
-import { Text, View } from "react-native";
+import { Text, View } from 'react-native';
 
 // const COUNT_LENGTH = 30;
 // const COUNT_NOTIFICATION_RECENT = 2;
@@ -150,11 +150,10 @@ import { Text, View } from "react-native";
 //    )
 // }
 
-
 export default function AccountScreen() {
-   return (
-      <View className="bg-white h-[100%] px-[20px]">
-         <Text>Account Screen</Text>
-      </View>
-   )
+  return (
+    <View className="bg-white h-[100%] px-[20px]">
+      <Text>Account Screen</Text>
+    </View>
+  );
 }

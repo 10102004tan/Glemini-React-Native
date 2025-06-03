@@ -1,18 +1,18 @@
-import { createRef, useCallback, useEffect } from "react";
-import { View, Text, Pressable, TouchableOpacity, ScrollView, Image, Alert } from "react-native";
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import { useResultProvider } from "@/contexts/ResultProvider";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import moment from "moment";
-import LottieView from "lottie-react-native";
-import { Modalize } from "react-native-modalize";
-import { useQuestionProvider } from "@/contexts/QuestionProvider";
-import QuestionOverview from "@/components/customs/QuestionOverview";
+import { createRef, useCallback, useEffect } from 'react';
+import { View, Text, Pressable, TouchableOpacity, ScrollView, Image, Alert } from 'react-native';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useResultProvider } from '@/contexts/ResultProvider';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import moment from 'moment';
+import LottieView from 'lottie-react-native';
+import { Modalize } from 'react-native-modalize';
+import { useQuestionProvider } from '@/contexts/QuestionProvider';
+import QuestionOverview from '@/components/customs/QuestionOverview';
 import * as XLSX from 'xlsx';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
-import Lottie from "@/components/loadings/Lottie";
-import { useAppProvider } from "@/contexts/AppProvider";
+import Lottie from '@/components/loadings/Lottie';
+import { useAppProvider } from '@/contexts/AppProvider';
 
 export default function DetailReport() {
     const { i18n } = useAppProvider()
@@ -21,66 +21,68 @@ export default function DetailReport() {
     const { reportData, fetchReportDetail } = useResultProvider();
     const { fetchQuestions, questions } = useQuestionProvider();
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchReportDetail(reportId, type);
-        }, [reportId])
-    );
+  useFocusEffect(
+    useCallback(() => {
+      fetchReportDetail(reportId, type);
+    }, [reportId]),
+  );
 
-    const getStatus = () => {
-        const currentDate = new Date();
-        const endDate = new Date(reportData.date_end);
-        return currentDate < endDate;
-    };
+  const getStatus = () => {
+    const currentDate = new Date();
+    const endDate = new Date(reportData.date_end);
+    return currentDate < endDate;
+  };
 
-    const onOpen = () => {
-        if (modal.current) {
-            modal.current.open();
-        }
-    };
+  const onOpen = () => {
+    if (modal.current) {
+      modal.current.open();
+    }
+  };
 
-    const downloadExcel = async () => {
-        if (!reportData.result_ids) return;
+  const downloadExcel = async () => {
+    if (!reportData.result_ids) return;
 
-        // Prepare data for Excel
-        const data = reportData.result_ids.map((result) => ({
-            "Họ và tên": result.user_id.user_fullname,
-            "Email": result.user_id.user_email,
-            "Trạng thái": 'Hoàn thành',
-            "Điểm số": result.result_questions.filter(q => q.correct).length + " điểm",
-            "Tổng câu hỏi": result.result_questions.length + " câu",
-        }));
+    // Prepare data for Excel
+    const data = reportData.result_ids.map((result) => ({
+      'Họ và tên': result.user_id.user_fullname,
+      Email: result.user_id.user_email,
+      'Trạng thái': 'Hoàn thành',
+      'Điểm số': result.result_questions.filter((q) => q.correct).length + ' điểm',
+      'Tổng câu hỏi': result.result_questions.length + ' câu',
+    }));
 
-        // Add Title Row
-        const title = [["Báo cáo Kết quả Quiz"]];
-        const headers = [["Họ và tên", "Email", "Trạng thái", "Điểm số", "Tổng câu hỏi"]];
+    // Add Title Row
+    const title = [['Báo cáo Kết quả Quiz']];
+    const headers = [['Họ và tên', 'Email', 'Trạng thái', 'Điểm số', 'Tổng câu hỏi']];
 
-        // Combine title, headers, and data into one sheet
-        const sheetData = [...title, [], ...headers, ...data.map(Object.values)];
+    // Combine title, headers, and data into one sheet
+    const sheetData = [...title, [], ...headers, ...data.map(Object.values)];
 
-        // Create worksheet and workbook
-        const ws = XLSX.utils.aoa_to_sheet(sheetData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Results");
+    // Create worksheet and workbook
+    const ws = XLSX.utils.aoa_to_sheet(sheetData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Results');
 
-        // Write the Excel file to the file system
-        const wbout = XLSX.write(wb, { type: "base64", bookType: "xlsx" });
-        const fileUri = `${FileSystem.cacheDirectory}${reportData.name || reportData.room_code}_report.xlsx`;
+    // Write the Excel file to the file system
+    const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
+    const fileUri = `${FileSystem.cacheDirectory}${reportData.name || reportData.room_code}_report.xlsx`;
 
-        // Save and share
-        try {
-            await FileSystem.writeAsStringAsync(fileUri, wbout, { encoding: FileSystem.EncodingType.Base64 });
-            await Sharing.shareAsync(fileUri);
-        } catch (error) {
-            console.error("Error downloading Excel:", error);
-        }
-    };
+    // Save and share
+    try {
+      await FileSystem.writeAsStringAsync(fileUri, wbout, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      await Sharing.shareAsync(fileUri);
+    } catch (error) {
+      console.error('Error downloading Excel:', error);
+    }
+  };
 
-    useEffect(() => {
-        if (reportData) {
-            fetchQuestions(reportData.quiz_id?._id);
-        }
-    }, [reportData])
+  useEffect(() => {
+    if (reportData) {
+      fetchQuestions(reportData.quiz_id?._id);
+    }
+  }, [reportData]);
 
     return (
         <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>

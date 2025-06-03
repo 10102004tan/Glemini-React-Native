@@ -61,12 +61,10 @@
 //       }
 //    };
 
-
 //    useEffect(() => {
 //       setPage(1);
 //       loadResults(1, false); // Reset results rather than appending
 //    }, [searchTerm, classFilter, sortOrder, typeFilter]);
-
 
 //    const handleLoadMore = async () => {
 //       if (isFetchingMore || !hasMoreData) return;
@@ -95,7 +93,6 @@
 
 //       loadResults(1).then(() => handleLoadMore());
 //    };
-
 
 //    if (teacherStatus === 'pedding' || teacherStatus === 'rejected') {
 //       return <LockFeature />;
@@ -229,7 +226,6 @@
 //    );
 // }
 
-
 // export default function ReportScreen() {
-   
+
 // }

@@ -1,115 +1,129 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Pressable, ActivityIndicator, FlatList } from "react-native";
-import { router } from "expo-router";
-import { useResultProvider } from "@/contexts/ResultProvider";
-import { AuthContext } from "@/contexts/AuthContext";
-import LockFeature from "@/components/customs/LockFeature";
-import { Feather, FontAwesome } from "@expo/vector-icons";
+import { useCallback, useContext, useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Pressable,
+  ActivityIndicator,
+  FlatList,
+} from 'react-native';
+import { router } from 'expo-router';
+import { useResultProvider } from '@/contexts/ResultProvider';
+import { AuthContext } from '@/contexts/AuthContext';
+import LockFeature from '@/components/customs/LockFeature';
+import { Feather, FontAwesome } from '@expo/vector-icons';
 import debounce from 'lodash/debounce';
-import Toast from "react-native-toast-message-custom";
-import { useClassroomProvider } from "@/contexts/ClassroomProvider";
+import Toast from 'react-native-toast-message-custom';
+import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import { Picker } from '@react-native-picker/picker';
-import { useAppProvider } from "@/contexts/AppProvider";
-import MainLayout from "@/components/layouts/MainLayout";
+import { useAppProvider } from '@/contexts/AppProvider';
+import MainLayout from '@/components/layouts/MainLayout';
 
 export default function Report() {
-   const { i18n } = useAppProvider()
-   // const { teacherStatus } = useContext(AuthContext);
-   const { fetchResultsForTeacher } = useResultProvider();
-   const { classrooms } = useClassroomProvider();
-   const [typeFilter, setTypeFilter] = useState("");
-   const [searchTerm, setSearchTerm] = useState("");
-   const [searchTermMockup, setSearchTermMockup] = useState("");
-   const [classFilter, setClassFilter] = useState("");
-   const [sortOrder, setSortOrder] = useState("newest");
-   const [page, setPage] = useState(1);
-   const [isFetchingMore, setIsFetchingMore] = useState(false);
-   const [resultsData, setResultsData] = useState([]);
-   const [hasMoreData, setHasMoreData] = useState(true);
+  const { i18n } = useAppProvider();
+  // const { teacherStatus } = useContext(AuthContext);
+  const { fetchResultsForTeacher } = useResultProvider();
+  const { classrooms } = useClassroomProvider();
+  const [typeFilter, setTypeFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTermMockup, setSearchTermMockup] = useState('');
+  const [classFilter, setClassFilter] = useState('');
+  const [sortOrder, setSortOrder] = useState('newest');
+  const [page, setPage] = useState(1);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [resultsData, setResultsData] = useState([]);
+  const [hasMoreData, setHasMoreData] = useState(true);
 
-   // Debounced search handler
-   const handleSearchChange = useCallback(
-      debounce((term) => {
-         setSearchTerm(term);
-      }, 200),
-      []
-   );
+  // Debounced search handler
+  const handleSearchChange = useCallback(
+    debounce((term) => {
+      setSearchTerm(term);
+    }, 200),
+    [],
+  );
 
-   // Function to fetch results with filters and pagination
-   const loadResults = async (overridePage = 1, append = false) => {
-      try {
-         const newResults = await fetchResultsForTeacher(overridePage, sortOrder, searchTerm, classFilter, typeFilter);
+  // Function to fetch results with filters and pagination
+  const loadResults = async (overridePage = 1, append = false) => {
+    try {
+      const newResults = await fetchResultsForTeacher(
+        overridePage,
+        sortOrder,
+        searchTerm,
+        classFilter,
+        typeFilter,
+      );
 
-         if (newResults?.results) {
-            if (newResults.results.length > 0) {
-               if (append) {
-                  setResultsData((prevResults) => [...prevResults, ...newResults.results]);
-               } else {
-                  setResultsData(newResults.results);
-               }
-               setHasMoreData(true);
-            } else {
-               if (!append) {
-                  setResultsData([]);
-               }
-               setHasMoreData(false);
-            }
-         } else {
-            Toast.show({ type: 'error', text1: 'Dữ liệu trả về không đúng cấu trúc mong đợi' });
-         }
-      } catch (error) {
-         Toast.show({ type: 'error', text1: 'Có lỗi xảy ra khi tải dữ liệu' });
+      if (newResults?.results) {
+        if (newResults.results.length > 0) {
+          if (append) {
+            setResultsData((prevResults) => [...prevResults, ...newResults.results]);
+          } else {
+            setResultsData(newResults.results);
+          }
+          setHasMoreData(true);
+        } else {
+          if (!append) {
+            setResultsData([]);
+          }
+          setHasMoreData(false);
+        }
+      } else {
+        Toast.show({ type: 'error', text1: 'Dữ liệu trả về không đúng cấu trúc mong đợi' });
       }
-   };
+    } catch (error) {
+      Toast.show({ type: 'error', text1: 'Có lỗi xảy ra khi tải dữ liệu' });
+    }
+  };
 
+  useEffect(() => {
+    setPage(1);
+    loadResults(1, false); // Reset results rather than appending
+  }, [searchTerm, classFilter, sortOrder, typeFilter]);
 
-   useEffect(() => {
-      setPage(1);
-      loadResults(1, false); // Reset results rather than appending
-   }, [searchTerm, classFilter, sortOrder, typeFilter]);
+  const handleLoadMore = async () => {
+    if (isFetchingMore || !hasMoreData) return;
 
+    setIsFetchingMore(true);
+    const nextPage = page + 1;
+    await loadResults(nextPage, true);
+    setPage(nextPage);
+    setIsFetchingMore(false);
+  };
 
-   const handleLoadMore = async () => {
-      if (isFetchingMore || !hasMoreData) return;
+  const handleSortOrderToggle = () => {
+    setSortOrder((prevOrder) => (prevOrder === 'newest' ? 'oldest' : 'newest'));
+    setPage(1);
+  };
 
-      setIsFetchingMore(true);
-      const nextPage = page + 1;
-      await loadResults(nextPage, true);
-      setPage(nextPage);
-      setIsFetchingMore(false);
-   };
+  // Reset Filters
+  const handleResetFilters = () => {
+    setSearchTermMockup('');
+    setSearchTerm('');
+    setClassFilter('');
+    setTypeFilter('');
+    setSortOrder('newest');
+    setPage(1);
+    setHasMoreData(true);
 
-   const handleSortOrderToggle = () => {
-      setSortOrder((prevOrder) => (prevOrder === 'newest' ? 'oldest' : 'newest'));
-      setPage(1);
-   };
+    loadResults(1).then(() => handleLoadMore());
+  };
 
-   // Reset Filters
-   const handleResetFilters = () => {
-      setSearchTermMockup("");
-      setSearchTerm("");
-      setClassFilter("");
-      setTypeFilter("");
-      setSortOrder("newest");
-      setPage(1);
-      setHasMoreData(true);
+  const renderItem = ({ item }) => {
+    // Tính tổng số câu hỏi từ tất cả kết quả
+    const totalQuestions =
+      item.results?.reduce((acc, result) => acc + (result.result_questions?.length || 0), 0) || 0;
 
-      loadResults(1).then(() => handleLoadMore());
-   };
-
-   const renderItem = ({ item }) => {
-      // Tính tổng số câu hỏi từ tất cả kết quả
-      const totalQuestions = item.results?.reduce((acc, result) => acc + (result.result_questions?.length || 0), 0) || 0;
-
-      // Tính tổng số câu trả lời đúng từ tất cả kết quả
-      const correctAnswers = item.results?.reduce((acc, result) =>
-         acc + (result.result_questions?.filter(q => q.correct).length || 0), 0
+    // Tính tổng số câu trả lời đúng từ tất cả kết quả
+    const correctAnswers =
+      item.results?.reduce(
+        (acc, result) => acc + (result.result_questions?.filter((q) => q.correct).length || 0),
+        0,
       ) || 0;
 
-      // Tính tỷ lệ hoàn thành
-      const completionPercentage = totalQuestions > 0
-         ? Math.round((correctAnswers / totalQuestions) * 100)
-         : 0;
+    // Tính tỷ lệ hoàn thành
+    const completionPercentage =
+      totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
 
       return (
          <Pressable
