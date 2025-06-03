@@ -7,12 +7,8 @@ import Toast from 'react-native-toast-message-custom';
 import { useAppProvider } from '@/contexts/AppProvider';
 
 export default function ChangePasswordScreen() {
-                      
-         const { changePassword } =
-   useContext(AuthContext);
-  const [oldPassword, setOldPassword] = 
-   
-  useState('');
+  const { changePassword } = useContext(AuthContext);
+  const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const { i18n } = useAppProvider();

@@ -7,13 +7,15 @@ import { AntDesign } from '@expo/vector-icons';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useState, useRef, useEffect } from 'react';
 import ThoBayMauGif from '@/assets/images/congratulations.1.webp';
+import InCorrectGif from '@/assets/images/incorrect.1.webp';
+import api from '@/libs/axios';
 
 export default function Home() {
   const { user } = useAuthStore();
   return (
     <>
-      {user.user_role === 'user' ? <HomeStudent /> : <HomeTeacher />}
-      {/* <Play /> */}
+      {/* {user.user_role === 'user' ? <HomeStudent /> : <HomeTeacher />} */}
+      <Play /> 
     </>
   );
 }
@@ -24,192 +26,194 @@ const Play = () => {
   const optionsAnim = useRef(new Animated.Value(0)).current;
   const buttonAnim = useRef(new Animated.Value(0)).current;
   const modalAnim = useRef(new Animated.Value(0)).current;
+  const [data, setData] = useState([]);
 
-  const data = [
-    {
-      id: 1,
-      question: 'What is the capital of France?',
-      options: [
-        {
-          id: 1,
-          text: 'Paris',
-          image:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS77FladSUDfZrsWEf9Vf1RSh752wuXXE52ig&s',
-        },
-        {
-          id: 2,
-          text: 'London',
-          image:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS77FladSUDfZrsWEf9Vf1RSh752wuXXE52ig&s',
-        },
-        {
-          id: 3,
-          text: 'Berlin',
-          image:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS77FladSUDfZrsWEf9Vf1RSh752wuXXE52ig&s',
-        },
-        {
-          id: 4,
-          text: 'Madrid',
-          image:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS77FladSUDfZrsWEf9Vf1RSh752wuXXE52ig&s',
-        },
-      ],
-      type: 'single',
-    },
-    {
-      id: 2,
-      question: 'The capital of France is ___ and it is known for the ___ Tower.',
-      // đục lỗ
-      type: 'fill',
-      image:
-        'https://cdn3d.iconscout.com/3d/free/preview/free-duolingo-3d-icon-download-in-png-blend-fbx-gltf-file-formats--logo-brand-social-media-and-pack-logos-icons-9940806.png?f=webp&h=700',
-      options: [
-        {
-          id: 1,
-          position: 1,
-          text: 'Paris',
-        },
-        {
-          id: 2,
-          position: 2,
-          text: 'Eiffel',
-        },
-        {
-          id: 3,
-          position: 3,
-          text: 'Tower',
-        },
-        {
-          id: 4,
-          position: 4,
-          text: 'France',
-        },
-      ],
-    },
-    // xắp xếp theo thứ tự
-    {
-      id: 3,
-      question: 'Arrange the planets in order of their distance from the sun.',
-      type: 'order',
-      options: [
-        {
-          id: 1,
-          text: 'Mercury',
-        },
-        {
-          id: 2,
-          text: 'Venus',
-        },
-        {
-          id: 3,
-          text: 'Earth',
-        },
-        {
-          id: 4,
-          text: 'Mars',
-        },
-        {
-          id: 5,
-          text: 'Jupiter',
-        },
-        {
-          id: 6,
-          text: 'Saturn',
-        },
-        {
-          id: 7,
-          text: 'Uranus',
-        },
-        {
-          id: 8,
-          text: 'Neptune',
-        },
-      ],
-    },
-    {
-      id: 4,
-      question: 'Match the following countries with their capitals.',
-      type: 'match',
-      options: [
-        {
-          id: 1,
-          items: [
-            {
-              text: 'France',
-            },
-            {
-              text: 'Paris',
-            },
-            {
-              text: 'Germany',
-            },
-            {
-              text: 'Berlin',
-            },
-            {
-              text: 'Spain',
-            },
-            {
-              text: 'Madrid',
-            },
-          ],
-        },
-        {
-          id: 2,
-          items: [
-            {
-              text: 'Italy',
-            },
-            {
-              text: 'Rome',
-            },
-            {
-              text: 'Japan',
-            },
-            {
-              text: 'Tokyo',
-            },
-            {
-              text: 'USA',
-            },
-            {
-              text: 'Washington D.C.',
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 1,
-      question: 'What is the capital of France?',
-      options: [
-        {
-          id: 1,
-          text: 'Paris',
-          image:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS77FladSUDfZrsWEf9Vf1RSh752wuXXE52ig&s',
-        },
-        {
-          id: 2,
-          text: 'London',
-          image:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS77FladSUDfZrsWEf9Vf1RSh752wuXXE52ig&s',
-        },
-        {
-          id: 3,
-          text: 'Berlin',
-          image:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS77FladSUDfZrsWEf9Vf1RSh752wuXXE52ig&s',
-        },
-      ],
-      type: 'single',
-    },
-  ];
+  // const data = [
+  //   {
+  //     id: 1,
+  //     question: 'What is the capital of France?',
+  //     options: [
+  //       {
+  //         id: 1,
+  //         text: 'Paris',
+  //         image:
+  //           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS77FladSUDfZrsWEf9Vf1RSh752wuXXE52ig&s',
+  //       },
+  //       {
+  //         id: 2,
+  //         text: 'London',
+  //         image:
+  //           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS77FladSUDfZrsWEf9Vf1RSh752wuXXE52ig&s',
+  //       },
+  //       {
+  //         id: 3,
+  //         text: 'Berlin',
+  //         image:
+  //           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS77FladSUDfZrsWEf9Vf1RSh752wuXXE52ig&s',
+  //       },
+  //       {
+  //         id: 4,
+  //         text: 'Madrid',
+  //         image:
+  //           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS77FladSUDfZrsWEf9Vf1RSh752wuXXE52ig&s',
+  //       },
+  //     ],
+  //     type: 'single',
+  //   },
+  //   {
+  //     id: 2,
+  //     question: 'The capital of France is ___ and it is known for the ___ Tower.',
+  //     // đục lỗ
+  //     type: 'fill',
+  //     image:
+  //       'https://cdn3d.iconscout.com/3d/free/preview/free-duolingo-3d-icon-download-in-png-blend-fbx-gltf-file-formats--logo-brand-social-media-and-pack-logos-icons-9940806.png?f=webp&h=700',
+  //     options: [
+  //       {
+  //         id: 1,
+  //         position: 1,
+  //         text: 'Paris',
+  //       },
+  //       {
+  //         id: 2,
+  //         position: 2,
+  //         text: 'Eiffel',
+  //       },
+  //       {
+  //         id: 3,
+  //         position: 3,
+  //         text: 'Tower',
+  //       },
+  //       {
+  //         id: 4,
+  //         position: 4,
+  //         text: 'France',
+  //       },
+  //     ],
+  //   },
+  //   // xắp xếp theo thứ tự
+  //   {
+  //     id: 3,
+  //     question: 'Arrange the planets in order of their distance from the sun.',
+  //     type: 'order',
+  //     options: [
+  //       {
+  //         id: 1,
+  //         text: 'Mercury',
+  //       },
+  //       {
+  //         id: 2,
+  //         text: 'Venus',
+  //       },
+  //       {
+  //         id: 3,
+  //         text: 'Earth',
+  //       },
+  //       {
+  //         id: 4,
+  //         text: 'Mars',
+  //       },
+  //       {
+  //         id: 5,
+  //         text: 'Jupiter',
+  //       },
+  //       {
+  //         id: 6,
+  //         text: 'Saturn',
+  //       },
+  //       {
+  //         id: 7,
+  //         text: 'Uranus',
+  //       },
+  //       {
+  //         id: 8,
+  //         text: 'Neptune',
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: 4,
+  //     question: 'Match the following countries with their capitals.',
+  //     type: 'match',
+  //     options: [
+  //       {
+  //         id: 1,
+  //         items: [
+  //           {
+  //             text: 'France',
+  //           },
+  //           {
+  //             text: 'Paris',
+  //           },
+  //           {
+  //             text: 'Germany',
+  //           },
+  //           {
+  //             text: 'Berlin',
+  //           },
+  //           {
+  //             text: 'Spain',
+  //           },
+  //           {
+  //             text: 'Madrid',
+  //           },
+  //         ],
+  //       },
+  //       {
+  //         id: 2,
+  //         items: [
+  //           {
+  //             text: 'Italy',
+  //           },
+  //           {
+  //             text: 'Rome',
+  //           },
+  //           {
+  //             text: 'Japan',
+  //           },
+  //           {
+  //             text: 'Tokyo',
+  //           },
+  //           {
+  //             text: 'USA',
+  //           },
+  //           {
+  //             text: 'Washington D.C.',
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: 1,
+  //     question: 'What is the capital of France?',
+  //     options: [
+  //       {
+  //         id: 1,
+  //         text: 'Paris',
+  //         image:
+  //           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS77FladSUDfZrsWEf9Vf1RSh752wuXXE52ig&s',
+  //       },
+  //       {
+  //         id: 2,
+  //         text: 'London',
+  //         image:
+  //           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS77FladSUDfZrsWEf9Vf1RSh752wuXXE52ig&s',
+  //       },
+  //       {
+  //         id: 3,
+  //         text: 'Berlin',
+  //         image:
+  //           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS77FladSUDfZrsWEf9Vf1RSh752wuXXE52ig&s',
+  //       },
+  //     ],
+  //     type: 'single',
+  //   },
+  // ];
 
   const [index, setIndex] = useState(0);
   const [isNext, setIsNext] = useState(false);
   const item = data[index];
+  const [isCorrect, setIsCorrect] = useState(false);
 
   // Animate in on question change
   useEffect(() => {
@@ -234,6 +238,21 @@ const Play = () => {
       friction: 6,
     }).start();
   }, [index]);
+
+  useEffect(() => {
+   const fetchData = async () => {
+    try {
+      const response = await api.post("/v2/quizzes/683e465299f227ed48405984/questions")
+      const data = response.data;
+      const {items} = data.metadata;
+      console.log('Fetched data:', items);
+      setData(items);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+   }
+    fetchData();
+  },[]);
 
   // Animate modal result
   useEffect(() => {
@@ -338,7 +357,89 @@ const Play = () => {
             </View>
           </View>
         );
-      case 'fill':
+      case "multiple":
+        return (
+           <View
+            style={{
+              height: 600,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <View
+              style={{
+                flexDirection: options.length < 4 ? 'column' : 'row',
+                flexWrap: options.length < 4 ? 'nowrap' : 'wrap',
+                width: '100%',
+                gap: 10,
+              }}
+            >
+              {options.map((option, idx) => (
+                <Pressable
+                  key={idx}
+                  onPress={() => handleClickOption(option)}
+                  style={{
+                    padding: 10,
+                    borderRadius: 8,
+                    marginVertical: 5,
+                    backgroundColor: '#fff',
+                    shadowColor: '#000',
+                    borderColor: '#e5e5e5',
+                    borderWidth: 2,
+                    borderBottomWidth: 4,
+                    borderStyle: 'solid',
+                    width: options.length < 4 ? '100%' : '48%',
+                    minHeight: options.length < 4 ? 60 : 200,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {option.image && options.length === 4 ? (
+                    <View
+                      style={{
+                        minHeight: options.length < 4 ? 60 : 200,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Image
+                        source={{ uri: option.image }}
+                        style={{
+                          width: 150,
+                          height: 150,
+                          borderRadius: 8,
+                          marginBottom: 10,
+                        }}
+                      />
+                      <Text
+                        style={{
+                          textAlign: 'center',
+                          fontSize: 18,
+                          color: '#4B4B4B',
+                        }}
+                      >
+                        {option.text}
+                      </Text>
+                    </View>
+                  ) : (
+                    <Pressable onPress={() => handleClickOption(option)}>
+                      <Text
+                        style={{
+                          textAlign: 'center',
+                          fontSize: 18,
+                          color: '#4B4B4B',
+                        }}
+                      >
+                        {option.text}
+                      </Text>
+                    </Pressable>
+                  )}
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        )
+        case 'fill':
         return (
           <View style={{}}>
             {/* image */}
@@ -408,7 +509,6 @@ const Play = () => {
             </View>
           </View>
         );
-
       case 'order':
         return (
           <View>
@@ -526,6 +626,42 @@ const Play = () => {
     }
   };
 
+  const handleCheck = async() => {
+    setIsNext(true);
+    try {
+      const body = {
+        questionId: item.id,
+        answersId: ["683e45e599f227ed48405981"], 
+      }
+      const response = await api.post("/v2/questions/check", body);
+      const data = response.data;
+      const {isCorrect=true} = data.metadata;
+      setIsCorrect(isCorrect);
+    } catch (error) {
+      console.error('Error checking answer:', error);
+    }
+  }
+
+  const handleNext = () => {
+   if (index < data.length - 1) {
+                setIndex(index + 1);
+              } else {
+                alert('Game Over');
+                setIndex(0);
+              }
+              setIsNext(false);
+  }
+
+  if (!data.length) {
+    return (
+      <MainLayout>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text>Loading...</Text>
+        </View>
+      </MainLayout>
+    );
+  }
+
   return (
     <>
       <MainLayout>
@@ -624,7 +760,9 @@ const Play = () => {
               }}
             >
               <Image
-                source={ThoBayMauGif}
+                source={
+                  isCorrect ? ThoBayMauGif : InCorrectGif
+                }
                 resizeMode="contain"
                 style={{ width: 150, height: 150, borderRadius: 8, marginBottom: 10 }}
               />
@@ -639,7 +777,11 @@ const Play = () => {
                   borderRadius: 8,
                 }}
               >
-                <Text>Congratulations! You have completed the question.</Text>
+                <Text>
+                  {isCorrect
+                    ? 'Congratulations! You answered correctly.'
+                    : 'Sorry, your answer is incorrect. Please try again.'}
+                </Text>
               </View>
             </Animated.View>
           )}
@@ -659,7 +801,7 @@ const Play = () => {
                 ],
               }}
             >
-              <Pressable onPress={() => setIsNext(true)}>
+              <Pressable onPress={handleCheck}>
                 <Text
                   style={{
                     backgroundColor: '#4CAF50',
@@ -686,14 +828,15 @@ const Play = () => {
       </MainLayout>
       {/* modal result */}
       {isNext && (
-        <Animated.View
+        isCorrect ? (
+          <Animated.View
           style={{
             position: 'absolute',
             zIndex: 1000,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: '#d7ffb8',
+            backgroundColor: "#d7ffb8",
             justifyContent: 'center',
             padding: 20,
             transform: [
@@ -706,25 +849,19 @@ const Play = () => {
               fontSize: 24,
               fontWeight: 'bold',
               color: '#4CAF50',
+              // color: isCorrect ? '#4CAF50' : '#F44336',
               marginBottom: 20,
             }}
           >
             Correct!
           </Text>
           <Pressable
-            onPress={() => {
-              if (index < data.length - 1) {
-                setIndex(index + 1);
-              } else {
-                alert('Game Over');
-                setIndex(0);
-              }
-              setIsNext(false);
-            }}
+            onPress={handleNext}
           >
             <Text
               style={{
                 backgroundColor: '#4CAF50',
+                // backgroundColor: isCorrect ? '#4CAF50' : '#F44336',
                 color: '#fff',
                 padding: 10,
                 borderRadius: 8,
@@ -743,6 +880,58 @@ const Play = () => {
             </Text>
           </Pressable>
         </Animated.View>
+        ):(
+          <Animated.View
+          style={{
+            position: 'absolute',
+            zIndex: 1000,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "#FFCDD2",
+            justifyContent: 'center',
+            padding: 20,
+            transform: [
+              { translateY: modalAnim.interpolate({ inputRange: [0, 1], outputRange: [100, 0] }) },
+            ],
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: 'bold',
+              color: '#F44336',
+              marginBottom: 20,
+            }}
+          >
+            Incorrect!
+          </Text>
+          <Pressable
+            onPress={handleNext}
+          >
+            <Text
+              style={{
+                backgroundColor: '#F44336',
+                // backgroundColor: isCorrect ? '#4CAF50' : '#F44336',
+                color: '#fff',
+                padding: 10,
+                borderRadius: 8,
+                textAlign: 'center',
+                fontSize: 18,
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                borderTopWidth: 2,
+                borderColor: '#eee',
+                borderBottomWidth: 4,
+                borderStyle: 'solid',
+                shadowColor: '#000',
+              }}
+            >
+              Confirm
+            </Text>
+          </Pressable>
+        </Animated.View>
+        )
       )}
     </>
   );

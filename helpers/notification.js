@@ -89,7 +89,6 @@ export function useNotificationObserver({ setTeacherStatus }) {
 
     // Check if the app was opened by a notification
     Notifications.getLastNotificationResponseAsync().then((response) => {
-       
       if (!isMounted || !response?.notification) {
         return;
       }
@@ -103,9 +102,8 @@ export function useNotificationObserver({ setTeacherStatus }) {
 
     // Clean up
     return () => {
-       
       isMounted = false;
-       
+
       subscription.remove();
     };
   }, []);
