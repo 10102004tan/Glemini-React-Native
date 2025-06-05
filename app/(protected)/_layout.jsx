@@ -128,12 +128,6 @@ export default function AppRootLayout() {
           headerShown: false,
         }}
       />
-      <Stack.Screen
-        name="profile"
-        options={{
-          headerTitle: i18n.t('profile.title'),
-        }}
-      />
 
       <Stack.Screen
         name="change-password"
@@ -142,19 +136,7 @@ export default function AppRootLayout() {
         }}
       />
 
-      <Stack.Screen
-        name="profile-edit"
-        options={{
-          headerTitle: title,
-        }}
-      />
-
-      <Stack.Screen
-        name="profile-auth"
-        options={{
-          headerTitle: i18n.t('profile.infoAuth'),
-        }}
-      />
+     
 
       <Stack.Screen
         name="(quiz)/list"

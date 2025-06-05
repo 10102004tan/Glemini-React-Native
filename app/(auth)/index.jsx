@@ -45,19 +45,8 @@ const Home = () => {
     },
   ];
 
-  const { checkAuth, isLoading, isSignedIn } = useAuthStore();
-  useEffect(() => {
-    checkAuth().catch((error) => {
-      if (error.message === 'Network Error') {
-        Alert.alert(
-          '[DEV] lỗi kết nối mạng',
-          'Thay đổi ip hoặc thử lại sau',
-          // hidden buttons
-          [],
-        );
-      }
-    });
-  }, []);
+  const {isLoading, isSignedIn } = useAuthStore();
+
 
   useEffect(() => {
     if (message) {

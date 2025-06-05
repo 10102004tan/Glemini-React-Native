@@ -9,7 +9,7 @@ const MultipleChoice = ({ options, onClick }) => {
     } else {
       setSelectedOptions([...selectedOptions, option]);
     }
-  }
+  };
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
       {options.map((option, idx) => (
@@ -29,7 +29,7 @@ const MultipleChoice = ({ options, onClick }) => {
             alignItems: 'center',
             borderColor: selectedOptions.includes(option) ? '#4CAF50' : '#e5e5e5',
             backgroundColor: selectedOptions.includes(option) ? '#d7ffb8' : '#fff',
-            height:200,
+            height: 200,
             justifyContent: 'center',
             alignItems: 'center',
           }}
@@ -39,6 +39,6 @@ const MultipleChoice = ({ options, onClick }) => {
       ))}
     </View>
   );
-}
+};
 
 export default MultipleChoice;

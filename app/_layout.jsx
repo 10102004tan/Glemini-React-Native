@@ -20,9 +20,7 @@ import { Image, Animated } from 'react-native';
 import { useAuthStore } from '@/store/useAuthStore';
 import ModalContainer from '@/components/customs/ModalContainer';
 
-// // Prevent the splash screen from auto-hiding before asset loading is complete.
 // SplashScreen.preventAutoHideAsync();
-// // // Bỏ qua cảnh báo chứa chuỗi "defaultProps"
 // LogBox.ignoreLogs(["defaultProps"]);
 
 // Notifications.setNotificationHandler({
@@ -45,8 +43,33 @@ export default function RootLayout() {
     'Poppins-Thin': require('../assets/fonts/Poppins-Thin.ttf'),
   });
 
+  const { checkAuth} = useAuthStore();
+    useEffect(() => {
+      checkAuth().catch((error) => {
+        if (error.message === 'Network Error') {
+          Alert.alert(
+            '[DEV] lỗi kết nối mạng',
+            'Thay đổi ip hoặc thử lại sau',
+            // hidden buttons
+            [],
+          );
+        }
+      });
+    }, []);
+
+    useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) {
+    return null;
+  }
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView
+    style={{ flex: 1 }}>
       <Providers>
         <Slot />
         <Toast />

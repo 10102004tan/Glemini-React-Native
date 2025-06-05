@@ -41,11 +41,10 @@ export const useAuthStore = create((set, get) => ({
     }
   },
   signOut: async () => {
-    set({ isLoading: true });
     await SecureStore.deleteItemAsync('Authorization');
     await SecureStore.deleteItemAsync('refreshToken');
     await SecureStore.deleteItemAsync('x-client-id');
-    set({ user: null, isSignedIn: false, isLoading: false });
+    set({isSignedIn: false});
   },
   signUp: async ({ email, password, fullname }) => {
     try {
@@ -99,6 +98,7 @@ export const useAuthStore = create((set, get) => ({
       set({ user: metadata, isSignedIn: true, isLoading: false });
       return { success: true };
     } catch (error) {
+      console.log("error",error)
       let message = 'An error occurred. Please try again.';
       if (error.message === 'Network Error') {
         throw new Error('Network Error');
@@ -115,4 +115,25 @@ export const useAuthStore = create((set, get) => ({
       return { success: false, error: message };
     }
   },
+  updateInfo: async (data) => {
+    set({ error: null });
+    try {
+      const response = await api.put('/v2/user/update', data);
+      const { metadata } = response.data;
+      console.log('[STORE] updateInfo: => ' + metadata);
+      return { success: true };
+    } catch (error) {
+      console.log('[STORE] updateInfo error:', error);
+      let message = 'An error occurred. Please try again.';
+      if (error.response) {
+        if (error.response.status === 400) {
+          message = 'Invalid input. Please check your details.';
+        } else if (error.response.status === 500) {
+          message = 'Server error. Please try again later.';
+        }
+      }
+      set({ error: message});
+      return { success: false, error: message };
+    }
+  }
 }));

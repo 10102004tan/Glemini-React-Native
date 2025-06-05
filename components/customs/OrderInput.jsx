@@ -1,10 +1,18 @@
-import { useRef, useState,useEffect } from 'react';
-import { StyleSheet, LayoutAnimation, UIManager, Platform, Animated, View, Text, Pressable } from 'react-native';
+import { useRef, useState, useEffect } from 'react';
+import {
+  StyleSheet,
+  LayoutAnimation,
+  UIManager,
+  Platform,
+  Animated,
+  View,
+  Text,
+  Pressable,
+} from 'react-native';
 
 if (Platform.OS === 'android') {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
-
 
 const OrderInput = ({ options, onClick }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -13,11 +21,10 @@ const OrderInput = ({ options, onClick }) => {
     options.reduce((acc, option) => {
       acc[option.id] = new Animated.Value(0);
       return acc;
-    }, {})
+    }, {}),
   ).current;
 
-  const isSelected = (option) =>
-    selectedOptions.some((item) => item.id === option.id);
+  const isSelected = (option) => selectedOptions.some((item) => item.id === option.id);
 
   const handleClick = (option) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -29,9 +36,7 @@ const OrderInput = ({ options, onClick }) => {
         useNativeDriver: true,
       }).start();
 
-      setSelectedOptions((prev) =>
-        prev.filter((item) => item.id !== option.id)
-      );
+      setSelectedOptions((prev) => prev.filter((item) => item.id !== option.id));
     } else {
       // Animate lên
       Animated.spring(animations[option.id], {
@@ -83,8 +88,6 @@ const OrderInput = ({ options, onClick }) => {
   );
 };
 
-
-
 const styles = StyleSheet.create({
   boxContainer: {
     flexDirection: 'row',
@@ -92,11 +95,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 8,
-    minHeight:100,
-    paddingVertical:20,
+    minHeight: 100,
+    paddingVertical: 20,
     borderTopWidth: 2,
     borderColor: '#e5e5e5',
-    borderBottomWidth: 2
+    borderBottomWidth: 2,
   },
   box: {
     padding: 8,

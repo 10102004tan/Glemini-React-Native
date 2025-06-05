@@ -2,8 +2,8 @@ import MainLayout from '@/components/layouts/MainLayout';
 import { useAuthStore } from '@/store/useAuthStore';
 import HomeStudent from '@/components/customs/HomeStudent';
 import HomeTeacher from '@/components/customs/HomeTeacher';
-import { Image, Pressable, Text, View, Animated, Easing } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
+import { Image, Pressable, Text, View, Animated, Easing, TextInput } from 'react-native';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useState, useRef, useEffect } from 'react';
 import ThoBayMauGif from '@/assets/images/congratulations.1.webp';
@@ -14,13 +14,112 @@ import Onechoice from '@/components/customs/Onechoice';
 import FillInTheBlank from '@/components/customs/FillInTheBlank';
 import MatchItems from '@/components/customs/MatchItems';
 import MultipleChoice from '@/components/customs/MultipleChoice';
+import { Feather } from '@expo/vector-icons';
+import { FlashList } from '@shopify/flash-list';
+import { useStore } from 'zustand';
+import { useClassroomProvider } from '@/contexts/ClassroomProvider';
+import Toast from 'react-native-toast-message';
+import { Link, router } from 'expo-router';
 
 export default function Home() {
   const { user } = useAuthStore();
+  const data = [
+    {
+      id: 1,
+      name: 'THPT Nguyễn Huệ',
+      image: 'https://i.imgur.com/1z5Z5zF.png',
+      description:
+        'Trường THPT Nguyễn Huệ là một trong những trường trung học phổ thông hàng đầu tại Việt Nam, nổi tiếng với chất lượng giáo dục và đội ngũ giảng viên xuất sắc.',
+      address: '123 Đường Nguyễn Huệ, Quận 1, TP.HCM',
+      phone: '0123456789',
+    },
+    {
+      id: 2,
+      name: 'THPT Lê Quý Đôn',
+      image: 'https://i.imgur.com/1z5Z5zF.png',
+      description:
+        'Trường THPT Lê Quý Đôn là một trong những trường trung học phổ thông hàng đầu tại Việt Nam, nổi tiếng với chất lượng giáo dục và đội ngũ giảng viên xuất sắc.',
+      address: '456 Đường Lê Quý Đôn, Quận 3, TP.HCM',
+      phone: '0987654321',
+    },
+    {
+      id: 3,
+      name: 'THPT Trần Phú',
+      image: 'https://i.imgur.com/1z5Z5zF.png',
+      description:
+        'Trường THPT Trần Phú là một trong những trường trung học phổ thông hàng đầu tại Việt Nam, nổi tiếng với chất lượng giáo dục và đội ngũ giảng viên xuất sắc.',
+      address: '789 Đường Trần Phú, Quận 5, TP.HCM',
+      phone: '0123456789',
+    },
+    {
+      id: 4,
+      name: 'THPT Nguyễn Thị Minh Khai',
+      image: 'https://i.imgur.com/1z5Z5zF.png',
+      description:
+        'Trường THPT Nguyễn Thị Minh Khai là một trong những trường trung học phổ thông hàng đầu tại Việt Nam, nổi tiếng với chất lượng giáo dục và đội ngũ giảng viên xuất sắc.',
+      address: '321 Đường Nguyễn Thị Minh Khai, Quận 7, TP.HCM',
+      phone: '0987654321',
+    },
+    {
+      id: 5,
+      name: 'THPT Võ Thị Sáu',
+      image: 'https://i.imgur.com/1z5Z5zF.png',
+      description:
+        'Trường THPT Võ Thị Sáu là một trong những trường trung học phổ thông hàng đầu tại Việt Nam, nổi tiếng với chất lượng giáo dục và đội ngũ giảng viên xuất sắc.',
+      address: '654 Đường Võ Thị Sáu, Quận 9, TP.HCM',
+      phone: '0123456789',
+    },
+    {
+      id: 6,
+      name: 'THPT Nguyễn Trãi',
+      image: 'https://i.imgur.com/1z5Z5zF.png',
+      description:
+        'Trường THPT Nguyễn Trãi là một trong những trường trung học phổ thông hàng đầu tại Việt Nam, nổi tiếng với chất lượng giáo dục và đội ngũ giảng viên xuất sắc.',
+      address: '987 Đường Nguyễn Trãi, Quận 11, TP.HCM',
+      phone: '0987654321',
+    },
+    {
+      id: 7,
+      name: 'THPT Phan Đình Phùng',
+      image: 'https://i.imgur.com/1z5Z5zF.png',
+      description:
+        'Trường THPT Phan Đình Phùng là một trong những trường trung học phổ thông hàng đầu tại Việt Nam, nổi tiếng với chất lượng giáo dục và đội ngũ giảng viên xuất sắc.',
+      address: '159 Đường Phan Đình Phùng, Quận 12, TP.HCM',
+      phone: '0123456789',
+    },
+    {
+      id: 8,
+      name: 'THPT Nguyễn Huệ',
+      image: 'https://i.imgur.com/1z5Z5zF.png',
+      description:
+        'Trường THPT Nguyễn Huệ là một trong những trường trung học phổ thông hàng đầu tại Việt Nam, nổi tiếng với chất lượng giáo dục và đội ngũ giảng viên xuất sắc.',
+      address: '123 Đường Nguyễn Huệ, Quận 1, TP.HCM',
+      phone: '0123456789',
+    },
+    {
+      id: 9,
+      name: 'THPT Lê Quý Đôn',
+      image: 'https://i.imgur.com/1z5Z5zF.png',
+      description:
+        'Trường THPT Lê Quý Đôn là một trong những trường trung học phổ thông hàng đầu tại Việt Nam, nổi tiếng với chất lượng giáo dục và đội ngũ giảng viên xuất sắc.',
+      address: '456 Đường Lê Quý Đôn, Quận 3, TP.HCM',
+      phone: '0987654321',
+    },
+    {
+      id: 10,
+      name: 'THPT Trần Phú',
+      image: 'https://i.imgur.com/1z5Z5zF.png',
+      description:
+        'Trường THPT Trần Phú là một trong những trường trung học phổ thông hàng đầu tại Việt Nam, nổi tiếng với chất lượng giáo dục và đội ngũ giảng viên xuất sắc.',
+      address: '789 Đường Trần Phú, Quận 5, TP.HCM',
+      phone: '0123456789',
+    },
+  ];
   return (
     <>
-      {/* {user.user_role === 'user' ? <HomeStudent /> : <HomeTeacher />} */}
-      <Play />
+      {user.user_role === 'user' ? <HomeStudent /> : <HomeTeacher />}
+      {/* <School/> */}
+      {/* <Profile/> */}
     </>
   );
 }
@@ -279,44 +378,35 @@ const Play = () => {
   };
 
   const renderOptions = () => {
-    const {options, type, image='',question} = item;
+    const { options, type, image = '', question } = item;
     switch (type) {
       case 'single':
         return (
-         <View
-         style={{
-            flexWrap: 'wrap',
-            gap: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-            height:600,
-          }}
-         >
-          <Onechoice
-            options={options}
-            onClick={handleClickOption}
-            image={image}
-          />
-         </View>
+          <View
+            style={{
+              flexWrap: 'wrap',
+              gap: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: 600,
+            }}
+          >
+            <Onechoice options={options} onClick={handleClickOption} image={image} />
+          </View>
         );
       case 'multiple':
-           return (
-         <View
-         style={{
-            flexWrap: 'wrap',
-            gap: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-            height:600,
-          }}
-         >
-          <MultipleChoice
-            options={options}
-            onClick={handleClickOption}
-            image={image}
-            
-          />
-         </View>
+        return (
+          <View
+            style={{
+              flexWrap: 'wrap',
+              gap: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: 600,
+            }}
+          >
+            <MultipleChoice options={options} onClick={handleClickOption} image={image} />
+          </View>
         );
       case 'fill':
         return (
@@ -328,13 +418,9 @@ const Play = () => {
           />
         );
       case 'order':
-        return (
-          <OrderInput options={options} onClick={handleClickOption} />
-        );
+        return <OrderInput options={options} onClick={handleClickOption} />;
       case 'match':
-        return (
-         <MatchItems options={options} onClick={handleClickOption} />
-        );
+        return <MatchItems options={options} onClick={handleClickOption} />;
       default:
         return null;
     }
@@ -438,9 +524,7 @@ const Play = () => {
                   ],
                 }}
               >
-                {
-                  item.type === 'fill' ? 'Fill in the blank ' : item.question
-                }
+                {item.type === 'fill' ? 'Fill in the blank ' : item.question}
               </Animated.Text>
               <Animated.View
                 style={{
@@ -649,6 +733,5 @@ const Play = () => {
     </>
   );
 };
-
 
 

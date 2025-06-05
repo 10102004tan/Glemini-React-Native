@@ -1,7 +1,8 @@
 import MainLayout from '@/components/layouts/MainLayout';
 import api from '@/libs/axios';
 import { useAuthStore } from '@/store/useAuthStore';
-import { Entypo } from '@expo/vector-icons';
+import { AntDesign, Entypo } from '@expo/vector-icons';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Stack } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -125,6 +126,10 @@ const UploadItem = ({
 
 const FormVerify = () => {
   const { user } = useAuthStore();
+  const {
+    schoolId,
+    schoolName,
+  } = useLocalSearchParams();
   const verifyTeacherHandler = async () => {
     try {
       const body = {};
