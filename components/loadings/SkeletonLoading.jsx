@@ -26,11 +26,19 @@ const SkeletonLoading = ({ styles = '' }) => {
     outputRange: ['#e0e0e0', '#f0f0f0'],
   });
 
-  return (
-    <View className={`rounded-lg flex items-center justify-center overflow-hidden ${styles}`}>
-      <Animated.View className="w-full h-full" style={[{ backgroundColor }]}></Animated.View>
-    </View>
-  );
+   return (
+      <View style={[{
+               borderRadius: 8,
+               display: 'flex',
+               alignItems: 'center',
+               justifyContent: 'center',
+               overflow: 'hidden',
+            }, { styles }]}>
+         <Animated.View
+            style={[{ backgroundColor }, { width: '100%', height: '100%' }]}
+         ></Animated.View>
+      </View>
+   );
 };
 
 export default SkeletonLoading;

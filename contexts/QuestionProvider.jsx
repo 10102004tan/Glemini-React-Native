@@ -47,33 +47,27 @@ const QuestionProvider = ({ children }) => {
   const [questions, setQuestions] = useState([]);
   const { userData } = useAuthContext();
 
-  const fetchQuestions = async (quizId) => {
-    setQuestions([]);
-    try {
-      const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.GET_QUIZ_QUESTIONS, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          quiz_id: quizId,
-        }),
-      });
+   const fetchQuestions = async (quizId) => {
+      setQuestions([])
+      try {
+         const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.GET_QUIZ_QUESTIONS, {
+               quiz_id: quizId,
+            });
 
-      const data = await res.json();
-      setQuestions(data.metadata);
-    } catch (error) {
-      Toast.show({
-        type: 'error',
-        text1: 'Lỗi khi lấy câu hỏi',
-        text2: { error },
-        visibilityTime: 1000,
-        autoHide: true,
-      });
-    }
-  };
+
+         const data = await res.data;
+         
+         setQuestions(data.metadata);
+      } catch (error) {
+         Toast.show({
+            type: 'error',
+            text1: 'Lỗi khi lấy câu hỏi',
+            text2: { error },
+            visibilityTime: 1000,
+            autoHide: true,
+         });
+      }
+   };
 
   // Lấy nội dung câu hỏi từ file template docx
   const getQuestionFromTemplateFile = async (questionData, quizId) => {

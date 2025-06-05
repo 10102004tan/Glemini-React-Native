@@ -31,22 +31,37 @@ const BottomSheet = ({ children, visible = false, onClose = () => {} }) => {
     };
   });
 
-  return (
-    <Animated.View
-      className="absolute left-0 right-0 bottom-0 p-6 rounded-t-3xl bg-white z-10"
-      style={[animatedStyle]}
-    >
-      <TouchableOpacity
-        className="flex items-center justify-end flex-row mb-2"
-        onPress={() => {
-          onClose();
-        }}
+   return (
+      <Animated.View
+         style={[animatedStyle, {
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 10,
+            padding: 40,
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+            backgroundColor: 'white'
+         }]}
       >
-        <AntDesign name="close" size={20} color="black" />
-      </TouchableOpacity>
-      {visible && children}
-    </Animated.View>
-  );
+         <TouchableOpacity
+            style={{
+               display: 'flex',
+               alignItems: 'center',
+               justifyContent: 'flex-end',
+               flexDirection: 'row',
+               marginBottom: 8
+            }}
+            onPress={() => {
+               onClose();
+            }}
+         >
+            <AntDesign name="close" size={20} color="black" />
+         </TouchableOpacity>
+         {visible && children}
+      </Animated.View>
+   );
 };
 
 export default BottomSheet;

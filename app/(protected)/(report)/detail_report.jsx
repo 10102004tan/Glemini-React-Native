@@ -15,11 +15,11 @@ import Lottie from '@/components/loadings/Lottie';
 import { useAppProvider } from '@/contexts/AppProvider';
 
 export default function DetailReport() {
-  const { i18n } = useAppProvider();
-  const modal = createRef();
-  const { reportId, type } = useLocalSearchParams();
-  const { reportData, fetchReportDetail } = useResultProvider();
-  const { fetchQuestions, questions } = useQuestionProvider();
+    const { i18n } = useAppProvider()
+    const modal = createRef();
+    const { reportId, type } = useLocalSearchParams();
+    const { reportData, fetchReportDetail } = useResultProvider();
+    const { fetchQuestions, questions } = useQuestionProvider();
 
   useFocusEffect(
     useCallback(() => {
@@ -84,144 +84,184 @@ export default function DetailReport() {
     }
   }, [reportData]);
 
-  return (
-    <View className="flex-1 bg-slate-50">
-      <View className="mx-4 my-3 p-3 rounded-md border-[1px] border-slate-300 flex-col">
-        <View className="border-b-[1px] border-slate-300 pb-3 flex-row justify-between items-center">
-          <View>
-            <Text className="text-black text-base font-bold">{reportData.quiz_id?.quiz_name}</Text>
-            <Text className={`font-medium ${getStatus() ? 'text-green-500' : 'text-red-500'}`}>
-              {getStatus()
-                ? i18n.t('report.reportDetail.starting')
-                : i18n.t('report.reportDetail.end')}
-            </Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              Alert.alert(
-                i18n.t('report.reportDetail.questionDownload'),
-                i18n.t('report.reportDetail.textQuestionDownload'),
-                [
-                  { text: i18n.t('report.reportDetail.cancel'), style: 'cancel' },
-                  {
-                    text: i18n.t('report.reportDetail.continute'),
-                    onPress: () => {
-                      downloadExcel();
-                    },
-                  },
-                ],
-              );
-            }}
-          >
-            <LottieView
-              source={require('@/assets/jsons/download.json')}
-              autoPlay
-              loop
-              style={{ width: 40, height: 40 }}
-            />
-          </TouchableOpacity>
-        </View>
-        <View className="mt-2 flex-row justify-between items-center">
-          <View className="flex-row gap-1 items-center">
-            <MaterialCommunityIcons name="clock-time-four-outline" size={20} color={'gray'} />
-            <Text>{moment(reportData.date_end).format('MMMM Do YYYY | h:mm A')}</Text>
-          </View>
-          <TouchableOpacity className="flex-row items-center" onPress={onOpen}>
-            <Text className="px-1 py-1 bg-green-500/60 rounded-lg">
-              {i18n.t('report.reportDetail.btnViewQuiz')}
-            </Text>
-            <MaterialCommunityIcons name="menu-right" size={30} />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View className="flex-1 p-3">
-        <Text className="text-base font-semibold">{i18n.t('report.reportDetail.text1')}</Text>
-        <View className="w-full flex-row items-center justify-around my-1">
-          <View className="flex-row items-center gap-2">
-            <View className="w-6 h-6 rounded-full bg-green-500" />
-            <Text className="text-green-500">{i18n.t('report.reportDetail.text2')}</Text>
-          </View>
-          <View className="flex-row items-center gap-2">
-            <View className="w-6 h-6 bg-red-500" />
-            <Text className="text-red-500">{i18n.t('report.reportDetail.text3')}</Text>
-          </View>
-        </View>
-        <Text className="text-base font-semibold my-1">{i18n.t('report.reportDetail.text4')}</Text>
-        <View className="flex-1">
-          {reportData.result_ids && reportData.result_ids.length > 0 ? (
-            <ScrollView showsVerticalScrollIndicator={false} className="mx-4">
-              {reportData.result_ids?.map((result) => {
-                const correctCount = result.result_questions.filter((q) => q.correct).length;
-                const incorrectCount = result.result_questions.length - correctCount;
-
-                return (
-                  <Pressable
-                    key={result._id}
-                    onPress={() => {
-                      router.push({
-                        pathname: '/(report)/overview_report',
-                        params: {
-                          resultId: result._id,
-                        },
-                      });
+    return (
+        <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+            <View style={{
+                marginHorizontal: 16,
+                marginVertical: 12,
+                padding: 12,
+                borderWidth: 1,
+                borderRadius: 6,
+                borderColor: '#cbd5e1',
+                flexDirection: 'column'
+            }}>
+                <View
+                    style={{
+                        borderBottomWidth: 1,
+                        borderColor: '#cbd5e1',
+                        paddingBottom: 12,
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
                     }}
-                  >
-                    <View className="flex-row items-center p-3 my-2 border rounded-lg border-slate-300 bg-white">
-                      <Image
-                        source={{ uri: result.user_id.user_avatar }}
-                        className="w-12 h-12 rounded-full mr-4"
-                      />
-                      <View className="flex-1">
-                        <Text className="text-sm font-bold mb-1">
-                          {result.user_id.user_fullname}
+                >
+                    <View>
+                        <Text style={{ color: '#000', fontSize: 16, lineHeight: 24, fontWeight: 'bold' }}>
+                            {reportData.quiz_id?.quiz_name}
                         </Text>
-                        <View className="h-4 flex-row w-full rounded-md overflow-hidden">
-                          <View
-                            style={{ flex: correctCount / result.result_questions.length }}
-                            className="bg-green-500"
-                          />
-                          <View
-                            style={{ flex: incorrectCount / result.result_questions.length }}
-                            className="bg-red-500"
-                          />
-                        </View>
-                      </View>
+                        <Text className={`font-medium ${getStatus() ? 'text-green-500' : 'text-red-500'}`}>
+                            {getStatus() ? i18n.t('report.reportDetail.starting') : i18n.t('report.reportDetail.end')}
+                        </Text>
                     </View>
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-          ) : (
-            <Lottie
-              source={require('@/assets/jsons/empty.json')}
-              width={200}
-              height={200}
-              text={'Chưa có học sinh nào tham gia'}
-            />
-          )}
+                    <TouchableOpacity onPress={() => {
+                        Alert.alert(
+                            i18n.t('report.reportDetail.questionDownload'),
+                            i18n.t('report.reportDetail.textQuestionDownload'),
+                            [
+                                { text: i18n.t('report.reportDetail.cancel'), style: "cancel" },
+                                {
+                                    text: i18n.t('report.reportDetail.continute'), onPress: () => {
+                                        downloadExcel()
+                                    }
+                                },
+                            ]
+                        );
+                    }}>
+                        <LottieView
+                            source={require('@/assets/jsons/download.json')}
+                            autoPlay
+                            loop
+                            style={{ width: 40, height: 40 }}
+                        />
+                    </TouchableOpacity>
+                </View>
+                <View
+                    style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+                    <View style={{ alignItems: 'center', flexDirection: 'row', gap: 4 }}>
+                        <MaterialCommunityIcons name="clock-time-four-outline" size={20} color={'gray'} />
+                        <Text>{moment(reportData.date_end).format("MMMM Do YYYY | h:mm A")}</Text>
+                    </View>
+                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={onOpen}>
+                        <Text style={{ padding: 4, backgroundColor: rgb(34, 197, 94 / 0.6), borderRadius: 8 }} >{i18n.t('report.reportDetail.btnViewQuiz')}</Text>
+                        <MaterialCommunityIcons name="menu-right" size={30} />
+                    </TouchableOpacity>
+                </View>
+            </View>
+            <View style={{ flex: 1, padding: 12 }}>
+                <Text style={{ fontSize: 16, lineHeight: 24, fontWeight: 600 }}>{i18n.t('report.reportDetail.text1')}</Text>
+                <View
+                    style={{
+                        width: '100%',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginVertical: 4,
+                        justifyContent: 'space-around'
+                    }}>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: 8
+                        }}>
+                        <View style={{ borderRadius: 50, width: 24, height: 24, backgroundColor: '#22c55e' }} />
+                        <Text style={{ color: '#22c55e' }}>{i18n.t('report.reportDetail.text2')}</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }} >
+                        <View style={{ width: 24, height: 24, backgroundColor: '#ef4444' }} />
+                        <Text style={{ color: '#ef4444' }}>{i18n.t('report.reportDetail.text3')}</Text>
+                    </View>
+                </View>
+                <Text style={{ fontSize: 16, lineHeight: 24, fontWeight: 600, marginVertical: 4 }}>{i18n.t('report.reportDetail.text4')}</Text>
+                <View style={{ flex: 1 }}>
+                    {
+                        reportData.result_ids && reportData.result_ids.length > 0 ?
+                            <ScrollView
+                                showsVerticalScrollIndicator={false}
+                                style={{ marginHorizontal: 16 }}>
+                                {reportData.result_ids?.map((result) => {
+                                    const correctCount = result.result_questions.filter(q => q.correct).length;
+                                    const incorrectCount = result.result_questions.length - correctCount;
+
+                                    return (
+                                        <Pressable key={result._id} onPress={() => {
+                                            router.push({
+                                                pathname: '/(report)/overview_report',
+                                                params: {
+                                                    resultId: result._id,
+                                                }
+                                            });
+                                        }}>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center',
+                                                    padding: 12,
+                                                    marginVertical: 8,
+                                                    borderWidth: 1,
+                                                    borderRadius: 8,
+                                                    borderColor: '#cbd5e1',
+                                                    backgroundColor: '#fff'
+                                                }}>
+                                                <Image source={{ uri: result.user_id.user_avatar }}
+                                                    style={{
+                                                        width: 48,
+                                                        height: 48,
+                                                        borderRadius: 50,
+                                                        marginRight: 16
+                                                    }} />
+                                                <View style={{ flex: 1 }}>
+                                                    <Text style={{ fontSize: 14, lineHeight: 20, fontStyle: 'bold', marginBottom: 4 }}>{result.user_id.user_fullname}</Text>
+                                                    <View
+                                                        style={{ flexDirection: 'row', height: 16, width: '100%', borderRadius: 6, overflow: 'hidden' }}>  
+                                                        <View style={{ flex: correctCount / result.result_questions.length }} className="bg-green-500" />
+                                                        <View style={{ flex: incorrectCount / result.result_questions.length }} className="bg-red-500" />
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </Pressable>
+                                    );
+                                })}
+                            </ScrollView>
+                            :
+                            <Lottie
+                                source={require('@/assets/jsons/empty.json')}
+                                width={200}
+                                height={200}
+                                text={'Chưa có học sinh nào tham gia'}
+                            />
+                    }
+                </View>
+            </View>
+            <Modalize
+                ref={modal}
+                snapPoint={500}
+                modalStyle={{ zIndex: 1000, elevation: 10, padding: 10 }}
+                avoidKeyboardLikeIOS={true}
+                withHandle={false}
+                scrollViewProps={{ showsVerticalScrollIndicator: false }}>
+                <View style={{ padding: 16 }}>
+                    <Text style={{ fontSize: 18, lineHeight: 28, fontStyle: 'bold', marginBottom: 12 }}>{i18n.t('report.reportDetail.titleQuiz')}</Text>
+                    {questions?.length > 0 ? (
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            {
+                                questions.map((question, index) => (
+                                    <QuestionOverview
+                                        key={index}
+                                        question={question}
+                                        index={index}
+                                    />
+                                ))
+                            }
+                        </ScrollView>
+                    ) : (
+                        <Lottie
+                            source={require('@/assets/jsons/empty.json')}
+                            width={150}
+                            height={150}
+                        />
+                    )}
+                </View>
+            </Modalize>
         </View>
-      </View>
-      <Modalize
-        ref={modal}
-        snapPoint={500}
-        modalStyle={{ zIndex: 1000, elevation: 10, padding: 10 }}
-        avoidKeyboardLikeIOS={true}
-        withHandle={false}
-        scrollViewProps={{ showsVerticalScrollIndicator: false }}
-      >
-        <View className="p-4">
-          <Text className="text-lg font-bold mb-3">{i18n.t('report.reportDetail.titleQuiz')}</Text>
-          {questions?.length > 0 ? (
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {questions.map((question, index) => (
-                <QuestionOverview key={index} question={question} index={index} />
-              ))}
-            </ScrollView>
-          ) : (
-            <Lottie source={require('@/assets/jsons/empty.json')} width={150} height={150} />
-          )}
-        </View>
-      </Modalize>
-    </View>
-  );
+    );
 }
