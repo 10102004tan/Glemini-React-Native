@@ -1,7 +1,8 @@
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { useAuthStore } from '@/store/useAuthStore';
-import { Slot, Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { Link, Slot, Tabs } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
 
 export default function TabLayout() {
@@ -88,10 +89,20 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="account"
+        name="profile"
         options={{
-          title: 'Account',
+          title: 'Profile',
           headerShown: false,
+          headerRight: () => (
+            <Link
+              href={{
+                pathname: '/(protected)/settings',
+              }}
+              style={{ marginRight: 10 }}
+            >
+              <Ionicons name="settings" size={24} color="black" />
+            </Link>
+          ),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'moon' : 'moon-outline'} color={color} />
           ),
