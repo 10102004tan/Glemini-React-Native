@@ -1,11 +1,11 @@
 'use strict';
 
 const dev = {
-  API_URL: 'http://10.0.252.102:3000/api',
-  API_VERSION: {
-    V1: '/v1',
-    V2: '/v2',
-  },
+	API_URL: 'http://192.168.22.116:3000/api',
+	API_VERSION: {
+		V1: '/v1',
+		V2: '/v2',
+	},
 
   END_POINTS: {
     SERVER: '/working',
