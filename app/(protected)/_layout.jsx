@@ -136,8 +136,6 @@ export default function AppRootLayout() {
         }}
       />
 
-     
-
       <Stack.Screen
         name="(quiz)/list"
         options={{

@@ -4,7 +4,7 @@ import HomeStudent from '@/components/customs/HomeStudent';
 import HomeTeacher from '@/components/customs/HomeTeacher';
 import { Image, Pressable, Text, View, Animated, Easing, TextInput } from 'react-native';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
-import { ScrollView } from 'react-native-gesture-handler';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { useState, useRef, useEffect } from 'react';
 import ThoBayMauGif from '@/assets/images/congratulations.1.webp';
 import InCorrectGif from '@/assets/images/incorrect.1.webp';
@@ -20,6 +20,7 @@ import { useStore } from 'zustand';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import Toast from 'react-native-toast-message';
 import { Link, router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Home() {
   const { user } = useAuthStore();
@@ -119,7 +120,6 @@ export default function Home() {
     <>
       {user.user_role === 'user' ? <HomeStudent /> : <HomeTeacher />}
       {/* <School/> */}
-      {/* <Profile/> */}
     </>
   );
 }
@@ -733,5 +733,4 @@ const Play = () => {
     </>
   );
 };
-
 
