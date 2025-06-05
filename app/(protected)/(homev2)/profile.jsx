@@ -49,34 +49,30 @@ const Profile = () => {
             <Feather name="edit-2" size={16} color="#fff" />
           </Pressable>
           <View
-          style={{
-            position: 'absolute',
-            bottom: -10,
-            left: "50%",
-            transform: [{ translateX: -50 }],
-            backgroundColor: '#1cb0f6',
-            paddingHorizontal: 8,
-            paddingVertical: 2,
-            borderRadius: 10,
-            borderWidth: 3,
-            borderColor: '#fff',
-          }}
+            style={{
+              position: 'absolute',
+              bottom: -10,
+              left: '50%',
+              transform: [{ translateX: -50 }],
+              backgroundColor: '#1cb0f6',
+              paddingHorizontal: 8,
+              paddingVertical: 2,
+              borderRadius: 10,
+              borderWidth: 3,
+              borderColor: '#fff',
+            }}
           >
-          <Text
-          style={{
-            color: '#fff',
-            fontSize: 10,
-            fontWeight: 'bold',
-            textAlign: 'center',
-            textTransform: 'uppercase',
-          }}
-          >
-            {
-              user.user_role === 'teacher'
-                ? 'Teacher'
-                : 'Student'
-            }
-          </Text>
+            <Text
+              style={{
+                color: '#fff',
+                fontSize: 10,
+                fontWeight: 'bold',
+                textAlign: 'center',
+                textTransform: 'uppercase',
+              }}
+            >
+              {user.user_role === 'teacher' ? 'Teacher' : 'Student'}
+            </Text>
           </View>
         </View>
       </View>

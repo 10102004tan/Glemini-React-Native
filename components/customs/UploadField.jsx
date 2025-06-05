@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 
-const ProfilePictureField = ({ setImage, image }) => {
+const UploadField = ({ setImage, image,label=""}) => {
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -18,7 +18,7 @@ const ProfilePictureField = ({ setImage, image }) => {
 
   return (
     <View style={styles.row}>
-      <Text style={styles.label}>Profile Picture</Text>
+      <Text style={styles.label}>{label}</Text>
       <Pressable onPress={pickImage}>
         <Text style={styles.chooseFileBtn}>choose file</Text>
       </Pressable>
@@ -64,4 +64,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfilePictureField;
+export default UploadField;

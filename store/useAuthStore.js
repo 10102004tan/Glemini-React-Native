@@ -44,7 +44,7 @@ export const useAuthStore = create((set, get) => ({
     await SecureStore.deleteItemAsync('Authorization');
     await SecureStore.deleteItemAsync('refreshToken');
     await SecureStore.deleteItemAsync('x-client-id');
-    set({isSignedIn: false});
+    set({ isSignedIn: false });
   },
   signUp: async ({ email, password, fullname }) => {
     try {
@@ -98,7 +98,7 @@ export const useAuthStore = create((set, get) => ({
       set({ user: metadata, isSignedIn: true, isLoading: false });
       return { success: true };
     } catch (error) {
-      console.log("error",error)
+      console.log('error', error);
       let message = 'An error occurred. Please try again.';
       if (error.message === 'Network Error') {
         throw new Error('Network Error');
@@ -132,8 +132,8 @@ export const useAuthStore = create((set, get) => ({
           message = 'Server error. Please try again later.';
         }
       }
-      set({ error: message});
+      set({ error: message });
       return { success: false, error: message };
     }
-  }
+  },
 }));

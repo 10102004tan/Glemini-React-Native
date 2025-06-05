@@ -43,21 +43,21 @@ export default function RootLayout() {
     'Poppins-Thin': require('../assets/fonts/Poppins-Thin.ttf'),
   });
 
-  const { checkAuth} = useAuthStore();
-    useEffect(() => {
-      checkAuth().catch((error) => {
-        if (error.message === 'Network Error') {
-          Alert.alert(
-            '[DEV] lỗi kết nối mạng',
-            'Thay đổi ip hoặc thử lại sau',
-            // hidden buttons
-            [],
-          );
-        }
-      });
-    }, []);
+  const { checkAuth } = useAuthStore();
+  useEffect(() => {
+    checkAuth().catch((error) => {
+      if (error.message === 'Network Error') {
+        Alert.alert(
+          '[DEV] lỗi kết nối mạng',
+          'Thay đổi ip hoặc thử lại sau',
+          // hidden buttons
+          [],
+        );
+      }
+    });
+  }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
     }
@@ -68,8 +68,7 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView
-    style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <Providers>
         <Slot />
         <Toast />

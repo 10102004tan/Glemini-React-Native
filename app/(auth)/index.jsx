@@ -45,8 +45,7 @@ const Home = () => {
     },
   ];
 
-  const {isLoading, isSignedIn } = useAuthStore();
-
+  const { isLoading, isSignedIn } = useAuthStore();
 
   useEffect(() => {
     if (message) {
