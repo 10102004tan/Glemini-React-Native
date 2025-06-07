@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 
-const UploadField = ({ setImage, image,label=""}) => {
+const UploadField = ({ setImage, image, label = '' }) => {
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,

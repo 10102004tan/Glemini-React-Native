@@ -20,7 +20,6 @@ import {
   ViewStyle,
 } from 'react-native';
 
-
 const VerifyTeacher = () => {
   const { user } = useAuthStore();
 
@@ -56,9 +55,7 @@ const VerifyTeacher = () => {
         </View>
       );
     } else {
-      return (
-        <FormTeacherPlan />
-      );
+      return <FormTeacherPlan />;
     }
   };
   return (
@@ -78,6 +75,5 @@ const VerifyTeacher = () => {
     </MainLayout>
   );
 };
-
 
 export default VerifyTeacher;

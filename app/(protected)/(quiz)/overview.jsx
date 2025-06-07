@@ -26,6 +26,9 @@ import ConfirmDialog from '@/components/dialogs/ConfirmDialog';
 import { Status } from '@/constants';
 import DropDownMultipleSelect from '@/components/customs/DropDownMultipleSelect';
 import SkeletonLoading from '@/components/loadings/SkeletonLoading';
+import api from '@/libs/axios';
+import { useAuthStore } from '@/store/useAuthStore';
+import Loading from '@/components/customs/Loading';
 
 const QuizzOverViewScreen = () => {
   const router = useRouter();
@@ -56,6 +59,7 @@ const QuizzOverViewScreen = () => {
   const [uploadedImage, setUploadedImage] = useState(null);
   const { isChangeData, setIsChangeData, setQuestions } = useQuestionProvider();
   const { i18n } = useAppProvider();
+  const {user} = useAuthStore()
 
   // Hàm kiểm tra xem câu hỏi có thay đổi không
   useEffect(() => {
@@ -99,7 +103,6 @@ const QuizzOverViewScreen = () => {
 
   useEffect(() => {
     if (id) {
-      // console.log("CALL THE FIRST TIME")
       fetchQuiz();
       fetchQuestions();
     }
@@ -131,19 +134,11 @@ const QuizzOverViewScreen = () => {
 
   // Lấy thông tin của quiz hiện tại
   const fetchQuiz = async () => {
-    // console.log("CALL FETCH QUIZ")
     setQuizFetching(true);
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify({ quiz_id: id }),
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`, {
+      quiz_id: id,
     });
-
-    const data = await response.json();
+    const data = response.data;
     if (data.statusCode === 200) {
       // Save init state
       setQuizId(data.metadata._id);
@@ -159,46 +154,29 @@ const QuizzOverViewScreen = () => {
       setQuizSubjectsChange(data.metadata.subject_ids);
       setQuizThumbnailChange(data.metadata.quiz_thumb);
 
-      if (data.metadata.user_id === userData._id) {
+      if (data.metadata.user_id === user.user_id) {
         setIsEdited(true);
       } else {
         const users = data.metadata.shared_user_ids;
-        const check = users.some((user) => user.user_id === userData._id && user.isEdit);
+        const check = users.some((user) => user.user_id === user.user_id && user.isEdit);
         setIsEdited(check);
       }
-    } else {
-      if (data.statusCode === 401 && data.message === 'expired') {
-        processAccessTokenExpired();
-      }
     }
-
     setQuizFetching(false);
   };
 
   // Lấy danh sách các câu hỏi thuộc quiz hiện tại
   const fetchQuestions = async () => {
-    console.log('CALL FETCH QUESTION');
     setQuestionFetching(true);
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify({ quiz_id: id }),
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`, {
+      quiz_id: id,
     });
-
-    const data = await response.json();
-    // console.log(data);
+    const data = response.data;
 
     if (data.statusCode === 200) {
       setCurrentQuizQuestion(data.metadata);
       setQuestions(data.metadata);
     } else {
-      if (data.statusCode === 401 && data.message === 'expired') {
-        processAccessTokenExpired();
-      }
       setCurrentQuizQuestion([]);
     }
     setQuestionFetching(false);
@@ -284,17 +262,12 @@ const QuizzOverViewScreen = () => {
         name: cleanFileName,
         type: file.mimeType,
       });
-
-      const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_IMAGE}`, {
-        method: 'POST',
-        body: formData,
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_IMAGE}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
         },
       });
-      const data = await response.json();
+      const data = response.data;
       // console.log(data)
       if (data.statusCode === 200) {
         return data.metadata.url;
@@ -343,6 +316,12 @@ const QuizzOverViewScreen = () => {
       setQuizSubjects([...quizSubjects, key]);
     }
   };
+
+  if (quizFetching || questionFetching || !id || !quizName) {
+    return (
+      <Loading/>
+    )
+  }
 
   return (
     <Wrapper>
@@ -483,14 +462,7 @@ const QuizzOverViewScreen = () => {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
       >
-        {quizFetching ? (
-          <>
-            {/* <Text>LOADING</Text> */}
-            <QuizInforSkeleton />
-          </>
-        ) : (
-          <>
-            <View className="p-4 flex items-center justify-center flex-col">
+       <View className="p-4 flex items-center justify-center flex-col">
               {quizThumbnail ? (
                 <>
                   <TouchableOpacity
@@ -544,8 +516,7 @@ const QuizzOverViewScreen = () => {
                   </TouchableOpacity>
                 </>
               )}
-            </View>
-            {/* Quiz infor */}
+          </View>
             <View className="mt-4 p-4">
               <View className="flex items-center justify-between flex-row">
                 <View className="max-w-[300px]">
@@ -582,17 +553,7 @@ const QuizzOverViewScreen = () => {
                 </View>
               </View>
             </View>
-          </>
-        )}
-        {/* Quiz Questions */}
-        {questionFetching ? (
-          <>
             <View className="mt-2 p-4">
-              <QuestionOverviewSkeleton />
-            </View>
-          </>
-        ) : (
-          <View className="mt-2 p-4">
             <Text className="mb-2">{i18n.t('overview_quiz_screen.editQuestionTitle')}</Text>
             {currentQuizQuestion.length > 0 &&
               currentQuizQuestion.map((question, index) => {
@@ -601,7 +562,6 @@ const QuizzOverViewScreen = () => {
                 );
               })}
           </View>
-        )}
       </ScrollView>
       <View className="p-4 absolute bg-white bottom-0 w-full border-t border-gray">
         <Button

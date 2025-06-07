@@ -12,6 +12,8 @@ import * as ImagePicker from 'expo-image-picker';
 import LottieView from 'lottie-react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useAppProvider } from '@/contexts/AppProvider';
+import { useAuthStore } from '@/store/useAuthStore';
+import api from '@/libs/axios';
 const CreateTitleQuizzScreen = () => {
   const { userData, processAccessTokenExpired } = useAuthContext();
   const [quizName, setQuizName] = useState('');
@@ -23,6 +25,7 @@ const CreateTitleQuizzScreen = () => {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const { i18n } = useAppProvider();
+  const {user} = useAuthStore();
 
   const handleGenerateQuestionFromGemini = async (quizId) => {
     // Nếu đang xử lý không gọi lại hàm
@@ -114,34 +117,76 @@ const CreateTitleQuizzScreen = () => {
 
   const handleCreateQuizTitle = async () => {
     // Xử lý tạo quiz rỗng
-    if (userData) {
-      const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_CREATE}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_id: userData._id,
-          quiz_name: quizName,
-        }),
+    // if (userData) {
+    //   const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_CREATE}`, {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'x-client-id': userData._id,
+    //       authorization: userData.accessToken,
+    //     },
+    //     body: JSON.stringify({
+    //       user_id: userData._id,
+    //       quiz_name: quizName,
+    //     }),
+    //   });
+    //   const data = await response.json();
+    //   // console.log(data)
+    //   if (data.statusCode === 200) {
+    //     setNeedUpdate(true);
+
+    //     switch (actionQuizType) {
+    //       case 'create':
+    //         router.replace({
+    //           pathname: '/(app)/(quiz)/overview/',
+    //           params: { id: data.metadata._id },
+    //         });
+    //         break;
+    //       case 'template':
+    //         router.replace({
+    //           pathname: '/(app)/(quiz)/create_quiz_by_template',
+    //           params: { id: data.metadata._id },
+    //         });
+    //         break;
+    //       case 'ai/prompt':
+    //         handleGenerateQuestionFromGemini(data.metadata._id);
+    //         break;
+    //       case 'ai/images':
+    //         handleGenerateQuestionFromGeminiWithImage(data.metadata._id);
+    //         break;
+    //       default:
+    //         break;
+    //     }
+    //   } else {
+    //     if (data.statusCode === 404 && data.message === 'Access denied') {
+    //       await processAccessTokenExpired();
+    //     }
+
+    //     // Alert to user here
+    //     console.log('Error when create quiz');
+    //   }
+    // } else {
+    //   console.log('User not found');
+    // }
+    try {
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_CREATE}`, {
+        user_id: user.user_id,
+        quiz_name: quizName,
       });
-      const data = await response.json();
-      // console.log(data)
+      const data = response.data;
       if (data.statusCode === 200) {
         setNeedUpdate(true);
 
         switch (actionQuizType) {
           case 'create':
             router.replace({
-              pathname: '/(app)/(quiz)/overview/',
+              pathname: '/(protected)/(quiz)/overview/',
               params: { id: data.metadata._id },
             });
             break;
           case 'template':
             router.replace({
-              pathname: '/(app)/(quiz)/create_quiz_by_template',
+              pathname: '/(protected)/(quiz)/create_quiz_by_template',
               params: { id: data.metadata._id },
             });
             break;
@@ -154,17 +199,12 @@ const CreateTitleQuizzScreen = () => {
           default:
             break;
         }
-      } else {
-        if (data.statusCode === 404 && data.message === 'Access denied') {
-          await processAccessTokenExpired();
-        }
-
-        // Alert to user here
-        console.log('Error when create quiz');
       }
-    } else {
-      console.log('User not found');
+    } catch (error) {
+      console.log('Error when create quiz:', error);
+      Alert.alert('Lỗi', 'Đã xảy ra lỗi khi tạo quiz, vui lòng thử lại sau.');
     }
+
   };
 
   // Hàm upload ảnh lên server

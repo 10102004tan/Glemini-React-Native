@@ -12,6 +12,7 @@ import * as SecureStore from 'expo-secure-store';
 import socket from '@/libs/socket';
 import Toast from 'react-native-toast-message';
 import { useModal } from '@/store/useModal';
+import { useNotification } from '@/contexts/NotificationContext';
 
 export default function AppRootLayout() {
   const { isSave, setIsSave } = useQuizProvider();
@@ -22,9 +23,10 @@ export default function AppRootLayout() {
   const { showModal, hideModal } = useModal();
 
   const { isSignedIn, user, signOut, error } = useAuthStore();
+  const {expoPushToken,sendPushTokenToServer} = useNotification();
 
   if (!isSignedIn && !user) {
-    return <Redirect href={'/login'} />;
+    return <Redirect href={'/login'} />
   }
 
   useEffect(() => {
@@ -112,6 +114,12 @@ export default function AppRootLayout() {
       });
     }
   }, [isSignedIn, user]);
+
+  useEffect(() => {
+    if (expoPushToken && user) {
+      sendPushTokenToServer(user.user_id);
+    }
+  },[user,expoPushToken])
 
   return (
     <Stack>

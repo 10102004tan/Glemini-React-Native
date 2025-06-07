@@ -4,6 +4,7 @@ import Loading from '@/components/customs/Loading';
 import NotificationCard from '@/components/customs/NotificationCard';
 import TypeAccountField from '@/components/customs/TypeAccoutField';
 import MainLayout from '@/components/layouts/MainLayout';
+import { useNotification } from '@/contexts/NotificationContext';
 import api from '@/libs/axios';
 import { useAuthStore } from '@/store/useAuthStore';
 import { AntDesign, Entypo, FontAwesome } from '@expo/vector-icons';
@@ -26,9 +27,13 @@ const Account = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [info, setInfo] = useState(null);
   const { schoolId, schoolName } = useLocalSearchParams();
+  const {expoPushToken} = useNotification();
 
-  const handleLogout = async () => {
-    signOut().then(() => {
+  const handleLogout = () => {
+    console.log('[Account] Logging out...', expoPushToken);
+    signOut({
+      deviceToken: expoPushToken || null,
+    }).then(() => {
       router.replace('/(auth)/login');
     });
   };
@@ -87,7 +92,7 @@ const Account = () => {
       </View>
 
       <View style={styles.formWrapper}>
-        <TypeAccountField/>
+        <TypeAccountField />
       </View>
 
       <View>
