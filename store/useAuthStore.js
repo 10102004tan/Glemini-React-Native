@@ -40,11 +40,31 @@ export const useAuthStore = create((set, get) => ({
       return { success: false, error: message };
     }
   },
-  signOut: async () => {
-    await SecureStore.deleteItemAsync('Authorization');
-    await SecureStore.deleteItemAsync('refreshToken');
-    await SecureStore.deleteItemAsync('x-client-id');
-    set({ isSignedIn: false });
+  signOut: async ({
+    deviceToken = null,
+  }) => {
+    try {
+      const body = {
+        deviceToken,
+      }
+      const response = await api.post('/v2/auth/logout', body);
+      console.log('/logout=>response::::', response.data);
+      await SecureStore.deleteItemAsync('Authorization');
+      await SecureStore.deleteItemAsync('refreshToken');
+      await SecureStore.deleteItemAsync('x-client-id');
+      set({ isSignedIn: false });
+    } catch (error) {
+      console.log('/logout=>error::::', error);
+      let message = 'An error occurred. Please try again.';
+      if (error.response) {
+        if (error.response.status === 500) {
+          message = 'Server error. Please try again later.';
+        } else if (error.response.status === 401) {
+          message = 'Unauthorized. Please check your credentials.';
+        }
+      }
+      return { success: false, error: message };
+    }
   },
   signUp: async ({ email, password, fullname }) => {
     try {

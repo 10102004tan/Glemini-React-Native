@@ -3,7 +3,7 @@ import EnLoading from '../../assets/images/EnLoading.webp';
 import { useEffect, useRef } from 'react';
 import { Animated } from 'react-native';
 
-const Loading = ({ duration = 1200, message = 'Dữ liệu đang được tải, đợi 1 xíu nhé!!' }) => {
+const Loading = ({ duration = 1200, message = 'Dữ liệu đang được tải, đợi 1 xíu nhé!!' ,icon}) => {
   const progress = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -25,7 +25,9 @@ const Loading = ({ duration = 1200, message = 'Dữ liệu đang được tải,
   return (
     <View style={styles.container}>
       <View style={styles.messageBoxWrapper}>
-        <Image source={EnLoading} style={styles.image} resizeMode="contain" />
+        <Image source={
+          icon || EnLoading
+        } style={styles.image} resizeMode="contain" />
         {!!message && (
           <View style={styles.messageBox}>
             <Text style={styles.messageText}>{message}</Text>

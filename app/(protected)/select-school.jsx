@@ -46,13 +46,15 @@ const SelectSchool = () => {
         }}
       >
         <Text
-        style={{
-          fontSize: 16,
-          color: '#111827',
-          marginBottom: 5,
-          textTransform: 'capitalize',
-        }}
-        >{item.school_name.replace('- ', '').trim()}</Text>
+          style={{
+            fontSize: 16,
+            color: '#111827',
+            marginBottom: 5,
+            textTransform: 'capitalize',
+          }}
+        >
+          {item.school_name.replace('- ', '').trim()}
+        </Text>
         <View
           style={{
             flexDirection: 'row',
@@ -61,24 +63,34 @@ const SelectSchool = () => {
             marginTop: 5,
           }}
         >
-          {
-            item?.district && (
-          <Text 
-          style={{ color: '#666', fontSize: 10 ,paddingHorizontal:10,paddingVertical:3,borderRadius:20,backgroundColor:'#f3f3f3'}}
-          >
-            {item?.district?.district_name || ''}
-          </Text>
-            )
-          }
-         {
-          item.governing_body && (
-             <Text
-          style={{ color: '#666', fontSize: 10 ,paddingHorizontal:10,paddingVertical:3,borderRadius:20,backgroundColor:'#f3f3f3'}}
-          >
-            {item.governing_body || ''}
-          </Text>
-          )
-         }
+          {item?.district && (
+            <Text
+              style={{
+                color: '#666',
+                fontSize: 10,
+                paddingHorizontal: 10,
+                paddingVertical: 3,
+                borderRadius: 20,
+                backgroundColor: '#f3f3f3',
+              }}
+            >
+              {item?.district?.district_name || ''}
+            </Text>
+          )}
+          {item.governing_body && (
+            <Text
+              style={{
+                color: '#666',
+                fontSize: 10,
+                paddingHorizontal: 10,
+                paddingVertical: 3,
+                borderRadius: 20,
+                backgroundColor: '#f3f3f3',
+              }}
+            >
+              {item.governing_body || ''}
+            </Text>
+          )}
         </View>
       </Pressable>
     );

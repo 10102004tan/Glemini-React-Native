@@ -8,7 +8,7 @@ export default function NotificationIcon({ numberOfUnreadNoti, color = 'white' }
     <TouchableOpacity
       onPress={() => {
         router.push({
-          pathname: '(app)/notification',
+          pathname: '(protected)/notification',
         });
       }}
     >

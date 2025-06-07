@@ -3,8 +3,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import HomeStudent from '@/components/customs/HomeStudent';
 import HomeTeacher from '@/components/customs/HomeTeacher';
 import { Image, Pressable, Text, View, Animated, Easing, TextInput } from 'react-native';
-import { AntDesign, Ionicons } from '@expo/vector-icons';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import { AntDesign } from '@expo/vector-icons';
 import { useState, useRef, useEffect } from 'react';
 import ThoBayMauGif from '@/assets/images/congratulations.1.webp';
 import InCorrectGif from '@/assets/images/incorrect.1.webp';
@@ -14,13 +13,6 @@ import Onechoice from '@/components/customs/Onechoice';
 import FillInTheBlank from '@/components/customs/FillInTheBlank';
 import MatchItems from '@/components/customs/MatchItems';
 import MultipleChoice from '@/components/customs/MultipleChoice';
-import { Feather } from '@expo/vector-icons';
-import { FlashList } from '@shopify/flash-list';
-import { useStore } from 'zustand';
-import { useClassroomProvider } from '@/contexts/ClassroomProvider';
-import Toast from 'react-native-toast-message';
-import { Link, router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Home() {
   const { user } = useAuthStore();
@@ -119,7 +111,6 @@ export default function Home() {
   return (
     <>
       {user.user_role === 'user' ? <HomeStudent /> : <HomeTeacher />}
-      {/* <School/> */}
     </>
   );
 }
@@ -732,5 +723,4 @@ const Play = () => {
         ))}
     </>
   );
-};
-
+}
