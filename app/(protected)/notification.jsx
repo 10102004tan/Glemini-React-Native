@@ -40,7 +40,7 @@ export default function NotificationScreen() {
   const [notifications, setNotifications] = useState([]);
   const [isRefetching, setIsRefetching] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const {user} = useAuthStore();
+  const { user } = useAuthStore();
 
   // useEffect(() => {
   //   if (!currentSelected) return;
@@ -68,7 +68,6 @@ export default function NotificationScreen() {
     modalizeRef.current?.open();
   };
 
-
   useEffect(() => {
     fetchNotifications();
   }, []);
@@ -79,18 +78,17 @@ export default function NotificationScreen() {
       const body = {
         limit: 10,
         skip: 0,
-      }
-      const response = await api.get(`${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`,body)
+      };
+      const response = await api.get(`${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`, body);
       const { data } = response;
       if (data.metadata) {
         setNotifications(data.metadata.items);
         setIsLoading(false);
-
       }
     } catch (error) {
       console.log('[Notification] Error fetching notifications:', error);
     }
-  }
+  };
 
   const refetch = async () => {
     setIsRefetching(true);
@@ -98,8 +96,8 @@ export default function NotificationScreen() {
       const body = {
         limit: 10,
         skip: 0,
-      }
-      const response = await api.get(`${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`,body)
+      };
+      const response = await api.get(`${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`, body);
       const { data } = response;
       if (data.metadata) {
         setNotifications(data.metadata.items);
@@ -108,7 +106,7 @@ export default function NotificationScreen() {
     } catch (error) {
       console.log('[Notification] Error refetching notifications:', error);
     }
-  }
+  };
 
   const handleNotification = (item) => {
     setCurrentSelected(item);
@@ -143,7 +141,6 @@ export default function NotificationScreen() {
         break;
     }
   };
-
 
   const ComponentItem = ({ data }) => {
     const { noti_type, noti_content, createdAt, noti_options, noti_status, _id: notiId } = data;
@@ -187,11 +184,8 @@ export default function NotificationScreen() {
       .catch((err) => console.err(err));
   };
 
-  if (isLoading && notifications.length === 0 ) {
-    return (
-      <Loading duration={1500}/>
-    )
-      
+  if (isLoading && notifications.length === 0) {
+    return <Loading duration={1500} />;
   }
 
   return (

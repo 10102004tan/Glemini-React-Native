@@ -23,10 +23,10 @@ export default function AppRootLayout() {
   const { showModal, hideModal } = useModal();
 
   const { isSignedIn, user, signOut, error } = useAuthStore();
-  const {expoPushToken,sendPushTokenToServer} = useNotification();
+  const { expoPushToken, sendPushTokenToServer } = useNotification();
 
   if (!isSignedIn && !user) {
-    return <Redirect href={'/login'} />
+    return <Redirect href={'/login'} />;
   }
 
   useEffect(() => {
@@ -119,7 +119,7 @@ export default function AppRootLayout() {
     if (expoPushToken && user) {
       sendPushTokenToServer(user.user_id);
     }
-  },[user,expoPushToken])
+  }, [user, expoPushToken]);
 
   return (
     <Stack>
@@ -138,9 +138,10 @@ export default function AppRootLayout() {
       />
 
       <Stack.Screen
-        name="change-password"
+        name="pw-change"
         options={{
           headerTitle: i18n.t('profile.title'),
+          animation: 'fade_from_bottom',
         }}
       />
 
@@ -233,6 +234,7 @@ export default function AppRootLayout() {
           headerShown: false,
         }}
       />
+
 
       <Stack.Screen
         name="(result)/review"

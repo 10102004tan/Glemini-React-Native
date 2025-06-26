@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { Text, View, TextInput } from 'react-native';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
@@ -20,11 +20,16 @@ const Search = () => {
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
+    key,
+    setKey
   } = useQuizStore();
 
   useEffect(() => {
+    setKey('');
     refetch();
   }, []);
+
+
 
   const renderItem = useCallback(({ item }) => {
     return (
@@ -164,6 +169,7 @@ const Search = () => {
           headerTitle: '',
           headerTitleAlign: 'center',
           headerShadowVisible: false,
+          animation: 'slide_from_bottom',
           headerRight: () => (
             <View
               style={{
@@ -181,6 +187,13 @@ const Search = () => {
               }}
             >
               <TextInput
+                onChangeText={(text) => setKey(text)}
+                value={key}
+                keyboardType="default"
+                onBlur={refetch}
+                onSubmitEditing={refetch}
+                autoCapitalize="none"
+                autoCorrect={false}
                 placeholder="Search"
                 style={{
                   paddingHorizontal: 5,

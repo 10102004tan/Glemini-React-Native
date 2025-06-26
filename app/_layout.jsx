@@ -32,7 +32,6 @@ Notifications.setNotificationHandler({
   }),
 });
 
-
 export default function RootLayout() {
   const [loaded] = useFonts({
     'Poppins-Black': require('../assets/fonts/Poppins-Black.ttf'),
@@ -45,7 +44,6 @@ export default function RootLayout() {
     'Poppins-SemiBold': require('../assets/fonts/Poppins-SemiBold.ttf'),
     'Poppins-Thin': require('../assets/fonts/Poppins-Thin.ttf'),
   });
-
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

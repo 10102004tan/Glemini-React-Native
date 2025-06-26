@@ -59,7 +59,7 @@ const QuizzOverViewScreen = () => {
   const [uploadedImage, setUploadedImage] = useState(null);
   const { isChangeData, setIsChangeData, setQuestions } = useQuestionProvider();
   const { i18n } = useAppProvider();
-  const {user} = useAuthStore()
+  const { user } = useAuthStore();
 
   // Hàm kiểm tra xem câu hỏi có thay đổi không
   useEffect(() => {
@@ -262,11 +262,15 @@ const QuizzOverViewScreen = () => {
         name: cleanFileName,
         type: file.mimeType,
       });
-      const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_IMAGE}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      const response = await api.post(
+        `${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_IMAGE}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         },
-      });
+      );
       const data = response.data;
       // console.log(data)
       if (data.statusCode === 200) {
@@ -318,9 +322,7 @@ const QuizzOverViewScreen = () => {
   };
 
   if (quizFetching || questionFetching || !id || !quizName) {
-    return (
-      <Loading/>
-    )
+    return <Loading />;
   }
 
   return (
@@ -462,106 +464,106 @@ const QuizzOverViewScreen = () => {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
       >
-       <View className="p-4 flex items-center justify-center flex-col">
-              {quizThumbnail ? (
-                <>
-                  <TouchableOpacity
-                    className="w-full max-h-[300px] h-[260px] rounded-2xl overflow-hidden"
-                    onPress={() => {
-                      pickImage();
-                    }}
-                  >
-                    {uploadingImage ? (
-                      <>
-                        <View className="flex-1 flex items-center justify-center w-full min-h-[120px]">
-                          <SkeletonLoading styles="w-full h-full" />
-                        </View>
-                      </>
-                    ) : (
-                      <Image className="flex-1" source={{ uri: quizThumbnail }}></Image>
-                    )}
-                  </TouchableOpacity>
-                </>
-              ) : uploadedImage ? (
-                <>
-                  <TouchableOpacity
-                    className="w-full max-h-[300px] h-[260px] rounded-2xl overflow-hidden"
-                    onPress={() => {
-                      pickImage();
-                    }}
-                  >
-                    {uploadingImage ? (
-                      <>
-                        <View className="flex-1 flex items-center justify-center w-full min-h-[120px]">
-                          <SkeletonLoading styles="w-full h-full" />
-                        </View>
-                      </>
-                    ) : (
-                      <Image className="flex-1" source={{ uri: uploadedImage.uri }}></Image>
-                    )}
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <>
-                  <TouchableOpacity
-                    className="flex items-center justify-center flex-col rounded-2xl bg-overlay w-full min-h-[120px]"
-                    onPress={() => {
-                      pickImage();
-                    }}
-                  >
-                    <Ionicons name="image-outline" size={24} color="black" />
-                    <Text className="text-center mt-1">
-                      {i18n.t('overview_quiz_screen.addImageTitle')}
-                    </Text>
-                  </TouchableOpacity>
-                </>
-              )}
-          </View>
-            <View className="mt-4 p-4">
-              <View className="flex items-center justify-between flex-row">
-                <View className="max-w-[300px]">
-                  <Text className="text-lg font-semibold">
-                    {(quizName.length > 25 ? quizName.substring(0, 25) + '...' : quizName) ||
-                      i18n.t('overview_quiz_screen.quizName')}
-                  </Text>
-                  <Text className="text-gray max-w-[300px]">
-                    {(quizDescription.length > 25
-                      ? quizDescription.substring(0, 25) + '...'
-                      : quizDescription) || i18n.t('overview_quiz_screen.quizDescription')}
-                  </Text>
-                </View>
-                <View className="flex items-center flex-row justify-center">
-                  <TouchableOpacity
-                    className="p-2 rounded-full bg-primary w-10 flex items-center justify-center h-10"
-                    onPress={() => {
-                      handleShowBottomSheetEditQuiz();
-                    }}
-                  >
-                    <Feather name="edit-3" size={20} color="white" />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    className="ml-2 p-2 rounded-full bg-primary w-10 flex items-center justify-center h-10"
-                    onPress={() => {
-                      setConfirmFn('delete');
-                      setAlertMessage(i18n.t('overview_quiz_screen.confirmDelete'));
-                      setShowConfirmDialog(true);
-                    }}
-                  >
-                    <FontAwesome name="trash-o" size={20} color="white" />
-                  </TouchableOpacity>
-                </View>
-              </View>
+        <View className="p-4 flex items-center justify-center flex-col">
+          {quizThumbnail ? (
+            <>
+              <TouchableOpacity
+                className="w-full max-h-[300px] h-[260px] rounded-2xl overflow-hidden"
+                onPress={() => {
+                  pickImage();
+                }}
+              >
+                {uploadingImage ? (
+                  <>
+                    <View className="flex-1 flex items-center justify-center w-full min-h-[120px]">
+                      <SkeletonLoading styles="w-full h-full" />
+                    </View>
+                  </>
+                ) : (
+                  <Image className="flex-1" source={{ uri: quizThumbnail }}></Image>
+                )}
+              </TouchableOpacity>
+            </>
+          ) : uploadedImage ? (
+            <>
+              <TouchableOpacity
+                className="w-full max-h-[300px] h-[260px] rounded-2xl overflow-hidden"
+                onPress={() => {
+                  pickImage();
+                }}
+              >
+                {uploadingImage ? (
+                  <>
+                    <View className="flex-1 flex items-center justify-center w-full min-h-[120px]">
+                      <SkeletonLoading styles="w-full h-full" />
+                    </View>
+                  </>
+                ) : (
+                  <Image className="flex-1" source={{ uri: uploadedImage.uri }}></Image>
+                )}
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <TouchableOpacity
+                className="flex items-center justify-center flex-col rounded-2xl bg-overlay w-full min-h-[120px]"
+                onPress={() => {
+                  pickImage();
+                }}
+              >
+                <Ionicons name="image-outline" size={24} color="black" />
+                <Text className="text-center mt-1">
+                  {i18n.t('overview_quiz_screen.addImageTitle')}
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+        <View className="mt-4 p-4">
+          <View className="flex items-center justify-between flex-row">
+            <View className="max-w-[300px]">
+              <Text className="text-lg font-semibold">
+                {(quizName.length > 25 ? quizName.substring(0, 25) + '...' : quizName) ||
+                  i18n.t('overview_quiz_screen.quizName')}
+              </Text>
+              <Text className="text-gray max-w-[300px]">
+                {(quizDescription.length > 25
+                  ? quizDescription.substring(0, 25) + '...'
+                  : quizDescription) || i18n.t('overview_quiz_screen.quizDescription')}
+              </Text>
             </View>
-            <View className="mt-2 p-4">
-            <Text className="mb-2">{i18n.t('overview_quiz_screen.editQuestionTitle')}</Text>
-            {currentQuizQuestion.length > 0 &&
-              currentQuizQuestion.map((question, index) => {
-                return (
-                  <QuestionOverview key={index} quizId={quizId} question={question} index={index} />
-                );
-              })}
+            <View className="flex items-center flex-row justify-center">
+              <TouchableOpacity
+                className="p-2 rounded-full bg-primary w-10 flex items-center justify-center h-10"
+                onPress={() => {
+                  handleShowBottomSheetEditQuiz();
+                }}
+              >
+                <Feather name="edit-3" size={20} color="white" />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="ml-2 p-2 rounded-full bg-primary w-10 flex items-center justify-center h-10"
+                onPress={() => {
+                  setConfirmFn('delete');
+                  setAlertMessage(i18n.t('overview_quiz_screen.confirmDelete'));
+                  setShowConfirmDialog(true);
+                }}
+              >
+                <FontAwesome name="trash-o" size={20} color="white" />
+              </TouchableOpacity>
+            </View>
           </View>
+        </View>
+        <View className="mt-2 p-4">
+          <Text className="mb-2">{i18n.t('overview_quiz_screen.editQuestionTitle')}</Text>
+          {currentQuizQuestion.length > 0 &&
+            currentQuizQuestion.map((question, index) => {
+              return (
+                <QuestionOverview key={index} quizId={quizId} question={question} index={index} />
+              );
+            })}
+        </View>
       </ScrollView>
       <View className="p-4 absolute bg-white bottom-0 w-full border-t border-gray">
         <Button

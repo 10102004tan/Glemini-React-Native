@@ -53,7 +53,7 @@ const detailquizz = () => {
   const { deleteQuiz, questionFetching, setQuestionFetching, removeQuizShared } = useQuizProvider();
 
   const { id, user_id } = useGlobalSearchParams();
-  const {user} = useAuthStore();
+  const { user } = useAuthStore();
 
   const { userData } = useAuthContext();
   const [quizId, setQuizId] = useState('');
@@ -216,7 +216,7 @@ const detailquizz = () => {
   //gọi hàm sao chép lại quiz
   const copyQuiz = async () => {
     const response = await api.post(`${API_VERSION.V1}${END_POINTS.COPY_QUIZ}`, {
-      quiz_id: id, 
+      quiz_id: id,
       user_id: user.user_id,
     });
     const data = response.data;
@@ -230,9 +230,7 @@ const detailquizz = () => {
   };
 
   if (!quizId || questionFetching || !quizName || !quizThumbnail) {
-    return (
-      <Loading/>
-    );
+    return <Loading />;
   }
 
   return (

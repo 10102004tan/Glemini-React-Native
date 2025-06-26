@@ -18,56 +18,57 @@ const CardQuiz = ({
   const { isEdited } = useQuizProvider();
   const { i18n } = useAppProvider();
 
-   if (type === "horizontal") {
-      const { quiz_thumb, quiz_name, quiz_description, quiz_status } = quiz;
-      return (
-         <TouchableOpacity
-            onPress={() => {
-               router.push({
-                  pathname: routerPath,
-                  params: params,
-               });
-            }}
-
-            style={{
-               flex: 1,
-               marginHorizontal: 4,
-               marginBottom: 12,
-               paddingBottom: 8,
-               borderWidth: 1,
-               borderColor: "#E5E7EB",
-               borderRadius: 12,
-               overflow: "hidden",
-               shadowColor: "#000",
-               shadowOffset: {
-                  width: 0,
-                  height: 2,
-               },
-            }}
-         >
-            <View>
-               <Image
-                  src={
-                     quiz_thumb
-                        ? quiz_thumb
-                        : "https://elearningindustry.com/wp-content/uploads/2021/10/Shareable-Quizzes-In-Online-Training-7-Reasons.jpg"
-                  }
-                  style={{ width: "100%", height: 100, borderBottomWidth: 10 }}
-                  alt={quiz_name}
-               />
-            </View>
-            <View className={"p-2"}>
-               <Text>{quiz_name.length > 20 ? quiz_name.substring(0, 20) + "..." : quiz_name}</Text>
-               <Text style={{fontSize: 12}}>{quiz_description.length > 20 ? quiz_description.substring(0, 20) + "..." : quiz_description}</Text>
-               <Text>
-                  {quiz_status === "published"
-                     ? i18n.t("library.public")
-                     : i18n.t("library.private")}
-               </Text>
-            </View>
-         </TouchableOpacity>
-      );
-   }
+  if (type === 'horizontal') {
+    const { quiz_thumb, quiz_name, quiz_description, quiz_status } = quiz;
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          router.push({
+            pathname: routerPath,
+            params: params,
+          });
+        }}
+        style={{
+          flex: 1,
+          marginHorizontal: 4,
+          marginBottom: 12,
+          paddingBottom: 8,
+          borderWidth: 1,
+          borderColor: '#E5E7EB',
+          borderRadius: 12,
+          overflow: 'hidden',
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+        }}
+      >
+        <View>
+          <Image
+            src={
+              quiz_thumb
+                ? quiz_thumb
+                : 'https://elearningindustry.com/wp-content/uploads/2021/10/Shareable-Quizzes-In-Online-Training-7-Reasons.jpg'
+            }
+            style={{ width: '100%', height: 100, borderBottomWidth: 10 }}
+            alt={quiz_name}
+          />
+        </View>
+        <View className={'p-2'}>
+          <Text>{quiz_name.length > 20 ? quiz_name.substring(0, 20) + '...' : quiz_name}</Text>
+          <Text style={{ fontSize: 12 }}>
+            {quiz_description.length > 20
+              ? quiz_description.substring(0, 20) + '...'
+              : quiz_description}
+          </Text>
+          <Text>
+            {quiz_status === 'published' ? i18n.t('library.public') : i18n.t('library.private')}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  }
 
   // vertical
   return (

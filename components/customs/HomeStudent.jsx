@@ -88,8 +88,6 @@ const HomeStudent = () => {
     setIsFetch((prev) => !prev);
   };
 
-  
-
   return (
     <MainLayout>
       <View
@@ -99,7 +97,7 @@ const HomeStudent = () => {
           paddingTop: 30,
         }}
       >
-        <SearchQuizBar/>
+        <SearchQuizBar />
         {loading || refreshing ? (
           <Lottie source={require('@/assets/jsons/loading.json')} width={150} height={150} />
         ) : (

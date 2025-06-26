@@ -7,12 +7,14 @@ export default function AuthLayout() {
         name="index"
         options={{
           headerShown: false,
+          animation: 'slide_from_right',
         }}
       />
       <Stack.Screen
         name="login"
         options={{
           headerTitle: '',
+          animation: 'slide_from_right',
         }}
       />
 
@@ -20,6 +22,7 @@ export default function AuthLayout() {
         name="register"
         options={{
           headerTitle: '',
+          animation: 'slide_from_right',
         }}
       />
 
@@ -27,12 +30,14 @@ export default function AuthLayout() {
         name="forgot"
         options={{
           headerTitle: '',
+          animation: 'slide_from_right',
         }}
       />
       <Stack.Screen
         name="reset"
         options={{
           headerTitle: '',
+          animation: 'slide_from_right',
         }}
       />
 
@@ -40,6 +45,7 @@ export default function AuthLayout() {
         name="otp"
         options={{
           headerTitle: '',
+          animation: 'slide_from_right',
         }}
       />
     </Stack>

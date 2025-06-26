@@ -11,10 +11,12 @@ export const useQuizStore = create((set, get) => ({
   isFetchingNextPage: false,
   isRefetching: false,
   key: '',
+  setKey: (key) => {
+    set({ key });
+  },
   refetch: async () => {
     console.log('refetch');
-    set({ isLoading: true });
-    set({ page: 1 });
+    set({ isLoading: true ,data: [], error: null, totalPage: 0, page: 1 });
     const { page, limit, key } = get();
     const body = {
       page,

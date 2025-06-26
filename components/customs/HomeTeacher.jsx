@@ -165,7 +165,7 @@ const HomeTeacher = () => {
           <View className="px-4 py-6 pt-[50px] bg-primary rounded-b-3xl">
             {/* Teacher Info */}
             <View className={'flex flex-row justify-between'}>
-              <SearchQuizBar/>
+              <SearchQuizBar />
             </View>
             {/* <View className="w-full h-[1px] rounded-xl mt-3 bg-white"></View> */}
 
@@ -198,7 +198,9 @@ const HomeTeacher = () => {
                 <Text className="text-lg font-semibold">
                   {i18n.t('teacher_homepage.createdRecentQuizzes')}
                 </Text>
-                <TouchableOpacity onPress={() => router.push('/(protected)/(homev2)/library.teacher')}>
+                <TouchableOpacity
+                  onPress={() => router.push('/(protected)/(homev2)/library.teacher')}
+                >
                   <Text className="text-blue-600">{i18n.t('teacher_homepage.viewAll')}</Text>
                 </TouchableOpacity>
               </View>
