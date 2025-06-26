@@ -1,7 +1,7 @@
 'use strict';
 
 const dev = {
-	API_URL: 'http://192.168.22.116:3000/api',
+	API_URL: 'http://192.168.35.116:3000/api',
 	API_VERSION: {
 		V1: '/v1',
 		V2: '/v2',

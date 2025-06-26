@@ -177,7 +177,7 @@ const ClassroomProvider = ({ children }) => {
 
     const addQuizToClassroom = async (name, classroomId, quizId, start, deadline) => {
         try {
-            const response = await fetch(
+            const response = await api.post(
                 `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_ADD_QUIZ}`, {
                             name: name,
                             classroomId: classroomId,

@@ -10,16 +10,9 @@ const SubjectProvider = ({ children }) => {
   const { userData } = useAuthContext();
   // Lấy dữ liệu từ API
   const fetchSubjects = async () => {
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.SUBJECTS}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-    });
+    const response = await api.post(`${API_URL}${API_VERSION.V1}${END_POINTS.SUBJECTS}`);
 
-    const data = await response.json();
+    const data = await response.data;
 
     if (data.statusCode === 200) {
       setSubjects(data.metadata);
