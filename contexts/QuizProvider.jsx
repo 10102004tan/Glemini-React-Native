@@ -10,7 +10,7 @@ const QuizProvider = ({ children }) => {
   const [filterQuizzes, setFilterQuizzes] = useState([]); // Get Publish
   const [bannerQuizzes, setBannerQuizzes] = useState([]); // Banner
   const [needUpdate, setNeedUpdate] = useState(false);
-  const [quizFetching, setQuizFetching] = useState(false);
+  const [quizFetching, setQuizFetching] = useState(true);
   const [questionFetching, setQuestionFetching] = useState(false);
   const [actionQuizType, setActionQuizType] = useState('create');
   const [isSave, setIsSave] = useState(false);
@@ -22,31 +22,28 @@ const QuizProvider = ({ children }) => {
 
   // Get all quizzes of the user
   const fetchQuizzes = async ({ skip = 0, limit = LIMIT }) => {
-    if (!quizFetching) {
-      setQuizFetching(true);
-      const body = {
-        user_id: user.user_id,
-        skip,
-        limit,
-      };
-      const response = await api.post(`${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`, body);
-      const data = response.data;
-      if (data.statusCode === 200) {
-        if (data.metadata.length > 0) {
-          if (skip === 0) {
-            setQuizzes(data.metadata);
-          } else {
-            setQuizzes([...quizzes, ...data.metadata]);
-            //setQuizzes((prev) => [...prev, ...data.metadata]);
-          }
+    const body = {
+      user_id: user.user_id,
+      skip,
+      limit,
+    };
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.GET_QUIZ_BY_USER}`, body);
+    const data = response.data;
+    if (data.statusCode === 200) {
+      if (data.metadata.length > 0) {
+        if (skip === 0) {
+          setQuizzes(data.metadata);
         } else {
-          // Không có dữ liệu, ngừng load thêm dữ liệu mới nữa
-          setQuizzes((prev) => [...prev]);
+          setQuizzes([...quizzes, ...data.metadata]);
+          //setQuizzes((prev) => [...prev, ...data.metadata]);
         }
+      } else {
+        // Không có dữ liệu, ngừng load thêm dữ liệu mới nữa
+        setQuizzes((prev) => [...prev]);
       }
-      setQuizFetching(false);
-      setNeedUpdate(false);
     }
+    setQuizFetching(false);
+    setNeedUpdate(false);
   };
 
   // hàm xóa quiz đã chia sẻ
@@ -69,20 +66,20 @@ const QuizProvider = ({ children }) => {
     }
   };
 
-   // Get Quiz Published
-   const getQuizzesPublished = async () => {
-      const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`, {
-            user_id: user.user_id,
-         });
+  // Get Quiz Published
+  const getQuizzesPublished = async () => {
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`, {
+      user_id: user.user_id,
+    });
 
-      const data = response.data;
-      
-      if (data.statusCode === 200) {
-         setFilterQuizzes(data.metadata);
-      } else {
-         setFilterQuizzes([]);
-      }
-   };
+    const data = response.data;
+
+    if (data.statusCode === 200) {
+      setFilterQuizzes(data.metadata);
+    } else {
+      setFilterQuizzes([]);
+    }
+  };
 
   /**
    * Description: Get quizzes for banner
@@ -138,25 +135,36 @@ const QuizProvider = ({ children }) => {
 
   // Update quiz
   const updateQuiz = async (quiz) => {
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPDATE}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify(quiz),
-    });
+    // const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPDATE}`, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'x-client-id': userData._id,
+    //     authorization: userData.accessToken,
+    //   },
+    //   body: JSON.stringify(quiz),
+    // });
 
-    const data = await response.json();
-    // console.log(JSON.stringify(data, null, 2));
-    if (data.statusCode === 200) {
-      setNeedUpdate(true);
-      setIsSave(false);
-      return true;
+    // const data = await response.json();
+    // // console.log(JSON.stringify(data, null, 2));
+    // if (data.statusCode === 200) {
+    //   setNeedUpdate(true);
+    //   setIsSave(false);
+    //   return true;
+    // }
+
+    try {
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_UPDATE}`, quiz);
+      const data = response.data;
+      if (data.statusCode === 200) {
+        setNeedUpdate(true);
+        setIsSave(false);
+        return true;
+      }
+    } catch (error) {
+      console.log('Error updating quiz:', error);
+      return false;
     }
-
-    return false;
   };
 
   // Update quiz if need
@@ -173,20 +181,17 @@ const QuizProvider = ({ children }) => {
    * @returns {Boolean}
    * */
 
-   const duplicateQuiz = async (quiz_id) => {
-      // console.log(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`);
-      const response = await fetch(
-         `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`,
-         {
-            method: "POST",
-            headers: {
-               "Content-Type": "application/json",
-               "x-client-id": userData._id,
-               authorization: userData.accessToken,
-            },
-            body: JSON.stringify({ quiz_id }),
-         }
-      );
+  const duplicateQuiz = async (quiz_id) => {
+    // console.log(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`);
+    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DUPLICATE}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-client-id': userData._id,
+        authorization: userData.accessToken,
+      },
+      body: JSON.stringify({ quiz_id }),
+    });
 
     const data = await response.json();
     return data.statusCode === 200;

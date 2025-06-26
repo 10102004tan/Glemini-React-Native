@@ -40,12 +40,31 @@ export const useAuthStore = create((set, get) => ({
       return { success: false, error: message };
     }
   },
-  signOut: async () => {
-    set({ isLoading: true });
-    await SecureStore.deleteItemAsync('Authorization');
-    await SecureStore.deleteItemAsync('refreshToken');
-    await SecureStore.deleteItemAsync('x-client-id');
-    set({ user: null, isSignedIn: false, isLoading: false });
+  signOut: async ({
+    deviceToken = null,
+  }) => {
+    try {
+      const body = {
+        deviceToken,
+      }
+      const response = await api.post('/v2/auth/logout', body);
+      console.log('/logout=>response::::', response.data);
+      await SecureStore.deleteItemAsync('Authorization');
+      await SecureStore.deleteItemAsync('refreshToken');
+      await SecureStore.deleteItemAsync('x-client-id');
+      set({ isSignedIn: false });
+    } catch (error) {
+      console.log('/logout=>error::::', error);
+      let message = 'An error occurred. Please try again.';
+      if (error.response) {
+        if (error.response.status === 500) {
+          message = 'Server error. Please try again later.';
+        } else if (error.response.status === 401) {
+          message = 'Unauthorized. Please check your credentials.';
+        }
+      }
+      return { success: false, error: message };
+    }
   },
   signUp: async ({ email, password, fullname }) => {
     try {
@@ -99,6 +118,7 @@ export const useAuthStore = create((set, get) => ({
       set({ user: metadata, isSignedIn: true, isLoading: false });
       return { success: true };
     } catch (error) {
+      console.log('error', error);
       let message = 'An error occurred. Please try again.';
       if (error.message === 'Network Error') {
         throw new Error('Network Error');
@@ -112,6 +132,27 @@ export const useAuthStore = create((set, get) => ({
       await SecureStore.deleteItemAsync('Authorization');
       await SecureStore.deleteItemAsync('refreshToken');
       await SecureStore.deleteItemAsync('x-client-id');
+      return { success: false, error: message };
+    }
+  },
+  updateInfo: async (data) => {
+    set({ error: null });
+    try {
+      const response = await api.put('/v2/user/update', data);
+      const { metadata } = response.data;
+      console.log('[STORE] updateInfo: => ' + metadata);
+      return { success: true };
+    } catch (error) {
+      console.log('[STORE] updateInfo error:', error);
+      let message = 'An error occurred. Please try again.';
+      if (error.response) {
+        if (error.response.status === 400) {
+          message = 'Invalid input. Please check your details.';
+        } else if (error.response.status === 500) {
+          message = 'Server error. Please try again later.';
+        }
+      }
+      set({ error: message });
       return { success: false, error: message };
     }
   },

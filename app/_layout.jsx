@@ -16,22 +16,23 @@ import {
 } from 'react-native';
 import Providers from '@/contexts/Providers';
 import * as Notifications from 'expo-notifications';
-import { Image, Animated } from 'react-native';
+// import * as TaskManager from 'expo-task-manager';
 import { useAuthStore } from '@/store/useAuthStore';
 import ModalContainer from '@/components/customs/ModalContainer';
+import { NotificationProvider } from '@/contexts/NotificationContext';
 
-// // Prevent the splash screen from auto-hiding before asset loading is complete.
 // SplashScreen.preventAutoHideAsync();
-// // // Bỏ qua cảnh báo chứa chuỗi "defaultProps"
-// LogBox.ignoreLogs(["defaultProps"]);
+LogBox.ignoreLogs(['defaultProps']);
 
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => ({
-//     shouldShowAlert: true,
-//     shouldPlaySound: true,
-//     shouldSetBadge: false,
-//   }),
-// });
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+
 export default function RootLayout() {
   const [loaded] = useFonts({
     'Poppins-Black': require('../assets/fonts/Poppins-Black.ttf'),
@@ -45,13 +46,16 @@ export default function RootLayout() {
     'Poppins-Thin': require('../assets/fonts/Poppins-Thin.ttf'),
   });
 
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Providers>
-        <Slot />
-        <Toast />
-        <ToastV2 />
-        <ModalContainer />
+        <NotificationProvider>
+          <Slot />
+          <Toast />
+          <ToastV2 />
+          <ModalContainer />
+        </NotificationProvider>
       </Providers>
     </GestureHandlerRootView>
   );

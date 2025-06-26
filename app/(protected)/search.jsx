@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import { Text, View, TextInput } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Feather } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
 import api from '@/libs/axios';
 import { API_VERSION, END_POINTS } from '@/configs/api.config';
@@ -189,7 +189,7 @@ const Search = () => {
                 }}
               />
               {/* icon search */}
-              <AntDesign name="camerao" size={24} color="black" />
+              <Feather name="filter" size={24} color="black" />
             </View>
           ),
         }}

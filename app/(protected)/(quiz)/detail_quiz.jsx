@@ -25,6 +25,9 @@ import AssignQuizModal from '@/components/modals/AssignQuizModal.jsx';
 import RoomWaitingModal from '@/components/modals/RoomWaitingModal.jsx';
 import { useRoomProvider } from '@/contexts/RoomProvider.jsx';
 import Toast from 'react-native-toast-message-custom';
+import api from '@/libs/axios.js';
+import { useAuthStore } from '@/store/useAuthStore.js';
+import Loading from '@/components/customs/Loading.jsx';
 
 const detailquizz = () => {
   const { i18n } = useAppProvider();
@@ -50,6 +53,7 @@ const detailquizz = () => {
   const { deleteQuiz, questionFetching, setQuestionFetching, removeQuizShared } = useQuizProvider();
 
   const { id, user_id } = useGlobalSearchParams();
+  const {user} = useAuthStore();
 
   const { userData } = useAuthContext();
   const [quizId, setQuizId] = useState('');
@@ -89,23 +93,16 @@ const detailquizz = () => {
   };
 
   const handleCreateRoom = async (items) => {
-    await createRoom(items.roomCode, quizId, userData._id, items.userMax, items.description);
+    await createRoom(items.roomCode, quizId, user.user_id, items.userMax, items.description);
   };
 
   // Lấy thông tin của quiz hiện tại
   const fetchQuiz = async () => {
     setIsEdited(false);
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify({ quiz_id: id }),
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`, {
+      quiz_id: id,
     });
-
-    const data = await response.json();
+    const data = response.data;
     if (data.statusCode === 200) {
       setQuizId(data.metadata._id);
       setQuizThumbnail(data.metadata.quiz_thumb);
@@ -118,10 +115,10 @@ const detailquizz = () => {
 
       const users = data.metadata.shared_user_ids;
 
-      if (data.metadata.user_id === userData._id) {
+      if (data.metadata.user_id === user.user_id) {
         setIsEdited(true);
       } else {
-        const check = users.some((user) => user.user_id === userData._id && user.isEdit);
+        const check = users.some((user) => user.user_id === user.user_id && user.isEdit);
         setIsEdited(check);
       }
     }
@@ -130,16 +127,10 @@ const detailquizz = () => {
   // Lấy danh sách các câu hỏi thuộc quiz hiện tại
   const fetchQuestions = async () => {
     setQuestionFetching(true);
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify({ quiz_id: id }),
+    const reponse = await api.post(`${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`, {
+      quiz_id: id,
     });
-    const data = await response.json();
+    const data = reponse.data;
     // console.log(data.metadata);
     if (data.statusCode === 200) {
       setCurrentQuizQuestion(data.metadata);
@@ -156,20 +147,12 @@ const detailquizz = () => {
 
     // Kiểm tra xem quiz đã tồn tại trong collection chưa
     if (!collection.quizzes.some((quiz_id) => quiz_id === quizId)) {
-      const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_ADD_QUIZ}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_id: userData._id,
-          collection_id,
-          quiz_id: quizId,
-        }),
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.COLLECTION_ADD_QUIZ}`, {
+        user_id: user.user_id,
+        collection_id,
+        quiz_id: quizId,
       });
-      const data = await response.json();
+      const data = response.data;
       if (data.statusCode === 200) {
         getAllCollections(); // Cập nhật lại danh sách collections sau khi thêm
       }
@@ -182,23 +165,12 @@ const detailquizz = () => {
 
     // Kiểm tra xem quiz có trong collection không
     if (collection.quizzes.some((quiz_id) => quiz_id === quizId)) {
-      const response = await fetch(
-        `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_REMOVE_QUIZ}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-client-id': userData._id,
-            authorization: userData.accessToken,
-          },
-          body: JSON.stringify({
-            user_id: userData._id,
-            quiz_id: quizId,
-            collection_id: collection_id,
-          }),
-        },
-      );
-      const data = await response.json();
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.COLLECTION_REMOVE_QUIZ}`, {
+        user_id: user.user_id,
+        quiz_id: quizId,
+        collection_id: collection_id,
+      });
+      const data = response.data;
       if (data.statusCode === 200) {
         getAllCollections(); // Cập nhật lại danh sách collections sau khi xóa
       }
@@ -206,26 +178,16 @@ const detailquizz = () => {
   };
 
   const getAllCollections = async () => {
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_GETALL}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify({
-        user_id: userData._id,
-      }),
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.COLLECTION_GETALL}`, {
+      user_id: user.user_id,
     });
-    const data = await response.json();
-    console.log(data);
+    const data = response.data;
     if (data.statusCode === 200) {
       setCollections(collectionData(data.metadata));
       console.log(collectionData(data.metadata));
     }
   };
   useEffect(() => {
-    // console.log("COLLECTIONS")
     getAllCollections();
   }, []);
 
@@ -245,7 +207,6 @@ const detailquizz = () => {
 
   useEffect(() => {
     if (needUpdate) {
-      // console.log("LOOOP")
       setNeedUpdate(false);
       fetchQuiz();
       fetchQuestions();
@@ -254,16 +215,11 @@ const detailquizz = () => {
 
   //gọi hàm sao chép lại quiz
   const copyQuiz = async () => {
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.COPY_QUIZ}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify({ quiz_id: id, user_id: userData._id }),
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.COPY_QUIZ}`, {
+      quiz_id: id, 
+      user_id: user.user_id,
     });
-    const data = await response.json();
+    const data = response.data;
     console.log(data);
     if (data.statusCode === 200) {
       Toast.show({ type: 'success', text1: 'Sao chép Quiz thành công.' });
@@ -273,11 +229,9 @@ const detailquizz = () => {
     }
   };
 
-  if (!quizId || questionFetching) {
+  if (!quizId || questionFetching || !quizName || !quizThumbnail) {
     return (
-      <View className="h-[100%] bg-white items-center justify-center">
-        <ActivityIndicator style={{ color: '#000' }} />
-      </View>
+      <Loading/>
     );
   }
 
@@ -303,7 +257,7 @@ const detailquizz = () => {
         onCancel={() => setShowConfirmDialog(false)}
         onConfirm={() => {
           // Mình là người tạo quiz mới được xóa
-          if (quiz_user === userData._id) {
+          if (quiz_user === user.user_id) {
             deleteQuiz(id);
           }
           // Người khác chia sẻ cho mình thì xóa chia sẻ
@@ -367,7 +321,7 @@ const detailquizz = () => {
             setShowConfirmDialog(true);
           }}
         />
-        {isEdited && quiz_user === userData._id && (
+        {isEdited && quiz_user === user.user_id && (
           <Button
             text={i18n.t('detailQuiz.shareTest')}
             otherStyles={'m-2 flex-row p-4'}
@@ -380,7 +334,7 @@ const detailquizz = () => {
             }}
           />
         )}
-        {isEdited && quiz_user === userData._id && (
+        {isEdited && quiz_user === user.user_id && (
           <Button
             text={i18n.t('detailQuiz.giveHomework')}
             otherStyles={'m-2 flex-row p-4'}
@@ -391,7 +345,7 @@ const detailquizz = () => {
             }}
           />
         )}
-        {isEdited && quiz_user === userData._id && (
+        {isEdited && quiz_user === user.user_id && (
           <Button
             text={i18n.t('detailQuiz.saveToCollection.title')}
             otherStyles={'m-2 flex-row p-4'}
@@ -423,7 +377,7 @@ const detailquizz = () => {
           </View>
         </View>
 
-        {quiz_user !== userData._id && (
+        {quiz_user !== user.user_id && (
           <Button
             text={i18n.t('library.coppyQuiz')}
             otherStyles={'flex-row p-4 w-[50%] justify-center ml-4'}
