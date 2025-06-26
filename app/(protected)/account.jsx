@@ -27,7 +27,7 @@ const Account = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [info, setInfo] = useState(null);
   const { schoolId, schoolName } = useLocalSearchParams();
-  const {expoPushToken} = useNotification();
+  const { expoPushToken } = useNotification();
 
   const handleLogout = () => {
     console.log('[Account] Logging out...', expoPushToken);

@@ -58,7 +58,7 @@ const Library = () => {
       value: 'Chỉ mình tôi',
       data_selected: 'unpublished',
     },
-  ]
+  ];
   // Lấy dữ liệu môn học
   const { subjects } = useSubjectProvider();
   const subjectsData = convertSubjectData(subjects);
@@ -465,7 +465,7 @@ const Library = () => {
                 if (isRefreshing || (quizFetching && quizzes.length === 0)) {
                   return <QuizListSkeleton />;
                 }
-                return <QuizEmpty/>
+                return <QuizEmpty />;
               }}
               ListFooterComponent={() => {
                 if (!hasMore) {
@@ -532,7 +532,7 @@ const Library = () => {
           )}
         </View>
       </MainLayout>
-       <Overlay
+      <Overlay
         onPress={handleCloseBottomSheet}
         visible={visibleBottomSheet || visibleCreateNewBottomSheet || visibleFilterBottomSheet}
       ></Overlay>
@@ -689,7 +689,6 @@ const Library = () => {
           otherStyles={'bg-primary p-3 rounded-xl flex items-center justify-center'}
         />
       </BottomSheet>
-
     </View>
   );
 };

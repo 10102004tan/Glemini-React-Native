@@ -1,8 +1,34 @@
 import AuthLayout from '@/components/layouts/AuthLayout';
+import { useAuthStore } from '@/store/useAuthStore';
+import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { View, Text, Image, FlatList, Dimensions, TouchableOpacity, TextInput } from 'react-native';
 
 const Otp = () => {
+  const {checkOtp} = useAuthStore();
+  const [otp, setOtp] = React.useState('');
+  const {email}  = useLocalSearchParams();
+
+  const handleOtpSubmit = async () => {
+    if (!otp) {
+      alert('Kode OTP tidak boleh kosong');
+      return;
+    }
+    
+    const response = await checkOtp(otp,email);
+    if (response.success) {
+      // Navigate to the next screen or show success message
+      router.replace({
+        pathname: '/reset',
+        params: { otp,
+          email 
+        },
+      })
+    } else {
+      alert(response.error || 'Kode OTP tidak valid, silakan coba lagi');
+    }
+  };
+
   return (
     <AuthLayout>
       <View>
@@ -25,6 +51,12 @@ const Otp = () => {
             </Text>
 
             <TextInput
+              value={otp}
+              onChangeText={setOtp}
+              autoCapitalize="none"
+              autoComplete="off"
+              returnKeyType="done"
+              onSubmitEditing={handleOtpSubmit}
               style={{
                 borderWidth: 1,
                 borderColor: '#D1D5DB',
@@ -51,9 +83,7 @@ const Otp = () => {
                 paddingHorizontal: 20,
                 alignItems: 'center',
               }}
-              onPress={() => {
-                // handle login
-              }}
+              onPress={handleOtpSubmit}
             >
               <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: 'bold' }}>
                 Kirim Kode OTP!

@@ -108,11 +108,7 @@ export default function Home() {
       phone: '0123456789',
     },
   ];
-  return (
-    <>
-      {user.user_role === 'user' ? <HomeStudent /> : <HomeTeacher />}
-    </>
-  );
+  return <>{user.user_role === 'user' ? <HomeStudent /> : <HomeTeacher />}</>;
 }
 
 const Play = () => {
@@ -723,4 +719,4 @@ const Play = () => {
         ))}
     </>
   );
-}
+};

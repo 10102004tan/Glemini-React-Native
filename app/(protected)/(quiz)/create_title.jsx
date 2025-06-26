@@ -25,7 +25,7 @@ const CreateTitleQuizzScreen = () => {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const { i18n } = useAppProvider();
-  const {user} = useAuthStore();
+  const { user } = useAuthStore();
 
   const handleGenerateQuestionFromGemini = async (quizId) => {
     // Nếu đang xử lý không gọi lại hàm
@@ -204,7 +204,6 @@ const CreateTitleQuizzScreen = () => {
       console.log('Error when create quiz:', error);
       Alert.alert('Lỗi', 'Đã xảy ra lỗi khi tạo quiz, vui lòng thử lại sau.');
     }
-
   };
 
   // Hàm upload ảnh lên server

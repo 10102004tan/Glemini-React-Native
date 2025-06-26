@@ -14,7 +14,7 @@ const SearchQuizBar = () => {
       style={{
         width: '100%',
         flexDirection: 'row',
-        justifyContent:"space-between",
+        justifyContent: 'space-between',
         marginBottom: 14,
         alignItems: 'center',
       }}
@@ -36,7 +36,7 @@ const SearchQuizBar = () => {
           />
         </TouchableOpacity>
       </View>
-      <NotificationIcon numberOfUnreadNoti={user.count_notification_unread || 0} />
+      <NotificationIcon color='black' numberOfUnreadNoti={user.count_notification_unread || 0} />
     </View>
   );
 };

@@ -26,7 +26,7 @@ const EmailDialog = ({ visible, onClose, quiz_id }) => {
   const [clicked, setClicked] = useState([]);
   const [loading, setLoading] = useState(false);
   const { i18n } = useAppProvider();
-  const {user} = useAuthStore();
+  const { user } = useAuthStore();
 
   useEffect(() => {
     getAllUserShared();
@@ -44,8 +44,8 @@ const EmailDialog = ({ visible, onClose, quiz_id }) => {
       email,
       quiz_id,
       isEdit,
-    }
-    const response = await api.post(`${API_VERSION.V1}${END_POINTS.SHARE_QUIZ}`,body)
+    };
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.SHARE_QUIZ}`, body);
     const data = response.data;
     if (data.statusCode === 200) {
       alert('Share thành công');
@@ -57,7 +57,6 @@ const EmailDialog = ({ visible, onClose, quiz_id }) => {
   const getAllUserShared = async () => {
     setLoading(true);
     try {
-
       const response = await api.post(`${API_VERSION.V1}${END_POINTS.GET_ALL_USER_SHARED}`, {
         user_id: user.user_id,
         quiz_id,
@@ -106,24 +105,12 @@ const EmailDialog = ({ visible, onClose, quiz_id }) => {
         await shareQuizToTeacher(email);
       }
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.message === "u0001") {
-        Alert.alert(
-          "Thông báo",
-          "Không phải là tài khoản giáo viên.", 
-          [{ text: "OK"}],
-        );
-      }else if (err.response && err.response.data && err.response.data.message === "u0002") {
-        Alert.alert(
-          "Thông báo",
-          "Đã gửi quiz cho giáo viên này.", 
-          [{ text: "OK"}],
-        );
-      }else {
-        Alert.alert(
-          "Thông báo",
-          "Có lỗi xảy ra, vui lòng thử lại sau.", 
-          [{ text: "OK"}],
-        );
+      if (err.response && err.response.data && err.response.data.message === 'u0001') {
+        Alert.alert('Thông báo', 'Không phải là tài khoản giáo viên.', [{ text: 'OK' }]);
+      } else if (err.response && err.response.data && err.response.data.message === 'u0002') {
+        Alert.alert('Thông báo', 'Đã gửi quiz cho giáo viên này.', [{ text: 'OK' }]);
+      } else {
+        Alert.alert('Thông báo', 'Có lỗi xảy ra, vui lòng thử lại sau.', [{ text: 'OK' }]);
       }
     } finally {
       setLoading(false); // Dừng loading
