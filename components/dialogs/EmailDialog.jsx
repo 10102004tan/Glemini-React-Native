@@ -36,6 +36,12 @@ const EmailDialog = ({ visible, onClose, quiz_id }) => {
   }, [visible]);
 
   const shareQuizToTeacher = async (user_email) => {
+    // TODO: Fix V2 API endpoint for sharing quiz
+    console.log('shareQuizToTeacher - temporarily disabled');
+    alert('Tính năng chia sẻ quiz tạm thời bị vô hiệu hóa');
+    return;
+
+    /*
     const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.SHARE_QUIZ}`, {
       method: 'POST',
       headers: {
@@ -57,26 +63,32 @@ const EmailDialog = ({ visible, onClose, quiz_id }) => {
     } else {
       alert(data.message);
     }
+    */
   };
   const getAllUserShared = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.GET_ALL_USER_SHARED}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_id: userData._id,
-          quiz_id,
-        }),
-      });
-      const data = await response.json();
-      if (data.statusCode === 200) {
-        setClicked(data.metadata);
-      }
+      // TODO: Fix V2 API endpoint for shared users
+      console.log('getAllUserShared - temporarily disabled');
+      // const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.GET_ALL_USER_SHARED}`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'x-client-id': userData._id,
+      //     authorization: userData.accessToken,
+      //   },
+      //   body: JSON.stringify({
+      //     user_id: userData._id,
+      //     quiz_id,
+      //   }),
+      // });
+      // const data = await response.json();
+      // if (data.statusCode === 200) {
+      //   setClicked(data.metadata);
+      // }
+
+      // Temporary empty data
+      setClicked([]);
     } catch (err) {
       console.error('Error fetching shared users:', err);
     } finally {
@@ -86,25 +98,31 @@ const EmailDialog = ({ visible, onClose, quiz_id }) => {
   const removeSharedUser = async (user_id) => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.REVOKE_SHARED_USER}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          quiz_id,
-          user_id,
-        }),
-      });
-      const data = await response.json();
-      if (data.statusCode === 200) {
-        alert('Xóa thành công');
-        getAllUserShared();
-      } else {
-        alert(data.message);
-      }
+      // TODO: Fix V2 API endpoint for removing shared users
+      console.log('removeSharedUser - temporarily disabled');
+      // const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.REVOKE_SHARED_USER}`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'x-client-id': userData._id,
+      //     authorization: userData.accessToken,
+      //   },
+      //   body: JSON.stringify({
+      //     quiz_id,
+      //     user_id,
+      //   }),
+      // });
+      // const data = await response.json();
+      // if (data.statusCode === 200) {
+      //   alert('Xóa thành công');
+      //   getAllUserShared();
+      // } else {
+      //   alert(data.message);
+      // }
+
+      // Temporary success message
+      alert('Tính năng tạm thời bị vô hiệu hóa');
+      getAllUserShared();
     } catch (err) {
       console.error('Error removing shared user:', err);
       alert('Mạng yếu, vui lòng thử lại sau.');

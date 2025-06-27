@@ -128,6 +128,7 @@ export default function AppRootLayout() {
           headerShown: false,
         }}
       />
+
       <Stack.Screen
         name="profile"
         options={{

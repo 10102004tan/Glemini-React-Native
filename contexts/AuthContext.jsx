@@ -82,6 +82,14 @@ export const AuthProvider = ({ children }) => {
 
   // }, []);
 
+//   useEffect(() => {
+//     if (userData) {
+//       console.log(userData);
+//     } else {
+//       console.log('No user data found');
+//     }
+//   }, [userData]);
+
   // fetch access token from local storage
   const fetchAccessToken = async () => {
     const value = await AsyncStorage.getItem('userData');
@@ -106,6 +114,7 @@ export const AuthProvider = ({ children }) => {
     }
     throw new Error(data.message);
   };
+
   const signUp = async ({ email, password, fullname, type, images, schools }) => {
     // trim data
     email = email.trim();
@@ -182,6 +191,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const storeUserData = async (data) => {
+    console.log(data);
     const {
       tokens: { accessToken, refreshToken },
       user: {

@@ -27,7 +27,13 @@ const RichTextEditor = ({
   const { userData } = useAuthContext();
   const richText = useRef(null);
   const fieldRef = useRef(null);
+  const selectedAnswerRef = useRef(selectedAnswer);
   const { i18n } = useAppProvider();
+
+  // Keep selectedAnswerRef up to date
+  useEffect(() => {
+    selectedAnswerRef.current = selectedAnswer;
+  }, [selectedAnswer]);
 
   useEffect(() => {
     if (typingType === Status.quiz.ANSWER && questionType === 'box') {
@@ -56,12 +62,20 @@ const RichTextEditor = ({
 
   // Cập nhật nội dung của RichEditor
   useEffect(() => {
+    console.log('📥 Content useEffect triggered:');
+    console.log('  content:', content);
+    console.log('  typingType:', typingType);
+    console.log('  questionType:', questionType);
+    console.log('  current editorValue:', editorValue);
+
     if (typingType === Status.quiz.ANSWER && questionType === 'box') {
+      console.log('  → Setting editorValue for box type');
       setEditorValue(content);
     } else {
-      if (richText) {
+      if (richText.current) {
+        console.log('  → Setting content for RichEditor');
         richText.current.setContentHTML(content);
-        editorValue !== content && setEditorValue(content);
+        setEditorValue(content);
       }
     }
   }, [content, richText, typingType, questionType]);
@@ -72,19 +86,41 @@ const RichTextEditor = ({
     }
   }, [isSave]);
 
+  // Reset editorValue when selectedAnswer changes
+  useEffect(() => {
+    console.log('🔄 SelectedAnswer changed:');
+    console.log('  selectedAnswer:', selectedAnswer);
+    console.log('  content:', content);
+    console.log('  → Setting editorValue to:', content);
+    setEditorValue(content);
+  }, [selectedAnswer, content]);
+
   const handleUpdateData = () => {
+    console.log('🔥 === RICH TEXT EDITOR DEBUG ===');
+    console.log('🎯 typingType:', typingType);
+    console.log('🎯 selectedAnswer:', selectedAnswer, 'Type:', typeof selectedAnswer);
+    console.log('📝 editorValue:', editorValue);
+    console.log('📝 content prop:', content);
+    console.log('🔥 ===============================');
+
     switch (typingType) {
       // Trương hợp dùng rich text editor tạo giải thích cho câu hỏi
       case Status.quiz.EXPLAINATION:
-        setQuestion({ ...question, question_explanation: editorValue });
+        setQuestion((prevQuestion) => ({ ...prevQuestion, question_explanation: editorValue }));
         break;
       // Trường hợp dùng rich text editor tạo nội dung câu hỏi
       case Status.quiz.QUESTION:
-        setQuestion({ ...question, question_excerpt: editorValue });
+        setQuestion((prevQuestion) => ({ ...prevQuestion, question_excerpt: editorValue }));
         break;
       // Trường hợp dùng rich text editor tạo nội dung câu trả lời
       case Status.quiz.ANSWER:
-        editAnswerContent(selectedAnswer, editorValue);
+        console.log(
+          '📞 Calling editAnswerContent with ref:',
+          selectedAnswerRef.current,
+          editorValue,
+        );
+        console.log('📞 selectedAnswer prop:', selectedAnswer);
+        editAnswerContent(selectedAnswerRef.current, editorValue);
         break;
 
       default:
@@ -190,6 +226,10 @@ const RichTextEditor = ({
               style={{ width: '100%', height: 300 }}
               ref={richText}
               onChange={(descriptionText) => {
+                console.log('📝 RichEditor onChange:');
+                console.log('  selectedAnswer:', selectedAnswer);
+                console.log('  new text:', descriptionText);
+                console.log('  previous editorValue:', editorValue);
                 setEditorValue(descriptionText);
               }}
             />

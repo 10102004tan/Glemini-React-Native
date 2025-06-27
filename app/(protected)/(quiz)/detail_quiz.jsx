@@ -13,6 +13,7 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { router, useGlobalSearchParams } from 'expo-router';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config.js';
+import api from '@/libs/axios';
 import QuestionOverview from '@/components/customs/QuestionOverview';
 import { ScrollView } from 'react-native';
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog.jsx';
@@ -25,6 +26,7 @@ import AssignQuizModal from '@/components/modals/AssignQuizModal.jsx';
 import RoomWaitingModal from '@/components/modals/RoomWaitingModal.jsx';
 import { useRoomProvider } from '@/contexts/RoomProvider.jsx';
 import Toast from 'react-native-toast-message-custom';
+import { useAuthStore } from '@/store/useAuthStore.js';
 
 const detailquizz = () => {
   const { i18n } = useAppProvider();
@@ -51,7 +53,7 @@ const detailquizz = () => {
 
   const { id, user_id } = useGlobalSearchParams();
 
-  const { userData } = useAuthContext();
+  const { user } = useAuthStore();
   const [quizId, setQuizId] = useState('');
   // Save init state
   const [quizName, setQuizName] = useState('');
@@ -89,62 +91,143 @@ const detailquizz = () => {
   };
 
   const handleCreateRoom = async (items) => {
-    await createRoom(items.roomCode, quizId, userData._id, items.userMax, items.description);
+    await createRoom(items.roomCode, quizId, user.user_id, items.userMax, items.description);
   };
 
-  // Lấy thông tin của quiz hiện tại
+  // Lấy thông tin của quiz hiện tại - UPDATED TO V2
   const fetchQuiz = async () => {
+    console.log('🚀 DETAIL_QUIZ - Starting fetchQuiz...');
+    console.log('🚀 DETAIL_QUIZ - Current user before API call:', user);
     setIsEdited(false);
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify({ quiz_id: id }),
-    });
+    try {
+      // V2 API - RESTful GET
+      const response = await api.get(`${API_VERSION.V2}${END_POINTS.V2.QUIZ_DETAIL}/${id}`);
+      const data = response.data;
 
-    const data = await response.json();
-    if (data.statusCode === 200) {
-      setQuizId(data.metadata._id);
-      setQuizThumbnail(data.metadata.quiz_thumb);
-      setQuizName(data.metadata.quiz_name);
-      setQuizDescription(data.metadata.quiz_description);
-      setQuizStatus(data.metadata.quiz_status);
-      setQuizSubjects(data.metadata.subject_ids);
-      setQuizTurn(data.metadata.quiz_turn);
-      setQuizUser(data.metadata.user_id);
+      if (data.message === 'Get quiz successfully') {
+        const quizData = data.metadata;
 
-      const users = data.metadata.shared_user_ids;
+        console.log('🚀 DETAIL_QUIZ - Raw quiz data:', quizData);
 
-      if (data.metadata.user_id === userData._id) {
-        setIsEdited(true);
-      } else {
-        const check = users.some((user) => user.user_id === userData._id && user.isEdit);
-        setIsEdited(check);
+        // Debug logs
+        console.log('🔍 DETAIL_QUIZ - Current user from store:', user);
+        console.log('🔍 DETAIL_QUIZ - Quiz user_id from API:', quizData.user_id);
+        console.log('🔍 DETAIL_QUIZ - Quiz user_id type:', typeof quizData.user_id);
+        // V2 API now returns user_id as ObjectId string, not populated object
+        const quizUserId = quizData.user_id?.toString();
+        const currentUserId = user?.user_id?.toString();
+
+        console.log('🔍 DETAIL_QUIZ - Quiz owner ID:', quizUserId);
+        console.log('🔍 DETAIL_QUIZ - Current user ID:', currentUserId);
+        console.log('🔍 DETAIL_QUIZ - Are they equal?', quizUserId === currentUserId);
+        console.log('🔍 DETAIL_QUIZ - About to set quiz_user to:', quizUserId);
+
+        setQuizId(quizData._id);
+        setQuizThumbnail(quizData.quiz_thumb);
+        setQuizName(quizData.quiz_name);
+        setQuizDescription(quizData.quiz_description);
+        setQuizStatus(quizData.quiz_status);
+        setQuizSubjects(quizData.subject_ids);
+        setQuizTurn(quizData.quiz_turn);
+        setQuizUser(quizUserId); // Set quiz_user with the correct value
+
+        const users = quizData.shared_user_ids || [];
+
+        if (quizUserId === currentUserId) {
+          console.log('✅ DETAIL_QUIZ - User is OWNER');
+          setIsEdited(true);
+        } else {
+          console.log('⚠️ DETAIL_QUIZ - User is NOT owner, checking shared users...');
+          console.log('🔍 DETAIL_QUIZ - Shared users:', users);
+
+          const check = users.some((sharedUser) => {
+            const sharedUserId = sharedUser.user_id?.toString();
+            console.log(
+              '🔍 DETAIL_QUIZ - Checking shared user:',
+              sharedUserId,
+              'isEdit:',
+              sharedUser.isEdit,
+            );
+            return sharedUserId === currentUserId && sharedUser.isEdit;
+          });
+
+          console.log('🔍 DETAIL_QUIZ - Has edit permission?', check);
+          setIsEdited(check);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching quiz with V2:', error);
+      // Fallback to V1 if V2 fails
+      const body = { quiz_id: id };
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`, body);
+      const data = response.data;
+      if (data.statusCode === 200) {
+        // Debug logs for V1
+        console.log('🔍 DETAIL_QUIZ V1 - Current user from store:', user);
+        console.log('🔍 DETAIL_QUIZ V1 - Quiz user_id from API:', data.metadata.user_id);
+        console.log('🔍 DETAIL_QUIZ V1 - Quiz user_id type:', typeof data.metadata.user_id);
+        console.log('🔍 DETAIL_QUIZ V1 - Current user.user_id:', user?.user_id);
+        console.log('🔍 DETAIL_QUIZ V1 - Current user.user_id type:', typeof user?.user_id);
+        console.log('🔍 DETAIL_QUIZ V1 - Are they equal?', data.metadata.user_id === user?.user_id);
+
+        setQuizId(data.metadata._id);
+        setQuizThumbnail(data.metadata.quiz_thumb);
+        setQuizName(data.metadata.quiz_name);
+        setQuizDescription(data.metadata.quiz_description);
+        setQuizStatus(data.metadata.quiz_status);
+        setQuizSubjects(data.metadata.subject_ids);
+        setQuizTurn(data.metadata.quiz_turn);
+        setQuizUser(data.metadata.user_id);
+        const users = data.metadata.shared_user_ids;
+
+        // Check ownership V1 - handle both string and ObjectId
+        const quizUserIdV1 = data.metadata.user_id?.toString();
+        const currentUserIdV1 = user?.user_id?.toString();
+
+        if (quizUserIdV1 === currentUserIdV1) {
+          console.log('✅ DETAIL_QUIZ V1 - User is OWNER');
+          setIsEdited(true);
+        } else {
+          console.log('⚠️ DETAIL_QUIZ V1 - User is NOT owner, checking shared users...');
+          console.log('🔍 DETAIL_QUIZ V1 - Shared users:', users);
+          const check = users.some((us) => us.user_id?.toString() === currentUserIdV1 && us.isEdit);
+          console.log('🔍 DETAIL_QUIZ V1 - Has edit permission?', check);
+          setIsEdited(check);
+        }
       }
     }
   };
 
-  // Lấy danh sách các câu hỏi thuộc quiz hiện tại
+  // Lấy danh sách các câu hỏi thuộc quiz hiện tại - UPDATED TO V2
   const fetchQuestions = async () => {
     setQuestionFetching(true);
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify({ quiz_id: id }),
-    });
-    const data = await response.json();
-    // console.log(data.metadata);
-    if (data.statusCode === 200) {
-      setCurrentQuizQuestion(data.metadata);
-    } else {
-      setCurrentQuizQuestion([]);
+    try {
+      // V2 API - POST approach for getting quiz questions
+      const response = await api.post(
+        `${API_VERSION.V2}${END_POINTS.V2.QUIZ_QUESTIONS}/${id}/questions`,
+        { quiz_id: id },
+      );
+      const data = response.data;
+
+      if (data.message === 'Get questions by quiz successfully') {
+        // Handle V2 response structure
+        const questionsData = data.metadata?.items || data.metadata || [];
+        setCurrentQuizQuestion(questionsData);
+      } else {
+        console.log('Unexpected message in detail_quiz:', data.message);
+        setCurrentQuizQuestion([]);
+      }
+    } catch (error) {
+      console.error('Error fetching questions with V2:', error);
+      // Fallback to V1 if V2 fails
+      const body = { quiz_id: id };
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`, body);
+      const data = response.data;
+      if (data.statusCode === 200) {
+        setCurrentQuizQuestion(data.metadata);
+      } else {
+        setCurrentQuizQuestion([]);
+      }
     }
     setQuestionFetching(false);
   };
@@ -153,25 +236,16 @@ const detailquizz = () => {
   const addQuizToCollection = async (collection_id) => {
     const collection = collections.find((col) => col.key === collection_id);
     console.log(collection);
-
-    // Kiểm tra xem quiz đã tồn tại trong collection chưa
     if (!collection.quizzes.some((quiz_id) => quiz_id === quizId)) {
-      const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_ADD_QUIZ}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_id: userData._id,
-          collection_id,
-          quiz_id: quizId,
-        }),
-      });
-      const data = await response.json();
+      const body = {
+        user_id: user.user_id,
+        collection_id,
+        quiz_id: quizId,
+      };
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.COLLECTION_ADD_QUIZ}`, body);
+      const data = response.data;
       if (data.statusCode === 200) {
-        getAllCollections(); // Cập nhật lại danh sách collections sau khi thêm
+        getAllCollections();
       }
     }
   };
@@ -179,45 +253,27 @@ const detailquizz = () => {
   // xóa quiz ra khỏi bộ sưu tập
   const deleteQuizInCollection = async (collection_id) => {
     const collection = collections.find((col) => col.key === collection_id);
-
-    // Kiểm tra xem quiz có trong collection không
     if (collection.quizzes.some((quiz_id) => quiz_id === quizId)) {
-      const response = await fetch(
-        `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_REMOVE_QUIZ}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-client-id': userData._id,
-            authorization: userData.accessToken,
-          },
-          body: JSON.stringify({
-            user_id: userData._id,
-            quiz_id: quizId,
-            collection_id: collection_id,
-          }),
-        },
+      const body = {
+        user_id: user.user_id,
+        quiz_id: quizId,
+        collection_id: collection_id,
+      };
+      const response = await api.post(
+        `${API_VERSION.V1}${END_POINTS.COLLECTION_REMOVE_QUIZ}`,
+        body,
       );
-      const data = await response.json();
+      const data = response.data;
       if (data.statusCode === 200) {
-        getAllCollections(); // Cập nhật lại danh sách collections sau khi xóa
+        getAllCollections();
       }
     }
   };
 
   const getAllCollections = async () => {
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_GETALL}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify({
-        user_id: userData._id,
-      }),
-    });
-    const data = await response.json();
+    const body = { user_id: user.user_id };
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.COLLECTION_GETALL}`, body);
+    const data = response.data;
     console.log(data);
     if (data.statusCode === 200) {
       setCollections(collectionData(data.metadata));
@@ -254,16 +310,9 @@ const detailquizz = () => {
 
   //gọi hàm sao chép lại quiz
   const copyQuiz = async () => {
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.COPY_QUIZ}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify({ quiz_id: id, user_id: userData._id }),
-    });
-    const data = await response.json();
+    const body = { quiz_id: id, user_id: user.user_id };
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.COPY_QUIZ}`, body);
+    const data = response.data;
     console.log(data);
     if (data.statusCode === 200) {
       Toast.show({ type: 'success', text1: 'Sao chép Quiz thành công.' });
@@ -302,12 +351,18 @@ const detailquizz = () => {
         visible={showConfirmDialog}
         onCancel={() => setShowConfirmDialog(false)}
         onConfirm={() => {
+          console.log('🔍 Delete Debug - quiz_user:', quiz_user);
+          console.log('🔍 Delete Debug - user.user_id:', user.user_id);
+          console.log('🔍 Delete Debug - Are equal?', quiz_user === user.user_id);
+
           // Mình là người tạo quiz mới được xóa
-          if (quiz_user === userData._id) {
+          if (quiz_user === user.user_id) {
+            console.log('✅ Deleting quiz as owner');
             deleteQuiz(id);
           }
           // Người khác chia sẻ cho mình thì xóa chia sẻ
           else {
+            console.log('⚠️ Removing shared quiz');
             removeQuizShared(id);
           }
           setShowConfirmDialog(false);
@@ -367,7 +422,7 @@ const detailquizz = () => {
             setShowConfirmDialog(true);
           }}
         />
-        {isEdited && quiz_user === userData._id && (
+        {isEdited && quiz_user === user.user_id && (
           <Button
             text={i18n.t('detailQuiz.shareTest')}
             otherStyles={'m-2 flex-row p-4'}
@@ -380,7 +435,7 @@ const detailquizz = () => {
             }}
           />
         )}
-        {isEdited && quiz_user === userData._id && (
+        {isEdited && quiz_user === user.user_id && (
           <Button
             text={i18n.t('detailQuiz.giveHomework')}
             otherStyles={'m-2 flex-row p-4'}
@@ -391,7 +446,7 @@ const detailquizz = () => {
             }}
           />
         )}
-        {isEdited && quiz_user === userData._id && (
+        {isEdited && quiz_user === user.user_id && (
           <Button
             text={i18n.t('detailQuiz.saveToCollection.title')}
             otherStyles={'m-2 flex-row p-4'}
@@ -402,6 +457,12 @@ const detailquizz = () => {
             }}
           />
         )}
+
+        {/* Debug info */}
+        {console.log('🔍 UI Debug - isEdited:', isEdited)}
+        {console.log('🔍 UI Debug - quiz_user:', quiz_user)}
+        {console.log('🔍 UI Debug - user.user_id:', user.user_id)}
+        {console.log('🔍 UI Debug - quiz_user === user.user_id:', quiz_user === user.user_id)}
       </BottomSheet>
 
       <ScrollView>
@@ -423,7 +484,7 @@ const detailquizz = () => {
           </View>
         </View>
 
-        {quiz_user !== userData._id && (
+        {quiz_user !== user.user_id && (
           <Button
             text={i18n.t('library.coppyQuiz')}
             otherStyles={'flex-row p-4 w-[50%] justify-center ml-4'}
@@ -433,6 +494,9 @@ const detailquizz = () => {
             }}
           />
         )}
+
+        {/* Debug copy button condition */}
+        {console.log('🔍 Copy Button Debug - Show copy button?', quiz_user !== user.user_id)}
 
         <View>
           <Text className="text-gray text-right p-4">

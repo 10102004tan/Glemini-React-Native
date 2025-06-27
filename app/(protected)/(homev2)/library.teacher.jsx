@@ -526,7 +526,7 @@ const Library = () => {
                 handlePress={() => {
                   setActionQuizType('ai/prompt');
                   handleCloseBottomSheet();
-                  router.push('/(app)/(quiz)/create_title');
+                  router.push('/(protected)/(quiz)/create_title');
                 }}
                 otherStyles="ml-2"
                 title={i18n.t('teacher_homepage.createFromText')}
@@ -539,7 +539,7 @@ const Library = () => {
                 handlePress={() => {
                   setActionQuizType('template');
                   handleCloseBottomSheet();
-                  router.push('/(app)/(quiz)/create_title');
+                  router.push('/(protected)/(quiz)/create_title');
                 }}
                 title={i18n.t('teacher_homepage.uploadTemplate')}
                 icon={<Ionicons name="documents-outline" size={24} color="black" />}
@@ -548,7 +548,7 @@ const Library = () => {
                 handlePress={() => {
                   setActionQuizType('create');
                   handleCloseBottomSheet();
-                  router.push('(app)/(quiz)/create_title');
+                  router.push('/(protected)/(quiz)/create_title');
                 }}
                 otherStyles="ml-2"
                 title={i18n.t('teacher_homepage.createWithHand')}

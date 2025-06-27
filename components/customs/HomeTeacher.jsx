@@ -131,6 +131,7 @@ const HomeTeacher = () => {
       // setIsFetching(false);
     }
   };
+  //
 
   useEffect(() => {
     setIsFetching(true);
@@ -171,11 +172,20 @@ const HomeTeacher = () => {
               handlePress={() => {
                 setActionQuizType('ai/prompt');
                 handleCloseBottomSheet();
-                router.push('/(app)/(quiz)/create_title');
+                router.push('/(protected)/(quiz)/create_title');
               }}
-              otherStyles="ml-2"
               title={i18n.t('teacher_homepage.createFromText')}
               icon={<Ionicons name="text-outline" size={24} color="black" />}
+            />
+            <QuizzCreateAction
+              handlePress={() => {
+                setActionQuizType('ai/image');
+                handleCloseBottomSheet();
+                router.push('/(protected)/(quiz)/create_title');
+              }}
+              otherStyles="ml-2"
+              title={i18n.t('teacher_homepage.createFromImage')}
+              icon={<Ionicons name="image-outline" size={24} color="black" />}
             />
           </View>
           <Text className="text-lg mt-8">{i18n.t('teacher_homepage.createWithHand')}</Text>
@@ -184,7 +194,7 @@ const HomeTeacher = () => {
               handlePress={() => {
                 setActionQuizType('template');
                 handleCloseBottomSheet();
-                router.push('/(app)/(quiz)/create_title');
+                router.push('/(protected)/(quiz)/create_title');
               }}
               title={i18n.t('teacher_homepage.uploadTemplate')}
               icon={<Ionicons name="documents-outline" size={24} color="black" />}
@@ -193,7 +203,7 @@ const HomeTeacher = () => {
               handlePress={() => {
                 setActionQuizType('create');
                 handleCloseBottomSheet();
-                router.push('(app)/(quiz)/create_title');
+                router.push('/(protected)/(quiz)/create_title');
               }}
               otherStyles="ml-2"
               title={i18n.t('teacher_homepage.createWithHand')}
