@@ -1,7 +1,7 @@
 'use strict';
 
 const dev = {
-  API_URL: 'http://192.168.2.4:3000/api',
+  API_URL: 'http://192.168.69.1:3000/api',
   API_VERSION: {
     V1: '/v1',
     V2: '/v2',
@@ -20,7 +20,7 @@ const dev = {
     PROFILE: '/user/profile',
     PROFILE_EDIT: '/user/profile',
     RE_UPLOAD: '/user/profile/verification/re-upload',
-    USER_NOTIFICATION: '/user/notifications',
+    USER_NOTIFICATION: '/notification/list',
     PROFILE_EDIT_AVATAR: '/user/profile/avatar',
     PROFILE_TEACHER_IMAGES: '/user/profile/verification/images',
     CHANGE_PASSWORD: '/auth/change-password',

@@ -8,7 +8,7 @@ export default function NotificationIcon({ numberOfUnreadNoti, color = 'white' }
     <TouchableOpacity
       onPress={() => {
         router.push({
-          pathname: '(app)/notification',
+          pathname: '(protected)/notification',
         });
       }}
     >
@@ -22,7 +22,7 @@ export default function NotificationIcon({ numberOfUnreadNoti, color = 'white' }
             {numberOfUnreadNoti > 9 ? '9+' : numberOfUnreadNoti}
           </Text>
         )}
-        <AntDesign name="bells" size={30} color="white" />
+        <AntDesign name="bells" size={30} color={color} />
       </View>
     </TouchableOpacity>
   );

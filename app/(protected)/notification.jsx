@@ -14,6 +14,11 @@ import { STATUS_VERIFIED } from '@/utils/notificationCode';
 import NotificationListSkelaton from '@/components/customs/AntiFlatList/NotificationListSkelaton';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useAppProvider } from '@/contexts/AppProvider';
+import api from '@/libs/axios';
+import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
+import Loading from '@/components/customs/Loading';
+import { FlashList } from '@shopify/flash-list';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const COUNT_LENGTH = 30;
 export default function NotificationScreen() {
@@ -32,31 +37,75 @@ export default function NotificationScreen() {
   const [currentSelected, setCurrentSelected] = useState(null);
   const [isLoadMore, setIsLoadMore] = useState(false);
   const { i18n } = useAppProvider();
+  const [notifications, setNotifications] = useState([]);
+  const [isRefetching, setIsRefetching] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuthStore();
 
-  useEffect(() => {
-    if (!currentSelected) return;
-    const { _id: notiId } = currentSelected;
-    updateNotificationStatus({ notiId })
-      .then((statusCode) => {
-        if (statusCode === 200) {
-          setNumberOfUnreadNoti((prev) => {
-            return prev - 1;
-          });
-          setNotification((prev) => {
-            return prev.map((item) => {
-              if (item._id === notiId) {
-                return { ...item, noti_status: 'read' };
-              }
-              return item;
-            });
-          });
-        }
-      })
-      .catch((err) => console.err(err));
-  }, [currentSelected]);
+  // useEffect(() => {
+  //   if (!currentSelected) return;
+  //   const { _id: notiId } = currentSelected;
+  //   updateNotificationStatus({ notiId })
+  //     .then((statusCode) => {
+  //       if (statusCode === 200) {
+  //         setNumberOfUnreadNoti((prev) => {
+  //           return prev - 1;
+  //         });
+  //         setNotification((prev) => {
+  //           return prev.map((item) => {
+  //             if (item._id === notiId) {
+  //               return { ...item, noti_status: 'read' };
+  //             }
+  //             return item;
+  //           });
+  //         });
+  //       }
+  //     })
+  //     .catch((err) => console.err(err));
+  // }, [currentSelected]);
 
   const onOpen = () => {
     modalizeRef.current?.open();
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const fetchNotifications = async () => {
+    setIsLoading(true);
+    try {
+      const body = {
+        limit: 10,
+        skip: 0,
+      };
+      const response = await api.get(`${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`, body);
+      const { data } = response;
+      if (data.metadata) {
+        setNotifications(data.metadata.items);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log('[Notification] Error fetching notifications:', error);
+    }
+  };
+
+  const refetch = async () => {
+    setIsRefetching(true);
+    try {
+      const body = {
+        limit: 10,
+        skip: 0,
+      };
+      const response = await api.get(`${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`, body);
+      const { data } = response;
+      if (data.metadata) {
+        setNotifications(data.metadata.items);
+        setIsRefetching(false);
+      }
+    } catch (error) {
+      console.log('[Notification] Error refetching notifications:', error);
+    }
   };
 
   const handleNotification = (item) => {
@@ -91,10 +140,6 @@ export default function NotificationScreen() {
       default:
         break;
     }
-  };
-
-  const onClosed = () => {
-    setCurrentSelected(null);
   };
 
   const ComponentItem = ({ data }) => {
@@ -139,10 +184,13 @@ export default function NotificationScreen() {
       .catch((err) => console.err(err));
   };
 
+  if (isLoading && notifications.length === 0) {
+    return <Loading duration={1500} />;
+  }
+
   return (
     <View className={'px-2 bg-white pt-[20px]'}>
-      {/*read all*/}
-      {numberOfUnreadNoti > 0 && (
+      {user?.count_notification_unread > 0 && (
         <TouchableOpacity
           onPress={handlerReadAll}
           className={'flex-row items-center justify-center mb-2'}
@@ -157,20 +205,9 @@ export default function NotificationScreen() {
         handleRefresh={handleRefresh}
         handleLoadMore={handleLoadMore}
         colSpan={4}
-        data={notification}
+        data={notifications}
         componentItem={ComponentItem}
       />
-      <Modalize
-        onClosed={onClosed}
-        avoidKeyboardLikeIOS={true}
-        children={<View></View>}
-        modalStyle={{ padding: 10, marginTop: 30, paddingBottom: 50 }}
-        ref={modalizeRef}
-        withHandle={false}
-        scrollViewProps={{ showsVerticalScrollIndicator: false }}
-      >
-        <Markdown>{currentSelected ? currentSelected.noti_content : ''}</Markdown>
-      </Modalize>
     </View>
   );
 }

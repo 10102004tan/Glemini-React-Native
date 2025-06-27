@@ -12,6 +12,7 @@ import * as SecureStore from 'expo-secure-store';
 import socket from '@/libs/socket';
 import Toast from 'react-native-toast-message';
 import { useModal } from '@/store/useModal';
+import { useNotification } from '@/contexts/NotificationContext';
 
 export default function AppRootLayout() {
   const { isSave, setIsSave } = useQuizProvider();
@@ -22,6 +23,7 @@ export default function AppRootLayout() {
   const { showModal, hideModal } = useModal();
 
   const { isSignedIn, user, signOut, error } = useAuthStore();
+  const { expoPushToken, sendPushTokenToServer } = useNotification();
 
   if (!isSignedIn && !user) {
     return <Redirect href={'/login'} />;
@@ -99,7 +101,9 @@ export default function AppRootLayout() {
         buttonLeft: {
           text: 'Đăng nhập lại',
           onPress: () => {
-            signOut().then(() => {
+            signOut({
+              deviceToken: expoPushToken || null,
+            }).then(() => {
               if (!error) {
                 hideModal();
                 router.push({
@@ -112,6 +116,13 @@ export default function AppRootLayout() {
       });
     }
   }, [isSignedIn, user]);
+
+  useEffect(() => {
+    if (expoPushToken && user) {
+      sendPushTokenToServer(user.user_id);
+    }
+    
+  }, [user, expoPushToken]);
 
   return (
     <Stack>
@@ -130,30 +141,10 @@ export default function AppRootLayout() {
       />
 
       <Stack.Screen
-        name="profile"
+        name="pw-change"
         options={{
           headerTitle: i18n.t('profile.title'),
-        }}
-      />
-
-      <Stack.Screen
-        name="change-password"
-        options={{
-          headerTitle: i18n.t('profile.title'),
-        }}
-      />
-
-      <Stack.Screen
-        name="profile-edit"
-        options={{
-          headerTitle: title,
-        }}
-      />
-
-      <Stack.Screen
-        name="profile-auth"
-        options={{
-          headerTitle: i18n.t('profile.infoAuth'),
+          animation: 'fade_from_bottom',
         }}
       />
 
@@ -226,19 +217,7 @@ export default function AppRootLayout() {
         }}
       />
 
-      <Stack.Screen
-        name="(quiz)/edit_quiz_question"
-        options={{
-          headerTitle: '',
-          headerRight: () => {
-            return (
-              <View className="flex flex-row items-center justify-between">
-                <Text className="ml-4 px-4 py-2 rounded-xl bg-overlay">Chỉnh sửa câu hỏi</Text>
-              </View>
-            );
-          },
-        }}
-      />
+      
 
       <Stack.Screen
         name="(play)/single"

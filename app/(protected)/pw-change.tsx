@@ -1,45 +1,39 @@
-import AuthLayout from '@/components/layouts/AuthLayout';
+import MainLayout from '@/components/layouts/MainLayout';
 import { useAuthStore } from '@/store/useAuthStore';
-import { router, useLocalSearchParams } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { View, Text, Image, FlatList, Dimensions, TouchableOpacity, TextInput } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+import { Text, View } from 'react-native';
+import { TextInput } from 'react-native-gesture-handler';
+export default function PWChange() {
+  const [oldPw, setOldPw] = React.useState('');
+  const [newPw, setNewPw] = React.useState('');
+  const [confirmPw, setConfirmPw] = React.useState('');
+  const { changePw } = useAuthStore();
 
-const Reset = () => {
-  const { resetPassword } = useAuthStore();
-  const { otp, email } = useLocalSearchParams();
-  const [newPassword, setNewPassword] = React.useState('');
-  const [confirmPassword, setConfirmPassword] = React.useState('');
-
-  const handleResetPassword = async () => {
-    if (!newPassword || !confirmPassword) {
-      alert('Kata sandi baru dan konfirmasi kata sandi tidak boleh kosong');
+  const handleChangePassword = async () => {
+    if (!oldPw || !newPw || !confirmPw) {
+      alert('Semua field harus diisi');
       return;
     }
-    if (newPassword !== confirmPassword) {
-      alert('Kata sandi baru dan konfirmasi kata sandi tidak cocok');
+    if (newPw !== confirmPw) {
+      alert('Kata sandi baru dan konfirmasi tidak cocok');
       return;
     }
-    const response = await resetPassword(email, newPassword, otp);
+    const response = await changePw(oldPw, newPw);
     if (response.success) {
-      // Navigate to the login screen or show success message
-      router.replace({
-        pathname: '/(auth)',
-        params: { message: 'Đổi mật khẩu thành công.' },
-      });
+      alert('Đổi mật khẩu thành công!');
+      //   clear input fields
+      setOldPw('');
+      setNewPw('');
+      setConfirmPw('');
     } else {
-      alert('Gagal mengatur ulang kata sandi, silakan coba lagi');
+      alert(response.error || 'Gagal mengubah kata sandi, silakan coba lagi');
     }
   };
-
   return (
-    <AuthLayout>
+    <MainLayout>
       <View>
-        <View style={{ marginBottom: 20 }}>
-          <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Atur ulang kata sandi</Text>
-          <Text style={{ fontSize: 16, color: '#6B7280' }}>
-            Jangan pake kata sandi yang susah-susah makannya, ngerepotin mulu jadi orang.
-          </Text>
-        </View>
         <View style={{ marginBottom: 20 }}>
           <View style={{ marginBottom: 14 }}>
             <Text
@@ -49,11 +43,11 @@ const Reset = () => {
                 fontWeight: 'bold',
               }}
             >
-              Kata Sandi Baru
+              Mật khẩu cũ
             </Text>
             <TextInput
-              value={newPassword}
-              onChangeText={setNewPassword}
+              value={oldPw}
+              onChangeText={setOldPw}
               autoCapitalize="none"
               autoComplete="off"
               returnKeyType="done"
@@ -80,12 +74,43 @@ const Reset = () => {
                 fontWeight: 'bold',
               }}
             >
-              Konfirmasi Kata Sandi
+              Mật khẩu mới
             </Text>
             <TextInput
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
               autoCapitalize="none"
+              value={newPw}
+              onChangeText={setNewPw}
+              autoComplete="off"
+              returnKeyType="done"
+              style={{
+                borderWidth: 1,
+                borderColor: '#D1D5DB',
+                borderRadius: 8,
+                paddingVertical: 10,
+                paddingHorizontal: 20,
+                marginTop: 10,
+                backgroundColor: '#F9FAFB',
+              }}
+              placeholder="********"
+              secureTextEntry={true}
+              placeholderTextColor="#9CA3AF"
+            />
+          </View>
+
+          <View style={{ marginBottom: 14 }}>
+            <Text
+              style={{
+                fontSize: 16,
+                color: '#374151',
+                fontWeight: 'bold',
+              }}
+            >
+              Xác nhận mật khẩu mới
+            </Text>
+            <TextInput
+              autoCapitalize="none"
+              value={confirmPw}
+              onChangeText={setConfirmPw}
               autoComplete="off"
               returnKeyType="done"
               style={{
@@ -105,6 +130,7 @@ const Reset = () => {
 
           <View style={{ marginBottom: 14 }}>
             <TouchableOpacity
+              onPress={handleChangePassword}
               style={{
                 backgroundColor: '#4f46e5',
                 borderRadius: 8,
@@ -112,17 +138,14 @@ const Reset = () => {
                 paddingHorizontal: 20,
                 alignItems: 'center',
               }}
-              onPress={handleResetPassword}
             >
               <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: 'bold' }}>
-                Atur Ulang!
+                Đổi mật khẩu
               </Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
-    </AuthLayout>
+    </MainLayout>
   );
-};
-
-export default Reset;
+}

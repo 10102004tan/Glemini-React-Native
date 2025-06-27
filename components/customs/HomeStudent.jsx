@@ -25,36 +25,47 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import NotificationCard from '@/components/customs/NotificationCard';
 import MainLayout from '../layouts/MainLayout';
 import TestThoBayMau from './TestThoBayMau';
+import SearchQuizBar from './SearchQuizBar';
+import BannerSkeleton from './BannerSkeleton';
+import Banners from './Banners';
+import CollectionQuizListSkeleton from './CollectionQuizListSkeleton';
 
 const width = Dimensions.get('window').width;
+
 const HomeStudent = () => {
   const { i18n } = useAppProvider();
   const { fetchResultData } = useResultProvider();
-  const { filterQuizzes, getQuizzesPublished, bannerQuizzes, getQuizzesBanner } = useQuizProvider();
+  const { filterQuizzes, getQuizzesPublished, bannerQuizzes, getQuizzesBanner, isBannerFetching } =
+    useQuizProvider();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [isFetch, setIsFetch] = useState(false);
   const carouselHeight = (width * 2) / 3;
-  // const { numberOfUnreadNoti } = useContext(AuthContext);
 
   useEffect(() => {
-    const fetchData = async () => {
+    (async () => {
       setLoading(true);
-      await getQuizzesPublished();
-      await getQuizzesBanner();
-      setLoading(false);
-    };
-
-    fetchData();
+      getQuizzesPublished().then(() => {
+        if (filterQuizzes && filterQuizzes.length > 0) {
+          setLoading(false);
+        }
+      });
+      getQuizzesBanner();
+    })();
   }, []);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await getQuizzesPublished();
-    await getQuizzesBanner();
-    setRefreshing(false);
+    setLoading(true);
+    getQuizzesPublished().then(() => {
+      if (filterQuizzes && filterQuizzes.length > 0) {
+        setLoading(false);
+      }
+      setRefreshing(false);
+    });
+    getQuizzesBanner();
   };
 
   const handlePressQuizItem = (quiz) => {
@@ -86,14 +97,6 @@ const HomeStudent = () => {
     setIsFetch((prev) => !prev);
   };
 
-  const handleRedirectSearch = () => {
-    console.log('Redirecting to search page');
-    // router.push("/(protected)/search")
-    router.push({
-      pathname: '/(protected)/search',
-    });
-  };
-
   return (
     <MainLayout>
       <View
@@ -103,126 +106,76 @@ const HomeStudent = () => {
           paddingTop: 30,
         }}
       >
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 14,
-          }}
+        <SearchQuizBar />
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
-          <View>
-            <TouchableOpacity
-              onPress={handleRedirectSearch}
-              style={{
-                width: 300,
-              }}
-            >
-              <TextInput
-                editable={false}
-                style={{
-                  borderWidth: 1,
-                  borderColor: '#D1D5DB',
-                  borderRadius: 15,
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  backgroundColor: '#F9FAFB',
-                }}
-                placeholder="Gần đây có gì mới? Tìm kiếm ngay!"
-                placeholderTextColor="#9CA3AF"
-              />
-            </TouchableOpacity>
-          </View>
-          <NotificationIcon numberOfUnreadNoti={3} />
-        </View>
+          {/* Banner Section */}
+          <Banners
+            onPress={handlePressQuizItem}
+            bannerQuizzes={bannerQuizzes}
+            isBannerFetching={isBannerFetching}
+          />
 
-        {loading || refreshing ? (
-          <Lottie source={require('@/assets/jsons/loading.json')} width={150} height={150} />
-        ) : (
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-          >
-            <View className={bannerQuizzes.length > 0 ? `flex h-[${carouselHeight}px]` : `hidden`}>
-              <Carousel
-                loop
-                width={width}
-                height={carouselHeight}
-                autoPlay={true}
-                data={bannerQuizzes}
-                mode="parallax"
-                scrollAnimationDuration={2500}
-                renderItem={({ item, index }) => (
-                  <TouchableOpacity onPress={() => handlePressQuizItem(item)}>
-                    <View className="absolute z-10 top-5 left-5 px-3 py-1 rounded bg-blue-500/80">
-                      <Text className="text-xl font-bold text-white">{index + 1}</Text>
-                    </View>
-                    <Image
-                      source={item.quiz_thumb ? { uri: item.quiz_thumb } : Images.banner1}
-                      className="w-full h-full rounded-2xl"
-                      style={{ resizeMode: 'cover' }}
-                    />
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
-            {filterQuizzes && filterQuizzes.length > 0 ? (
-              <View className="px-4 mt-4 flex-1">
-                {/* Display subjects and their quizzes */}
-                {filterQuizzes.map(({ subject, quizzes }) => {
-                  return (
-                    <View key={subject._id} className="mb-4">
-                      <View className="flex-row justify-between mb-2">
-                        <Text className="text-xl font-bold">
-                          {i18n.t(`subjects.${subject.name}`)}
-                        </Text>
 
-                        <TouchableOpacity
-                          className={'flex-row items-center rounded gap-1'}
-                          onPress={() => {
-                            toggleFetch();
-                            router.push({
-                              pathname: '/(home)/search',
-                              params: { subjectId: subject._id, load: isFetch },
-                            });
-                          }}
-                        >
-                          <AntDesign name={'search1'} size={20} color={'black'} />
-                          <Text className="text-base">{i18n.t('student_homepage.btnSeeMore')}</Text>
-                        </TouchableOpacity>
-                      </View>
-                      {/* Horizontal ScrollView to display quizzes in rows of two items each */}
-                      <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        className="w-full"
+          {filterQuizzes && filterQuizzes.length > 0 && !loading ? (
+            <View className="px-4 mt-4 flex-1">
+              {/* Display subjects and their quizzes */}
+              {filterQuizzes.map(({ subject, quizzes }) => {
+                return (
+                  <View key={subject._id} className="mb-4">
+                    <View className="flex-row justify-between mb-2">
+                      <Text className="text-xl font-bold">
+                        {i18n.t(`subjects.${subject.name}`)}
+                      </Text>
+
+                      <TouchableOpacity
+                        className={'flex-row items-center rounded gap-1'}
+                        onPress={() => {
+                          toggleFetch();
+                          router.push({
+                            pathname: '/search',
+                            params: { homeSubjectIdSelected: subject._id, load: isFetch },
+                          });
+                        }}
                       >
-                        {quizzes.map((quiz) => (
-                          <View key={quiz._id} className="flex-row px-[6px]">
-                            <TouchableOpacity
-                              onPress={() => handlePressQuizItem(quiz)}
-                              className="flex-1 w-40"
-                            >
-                              <QuizItem quiz={quiz} />
-                            </TouchableOpacity>
-                          </View>
-                        ))}
-                      </ScrollView>
+                        <AntDesign name={'search1'} size={20} color={'black'} />
+                        <Text className="text-base">{i18n.t('student_homepage.btnSeeMore')}</Text>
+                      </TouchableOpacity>
                     </View>
-                  );
-                })}
-              </View>
-            ) : (
-              // Empty state
-              <Lottie
-                source={require('@/assets/jsons/empty.json')}
-                width={150}
-                height={150}
-                text={i18n.t('student_homepage.emptyList')}
-              />
-            )}
-          </ScrollView>
-        )}
+                    {/* Horizontal ScrollView to display quizzes in rows of two items each */}
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      className="w-full"
+                    >
+                      {quizzes.map((quiz) => (
+                        <View key={quiz._id} className="flex-row px-[6px]">
+                          <TouchableOpacity
+                            onPress={() => handlePressQuizItem(quiz)}
+                            className="flex-1 w-40"
+                          >
+                            <QuizItem quiz={quiz} />
+                          </TouchableOpacity>
+                        </View>
+                      ))}
+                    </ScrollView>
+                  </View>
+                );
+              })}
+            </View>
+          ) : loading ? (
+            <CollectionQuizListSkeleton />
+          ) : (
+            <Lottie
+              source={require('@/assets/jsons/empty.json')}
+              width={150}
+              height={150}
+              text={i18n.t('student_homepage.emptyList')}
+            />
+          )}
+        </ScrollView>
 
         {/* Quiz Modal */}
         <QuizModal

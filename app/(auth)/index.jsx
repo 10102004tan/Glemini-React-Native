@@ -2,9 +2,23 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { Redirect, useLocalSearchParams } from 'expo-router';
 import { Link } from 'expo-router';
 import React, { useEffect } from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  FlatList,
+  TouchableOpacity,
+  Dimensions,
+  Alert,
+  Platform,
+} from 'react-native';
 import Toast from 'react-native-toast-message';
 import { showModal } from '@/components/customs/ModalContainer';
+import { useNotification } from '@/contexts/NotificationContext';
+import * as Device from 'expo-device';
+import Constants from 'expo-constants';
+import Loading from '@/components/customs/Loading';
+import ThoLoading from '../../assets/images/thobaymau.2.webp';
 
 const { width } = Dimensions.get('window');
 const Home = () => {
@@ -45,16 +59,12 @@ const Home = () => {
     },
   ];
 
-  const { checkAuth, isLoading, isSignedIn } = useAuthStore();
+  const { isLoading, isSignedIn, checkAuth } = useAuthStore();
+
   useEffect(() => {
     checkAuth().catch((error) => {
       if (error.message === 'Network Error') {
-        Alert.alert(
-          '[DEV] lỗi kết nối mạng',
-          'Thay đổi ip hoặc thử lại sau',
-          // hidden buttons
-          [],
-        );
+        Alert.alert('[DEV] lỗi kết nối mạng', 'Thay đổi ip hoặc thử lại sau', []);
       }
     });
   }, []);
@@ -72,11 +82,7 @@ const Home = () => {
   }, [message]);
 
   if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Loading...</Text>
-      </View>
-    );
+    return <Loading icon={ThoLoading} duration={1000} />;
   }
 
   if (isSignedIn) {

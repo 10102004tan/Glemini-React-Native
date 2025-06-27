@@ -32,6 +32,17 @@ const Login = () => {
             </Link>
           </Text>
         </View>
+        {/* line */}
+        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 20 }} />
+
+        {/* Forgot password */}
+        <View style={{ alignItems: 'center' }}>
+          <TouchableOpacity onPress={() => router.push('/forgot')}>
+            <Text style={{ fontSize: 16, color: '#4F46E5', fontWeight: 'bold' }}>
+              Lupa kata sandi?
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </AuthLayout>
   );

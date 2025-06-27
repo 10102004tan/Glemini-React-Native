@@ -30,6 +30,7 @@ import { I18n } from 'i18n-js';
 import api from '@/libs/axios';
 import { useAuthStore } from '@/store/useAuthStore';
 import MainLayout from '@/components/layouts/MainLayout';
+import SearchQuizBar from './SearchQuizBar';
 
 const HomeTeacher = () => {
   const { setIsHiddenNavigationBar } = useAppProvider();
@@ -55,30 +56,6 @@ const HomeTeacher = () => {
 
   const fetchNewQuizzes = async () => {
     try {
-      // const fetchNewQuizzes = async () => {
-      //    // const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.GET_NEWEST_QUIZZES}`, {
-      //    //    method: 'POST',
-      //    //    headers: {
-      //    //       'Content-Type': 'application/json',
-      //    //       'x-client-id': _id,
-      //    //       authorization: accessToken,
-      //    //    },
-      //    //    body: JSON.stringify({
-      //    //       user_id: _id,
-      //    //    }),
-      //    // })
-
-      //    // const data = await response.json();
-      //    // console.log(data)
-
-      //    if (data.statusCode === 200) {
-      //       setNewQuizzes(data.metadata);
-      //    }
-      // }
-
-      // if (userData) {
-      //    fetchNewQuizzes();
-      // }
       const path = `${API_VERSION.V1}${END_POINTS.GET_NEWEST_QUIZZES}`;
       const body = {
         user_id: user.user_id, // Use user._id from useAuthStore
@@ -97,24 +74,6 @@ const HomeTeacher = () => {
 
   const fetchRecentCreatedRooms = async () => {
     try {
-      // setIsFetching(true);
-      // const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_LIST}`, {
-      //    method: 'POST',
-      //    headers: {
-      //       'Content-Type': 'application/json',
-      //       'x-client-id': _id,
-      //       authorization: accessToken,
-      //    },
-      //    body: JSON.stringify({
-      //       user_created_id: _id,
-      //    }),
-      // });
-      // const data = await response.json();
-      // if (data.statusCode === 200) {
-      //    setRecentCreatedRooms(data.metadata);
-      // } else {
-      //    alert('Lỗi khi lấy danh sách phòng chơi');
-      // }
       const path = `${API_VERSION.V1}${END_POINTS.ROOM_LIST}`;
       const body = {
         user_created_id: user.user_id, // Use user._id from useAuthStore
@@ -152,8 +111,6 @@ const HomeTeacher = () => {
 
   useEffect(() => {
     socket.on('joinRoom', (data) => {
-      console.log(data);
-      // alert('Join room success');
       setUsers([...data]);
     });
   }, []);
@@ -218,16 +175,7 @@ const HomeTeacher = () => {
           <View className="px-4 py-6 pt-[50px] bg-primary rounded-b-3xl">
             {/* Teacher Info */}
             <View className={'flex flex-row justify-between'}>
-              <View className="flex flex-row items-center justify-start mb-3">
-                <Image className={'w-[50px] h-[50px] rounded-full'} src={user.user_avatar} />
-                <View className="ml-3 max-w-[330px]">
-                  <Text className="text-lg font-pmedium text-white">
-                    {user.fullname || 'Chưa cập nhật tên'}
-                  </Text>
-                  <Text style={{ color: 'rgba(255, 255, 255, 0.7)' }}>{user.email}</Text>
-                </View>
-              </View>
-              <NotificationIcon numberOfUnreadNoti={3} />
+              <SearchQuizBar notiItemColor='white' />
             </View>
             {/* <View className="w-full h-[1px] rounded-xl mt-3 bg-white"></View> */}
 
@@ -240,14 +188,14 @@ const HomeTeacher = () => {
               />
               <PressAction
                 onPress={() => {
-                  router.push('/(app)/(home)/libraly');
+                  router.push('/(protected)/(homev2)/library.teacher');
                 }}
                 title={i18n.t('teacher_homepage.myLibraryButtonTitle')}
                 icon={<Ionicons name="library-outline" size={24} color="black" />}
               />
               <PressAction
                 onPress={() => {
-                  router.push('/(app)/(home)/report');
+                  router.push('/(protected)/(homev2)/report.teacher');
                 }}
                 title={i18n.t('teacher_homepage.reportButtonTitle')}
                 icon={<Ionicons name="analytics-outline" size={24} color="black" />}
@@ -260,7 +208,9 @@ const HomeTeacher = () => {
                 <Text className="text-lg font-semibold">
                   {i18n.t('teacher_homepage.createdRecentQuizzes')}
                 </Text>
-                <TouchableOpacity onPress={() => router.push('/(app)/(home)/libraly')}>
+                <TouchableOpacity
+                  onPress={() => router.push('/(protected)/(homev2)/library.teacher')}
+                >
                   <Text className="text-blue-600">{i18n.t('teacher_homepage.viewAll')}</Text>
                 </TouchableOpacity>
               </View>
@@ -280,7 +230,7 @@ const HomeTeacher = () => {
                           showCheck={false}
                           quiz={item}
                           type="vertical"
-                          routerPath="/(app)/(quiz)/overview"
+                          routerPath="/(protected)/(quiz)/overview"
                           params={{ id: item._id }}
                         />
                       )}
@@ -320,7 +270,7 @@ const HomeTeacher = () => {
                 <Text className="text-lg font-semibold">
                   {i18n.t('teacher_homepage.createdRecentRooms')}
                 </Text>
-                <TouchableOpacity onPress={() => router.push('/(app)/(room)/list')}>
+                <TouchableOpacity onPress={() => router.push('/(protected)/(room)/list')}>
                   <Text className="text-blue-600">{i18n.t('teacher_homepage.viewAll')}</Text>
                 </TouchableOpacity>
               </View>
