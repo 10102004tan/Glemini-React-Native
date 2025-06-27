@@ -95,7 +95,10 @@ const RoomProvider = ({ children }) => {
             room_code: data.metadata.room_code,
             user_id: userData._id,
           };
-          const checkAdded = await api.post(`${API_VERSION.V1}${END_POINTS.ROOM_ADD_USER}`, bodyAddUser);
+          const checkAdded = await api.post(
+            `${API_VERSION.V1}${END_POINTS.ROOM_ADD_USER}`,
+            bodyAddUser,
+          );
           const checkData = checkAdded.data;
           if (checkData.statusCode === 200) {
             setCurrentRoom(data.metadata._id);

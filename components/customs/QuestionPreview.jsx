@@ -14,12 +14,7 @@ const QuestionPreview = ({ question, type = 'single', options = [], image = '' }
           <View className="mt-4">
             <Text className="text-white font-medium mb-3">🔘 Preview - Single Choice</Text>
             <View style={{ height: 300 }}>
-              <Onechoice
-                options={options}
-                onClick={() => {}}
-                image={image}
-                preview={true}
-              />
+              <Onechoice options={options} onClick={() => {}} image={image} preview={true} />
             </View>
           </View>
         );
@@ -29,12 +24,7 @@ const QuestionPreview = ({ question, type = 'single', options = [], image = '' }
           <View className="mt-4">
             <Text className="text-white font-medium mb-3">☑️ Preview - Multiple Choice</Text>
             <View style={{ height: 300 }}>
-              <MultipleChoice
-                options={options}
-                onClick={() => {}}
-                image={image}
-                preview={true}
-              />
+              <MultipleChoice options={options} onClick={() => {}} image={image} preview={true} />
             </View>
           </View>
         );
@@ -60,11 +50,7 @@ const QuestionPreview = ({ question, type = 'single', options = [], image = '' }
           <View className="mt-4">
             <Text className="text-white font-medium mb-3">🔢 Preview - Order</Text>
             <View style={{ height: 300 }}>
-              <OrderInput
-                options={options}
-                onClick={() => {}}
-                preview={true}
-              />
+              <OrderInput options={options} onClick={() => {}} preview={true} />
             </View>
           </View>
         );
@@ -74,11 +60,7 @@ const QuestionPreview = ({ question, type = 'single', options = [], image = '' }
           <View className="mt-4">
             <Text className="text-white font-medium mb-3">🔗 Preview - Match</Text>
             <View style={{ height: 300 }}>
-              <MatchItems
-                options={options}
-                onClick={() => {}}
-                preview={true}
-              />
+              <MatchItems options={options} onClick={() => {}} preview={true} />
             </View>
           </View>
         );
@@ -95,9 +77,7 @@ const QuestionPreview = ({ question, type = 'single', options = [], image = '' }
   if (!question || !options.length) {
     return (
       <View className="mt-4 p-4 bg-gray-700 rounded-xl">
-        <Text className="text-gray-400 text-center">
-          Thêm câu hỏi và đáp án để xem preview
-        </Text>
+        <Text className="text-gray-400 text-center">Thêm câu hỏi và đáp án để xem preview</Text>
       </View>
     );
   }

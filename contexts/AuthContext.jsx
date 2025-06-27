@@ -82,13 +82,13 @@ export const AuthProvider = ({ children }) => {
 
   // }, []);
 
-//   useEffect(() => {
-//     if (userData) {
-//       console.log(userData);
-//     } else {
-//       console.log('No user data found');
-//     }
-//   }, [userData]);
+  //   useEffect(() => {
+  //     if (userData) {
+  //       console.log(userData);
+  //     } else {
+  //       console.log('No user data found');
+  //     }
+  //   }, [userData]);
 
   // fetch access token from local storage
   const fetchAccessToken = async () => {
