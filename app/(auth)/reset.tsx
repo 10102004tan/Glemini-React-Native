@@ -5,8 +5,8 @@ import React from 'react';
 import { View, Text, Image, FlatList, Dimensions, TouchableOpacity, TextInput } from 'react-native';
 
 const Reset = () => {
-  const {resetPassword} = useAuthStore();
-  const {otp,email} = useLocalSearchParams();
+  const { resetPassword } = useAuthStore();
+  const { otp, email } = useLocalSearchParams();
   const [newPassword, setNewPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
 
@@ -19,7 +19,7 @@ const Reset = () => {
       alert('Kata sandi baru dan konfirmasi kata sandi tidak cocok');
       return;
     }
-    const response = await resetPassword(email, newPassword,otp);
+    const response = await resetPassword(email, newPassword, otp);
     if (response.success) {
       // Navigate to the login screen or show success message
       router.replace({

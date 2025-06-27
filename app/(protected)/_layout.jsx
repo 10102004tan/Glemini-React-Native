@@ -101,7 +101,9 @@ export default function AppRootLayout() {
         buttonLeft: {
           text: 'Đăng nhập lại',
           onPress: () => {
-            signOut().then(() => {
+            signOut({
+              deviceToken: expoPushToken || null,
+            }).then(() => {
               if (!error) {
                 hideModal();
                 router.push({
@@ -119,6 +121,7 @@ export default function AppRootLayout() {
     if (expoPushToken && user) {
       sendPushTokenToServer(user.user_id);
     }
+    
   }, [user, expoPushToken]);
 
   return (
@@ -214,19 +217,7 @@ export default function AppRootLayout() {
         }}
       />
 
-      <Stack.Screen
-        name="(quiz)/edit_quiz_question"
-        options={{
-          headerTitle: '',
-          headerRight: () => {
-            return (
-              <View className="flex flex-row items-center justify-between">
-                <Text className="ml-4 px-4 py-2 rounded-xl bg-overlay">Chỉnh sửa câu hỏi</Text>
-              </View>
-            );
-          },
-        }}
-      />
+      
 
       <Stack.Screen
         name="(play)/single"
@@ -234,7 +225,6 @@ export default function AppRootLayout() {
           headerShown: false,
         }}
       />
-
 
       <Stack.Screen
         name="(result)/review"

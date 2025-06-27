@@ -223,7 +223,7 @@ const QuizzOverViewScreen = () => {
     }
 
     router.push({
-      pathname: '(app)/(quiz)/edit_quiz_question',
+      pathname: '/(quiz)/edit_quiz_question',
       params: { quizId: id },
     });
   };

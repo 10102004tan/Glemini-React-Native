@@ -130,7 +130,7 @@ export default function PWChange() {
 
           <View style={{ marginBottom: 14 }}>
             <TouchableOpacity
-                onPress={handleChangePassword}
+              onPress={handleChangePassword}
               style={{
                 backgroundColor: '#4f46e5',
                 borderRadius: 8,

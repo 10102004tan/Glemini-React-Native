@@ -14,6 +14,7 @@ const QuizProvider = ({ children }) => {
   const [questionFetching, setQuestionFetching] = useState(false);
   const [actionQuizType, setActionQuizType] = useState('create');
   const [isSave, setIsSave] = useState(false);
+  const [isBannerFetching, setIsBannerFetching] = useState(false);
   // const { userData } = useAuthContext();
   const { user } = useAuthStore();
   const LIMIT = 10;
@@ -73,7 +74,6 @@ const QuizProvider = ({ children }) => {
     });
 
     const data = response.data;
-
     if (data.statusCode === 200) {
       setFilterQuizzes(data.metadata);
     } else {
@@ -104,6 +104,7 @@ const QuizProvider = ({ children }) => {
     // } else {
     //    setBannerQuizzes([]);
     // }
+    setIsBannerFetching(true);
     const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_BANNER}`, {
       user_id: user.user_id,
     });
@@ -113,6 +114,7 @@ const QuizProvider = ({ children }) => {
     } else {
       setBannerQuizzes([]);
     }
+    setIsBannerFetching(false);
   };
 
   // Delete quiz
@@ -200,6 +202,7 @@ const QuizProvider = ({ children }) => {
   return (
     <QuizContext.Provider
       value={{
+        isBannerFetching,
         actionQuizType,
         setActionQuizType,
         quizzes,
