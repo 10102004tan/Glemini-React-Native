@@ -19,6 +19,7 @@ import {
   View,
   StyleSheet,
 } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 
 const timeOut = 1000;
@@ -86,23 +87,25 @@ const Account = () => {
         }}
       />
 
-      <View style={styles.formWrapper}>
-        {/* field for avatar */}
-        <AccoutForm info={info} />
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.formWrapper}>
+          {/* field for avatar */}
+          <AccoutForm info={info} />
+        </View>
 
-      <View style={styles.formWrapper}>
-        <TypeAccountField />
-      </View>
+        <View style={styles.formWrapper}>
+          <TypeAccountField />
+        </View>
 
-      <View>
-        <Pressable onPress={handleLogout} style={styles.logoutBtn}>
-          <Text style={styles.logoutText}>Logout</Text>
-        </Pressable>
-        <Pressable style={styles.deleteBtn}>
-          <Text style={styles.deleteText}>Delete</Text>
-        </Pressable>
-      </View>
+        <View>
+          <Pressable onPress={handleLogout} style={styles.logoutBtn}>
+            <Text style={styles.logoutText}>Logout</Text>
+          </Pressable>
+          <Pressable style={styles.deleteBtn}>
+            <Text style={styles.deleteText}>Delete</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
     </MainLayout>
   );
 };

@@ -174,13 +174,13 @@ export const useAuthStore = create((set, get) => ({
       return { success: false, error: message };
     }
   },
-  resetPassword: async (email, password,otp) => {
+  resetPassword: async (email, password, otp) => {
     set({ error: null });
     try {
       const response = await api.post('/v1/auth/reset-password', {
         email,
         password,
-        otp
+        otp,
       });
       console.log('[STORE] resetPassword: => ' + response.data);
       return { success: true };
@@ -198,7 +198,7 @@ export const useAuthStore = create((set, get) => ({
       return { success: false, error: message };
     }
   },
-  checkOtp: async (otp,email) => {
+  checkOtp: async (otp, email) => {
     set({ error: null });
     try {
       const response = await api.post('/v1/auth/verify-otp', {
@@ -229,7 +229,7 @@ export const useAuthStore = create((set, get) => ({
         newPassword,
       });
       console.log('[STORE] changePw: => ' + response.data);
-      return { success: true }; 
+      return { success: true };
     } catch (error) {
       console.log('[STORE] changePw error:', error);
       let message = 'An error occurred. Please try again.';
@@ -243,5 +243,5 @@ export const useAuthStore = create((set, get) => ({
       set({ error: message });
       return { success: false, error: message };
     }
-  }
+  },
 }));

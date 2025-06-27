@@ -14,11 +14,12 @@ import { Points, Times, Status } from '../../../constants';
 import RenderHTML from 'react-native-render-html';
 import { useWindowDimensions } from 'react-native';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
-import { useGlobalSearchParams } from 'expo-router';
+import { Stack, useGlobalSearchParams } from 'expo-router';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useAuthContext } from '@/contexts/AuthContext';
 import QuestionEditScreenSkeleton from '../../../components/loadings/QuestionEditScreenSkeleton';
 import { useAppProvider } from '@/contexts/AppProvider';
+import api from '@/libs/axios';
 const MAX_ANSWER = 8;
 
 const EditQuizQuestion = () => {
@@ -47,7 +48,6 @@ const EditQuizQuestion = () => {
   const [answerEditSelected, setAnswerEditSelected] = useState(0); // đáp án được chọn
   const { width } = useWindowDimensions();
   const { quizId, questionId } = useGlobalSearchParams();
-  const { userData } = useAuthContext();
   const [loading, setLoading] = useState(true);
 
   // Khi người dùng chuyển từ chế độ chọn nhiều câu hỏi sang một câu hỏi thì bỏ chọn tất cả
@@ -72,17 +72,21 @@ const EditQuizQuestion = () => {
 
   // Lấy thông tin của câu hỏi hiện tại
   const getCurrentUpdateQuestion = async () => {
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUESTION_DETAIL}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify({ question_id: questionId }),
-    });
+    // const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUESTION_DETAIL}`, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'x-client-id': userData._id,
+    //     authorization: userData.accessToken,
+    //   },
+    //   body: JSON.stringify({ question_id: questionId }),
+    // });
 
-    const data = await response.json();
+    // const data = await response.json();
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.GET_QUESTION_DETAIL}`, {
+      question_id: questionId,
+    });
+    const data = response.data;
 
     if (data.statusCode === 200) {
       setQuestion(data.metadata);
@@ -117,6 +121,35 @@ const EditQuizQuestion = () => {
 
   return (
     <Wrapper>
+      <Stack.Screen
+        // name="(quiz)/edit_quiz_question"
+        options={{
+          headerTitle: '',
+          headerRight: () => {
+            return (
+              <View>
+                <Button
+                  onPress={() => {
+                    if (actionQuizType === 'create') {
+                      saveQuestion(quizId);
+                    } else if (actionQuizType === 'edit') {
+                      editQuestion(quizId, question._id);
+                    }
+                  }}
+                  text={
+                    actionQuizType === 'create'
+                      ? i18n.t('edit_quiz_screen.createQuestion')
+                      : i18n.t('edit_quiz_screen.saveQuestion')
+                  }
+                  otherStyles={'px-4 justify-center'}
+                  textStyles={'text-center'}
+                />
+              </View>
+            );
+          },
+        }}
+      />
+
       {/* Overlay */}
       <Overlay
         onPress={() => {
@@ -323,25 +356,6 @@ const EditQuizQuestion = () => {
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </View>
-      {/* Button */}
-      <View className="p-4">
-        <Button
-          onPress={() => {
-            if (actionQuizType === 'create') {
-              saveQuestion(quizId);
-            } else if (actionQuizType === 'edit') {
-              editQuestion(quizId, question._id);
-            }
-          }}
-          text={
-            actionQuizType === 'create'
-              ? i18n.t('edit_quiz_screen.createQuestion')
-              : i18n.t('edit_quiz_screen.saveQuestion')
-          }
-          otherStyles={'p-4 justify-center'}
-          textStyles={'text-center'}
-        />
       </View>
     </Wrapper>
   );

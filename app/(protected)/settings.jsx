@@ -20,9 +20,7 @@ export default function SettingsScreen() {
         }}
       >
         <MaterialIcons name="security" size={24} color="black" />
-        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#111827' }}>
-          Đổi mật khẩu
-        </Text>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#111827' }}>Đổi mật khẩu</Text>
       </TouchableOpacity>
     </MainLayout>
   );

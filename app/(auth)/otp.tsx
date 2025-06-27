@@ -5,25 +5,23 @@ import React from 'react';
 import { View, Text, Image, FlatList, Dimensions, TouchableOpacity, TextInput } from 'react-native';
 
 const Otp = () => {
-  const {checkOtp} = useAuthStore();
+  const { checkOtp } = useAuthStore();
   const [otp, setOtp] = React.useState('');
-  const {email}  = useLocalSearchParams();
+  const { email } = useLocalSearchParams();
 
   const handleOtpSubmit = async () => {
     if (!otp) {
       alert('Kode OTP tidak boleh kosong');
       return;
     }
-    
-    const response = await checkOtp(otp,email);
+
+    const response = await checkOtp(otp, email);
     if (response.success) {
       // Navigate to the next screen or show success message
       router.replace({
         pathname: '/reset',
-        params: { otp,
-          email 
-        },
-      })
+        params: { otp, email },
+      });
     } else {
       alert(response.error || 'Kode OTP tidak valid, silakan coba lagi');
     }

@@ -4,9 +4,9 @@ import { router } from 'expo-router';
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, Dimensions, TextInput } from 'react-native';
 const Forgot = () => {
-  const {forgotPassword} = useAuthStore();
+  const { forgotPassword } = useAuthStore();
   const [email, setEmail] = React.useState('');
-  const handleForgotPassword = async() => {
+  const handleForgotPassword = async () => {
     if (!email) {
       alert('Email tidak boleh kosong');
       return;
@@ -19,10 +19,9 @@ const Forgot = () => {
     if (response.success) {
       router.push({
         pathname: '/otp',
-        params:{ email },
+        params: { email },
       });
     } else {
-      
       alert(response.error || 'Gagal mengirim email, silakan coba lagi');
     }
   };
