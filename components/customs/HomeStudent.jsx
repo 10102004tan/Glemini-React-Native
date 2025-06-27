@@ -118,6 +118,7 @@ const HomeStudent = () => {
             isBannerFetching={isBannerFetching}
           />
 
+
           {filterQuizzes && filterQuizzes.length > 0 && !loading ? (
             <View className="px-4 mt-4 flex-1">
               {/* Display subjects and their quizzes */}

@@ -32,7 +32,7 @@ const dev = {
     READ_ALL_NOTIFICATION: '/notification/read-all',
     NOTIFY_SHARE_ROOM: '/classroom/notify-student',
 
-    // Question
+    // Question V1 (Legacy)
     GET_QUIZ_BY_USER: '/quizzes/get-by-user',
     GET_QUIZ_QUESTIONS: '/quizzes/get-questions',
     GET_QUESTION_DETAIL: '/questions/get-details',
@@ -43,7 +43,7 @@ const dev = {
     QUESTION_DELETE: '/questions/delete',
     QUIZ_GENERATE_GEMINI_IMAGE: '/quizzes/gemini/generate/images',
 
-    // Quizzes
+    // Quizzes V1 (Legacy)
     QUIZ_UPLOAD_IMAGE: '/quizzes/upload',
     QUIZ_DETAIL: '/quizzes/get-details',
     QUIZ_CREATE: '/quizzes/create',
@@ -53,9 +53,13 @@ const dev = {
     QUIZ_UPLOAD_DOC: '/quizzes/docs/upload',
     QUIZ_UPLOAD_MD: '/quizzes/md/upload',
     QUIZ_UPLOAD_TXT: '/quizzes/txt/upload',
-    QUIZ_GET_DOCX_TEMPLATE: '/quizzes/get-templates/template_docx',
-    QUIZ_GET_MD_TEMPLATE: '/quizzes/get-templates/template_md',
-    QUIZ_GET_TXT_TEMPLATE: '/quizzes/get-templates/template_txt',
+    // Template routes (no authentication required)
+    QUIZ_GET_DOCX_TEMPLATE: '/templates/template_docx',
+    QUIZ_GET_MD_TEMPLATE: '/templates/template_md',
+    QUIZ_GET_TXT_TEMPLATE: '/templates/template_txt',
+    // NEW: Complete templates with 5 question types
+    QUIZ_GET_COMPLETE_TXT_TEMPLATE: '/templates/complete_template_txt',
+    QUIZ_GET_COMPLETE_MD_TEMPLATE: '/templates/complete_template_md',
     QUIZ_FILTER: '/quizzes/filter',
     QUIZ_GENERATE_GEMINI: '/quizzes/gemini/generate/prompt',
     QUIZ_UPDATE: '/quizzes/update',
@@ -67,6 +71,29 @@ const dev = {
     REVOKE_SHARED_USER: '/quizzes/remove-user-shared',
     GET_NEWEST_QUIZZES: '/quizzes/get-newest-quizzes',
     QUIZ_DUPLICATE: '/quizzes/duplicate',
+
+    // V2 API Endpoints - Modern RESTful
+    V2: {
+      // Quizzes V2
+      QUIZ_CREATE: '/quizzes/create',
+      QUIZ_SEARCH: '/quizzes/search',
+      QUIZ_DETAIL: '/quizzes', // GET /quizzes/:id
+      QUIZ_UPDATE: '/quizzes', // PUT /quizzes/:id
+      QUIZ_DELETE: '/quizzes', // DELETE /quizzes/:id
+      QUIZ_DUPLICATE: '/quizzes', // POST /quizzes/:id/duplicate
+      QUIZ_QUESTIONS: '/quizzes', // GET /quizzes/:id/questions
+      QUIZ_BY_USER: '/quizzes/user', // GET /quizzes/user?user_id=xxx&skip=0&limit=10
+
+      // Questions V2
+      QUESTION_CREATE: '/questions/create',
+      QUESTION_DETAIL: '/questions', // GET /questions/:id
+      QUESTION_UPDATE: '/questions', // PUT /questions/:id
+      QUESTION_DELETE: '/questions', // DELETE /questions/:id
+      QUESTION_CHECK: '/questions/check',
+
+      // Answers V2
+      ANSWER_CREATE: '/answers/create',
+    },
 
     // Results
     RESULT_STUDENT: '/result/student',
