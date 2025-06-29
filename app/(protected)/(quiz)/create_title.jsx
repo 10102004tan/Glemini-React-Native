@@ -176,7 +176,7 @@ const CreateTitleQuizzScreen = () => {
       } finally {
         setGenerating(false);
       }
-    } 
+    }
   };
 
   // AI Generation Functions - Now Active!

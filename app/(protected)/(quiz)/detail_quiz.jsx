@@ -29,7 +29,6 @@ import Toast from 'react-native-toast-message-custom';
 import { useAuthStore } from '@/store/useAuthStore.js';
 import Loading from '@/components/customs/Loading.jsx';
 
-
 const detailquizz = () => {
   const { i18n } = useAppProvider();
 

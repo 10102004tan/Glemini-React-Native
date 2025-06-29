@@ -175,7 +175,7 @@ const HomeTeacher = () => {
           <View className="px-4 py-6 pt-[50px] bg-primary rounded-b-3xl">
             {/* Teacher Info */}
             <View className={'flex flex-row justify-between'}>
-              <SearchQuizBar notiItemColor='white' />
+              <SearchQuizBar notiItemColor="white" />
             </View>
             {/* <View className="w-full h-[1px] rounded-xl mt-3 bg-white"></View> */}
 

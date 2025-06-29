@@ -6,11 +6,11 @@ import { Images } from '@/constants';
 
 const { width } = Dimensions.get('window');
 const carouselHeight = (width * 2) / 3;
-const Banners = ({ bannerQuizzes, isBannerFetching,onPress}) => {
+const Banners = ({ bannerQuizzes, isBannerFetching, onPress }) => {
   return (
     <>
       {isBannerFetching ? (
-        <BannerSkeleton/>
+        <BannerSkeleton />
       ) : (
         <View className={bannerQuizzes.length > 0 ? `flex h-[${carouselHeight}px]` : `hidden`}>
           <Carousel
@@ -22,7 +22,7 @@ const Banners = ({ bannerQuizzes, isBannerFetching,onPress}) => {
             mode="parallax"
             scrollAnimationDuration={2500}
             renderItem={({ item, index }) => (
-              <TouchableOpacity onPress={()=> onPress(item)}>
+              <TouchableOpacity onPress={() => onPress(item)}>
                 <View className="absolute z-10 top-5 left-5 px-3 py-1 rounded bg-blue-500/80">
                   <Text className="text-xl font-bold text-white">{index + 1}</Text>
                 </View>
@@ -41,5 +41,3 @@ const Banners = ({ bannerQuizzes, isBannerFetching,onPress}) => {
 };
 
 export default Banners;
-
-

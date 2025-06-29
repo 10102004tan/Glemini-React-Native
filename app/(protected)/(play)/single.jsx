@@ -224,10 +224,7 @@ const SinglePlay = () => {
     // Determine correctness based on question type
     if (questionType === 'box') {
       const normalizeText = (text) => {
-        return text
-          .toLowerCase() 
-          .replace(/\s+/g, '') 
-          .trim();
+        return text.toLowerCase().replace(/\s+/g, '').trim();
       };
 
       const correctTextAnswers = currentQuestion.correct_answer_ids.map((a) =>
