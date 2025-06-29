@@ -12,11 +12,12 @@ const SubjectProvider = ({ children }) => {
   const {user} = useAuthStore();
   // Lấy dữ liệu từ API
   const fetchSubjects = async () => {
-    const response = await api.post(`${API_VERSION.V1}${END_POINTS.SUBJECTS}`);
-    if (response.data.statusCode === 200) {
-      setSubjects(response.data.metadata);
-    } else {
-      console.error('Failed to fetch subjects:', response.data.message);
+    const response = await api.post(`${API_URL}${API_VERSION.V1}${END_POINTS.SUBJECTS}`);
+
+    const data = await response.data;
+
+    if (data.statusCode === 200) {
+      setSubjects(data.metadata);
     }
   };
 

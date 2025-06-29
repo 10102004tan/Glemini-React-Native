@@ -9,6 +9,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import { useResultProvider } from '@/contexts/ResultProvider';
 import { Easing } from 'react-native';
+import api from '@/libs/axios';
+import { API_VERSION, END_POINTS } from '@/configs/api.config';
 
 // Reducer to manage game state
 const initialState = {
@@ -101,7 +103,7 @@ function gameReducer(state, action) {
 const SinglePlay = () => {
   const { quizId, exerciseId, type } = useLocalSearchParams();
   const { i18n } = useAppProvider();
-  const { questions, fetchQuestions, saveQuestionResult } = useQuestionProvider();
+  const { questions, fetchQuestions, saveQuestionResult, setQuestions } = useQuestionProvider();
   const { result, fetchResultData } = useResultProvider();
   const { completed } = useResultProvider();
   const [state, dispatch] = useReducer(gameReducer, initialState);
@@ -111,7 +113,27 @@ const SinglePlay = () => {
 
   useEffect(() => {
     if (quizId) {
-      fetchQuestions(quizId);
+      const fetchQuizQuestions = async (quizId) => {
+        console.log('[CONTEXT]:Fetch questions =>', quizId);
+        setQuestions([]);
+        try {
+          const res = await api.post(`${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`, {
+            quiz_id: quizId,
+          });
+
+          setQuestions(res.data.metadata);
+        } catch (error) {
+          console.error('Error fetching questions:', error);
+          Toast.show({
+            type: 'error',
+            text1: 'Lỗi khi lấy câu hỏi',
+            text2: error.message || 'Đã có lỗi xảy ra',
+            visibilityTime: 1000,
+            autoHide: true,
+          });
+        }
+      };
+      fetchQuizQuestions(quizId);
     }
   }, [quizId]);
 
@@ -202,10 +224,9 @@ const SinglePlay = () => {
     // Determine correctness based on question type
     if (questionType === 'box') {
       const normalizeText = (text) => {
-        // Loại bỏ khoảng trắng thừa và chuyển về chữ thường
         return text
-          .toLowerCase() // Chuyển về chữ thường
-          .replace(/\s+/g, '') // Loại bỏ khoảng trắng thừa giữa các từ
+          .toLowerCase() 
+          .replace(/\s+/g, '') 
           .trim();
       };
 
@@ -230,7 +251,7 @@ const SinglePlay = () => {
     });
 
     saveQuestionResult(
-      exerciseId,
+      exerciseId || null,
       quizId,
       currentQuestion._id,
       questionType === 'box' ? state.inputAnswers : state.selectedAnswers,

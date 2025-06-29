@@ -156,6 +156,7 @@ const QuestionProvider = ({ children }) => {
     }
   };
 
+
   // Lấy nội dung câu hỏi từ file template docx
   const getQuestionFromTemplateFile = async (questionData, quizId) => {
     setQuestions([]); // Reset mảng câu hỏi
@@ -508,9 +509,9 @@ const QuestionProvider = ({ children }) => {
     const resetAnswers = isMultiple
       ? question.question_answer_ids
       : question.question_answer_ids.map((answer) => ({
-          ...answer,
-          correct: false,
-        }));
+        ...answer,
+        correct: false,
+      }));
 
     // Cập nhật câu trả lời có id tương ứng với việc đánh dấu đúng/sai
     const updatedAnswers = resetAnswers.map((answer) =>
@@ -866,6 +867,8 @@ const QuestionProvider = ({ children }) => {
     };
     await api.post(`${API_VERSION.V1}${END_POINTS.RESULT_SAVE_QUESTION}`, body);
   };
+
+
   return (
     <QuestionContext.Provider
       value={{

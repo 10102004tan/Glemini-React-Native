@@ -83,33 +83,33 @@ const ResultProvider = ({ children }) => {
     }
   };
 
-  const fetchResultData = async ({ quizId, exerciseId, roomId, type }) => {
-    const query = {
-      user_id: user._id,
-      quiz_id: quizId,
-      type,
-      ...(exerciseId && { exercise_id: exerciseId }),
-      ...(roomId && { room_id: roomId }),
-    };
+   const fetchResultData = async ({ quizId, exerciseId, roomId, type }) => {
+      const query = {
+         user_id: user.user_id,
+         quiz_id: quizId,
+         type,
+         ...(exerciseId && { exercise_id: exerciseId }),
+         ...(roomId && { room_id: roomId })
+      };
 
     // console.log(query);
 
     try {
       const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_REVIEW, query);
 
-      const data = await res.data;
-      setResult(data.metadata);
-      return data.metadata;
-    } catch (error) {
-      Toast.show({
-        type: 'warn',
-        text1: 'Đang lấy kết quả',
-        visibilityTime: 1000,
-        autoHide: true,
-      });
-      return null;
-    }
-  };
+         const data = await res.data;
+         setResult(data.metadata);
+         return data.metadata;
+      } catch (error) {
+         Toast.show({
+            type: 'warn',
+            text1: 'Đang lấy kết quả: ' + error.message,
+            visibilityTime: 1000,
+            autoHide: true,
+         })
+         return null;
+      }
+   };
 
   const fetchOverViewData = async (id) => {
     try {
@@ -127,10 +127,10 @@ const ResultProvider = ({ children }) => {
     }
   };
 
-  const fetchResetResultOfQuiz = async (resultId) => {
-    console.log(resultId);
-
-    const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_RESET_V2, { resultId });
+   const fetchResetResultOfQuiz = async (resultId) => {
+      console.log(resultId);
+      
+      const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_RESET_V2, {resultId});
 
     const data = await res.data;
     if (data.statusCode === 200) {
