@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useAuthContext } from './AuthContext';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { Alert } from 'react-native';
+import api from '@/libs/axios';
 const QuestionContext = createContext();
 const QuestionProvider = ({ children }) => {
   const [isChangeData, setIsChangeData] = useState(false);
@@ -47,27 +48,27 @@ const QuestionProvider = ({ children }) => {
   const [questions, setQuestions] = useState([]);
   const { userData } = useAuthContext();
 
-   const fetchQuestions = async (quizId) => {
-      setQuestions([])
-      try {
-         const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.GET_QUIZ_QUESTIONS, {
-               quiz_id: quizId,
-            });
+  const fetchQuestions = async (quizId) => {
+    console.log('[CONTEXT]:Fetch questions =>', quizId);
+    setQuestions([]);
+    try {
+      const res = await api.post(`${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`, {
+        quiz_id: quizId,
+      });
+      
+      setQuestions(res.data.metadata);
+    } catch (error) {
+      console.error('Error fetching questions:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi khi lấy câu hỏi',
+        text2: error.message || 'Đã có lỗi xảy ra',
+        visibilityTime: 1000,
+        autoHide: true,
+      });
+    }
+  };
 
-
-         const data = await res.data;
-         
-         setQuestions(data.metadata);
-      } catch (error) {
-         Toast.show({
-            type: 'error',
-            text1: 'Lỗi khi lấy câu hỏi',
-            text2: { error },
-            visibilityTime: 1000,
-            autoHide: true,
-         });
-      }
-   };
 
   // Lấy nội dung câu hỏi từ file template docx
   const getQuestionFromTemplateFile = async (questionData, quizId) => {
@@ -270,9 +271,9 @@ const QuestionProvider = ({ children }) => {
     const resetAnswers = isMultiple
       ? question.question_answer_ids
       : question.question_answer_ids.map((answer) => ({
-          ...answer,
-          correct: false,
-        }));
+        ...answer,
+        correct: false,
+      }));
 
     // Cập nhật câu trả lời có id tương ứng với việc đánh dấu đúng/sai
     const updatedAnswers = resetAnswers.map((answer) =>
@@ -464,15 +465,18 @@ const QuestionProvider = ({ children }) => {
     score,
     questionType,
   ) => {
-    await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_SAVE_QUESTION, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify({
-        exercise_id: exerciseId,
+    console.log('[CONTEXT]: Save question result =>', {
+      exerciseId,
+    quizId,
+    questionId,
+    answerId,
+    correct,
+    score,
+    questionType}
+    );
+    
+    const res = await api.post(`${API_VERSION.V1}.${END_POINTS.RESULT_SAVE_QUESTION}`, {
+        exercise_id: exerciseId || null,
         user_id: userData._id,
         quiz_id: quizId,
         question_id: questionId,
@@ -480,9 +484,13 @@ const QuestionProvider = ({ children }) => {
         correct,
         score,
         question_type: questionType,
-      }),
     });
+
+    console.log('[CONTEXT]: Save question result response =>', res.data);
+    
   };
+
+
   return (
     <QuestionContext.Provider
       value={{

@@ -51,7 +51,7 @@ const ClassroomProvider = ({ children }) => {
     const createClassroom = async (classData) => {
         try {
             const response = await api.post(
-                `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_CREATE}`, {
+                `${API_VERSION.V1}${END_POINTS.CLASSROOM_CREATE}`, {
                     classData
                 }
             );

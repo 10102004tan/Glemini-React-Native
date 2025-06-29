@@ -79,7 +79,7 @@ const ResultProvider = ({ children }) => {
 
    const fetchResultData = async ({ quizId, exerciseId, roomId, type }) => {
       const query = {
-         user_id: user._id,
+         user_id: user.user_id,
          quiz_id: quizId,
          type,
          ...(exerciseId && { exercise_id: exerciseId }),
@@ -97,7 +97,7 @@ const ResultProvider = ({ children }) => {
       } catch (error) {
          Toast.show({
             type: 'warn',
-            text1: 'Đang lấy kết quả',
+            text1: 'Đang lấy kết quả: ' + error.message,
             visibilityTime: 1000,
             autoHide: true,
          })
@@ -124,7 +124,7 @@ const ResultProvider = ({ children }) => {
    const fetchResetResultOfQuiz = async (resultId) => {
       console.log(resultId);
       
-      const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_RESET_V2, {resultId});
+      const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_RESET_V2, {resultId});
 
       const data = await res.data;
       if (data.statusCode === 200) {
