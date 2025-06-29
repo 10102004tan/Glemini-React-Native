@@ -12,84 +12,79 @@ import QuizListSkeleton from '@/components/customs/QuizListSkeleton';
 import { useQuizStore } from '@/store/useQuizStore';
 
 const SearchRecent = () => {
-  const {
-    refetch,
-    fetchQuizRecents,
-    quizRecents,
-    clearQuizRecents
-  } = useQuizStore();
-  const [key, setKey] = useState("");
+  const { refetch, fetchQuizRecents, quizRecents, clearQuizRecents } = useQuizStore();
+  const [key, setKey] = useState('');
 
   useEffect(() => {
     fetchQuizRecents();
-  }, [])
+  }, []);
 
   const handleRedirectSearch = () => {
-    router.push({ pathname: '/(protected)/search',
+    router.push({
+      pathname: '/(protected)/search',
       params: {
         keyword: key,
       },
     });
-  }
+  };
 
   const handleItemRecentPress = (item) => {
-    router.push({ pathname: '/(protected)/search',
+    router.push({
+      pathname: '/(protected)/search',
       params: {
         keyword: item,
       },
     });
-  }
+  };
 
-  const handleClearRecents = async() => {
+  const handleClearRecents = async () => {
     try {
       const response = await api.delete('/v2/quizzes/recent-search');
       if (response.data.metadata === 1) {
-        clearQuizRecents()
+        clearQuizRecents();
       }
     } catch (error) {
       console.log('Error clearing recent searches:', error);
     }
-  }
-
+  };
 
   const StackHeaderRight = useCallback(() => {
     return (
       <View
+        style={{
+          flexDirection: 'row',
+          gap: 10,
+          marginBottom: 10,
+          borderRadius: 20,
+          overflow: 'hidden',
+          backgroundColor: '#FFF',
+          paddingHorizontal: 15,
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderWidth: 1,
+          borderColor: '#E5E5E5',
+        }}
+      >
+        <TextInput
+          keyboardType="default"
+          onChangeText={(text) => setKey(text)}
+          value={key}
+          onBlur={handleRedirectSearch}
+          // onSubmitEditing={refetch}
+          autoCapitalize="none"
+          autoCorrect={false}
+          placeholder="Search"
           style={{
-                flexDirection: 'row',
-                gap: 10,
-                marginBottom: 10,
-                borderRadius: 20,
-                overflow: 'hidden',
-                backgroundColor: '#FFF',
-                paddingHorizontal: 15,
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderWidth: 1,
-                borderColor: '#E5E5E5',
-              }}
-            >
-              <TextInput
-                keyboardType="default"
-                onChangeText={(text) => setKey(text)}
-                value={key}
-                onBlur={handleRedirectSearch}
-                // onSubmitEditing={refetch}
-                autoCapitalize="none"
-                autoCorrect={false}
-                placeholder="Search"
-                style={{
-                  paddingHorizontal: 5,
-                  paddingVertical: 10,
-                  width: 300,
-                }}
-              />
-              {/* icon search */}
-              {/* <Feather name="filter" size={24} color="black" /> */}
-            </View>
+            paddingHorizontal: 5,
+            paddingVertical: 10,
+            width: 300,
+          }}
+        />
+        {/* icon search */}
+        {/* <Feather name="filter" size={24} color="black" /> */}
+      </View>
     );
   }, [key]);
-
 
   return (
     <View
@@ -141,34 +136,30 @@ const SearchRecent = () => {
           }}
         >
           {quizRecents.map((item, index) => (
-            <TouchableOpacity
-            key={index}
-            onPress={() => handleItemRecentPress(item)}
-            >
+            <TouchableOpacity key={index} onPress={() => handleItemRecentPress(item)}>
               <Text
-              key={index}
-              style={{
-                fontSize: 14,
-                fontWeight: '400',
-                marginBottom: 10,
-                marginLeft: 15,
-                paddingVertical: 5,
-                paddingHorizontal: 20,
-                backgroundColor: '#fff',
-                borderRadius: 20,
-                width: 'auto',
-                color: '#000',
-                borderWidth: 1,
-                borderColor: '#E5E5E5',
-              }}
-            >
-              {item}
-            </Text>
+                key={index}
+                style={{
+                  fontSize: 14,
+                  fontWeight: '400',
+                  marginBottom: 10,
+                  marginLeft: 15,
+                  paddingVertical: 5,
+                  paddingHorizontal: 20,
+                  backgroundColor: '#fff',
+                  borderRadius: 20,
+                  width: 'auto',
+                  color: '#000',
+                  borderWidth: 1,
+                  borderColor: '#E5E5E5',
+                }}
+              >
+                {item}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
       </View>
-
     </View>
   );
 };
