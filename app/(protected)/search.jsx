@@ -363,7 +363,11 @@ const Search = () => {
         </ScrollView>
       </BottomSheet>
 
-      <BottomSheet visible={isOpenDetail} bottomSheetTitle="Chi tiết" onClose={() => setIsOpenDetail(false)}>
+      <BottomSheet
+        visible={isOpenDetail}
+        bottomSheetTitle="Chi tiết"
+        onClose={() => setIsOpenDetail(false)}
+      >
         <QuizDetailBottomSheet quiz={currentQuizSelected} />
       </BottomSheet>
     </View>
@@ -382,7 +386,9 @@ const QuizDetailBottomSheet = ({ quiz }) => {
         resizeMode="cover"
       />
       <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>{quiz.quiz_name}</Text>
-      <Text style={{ fontSize: 14, color: '#555', marginBottom: 10 }}>{quiz.description ? quiz.description : "Không có thông tin chi tiết"}</Text>
+      <Text style={{ fontSize: 14, color: '#555', marginBottom: 10 }}>
+        {quiz.description ? quiz.description : 'Không có thông tin chi tiết'}
+      </Text>
       <Text style={{ fontSize: 14, marginBottom: 5 }}>
         Số câu hỏi: <Text style={{ fontWeight: 'bold' }}>{quiz.question_count}</Text>
       </Text>
@@ -398,9 +404,7 @@ const QuizDetailBottomSheet = ({ quiz }) => {
         }}
         onPress={() => {}}
       >
-        <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>
-          Làm bài quiz
-        </Text>
+        <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>Làm bài quiz</Text>
       </TouchableOpacity>
     </View>
   );

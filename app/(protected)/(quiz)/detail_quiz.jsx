@@ -13,7 +13,6 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { router, useGlobalSearchParams } from 'expo-router';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config.js';
-import api from '@/libs/axios';
 import QuestionOverview from '@/components/customs/QuestionOverview';
 import { ScrollView } from 'react-native';
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog.jsx';
@@ -26,11 +25,9 @@ import AssignQuizModal from '@/components/modals/AssignQuizModal.jsx';
 import RoomWaitingModal from '@/components/modals/RoomWaitingModal.jsx';
 import { useRoomProvider } from '@/contexts/RoomProvider.jsx';
 import Toast from 'react-native-toast-message-custom';
-import { useAuthStore } from '@/store/useAuthStore.js';
 import api from '@/libs/axios.js';
 import { useAuthStore } from '@/store/useAuthStore.js';
 import Loading from '@/components/customs/Loading.jsx';
-
 
 const detailquizz = () => {
   const { i18n } = useAppProvider();
@@ -58,7 +55,6 @@ const detailquizz = () => {
   const { id, user_id } = useGlobalSearchParams();
   const { user } = useAuthStore();
 
-  const { user } = useAuthStore();
   const [quizId, setQuizId] = useState('');
   // Save init state
   const [quizName, setQuizName] = useState('');
