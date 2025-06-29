@@ -95,7 +95,7 @@ const ResultProvider = ({ children }) => {
     // console.log(query);
 
     try {
-      const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_REVIEW, query);
+      const res = await api.post(`${API_VERSION.V1}${END_POINTS.RESULT_REVIEW}`, query);
 
          const data = await res.data;
          setResult(data.metadata);
@@ -113,7 +113,7 @@ const ResultProvider = ({ children }) => {
 
   const fetchOverViewData = async (id) => {
     try {
-      const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_OVERVIEW, { id });
+      const res = await api.post(`${API_VERSION.V1}${END_POINTS.RESULT_OVERVIEW}`, { id });
 
       const data = await res.data;
       setOverviewData(data.metadata);
@@ -130,7 +130,7 @@ const ResultProvider = ({ children }) => {
    const fetchResetResultOfQuiz = async (resultId) => {
       console.log(resultId);
       
-      const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_RESET_V2, {resultId});
+      const res = await api.post(`${API_VERSION.V1}${END_POINTS.RESULT_RESET_V2}`, {resultId});
 
     const data = await res.data;
     if (data.statusCode === 200) {
@@ -147,10 +147,12 @@ const ResultProvider = ({ children }) => {
   };
 
   const completed = async (exerciseId, quizId) => {
+    console.log(exerciseId, quizId);
+    
     try {
-      const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
+      const res = await api.post(`${API_VERSION.V1}${END_POINTS.RESULT_COMPLETED}`, {
         exercise_id: exerciseId,
-        user_id: userData._id,
+        user_id: user.user_id,
         quiz_id: quizId,
         status: 'completed',
       });

@@ -30,7 +30,6 @@ const CreateTitleQuizzScreen = () => {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const { i18n } = useAppProvider();
-  const { user } = useAuthStore();
 
   // Function to pick image for AI generation
   const pickImageForAI = async () => {
@@ -177,10 +176,7 @@ const CreateTitleQuizzScreen = () => {
       } finally {
         setGenerating(false);
       }
-    } catch (error) {
-      console.log('Error when create quiz:', error);
-      Alert.alert('Lỗi', 'Đã xảy ra lỗi khi tạo quiz, vui lòng thử lại sau.');
-    }
+    } 
   };
 
   // AI Generation Functions - Now Active!
