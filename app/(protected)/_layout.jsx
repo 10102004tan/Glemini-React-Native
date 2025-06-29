@@ -23,10 +23,10 @@ export default function AppRootLayout() {
   const { showModal, hideModal } = useModal();
 
   const { isSignedIn, user, signOut, error } = useAuthStore();
-  const {expoPushToken,sendPushTokenToServer} = useNotification();
+  const { expoPushToken, sendPushTokenToServer } = useNotification();
 
   if (!isSignedIn && !user) {
-    return <Redirect href={'/login'} />
+    return <Redirect href={'/login'} />;
   }
 
   useEffect(() => {
@@ -101,7 +101,9 @@ export default function AppRootLayout() {
         buttonLeft: {
           text: 'Đăng nhập lại',
           onPress: () => {
-            signOut().then(() => {
+            signOut({
+              deviceToken: expoPushToken || null,
+            }).then(() => {
               if (!error) {
                 hideModal();
                 router.push({
@@ -119,7 +121,8 @@ export default function AppRootLayout() {
     if (expoPushToken && user) {
       sendPushTokenToServer(user.user_id);
     }
-  },[user,expoPushToken])
+    
+  }, [user, expoPushToken]);
 
   return (
     <Stack>
@@ -138,9 +141,10 @@ export default function AppRootLayout() {
       />
 
       <Stack.Screen
-        name="change-password"
+        name="pw-change"
         options={{
           headerTitle: i18n.t('profile.title'),
+          animation: 'fade_from_bottom',
         }}
       />
 
@@ -213,19 +217,7 @@ export default function AppRootLayout() {
         }}
       />
 
-      <Stack.Screen
-        name="(quiz)/edit_quiz_question"
-        options={{
-          headerTitle: '',
-          headerRight: () => {
-            return (
-              <View className="flex flex-row items-center justify-between">
-                <Text className="ml-4 px-4 py-2 rounded-xl bg-overlay">Chỉnh sửa câu hỏi</Text>
-              </View>
-            );
-          },
-        }}
-      />
+      
 
       <Stack.Screen
         name="(play)/single"

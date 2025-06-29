@@ -8,23 +8,29 @@ import { useAuthStore } from '@/store/useAuthStore';
 const ResultContext = createContext();
 
 const ResultProvider = ({ children }) => {
-   const [results, setResults] = useState([]);
-   const [result, setResult] = useState([]);
-   const [reportData, setReportData] = useState([]);
-   const [overViewData, setOverviewData] = useState([]);
-   const {user} = useAuthStore();
-   // Lấy dữ liệu từ API
-   // Fetch results for teachers with optional filters
-   const fetchResultsForTeacher = async (page = 1, sortOrder = "newest", identifier = "", class_name = "", type = "") => {
-      const path = `${API_VERSION.V1}${END_POINTS.RESULT_REPORT}`;
-      const requestBody = {
-         userId: user.user_id,
-         page,
-         sortOrder,
-         identifier,
-         class_name,
-         type,
-      };
+  const [results, setResults] = useState([]);
+  const [result, setResult] = useState([]);
+  const [reportData, setReportData] = useState([]);
+  const [overViewData, setOverviewData] = useState([]);
+  const { user } = useAuthStore();
+  // Lấy dữ liệu từ API
+  // Fetch results for teachers with optional filters
+  const fetchResultsForTeacher = async (
+    page = 1,
+    sortOrder = 'newest',
+    identifier = '',
+    class_name = '',
+    type = '',
+  ) => {
+    const path = `${API_VERSION.V1}${END_POINTS.RESULT_REPORT}`;
+    const requestBody = {
+      userId: user.user_id,
+      page,
+      sortOrder,
+      identifier,
+      class_name,
+      type,
+    };
 
     try {
       // const response = await fetch(path, {
@@ -88,8 +94,8 @@ const ResultProvider = ({ children }) => {
 
     // console.log(query);
 
-      try {
-         const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_REVIEW, query);
+    try {
+      const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_REVIEW, query);
 
          const data = await res.data;
          setResult(data.metadata);
@@ -105,51 +111,51 @@ const ResultProvider = ({ children }) => {
       }
    };
 
-   const fetchOverViewData = async (id) => {
-      try {
-         const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_OVERVIEW, {id});
+  const fetchOverViewData = async (id) => {
+    try {
+      const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_OVERVIEW, { id });
 
-         const data = await res.data;
-         setOverviewData(data.metadata);
-      } catch (error) {
-         Toast.show({
-            type: 'warn',
-            text1: 'Đang lấy kết quả',
-            visibilityTime: 1000,
-            autoHide: true,
-         })
-      }
-   };
+      const data = await res.data;
+      setOverviewData(data.metadata);
+    } catch (error) {
+      Toast.show({
+        type: 'warn',
+        text1: 'Đang lấy kết quả',
+        visibilityTime: 1000,
+        autoHide: true,
+      });
+    }
+  };
 
    const fetchResetResultOfQuiz = async (resultId) => {
       console.log(resultId);
       
       const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_RESET_V2, {resultId});
 
+    const data = await res.data;
+    if (data.statusCode === 200) {
+      return data.metadata;
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi.',
+        text2: { error },
+        visibilityTime: 1000,
+        autoHide: true,
+      });
+    }
+  };
+
+  const completed = async (exerciseId, quizId) => {
+    try {
+      const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
+        exercise_id: exerciseId,
+        user_id: userData._id,
+        quiz_id: quizId,
+        status: 'completed',
+      });
+
       const data = await res.data;
-      if (data.statusCode === 200) {
-         return data.metadata
-      } else {
-         Toast.show({
-            type: 'error',
-            text1: 'Lỗi.',
-            text2: { error },
-            visibilityTime: 1000,
-            autoHide: true,
-         });
-      }
-   };
-
-   const completed = async (exerciseId, quizId) => {
-      try {
-         const res = await api.post(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
-               exercise_id: exerciseId,
-               user_id: userData._id,
-               quiz_id: quizId,
-               status: 'completed',
-            });
-
-         const data = await res.data;
 
       if (data.statusCode === 200) {
         return data.metadata;
@@ -167,28 +173,30 @@ const ResultProvider = ({ children }) => {
     }
   };
 
-   /**
-    * Fetch report detail for a specific result
-    * @param {*} id 
-    * @param {*} type 
-    */
-   const fetchReportDetail = async (id, type) => {
-      const path = type === 'room' ? API_URL + API_VERSION.V1 + END_POINTS.ROOM_REPORT : API_URL + API_VERSION.V1 + END_POINTS.EXERCISE_REPORT;
-      try {
-         const res = await api.post(path, {id});
+  /**
+   * Fetch report detail for a specific result
+   * @param {*} id
+   * @param {*} type
+   */
+  const fetchReportDetail = async (id, type) => {
+    const path =
+      type === 'room'
+        ? API_URL + API_VERSION.V1 + END_POINTS.ROOM_REPORT
+        : API_URL + API_VERSION.V1 + END_POINTS.EXERCISE_REPORT;
+    try {
+      const res = await api.post(path, { id });
 
-         const data = await res.data;
-         setReportData(data.metadata);
-      } catch (error) {
-         Toast.show({
-            type: 'warn',
-            text1: 'Đang lấy kết quả',
-            visibilityTime: 1000,
-            autoHide: true,
-         })
-      }
-   };
-
+      const data = await res.data;
+      setReportData(data.metadata);
+    } catch (error) {
+      Toast.show({
+        type: 'warn',
+        text1: 'Đang lấy kết quả',
+        visibilityTime: 1000,
+        autoHide: true,
+      });
+    }
+  };
 
   useEffect(() => {
     if (user) {

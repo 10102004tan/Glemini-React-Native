@@ -1,7 +1,30 @@
 import AuthLayout from '@/components/layouts/AuthLayout';
+import { useAuthStore } from '@/store/useAuthStore';
+import { router } from 'expo-router';
 import React from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, Dimensions, TextInput } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Dimensions, TextInput } from 'react-native';
 const Forgot = () => {
+  const { forgotPassword } = useAuthStore();
+  const [email, setEmail] = React.useState('');
+  const handleForgotPassword = async () => {
+    if (!email) {
+      alert('Email tidak boleh kosong');
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      alert('Email tidak valid');
+      return;
+    }
+    const response = await forgotPassword(email);
+    if (response.success) {
+      router.push({
+        pathname: '/otp',
+        params: { email },
+      });
+    } else {
+      alert(response.error || 'Gagal mengirim email, silakan coba lagi');
+    }
+  };
   return (
     <AuthLayout>
       <View>
@@ -23,6 +46,13 @@ const Forgot = () => {
               Email
             </Text>
             <TextInput
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              autoComplete="email"
+              keyboardType="email-address"
+              returnKeyType="done"
+              onSubmitEditing={handleForgotPassword}
               style={{
                 borderWidth: 1,
                 borderColor: '#D1D5DB',
@@ -46,9 +76,7 @@ const Forgot = () => {
                 paddingHorizontal: 20,
                 alignItems: 'center',
               }}
-              onPress={() => {
-                // handle login
-              }}
+              onPress={handleForgotPassword}
             >
               <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: 'bold' }}>Euy!</Text>
             </TouchableOpacity>

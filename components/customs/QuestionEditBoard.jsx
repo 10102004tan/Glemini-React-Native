@@ -39,6 +39,18 @@ const QuestionEditBoard = ({
 
   const { deleteAnswer, markCorrectAnswer, checkCorrectAnswer } = useQuestionProvider();
 
+  // Debug log
+  useEffect(() => {
+    if (visible) {
+      console.log('🎯 === QUESTION EDIT BOARD DEBUG ===');
+      console.log('🎯 type:', type);
+      console.log('🎯 answerEditSelected:', answerEditSelected, 'Type:', typeof answerEditSelected);
+      console.log('🎯 content:', content);
+      console.log('🎯 questionType:', questionType);
+      console.log('🎯 ===================================');
+    }
+  }, [visible, type, answerEditSelected, content, questionType]);
+
   return (
     <Animated.View
       style={[animatedStyle]}
@@ -47,6 +59,7 @@ const QuestionEditBoard = ({
     >
       {/* Dùng để chỉnh sửa câu hỏi, đáp án của quiz */}
       <RichTextEditor
+        key={`${type}-${answerEditSelected}-${content?.substring(0, 10)}`}
         questionType={questionType}
         closeEditBoard={closeEditBoard}
         isSave={isSaveData}

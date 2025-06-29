@@ -7,7 +7,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-const BottomSheet = ({ children, visible = false, onClose = () => {} }) => {
+import { Text, View } from 'react-native';
+const BottomSheet = ({ children, visible = false, onClose = () => {}, bottomSheetTitle = '' }) => {
   const translateY = useSharedValue(300); // Chạy từ dưới lên, 300 là chiều cao khởi điểm
   useEffect(() => {
     if (visible) {
@@ -31,37 +32,74 @@ const BottomSheet = ({ children, visible = false, onClose = () => {} }) => {
     };
   });
 
-   return (
+  return (
+    <View
+      style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        top: 0,
+        right: 0,
+        zIndex: 20,
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        height: '100%',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        display: visible ? 'flex' : 'none',
+        opacity: visible ? 1 : 0,
+      }}
+    >
       <Animated.View
-         style={[animatedStyle, {
+        style={[
+          animatedStyle,
+          {
             position: 'absolute',
             bottom: 0,
             left: 0,
             right: 0,
-            zIndex: 10,
+            zIndex: 21, // nhỏ hơn headerStack
             padding: 40,
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
-            backgroundColor: 'white'
-         }]}
+            backgroundColor: 'white',
+            borderColor: '#E5E7EB',
+            borderWidth: 1,
+            shadowColor: '#000',
+            elevation: 5,
+            maxHeight: '99%',
+            overflow: 'hidden',
+          },
+        ]}
       >
-         <TouchableOpacity
-            style={{
-               display: 'flex',
-               alignItems: 'center',
-               justifyContent: 'flex-end',
-               flexDirection: 'row',
-               marginBottom: 8
-            }}
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: bottomSheetTitle ? 'space-between' : 'flex-end',
+            alignItems: 'center',
+            marginBottom: 16,
+            paddingBottom: 16,
+            borderBottomWidth: 1,
+            borderBottomColor: '#E5E7EB',
+          }}
+        >
+          {bottomSheetTitle && (
+            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{bottomSheetTitle}</Text>
+          )}
+
+          <TouchableOpacity
             onPress={() => {
-               onClose();
+              onClose();
             }}
-         >
+          >
             <AntDesign name="close" size={20} color="black" />
-         </TouchableOpacity>
-         {visible && children}
+          </TouchableOpacity>
+        </View>
+
+        {visible && children}
       </Animated.View>
-   );
+    </View>
+  );
 };
 
 export default BottomSheet;

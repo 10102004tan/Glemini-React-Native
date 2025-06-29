@@ -56,7 +56,7 @@ const ClassroomProvider = ({ children }) => {
                 }
             );
 
-            const data = await response.data;
+      const data = await response.data;
 
       if (data.statusCode === 200) {
         setClassrooms((prevClassrooms) => [...prevClassrooms, data.metadata]);
@@ -137,16 +137,16 @@ const ClassroomProvider = ({ children }) => {
     }
   };
 
-    const addStudent = async (classroomId, studentEmail) => {
-        try {
-            const response = await api.post(
-                `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_ADD_STUDENT}`, {
-                    
-                            classroomId: classroomId,
-                            user_email: studentEmail
-                        
-                });
-            const data = await response.data;
+  const addStudent = async (classroomId, studentEmail) => {
+    try {
+      const response = await api.post(
+        `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_ADD_STUDENT}`,
+        {
+          classroomId: classroomId,
+          user_email: studentEmail,
+        },
+      );
+      const data = await response.data;
 
       if (data.statusCode === 200) {
         if (data.metadata === true) {
@@ -186,7 +186,7 @@ const ClassroomProvider = ({ children }) => {
                             deadline: deadline
                         });
 
-            const data = await response.data;
+      const data = await response.data;
 
       if (data.statusCode === 200) {
         Toast.show({

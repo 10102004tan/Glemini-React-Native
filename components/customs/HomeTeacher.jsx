@@ -90,6 +90,7 @@ const HomeTeacher = () => {
       // setIsFetching(false);
     }
   };
+  //
 
   useEffect(() => {
     setIsFetching(true);
@@ -130,9 +131,18 @@ const HomeTeacher = () => {
                 handleCloseBottomSheet();
                 router.push('/(protected)/(quiz)/create_title');
               }}
-              otherStyles="ml-2"
               title={i18n.t('teacher_homepage.createFromText')}
               icon={<Ionicons name="text-outline" size={24} color="black" />}
+            />
+            <QuizzCreateAction
+              handlePress={() => {
+                setActionQuizType('ai/image');
+                handleCloseBottomSheet();
+                router.push('/(protected)/(quiz)/create_title');
+              }}
+              otherStyles="ml-2"
+              title={i18n.t('teacher_homepage.createFromImage')}
+              icon={<Ionicons name="image-outline" size={24} color="black" />}
             />
           </View>
           <Text className="text-lg mt-8">{i18n.t('teacher_homepage.createWithHand')}</Text>
@@ -150,7 +160,7 @@ const HomeTeacher = () => {
               handlePress={() => {
                 setActionQuizType('create');
                 handleCloseBottomSheet();
-                router.push('(protected)/(quiz)/create_title');
+                router.push('/(protected)/(quiz)/create_title');
               }}
               otherStyles="ml-2"
               title={i18n.t('teacher_homepage.createWithHand')}
@@ -165,7 +175,7 @@ const HomeTeacher = () => {
           <View className="px-4 py-6 pt-[50px] bg-primary rounded-b-3xl">
             {/* Teacher Info */}
             <View className={'flex flex-row justify-between'}>
-              <SearchQuizBar/>
+              <SearchQuizBar notiItemColor='white' />
             </View>
             {/* <View className="w-full h-[1px] rounded-xl mt-3 bg-white"></View> */}
 
@@ -198,7 +208,9 @@ const HomeTeacher = () => {
                 <Text className="text-lg font-semibold">
                   {i18n.t('teacher_homepage.createdRecentQuizzes')}
                 </Text>
-                <TouchableOpacity onPress={() => router.push('/(protected)/(homev2)/library.teacher')}>
+                <TouchableOpacity
+                  onPress={() => router.push('/(protected)/(homev2)/library.teacher')}
+                >
                   <Text className="text-blue-600">{i18n.t('teacher_homepage.viewAll')}</Text>
                 </TouchableOpacity>
               </View>

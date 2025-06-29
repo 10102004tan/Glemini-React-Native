@@ -74,7 +74,6 @@ const sortRankBoardDesc = (data) => {
   };
 };
 
-
 const createdAtConvert = (dateString) => {
   const { i18n } = useAppProvider();
   const date = new Date(dateString);

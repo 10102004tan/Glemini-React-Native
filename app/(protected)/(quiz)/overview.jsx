@@ -21,6 +21,7 @@ import { useSubjectProvider } from '@/contexts/SubjectProvider';
 import { convertSubjectData } from '@/utils';
 import QuestionOverviewSkeleton from '@/components/loadings/QuestionOverviewSkeleton';
 import QuizInforSkeleton from '@/components/loadings/QuizInforSkeleton';
+import QuestionTypeSelector from '@/components/customs/QuestionTypeSelector';
 import { Feather } from '@expo/vector-icons';
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog';
 import { Status } from '@/constants';
@@ -28,7 +29,6 @@ import DropDownMultipleSelect from '@/components/customs/DropDownMultipleSelect'
 import SkeletonLoading from '@/components/loadings/SkeletonLoading';
 import api from '@/libs/axios';
 import { useAuthStore } from '@/store/useAuthStore';
-import Loading from '@/components/customs/Loading';
 
 const QuizzOverViewScreen = () => {
   const router = useRouter();
@@ -37,7 +37,8 @@ const QuizzOverViewScreen = () => {
   const { setIsHiddenNavigationBar } = useAppProvider();
   const { id } = useGlobalSearchParams();
 
-  const { userData, processAccessTokenExpired } = useAuthContext();
+  const { processAccessTokenExpired } = useAuthContext();
+  const { user } = useAuthStore();
   const [quizId, setQuizId] = useState('');
   // Save init state
   const [quizName, setQuizName] = useState('');
@@ -59,7 +60,6 @@ const QuizzOverViewScreen = () => {
   const [uploadedImage, setUploadedImage] = useState(null);
   const { isChangeData, setIsChangeData, setQuestions } = useQuestionProvider();
   const { i18n } = useAppProvider();
-  const {user} = useAuthStore()
 
   // Hàm kiểm tra xem câu hỏi có thay đổi không
   useEffect(() => {
@@ -103,106 +103,165 @@ const QuizzOverViewScreen = () => {
 
   useEffect(() => {
     if (id) {
+      // console.log("CALL THE FIRST TIME")
       fetchQuiz();
       fetchQuestions();
     }
   }, []);
 
-  // Lưu thông tin của quiz khi người dùng ấn nút lưu trên thanh header
-  useEffect(() => {
-    const handleSaveQuiz = async () => {
-      if (isSave) {
-        // console.log("CALL SAVE QUIZ")
-        // Cập nhật lại ảnh thumbnail của quiz nếu người dùng thay đổi
-        if (uploadedImage) {
-          const imageUrl = await uploadImage(uploadedImage);
-          if (imageUrl) {
-            // console.log(imageUrl)
-            setQuizThumbnail(imageUrl);
-            handleUpdateQuiz(id, imageUrl);
-          } else {
-            setIsSave(false);
-          }
-        } else {
-          handleUpdateQuiz(id);
-        }
-      }
-    };
-
-    handleSaveQuiz();
-  }, [isSave]);
-
   // Lấy thông tin của quiz hiện tại
   const fetchQuiz = async () => {
     setQuizFetching(true);
-    const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`, {
-      quiz_id: id,
-    });
-    const data = response.data;
-    if (data.statusCode === 200) {
-      // Save init state
-      setQuizId(data.metadata._id);
-      setQuizThumbnail(data.metadata.quiz_thumb);
-      setQuizName(data.metadata.quiz_name);
-      setQuizDescription(data.metadata.quiz_description);
-      setQuizStatus(data.metadata.quiz_status);
-      setQuizSubjects(data.metadata.subject_ids);
-      // Save change state
-      setQuizNameChange(data.metadata.quiz_name);
-      setQuizDescriptionChange(data.metadata.quiz_description);
-      setQuizStatusChange(data.metadata.quiz_status);
-      setQuizSubjectsChange(data.metadata.subject_ids);
-      setQuizThumbnailChange(data.metadata.quiz_thumb);
+    try {
+      // V2 API - RESTful approach for getting quiz details
+      const response = await api.get(`${API_VERSION.V2}/quizzes/${id}`);
+      const data = response.data;
 
-      if (data.metadata.user_id === user.user_id) {
-        setIsEdited(true);
+      if (data.message === 'Get quiz successfully') {
+        const quizData = data.metadata;
+        setQuizId(quizData._id);
+        setQuizThumbnail(quizData.quiz_thumb);
+        setQuizName(quizData.quiz_name);
+        setQuizDescription(quizData.quiz_description);
+        setQuizStatus(quizData.quiz_status);
+        setQuizSubjects(quizData.subject_ids || []);
+        setQuizNameChange(quizData.quiz_name);
+        setQuizDescriptionChange(quizData.quiz_description);
+        setQuizStatusChange(quizData.quiz_status);
+        setQuizSubjectsChange(quizData.subject_ids || []);
+        setQuizThumbnailChange(quizData.quiz_thumb);
+
+        // V2 API now returns user_id as ObjectId string, not populated object
+        const quizUserId = quizData.user_id?.toString();
+        const currentUserId = user.user_id?.toString();
+
+        console.log('🔍 OVERVIEW - Quiz owner ID:', quizUserId);
+        console.log('🔍 OVERVIEW - Current user ID:', currentUserId);
+        console.log('🔍 OVERVIEW - Are they equal?', quizUserId === currentUserId);
+
+        if (quizUserId === currentUserId) {
+          console.log('✅ OVERVIEW - User is OWNER');
+          setIsEdited(true);
+        } else {
+          console.log('⚠️ OVERVIEW - User is NOT owner, checking shared users...');
+          const users = quizData.shared_user_ids || [];
+          console.log('🔍 OVERVIEW - Shared users:', users);
+
+          const check = users.some((sharedUser) => {
+            const sharedUserId = sharedUser.user_id?.toString();
+            console.log(
+              '🔍 OVERVIEW - Checking shared user:',
+              sharedUserId,
+              'isEdit:',
+              sharedUser.isEdit,
+            );
+            return sharedUserId === currentUserId && sharedUser.isEdit;
+          });
+
+          console.log('🔍 OVERVIEW - Has edit permission?', check);
+          setIsEdited(check);
+        }
       } else {
-        const users = data.metadata.shared_user_ids;
-        const check = users.some((user) => user.user_id === user.user_id && user.isEdit);
-        setIsEdited(check);
+        console.error('Failed to fetch quiz:', data.message);
       }
+    } catch (error) {
+      console.error('Error fetching quiz:', error);
+      if (error.response?.status === 401) {
+        processAccessTokenExpired();
+      }
+    } finally {
+      setQuizFetching(false);
     }
-    setQuizFetching(false);
   };
 
   // Lấy danh sách các câu hỏi thuộc quiz hiện tại
   const fetchQuestions = async () => {
+    console.log('🚀 OVERVIEW - CALL FETCH QUESTION V2');
+    console.log('🚀 OVERVIEW - Request URL:', `${API_VERSION.V2}/quizzes/${id}/questions`);
+    console.log('🚀 OVERVIEW - Quiz ID:', id);
+    console.log('🚀 OVERVIEW - Timestamp:', new Date().toISOString());
     setQuestionFetching(true);
-    const response = await api.post(`${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`, {
-      quiz_id: id,
-    });
-    const data = response.data;
+    try {
+      // V2 API - POST approach for getting quiz questions (following V1 convention)
+      const response = await api.post(`${API_VERSION.V2}/quizzes/${id}/questions`, {
+        quiz_id: id,
+      });
+      const data = response.data;
 
-    if (data.statusCode === 200) {
-      setCurrentQuizQuestion(data.metadata);
-      setQuestions(data.metadata);
-    } else {
+      console.log('🚀 OVERVIEW - Full API Response:', JSON.stringify(data, null, 2));
+      console.log('🚀 OVERVIEW - Response status:', response.status);
+      console.log('🚀 OVERVIEW - Message:', data.message);
+
+      if (data.message === 'Get questions by quiz successfully') {
+        const questionsData = data.metadata.items || [];
+        console.log('🚀 OVERVIEW - Questions Data:', JSON.stringify(questionsData, null, 2));
+        console.log('🚀 OVERVIEW - Number of questions:', questionsData.length);
+
+        if (questionsData.length > 0) {
+          console.log('🎯 First question structure:', JSON.stringify(questionsData[0], null, 2));
+        }
+
+        setCurrentQuizQuestion(questionsData);
+        setQuestions(questionsData);
+        console.log(
+          '🚀 OVERVIEW - State updated - currentQuizQuestion length:',
+          questionsData.length,
+        );
+        console.log('🚀 OVERVIEW - First question:', questionsData[0]);
+      } else {
+        console.error('Failed to fetch questions:', data.message);
+        setCurrentQuizQuestion([]);
+        setQuestions([]);
+      }
+    } catch (error) {
+      console.error('Error fetching questions:', error);
+      if (error.response?.status === 401) {
+        processAccessTokenExpired();
+      }
       setCurrentQuizQuestion([]);
+      setQuestions([]);
+    } finally {
+      setQuestionFetching(false);
     }
-    setQuestionFetching(false);
   };
 
   // Cập nhật thông tin của quiz
   const handleUpdateQuiz = async (id, thumbnail = quizThumbnail) => {
-    // console.log(quizThumbnail)
-    const quiz = {
-      quiz_id: id,
-      quiz_name: quizName,
-      quiz_description: quizDescription,
-      quiz_status: quizStatus,
-      quiz_subjects: quizSubjects,
-      quiz_thumb: thumbnail,
-    };
+    try {
+      // V2 API - Update quiz with enhanced validation
+      const quiz = {
+        name: quizName,
+        description: quizDescription,
+        status: quizStatus,
+        thumb: thumbnail,
+        subject_ids: quizSubjects,
+      };
 
-    // console.log(JSON.stringify(quiz, null, 2));
+      console.log('Updating quiz with V2 API:', quiz);
 
-    const success = await updateQuiz(quiz);
-    if (success) {
-      handleCloseBottomSheet();
-      router.back();
-    } else {
-      // setAlertMessage(i18n.t('overview_quiz_screen.alertNetwork'));
-      // setShowConfirmDialog(true);
+      const response = await api.put(`${API_VERSION.V2}/quizzes/${id}`, quiz);
+      const data = response.data;
+
+      if (data.message === 'Update quiz successfully') {
+        // Reset change tracking
+        setQuizNameChange(quizName);
+        setQuizDescriptionChange(quizDescription);
+        setQuizStatusChange(quizStatus);
+        setQuizSubjectsChange(quizSubjects);
+        setQuizThumbnailChange(thumbnail);
+        setUploadedImage(null);
+
+        console.log('Quiz updated successfully');
+      } else {
+        console.error('Failed to update quiz:', data.message);
+      }
+    } catch (error) {
+      console.error('Error updating quiz:', error);
+      if (error.response?.status === 401) {
+        processAccessTokenExpired();
+      }
+    } finally {
+      setIsSave(false);
     }
   };
 
@@ -213,17 +272,12 @@ const QuizzOverViewScreen = () => {
       handleUpdateQuiz(id);
     }
 
-    // Trạng thái câu hỏi ở đây sẽ là multiple choice hoặc single, fill in the blank, essay
-    if (questionType !== 'box' && questionType !== 'blank') {
-      selectQuestionType(questionType);
-    } else if (questionType === 'box') {
-      createBoxQuestion();
-    } else if (questionType === 'blank') {
-      createBlankQuestion();
-    }
+    // V2 Question Types: single, multiple, fill, order, match
+    // All V2 question types use selectQuestionType for consistency
+    selectQuestionType(questionType);
 
     router.push({
-      pathname: '(app)/(quiz)/edit_quiz_question',
+      pathname: '(protected)/(quiz)/edit_quiz_question',
       params: { quizId: id },
     });
   };
@@ -253,8 +307,6 @@ const QuizzOverViewScreen = () => {
   const uploadImage = async (file) => {
     try {
       setUploadingImage(true);
-
-      // console.log(JSON.stringify(file, null, 2));
       const cleanFileName = file.fileName.replace(/[^a-zA-Z0-9.]/g, '_');
       const formData = new FormData();
       formData.append('file', {
@@ -262,13 +314,22 @@ const QuizzOverViewScreen = () => {
         name: cleanFileName,
         type: file.mimeType,
       });
-      const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_IMAGE}`, formData, {
+      console.log('🔧 DEBUG - FormData object:', formData);
+      console.log('🔧 DEBUG - File object:', file);
+      console.log('🔧 DEBUG - Upload URL:', `${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_IMAGE}`);
+
+      // Use fetch instead of axios for file upload to avoid Content-Type issues
+      const uploadUrl = `${api.defaults.baseURL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_IMAGE}`;
+      const response = await fetch(uploadUrl, {
+        method: 'POST',
+        body: formData,
         headers: {
-          'Content-Type': 'multipart/form-data',
+          Authorization: api.defaults.headers.common['Authorization'],
+          'x-client-id': api.defaults.headers.common['x-client-id'],
+          // Don't set Content-Type - let browser set it with boundary
         },
       });
-      const data = response.data;
-      // console.log(data)
+      const data = await response.json();
       if (data.statusCode === 200) {
         return data.metadata.url;
       } else {
@@ -277,7 +338,6 @@ const QuizzOverViewScreen = () => {
     } catch (error) {
       if (error.message === 'Network request failed') {
         setAlertMessage(i18n.t('overview_quiz_screen.alertNetwork'));
-
         setShowConfirmDialog(true);
       }
       console.log(error);
@@ -317,11 +377,32 @@ const QuizzOverViewScreen = () => {
     }
   };
 
-  if (quizFetching || questionFetching || !id || !quizName) {
-    return (
-      <Loading/>
-    )
-  }
+  // Lưu thông tin của quiz khi người dùng ấn nút lưu trên thanh header
+  useEffect(() => {
+    const handleSaveQuiz = async () => {
+      if (isSave) {
+        try {
+          // Cập nhật lại ảnh thumbnail của quiz nếu người dùng thay đổi
+          if (uploadedImage) {
+            const imageUrl = await uploadImage(uploadedImage);
+            if (imageUrl) {
+              setQuizThumbnail(imageUrl);
+              await handleUpdateQuiz(id, imageUrl);
+            } else {
+              setIsSave(false);
+            }
+          } else {
+            await handleUpdateQuiz(id);
+          }
+        } catch (error) {
+          console.error('Error saving quiz:', error);
+          setIsSave(false);
+        }
+      }
+    };
+
+    handleSaveQuiz();
+  }, [isSave]);
 
   return (
     <Wrapper>
@@ -331,48 +412,15 @@ const QuizzOverViewScreen = () => {
         visible={visibleCreateQuestionBottomSheet || visibleEditQuizBottomSheet}
       />
 
-      {/* Bottom Sheet Create */}
+      {/* Bottom Sheet Create - Updated with QuestionTypeSelector */}
       <BottomSheet visible={visibleCreateQuestionBottomSheet} onClose={handleCloseBottomSheet}>
-        <View className="flex flex-col items-start justify-start">
-          <Text className="text-lg">{i18n.t('overview_quiz_screen.chooseQuestionType')}</Text>
-          <View className="mt-4">
-            <Text className="text-sm text-gray">{i18n.t('overview_quiz_screen.evaluation')}</Text>
-            <View className="flex flex-col items-start justify-start mt-2">
-              <TouchableOpacity
-                className="flex flex-row items-center justify-start"
-                onPress={() => {
-                  createQuestion('multiple');
-                }}
-              >
-                <MaterialCommunityIcons name="checkbox-outline" size={20} color="black" />
-                <Text className="ml-2">{i18n.t('overview_quiz_screen.mutipleChoice')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className="flex flex-row items-center justify-start mt-1"
-                onPress={() => {
-                  createQuestion('box');
-                }}
-              >
-                <MaterialCommunityIcons name="checkbox-blank-outline" size={20} color="black" />
-                <Text className="ml-2">{i18n.t('overview_quiz_screen.fillInBlank')}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View className="mt-4">
-            <Text className="text-sm text-gray">{i18n.t('overview_quiz_screen.logical')}</Text>
-            <View className="flex flex-col items-start justify-start mt-2">
-              <TouchableOpacity
-                className="flex flex-row items-center justify-start"
-                onPress={() => {
-                  createQuestion('blank');
-                }}
-              >
-                <MaterialCommunityIcons name="text" size={20} color="black" />
-                <Text className="ml-2">{i18n.t('overview_quiz_screen.blank')}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+        <QuestionTypeSelector
+          onSelectType={(type) => {
+            createQuestion(type);
+            handleCloseBottomSheet();
+          }}
+          selectedType="single"
+        />
       </BottomSheet>
 
       {/* Bottom Sheet Edit */}
@@ -462,7 +510,14 @@ const QuizzOverViewScreen = () => {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
       >
-       <View className="p-4 flex items-center justify-center flex-col">
+        {quizFetching ? (
+          <>
+            {/* <Text>LOADING</Text> */}
+            <QuizInforSkeleton />
+          </>
+        ) : (
+          <>
+            <View className="p-4 flex items-center justify-center flex-col">
               {quizThumbnail ? (
                 <>
                   <TouchableOpacity
@@ -516,7 +571,8 @@ const QuizzOverViewScreen = () => {
                   </TouchableOpacity>
                 </>
               )}
-          </View>
+            </View>
+            {/* Quiz infor */}
             <View className="mt-4 p-4">
               <View className="flex items-center justify-between flex-row">
                 <View className="max-w-[300px]">
@@ -553,16 +609,34 @@ const QuizzOverViewScreen = () => {
                 </View>
               </View>
             </View>
+          </>
+        )}
+        {/* Quiz Questions */}
+        {questionFetching ? (
+          <>
             <View className="mt-2 p-4">
+              <QuestionOverviewSkeleton />
+            </View>
+          </>
+        ) : (
+          <View className="mt-2 p-4">
             <Text className="mb-2">{i18n.t('overview_quiz_screen.editQuestionTitle')}</Text>
-            {currentQuizQuestion.length > 0 &&
+            {console.log('🎯 Render - currentQuizQuestion length:', currentQuizQuestion.length)}
+            {console.log('🎯 Render - currentQuizQuestion data:', currentQuizQuestion)}
+            {currentQuizQuestion.length > 0 ? (
               currentQuizQuestion.map((question, index) => {
+                console.log(`🎯 Rendering question ${index + 1}:`, question);
                 return (
                   <QuestionOverview key={index} quizId={quizId} question={question} index={index} />
                 );
-              })}
+              })
+            ) : (
+              <Text className="text-gray-500 text-center py-4">No questions found</Text>
+            )}
           </View>
+        )}
       </ScrollView>
+
       <View className="p-4 absolute bg-white bottom-0 w-full border-t border-gray">
         <Button
           onPress={handleShowCreateQuizQuestionBottomSheet}

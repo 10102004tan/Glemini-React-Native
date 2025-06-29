@@ -11,36 +11,59 @@ export const useQuizStore = create((set, get) => ({
   isFetchingNextPage: false,
   isRefetching: false,
   key: '',
+  quizRecents: [],
+  filter:{
+    sort: 'createdAt',
+    order: 'desc',
+    subjectIds:[]
+  },
+  setFilter: (filter) => {
+    set({ filter });
+  },
+  clearQuizRecents: () => {
+    set({ quizRecents: [] });
+  },
+  isFetchRecents: false,
+  setIsRefetching: (isRefetching) => {
+    set({ isRefetching });
+  },
+  setKey: (key) => {
+    set({ key });
+  },
   refetch: async () => {
-    console.log('refetch');
-    set({ isLoading: true });
-    set({ page: 1 });
-    const { page, limit, key } = get();
+    set({ isLoading: true, data: [], error: null, totalPage: 0, page: 1, isRefetching: true, isFetchingNextPage: false });
+    const { page, limit, key,filter} = get();
     const body = {
       page,
       limit,
       key,
+      sort: filter.sort,
+      order: filter.order,
+      subjectIds: filter.subjectIds
     };
     try {
       const response = await api.post(`/v2/quizzes/search`, body);
       const { items, totalPage } = await response.data.metadata;
-      set({ data: items, totalPage, isLoading: false });
+      set({ data: items, totalPage, isLoading: false,isRefetching: false });
     } catch (error) {
       console.log('error', error);
-      set({ error, isLoading: false });
+      set({ error, isLoading: false, isRefetching: false });
     }
   },
   fetchNextPage: async () => {
-    set({ isFetchingNextPage: true });
-    set({ page: get().page + 1 });
+    console.log('fetchNextPage');
+    set({ isFetchingNextPage: true,page: get().page + 1 });
     try {
       // log baseUrl
-      const { page, limit, key } = get();
-      const body = {
-        page,
-        limit,
-        key,
-      };
+      const { page, limit, key,filter} = get();
+    const body = {
+      page,
+      limit,
+      key,
+      sort: filter.sort,
+      order: filter.order,
+      subjectIds: filter.subjectIds
+    };
       const response = await api.post(`/v2/quizzes/search`, body);
       const { items } = await response.data.metadata;
       set((state) => ({
@@ -55,4 +78,14 @@ export const useQuizStore = create((set, get) => ({
     const { page, totalPage } = get();
     return page < totalPage;
   },
+  fetchQuizRecents: async () => {
+    set({ quizRecents: [],isFetchRecents: true});
+    try {
+      const response = await api.get('/v2/quizzes/recent-search');
+      set({ quizRecents: response.data.metadata, isFetchRecents: false });
+    } catch (error) {
+      console.log('error', error);
+      set({ error, isLoading: false });
+    }
+  }
 }));

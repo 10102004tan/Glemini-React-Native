@@ -2,12 +2,14 @@ import { View, Text } from 'react-native';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useAuthContext } from './AuthContext';
+import api from '@/libs/axios';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const SubjectContext = createContext();
 
 const SubjectProvider = ({ children }) => {
   const [subjects, setSubjects] = useState([]);
-  const { userData } = useAuthContext();
+  const {user} = useAuthStore();
   // Lấy dữ liệu từ API
   const fetchSubjects = async () => {
     const response = await api.post(`${API_URL}${API_VERSION.V1}${END_POINTS.SUBJECTS}`);
@@ -20,10 +22,10 @@ const SubjectProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (userData) {
+    if (user){
       fetchSubjects();
     }
-  }, [userData]);
+  }, [user]);
 
   return <SubjectContext.Provider value={{ subjects }}>{children}</SubjectContext.Provider>;
 };

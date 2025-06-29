@@ -4,17 +4,19 @@ import NotificationIcon from '@/components/customs/NotificationIcon';
 import { useAuthStore } from '@/store/useAuthStore';
 import { router } from 'expo-router';
 
-const SearchQuizBar = () => {
+const SearchQuizBar = ({
+  notiItemColor = 'black',
+}) => {
   const { user } = useAuthStore();
   const handleRedirectSearch = () => {
-    router.push({ pathname: '/(protected)/search' });
+    router.push({ pathname: '/(protected)/search-recent' });
   };
   return (
     <View
       style={{
         width: '100%',
         flexDirection: 'row',
-        justifyContent:"space-between",
+        justifyContent: 'space-between',
         marginBottom: 14,
         alignItems: 'center',
       }}
@@ -36,7 +38,7 @@ const SearchQuizBar = () => {
           />
         </TouchableOpacity>
       </View>
-      <NotificationIcon numberOfUnreadNoti={user.count_notification_unread || 0} />
+      <NotificationIcon color={notiItemColor} numberOfUnreadNoti={user.count_notification_unread || 0} />
     </View>
   );
 };
