@@ -12,10 +12,10 @@ export const useQuizStore = create((set, get) => ({
   isRefetching: false,
   key: '',
   quizRecents: [],
-  filter:{
+  filter: {
     sort: 'createdAt',
     order: 'desc',
-    subjectIds:[]
+    subjectIds: [],
   },
   setFilter: (filter) => {
     set({ filter });
@@ -31,20 +31,28 @@ export const useQuizStore = create((set, get) => ({
     set({ key });
   },
   refetch: async () => {
-    set({ isLoading: true, data: [], error: null, totalPage: 0, page: 1, isRefetching: true, isFetchingNextPage: false });
-    const { page, limit, key,filter} = get();
+    set({
+      isLoading: true,
+      data: [],
+      error: null,
+      totalPage: 0,
+      page: 1,
+      isRefetching: true,
+      isFetchingNextPage: false,
+    });
+    const { page, limit, key, filter } = get();
     const body = {
       page,
       limit,
       key,
       sort: filter.sort,
       order: filter.order,
-      subjectIds: filter.subjectIds
+      subjectIds: filter.subjectIds,
     };
     try {
       const response = await api.post(`/v2/quizzes/search`, body);
       const { items, totalPage } = await response.data.metadata;
-      set({ data: items, totalPage, isLoading: false,isRefetching: false });
+      set({ data: items, totalPage, isLoading: false, isRefetching: false });
     } catch (error) {
       console.log('error', error);
       set({ error, isLoading: false, isRefetching: false });
@@ -52,18 +60,18 @@ export const useQuizStore = create((set, get) => ({
   },
   fetchNextPage: async () => {
     console.log('fetchNextPage');
-    set({ isFetchingNextPage: true,page: get().page + 1 });
+    set({ isFetchingNextPage: true, page: get().page + 1 });
     try {
       // log baseUrl
-      const { page, limit, key,filter} = get();
-    const body = {
-      page,
-      limit,
-      key,
-      sort: filter.sort,
-      order: filter.order,
-      subjectIds: filter.subjectIds
-    };
+      const { page, limit, key, filter } = get();
+      const body = {
+        page,
+        limit,
+        key,
+        sort: filter.sort,
+        order: filter.order,
+        subjectIds: filter.subjectIds,
+      };
       const response = await api.post(`/v2/quizzes/search`, body);
       const { items } = await response.data.metadata;
       set((state) => ({
@@ -79,7 +87,7 @@ export const useQuizStore = create((set, get) => ({
     return page < totalPage;
   },
   fetchQuizRecents: async () => {
-    set({ quizRecents: [],isFetchRecents: true});
+    set({ quizRecents: [], isFetchRecents: true });
     try {
       const response = await api.get('/v2/quizzes/recent-search');
       set({ quizRecents: response.data.metadata, isFetchRecents: false });
@@ -87,5 +95,5 @@ export const useQuizStore = create((set, get) => ({
       console.log('error', error);
       set({ error, isLoading: false });
     }
-  }
+  },
 }));

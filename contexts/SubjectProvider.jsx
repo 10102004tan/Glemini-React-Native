@@ -9,7 +9,7 @@ const SubjectContext = createContext();
 
 const SubjectProvider = ({ children }) => {
   const [subjects, setSubjects] = useState([]);
-  const {user} = useAuthStore();
+  const { user } = useAuthStore();
   // Lấy dữ liệu từ API
   const fetchSubjects = async () => {
     const response = await api.post(`${API_VERSION.V1}${END_POINTS.SUBJECTS}`);
@@ -21,7 +21,7 @@ const SubjectProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (user){
+    if (user) {
       fetchSubjects();
     }
   }, [user]);

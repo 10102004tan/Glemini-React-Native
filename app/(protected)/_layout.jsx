@@ -121,7 +121,6 @@ export default function AppRootLayout() {
     if (expoPushToken && user) {
       sendPushTokenToServer(user.user_id);
     }
-    
   }, [user, expoPushToken]);
 
   return (
@@ -216,8 +215,6 @@ export default function AppRootLayout() {
           headerTitle: '',
         }}
       />
-
-      
 
       <Stack.Screen
         name="(play)/single"
