@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useAuthContext } from '@/contexts/AuthContext';
+import api from '@/libs/axios';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import Button from '@/components/customs/Button';
@@ -15,11 +16,14 @@ import * as IntentLauncher from 'expo-intent-launcher';
 import { Platform, Linking } from 'react-native';
 import { shareAsync } from 'expo-sharing';
 import { useAppProvider } from '@/contexts/AppProvider';
+import { useAuthStore } from '@/store/useAuthStore';
+import * as SecureStore from 'expo-secure-store';
 
 const DemoCreateQuizByTemplate = () => {
   const { id } = useGlobalSearchParams();
   const [uploadStatus, setUploadStatus] = useState(null);
-  const { userData, processAccessTokenExpired } = useAuthContext();
+  const { processAccessTokenExpired } = useAuthContext();
+  const { user } = useAuthStore(); // Use useAuthStore instead of useAuthContext
   const { getQuestionFromTemplateFile } = useQuestionProvider();
   const router = useRouter();
   const { i18n } = useAppProvider();
@@ -98,22 +102,53 @@ const DemoCreateQuizByTemplate = () => {
 
   const uploadFile = async (file) => {
     try {
-      let path = '';
+      console.log('📤 Starting file upload...');
 
+      // Get authentication data from SecureStore
+      const token = await SecureStore.getItemAsync('Authorization');
+      const userId = await SecureStore.getItemAsync('x-client-id');
+
+      console.log('🔍 Auth info:', {
+        user: user,
+        user_id: userId,
+        hasToken: !!token,
+        tokenLength: token?.length || 0,
+        userKeys: user ? Object.keys(user) : [],
+      });
+
+      // Setup authentication headers
+      if (token && userId) {
+        // Use lowercase headers as defined in backend HEADER constants
+        api.defaults.headers.common['authorization'] = token;
+        api.defaults.headers.common['x-client-id'] = userId;
+
+        console.log('✅ Authentication headers set:', {
+          userId: userId,
+          tokenPrefix: token.substring(0, 20) + '...',
+        });
+      } else {
+        console.error('❌ Missing authentication data');
+        Alert.alert('Lỗi xác thực', 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+        await processAccessTokenExpired();
+        return;
+      }
+
+      let endpoint = '';
       switch (file.mimeType) {
         case 'text/plain':
-          path = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_TXT}`;
+          endpoint = END_POINTS.QUIZ_UPLOAD_TXT;
           break;
         case 'application/msword':
-          path = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_DOC}`;
+          endpoint = END_POINTS.QUIZ_UPLOAD_DOC;
           break;
         case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-          path = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_DOC}`;
+          endpoint = END_POINTS.QUIZ_UPLOAD_DOC;
           break;
         case 'text/markdown':
-          path = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_UPLOAD_MD}`;
-        default:
+          endpoint = END_POINTS.QUIZ_UPLOAD_MD;
           break;
+        default:
+          throw new Error('Unsupported file type');
       }
 
       const cleanFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
@@ -124,30 +159,48 @@ const DemoCreateQuizByTemplate = () => {
         type: file.mimeType,
       });
 
-      const response = await fetch(path, {
-        method: 'POST',
-        body: formData,
+      console.log('📡 Uploading to:', `${API_VERSION.V1}${endpoint}`);
+      console.log('📄 File info:', {
+        name: cleanFileName,
+        type: file.mimeType,
+        size: file.size,
+      });
+
+      const response = await api.post(`${API_VERSION.V1}${endpoint}`, formData, {
         headers: {
-          'x-client-id': userData._id,
-          Authorization: userData.accessToken,
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      const data = await response.json();
-      console.log(JSON.stringify(data, null, 2));
+      const data = response.data;
+      console.log('✅ Upload response:', JSON.stringify(data, null, 2));
 
       if (data.statusCode === 200) {
         setUploadStatus(data.message);
+        console.log('🎉 Upload successful, processing questions...');
         getQuestionFromTemplateFile(data.metadata, id);
       } else {
         throw new Error(data.message || 'File upload failed.');
       }
     } catch (error) {
-      console.log(error);
+      console.error('❌ Upload error:', error);
+
+      if (error.response?.status === 401) {
+        console.error('🔐 Authentication error');
+        Alert.alert('Lỗi xác thực', 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+        await processAccessTokenExpired();
+      } else if (error.response?.status === 400) {
+        console.error('📄 File format error');
+        Alert.alert('Lỗi file', error.response.data?.message || 'File không đúng định dạng');
+      } else {
+        console.error('🚫 General upload error');
+        Alert.alert(
+          'Lỗi upload',
+          `Không thể upload file: ${error.message || 'Lỗi không xác định'}`,
+        );
+      }
+
       setUploadStatus('File upload failed.');
-      alert('An error occurred while uploading the file.');
-      // console.error('Upload Error:', error);
     }
   };
 
@@ -164,9 +217,16 @@ const DemoCreateQuizByTemplate = () => {
   };
 
   const clearTemplatedDownload = async () => {
+    // Basic templates
     await deleteFile(`${FileSystem.documentDirectory}template_md.md`);
     await deleteFile(`${FileSystem.documentDirectory}template_doc.docx`);
     await deleteFile(`${FileSystem.documentDirectory}template_txt.txt`);
+
+    // Complete templates
+    await deleteFile(`${FileSystem.documentDirectory}complete_template.md`);
+    await deleteFile(`${FileSystem.documentDirectory}complete_template.txt`);
+
+    console.log('🗑️ Cleared all downloaded templates');
   };
 
   const downloadAndOpenFile = async (type) => {
@@ -184,6 +244,15 @@ const DemoCreateQuizByTemplate = () => {
       case 'txt':
         fileUrl = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_GET_TXT_TEMPLATE}`;
         fileName = 'template_txt.txt';
+        break;
+      // NEW: Complete templates
+      case 'complete_txt':
+        fileUrl = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_GET_COMPLETE_TXT_TEMPLATE}`;
+        fileName = 'complete_template.txt';
+        break;
+      case 'complete_md':
+        fileUrl = `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_GET_COMPLETE_MD_TEMPLATE}`;
+        fileName = 'complete_template.md';
         break;
       default:
         break;
@@ -209,12 +278,15 @@ const DemoCreateQuizByTemplate = () => {
       }
 
       // Tải file về bộ nhớ tạm của ứng dụng
+      console.log('📥 Downloading template from:', fileUrl);
+
+      // Template routes don't require authentication, use direct download
       const downloadResult = await FileSystem.downloadAsync(fileUrl, fileUri);
 
       if (!downloadResult || !downloadResult.uri) {
         throw new Error('Failed to download file');
       }
-      console.log('File downloaded to:', downloadResult.uri);
+      console.log('✅ File downloaded to:', downloadResult.uri);
       const save = await shareAsync(downloadResult.uri);
 
       if (save) {
@@ -224,8 +296,11 @@ const DemoCreateQuizByTemplate = () => {
 
       Alert.alert('Success', 'File downloaded and opened successfully');
     } catch (error) {
-      console.error('Error:', error);
-      Alert.alert('Error', `Failed to download or open file: ${error.message}`);
+      console.error('❌ Template download error:', error);
+      Alert.alert(
+        'Lỗi tải template',
+        `Không thể tải template: ${error.message || 'Lỗi không xác định'}`,
+      );
     }
   };
 
@@ -259,12 +334,16 @@ const DemoCreateQuizByTemplate = () => {
             {i18n.t('create_quiz_template.upload.step1')}
           </Text>
           <View className="flex items-center justify-center mt-2 flex-col">
+            {/* Basic Templates */}
+            <Text className="text-center font-bold text-lg mb-2 text-blue-600">
+              📝 Template Cơ Bản (Chỉ Single Choice)
+            </Text>
             <Button
               onPress={() => {
                 downloadAndOpenFile('txt');
               }}
               otherStyles="p-4 mb-2 w-full"
-              text={i18n.t('create_quiz_template.buttons.downloadTxt')}
+              text="📄 Tải Template TXT Cơ Bản"
               icon={<AntDesign name="filetext1" size={18} color="white" />}
             />
             <Button
@@ -272,78 +351,129 @@ const DemoCreateQuizByTemplate = () => {
                 downloadAndOpenFile('md');
               }}
               otherStyles="p-4 mb-2 w-full"
-              text={i18n.t('create_quiz_template.buttons.downloadMd')}
+              text="📝 Tải Template MD Cơ Bản"
+              icon={<AntDesign name="file-markdown" size={18} color="white" />}
+            />
+
+            {/* Complete Templates */}
+            <Text className="text-center font-bold text-lg mt-4 mb-2 text-green-600">
+              🚀 Template Hoàn Chỉnh (5 Loại Câu Hỏi)
+            </Text>
+            <Button
+              onPress={() => {
+                downloadAndOpenFile('complete_txt');
+              }}
+              otherStyles="p-4 mb-2 w-full bg-green-600"
+              text="📄 Tải Template TXT Hoàn Chỉnh"
+              icon={<AntDesign name="filetext1" size={18} color="white" />}
+            />
+            <Button
+              onPress={() => {
+                downloadAndOpenFile('complete_md');
+              }}
+              otherStyles="p-4 mb-2 w-full bg-green-600"
+              text="📝 Tải Template MD Hoàn Chỉnh"
               icon={<AntDesign name="file-markdown" size={18} color="white" />}
             />
           </View>
-          <Text className="text-center font-semibold mt-4">
-            {i18n.t('create_quiz_template.upload.step2')}
+          <Text className="text-center font-semibold mt-4 text-lg">
+            📚 Hướng Dẫn Sử Dụng Template
           </Text>
-          {/* Docx */}
-          <View>
-            <Text className="text-start font-semibold mt-2 px-4">
-              {i18n.t('create_quiz_template.templates.forDocx')}
+
+          {/* Complete Template Guide */}
+          <View className="mt-4">
+            <Text className="text-start font-bold text-lg px-4 text-green-600">
+              🚀 Template Hoàn Chỉnh (Khuyến nghị)
             </Text>
-            <View className="ml-4 px-4">
-              <Text className="text-start mt-2">
-                - {i18n.t('create_quiz_template.templates.docxInstruction')}
-              </Text>
-              <Text className="text-start mt-2">
-                - {i18n.t('create_quiz_template.templates.docxNote')}
-              </Text>
-            </View>
-            <Text className="text-start font-semibold mt-2 px-4">
-              {i18n.t('create_quiz_template.templates.forTemplate')}
+            <Text className="text-start mt-2 px-4 text-gray-600">
+              Hỗ trợ đầy đủ 5 loại câu hỏi: Single Choice, Multiple Choice, Fill-in-blank, Order,
+              Match
             </Text>
-            <View
-              className="mt-2 p-4 rounded-xl"
-              style={{
-                borderWidth: 2,
-                borderStyle: 'dashed',
-                borderColor: '#757575',
-              }}
-            >
-              <Text>{i18n.t('create_quiz_template.templates.docxExampleTitle')}</Text>
-              <View className="mt-2">
-                <Text>{i18n.t('create_quiz_template.templates.docxExampleQuestion')}</Text>
-                <Text>{i18n.t('create_quiz_template.templates.docxAnswerA')}</Text>
-                <Text>{i18n.t('create_quiz_template.templates.docxAnswerB')}</Text>
-                <Text>{i18n.t('create_quiz_template.templates.docxAnswerC')}</Text>
-                <Text>{i18n.t('create_quiz_template.templates.docxAnswerD')}</Text>
-                <Text className="font-semibold">
-                  {i18n.t('create_quiz_template.templates.docxExampleAnswer')}
+
+            {/* 5 Question Types Examples */}
+            <View className="mt-4 px-4">
+              {/* Single Choice */}
+              <View className="mb-4 p-3 bg-blue-50 rounded-lg">
+                <Text className="font-bold text-blue-800">1. Single Choice (Chọn 1 đáp án)</Text>
+                <View className="mt-2 p-2 bg-white rounded border-l-4 border-blue-400">
+                  <Text className="text-sm">Question: Thủ đô Việt Nam là gì?</Text>
+                  <Text className="text-sm">Type: single</Text>
+                  <Text className="text-sm">Answer: A. Hà Nội</Text>
+                  <Text className="text-sm">Answer: B. TP.HCM</Text>
+                  <Text className="text-sm font-bold">Correct Answer: A</Text>
+                </View>
+              </View>
+
+              {/* Multiple Choice */}
+              <View className="mb-4 p-3 bg-purple-50 rounded-lg">
+                <Text className="font-bold text-purple-800">
+                  2. Multiple Choice (Chọn nhiều đáp án)
                 </Text>
+                <View className="mt-2 p-2 bg-white rounded border-l-4 border-purple-400">
+                  <Text className="text-sm">Question: Động vật có vú nào?</Text>
+                  <Text className="text-sm">Type: multiple</Text>
+                  <Text className="text-sm">Answer: A. Chó</Text>
+                  <Text className="text-sm">Answer: B. Cá</Text>
+                  <Text className="text-sm font-bold">Correct Answers: A, C</Text>
+                </View>
+              </View>
+
+              {/* Fill in blank */}
+              <View className="mb-4 p-3 bg-orange-50 rounded-lg">
+                <Text className="font-bold text-orange-800">3. Fill-in-blank (Điền từ)</Text>
+                <View className="mt-2 p-2 bg-white rounded border-l-4 border-orange-400">
+                  <Text className="text-sm">Question: Thủ đô VN là ___ ở miền ___</Text>
+                  <Text className="text-sm">Type: fill</Text>
+                  <Text className="text-sm">Fill: Hà Nội (position: 1)</Text>
+                  <Text className="text-sm">Fill: Bắc (position: 2)</Text>
+                </View>
+              </View>
+
+              {/* Order */}
+              <View className="mb-4 p-3 bg-green-50 rounded-lg">
+                <Text className="font-bold text-green-800">4. Order (Sắp xếp thứ tự)</Text>
+                <View className="mt-2 p-2 bg-white rounded border-l-4 border-green-400">
+                  <Text className="text-sm">Question: Sắp xếp số từ nhỏ đến lớn:</Text>
+                  <Text className="text-sm">Type: order</Text>
+                  <Text className="text-sm">Order: 3 (position: 1)</Text>
+                  <Text className="text-sm">Order: 7 (position: 2)</Text>
+                </View>
+              </View>
+
+              {/* Match */}
+              <View className="mb-4 p-3 bg-red-50 rounded-lg">
+                <Text className="font-bold text-red-800">5. Match (Nối cặp)</Text>
+                <View className="mt-2 p-2 bg-white rounded border-l-4 border-red-400">
+                  <Text className="text-sm">Question: Nối quốc gia với thủ đô:</Text>
+                  <Text className="text-sm">Type: match</Text>
+                  <Text className="text-sm">Match: Việt Nam - Hà Nội</Text>
+                  <Text className="text-sm">Match: Thái Lan - Bangkok</Text>
+                </View>
               </View>
             </View>
           </View>
-          {/* Markdown */}
-          <View>
-            <Text className="text-start font-semibold mt-2 px-4">
-              {i18n.t('create_quiz_template.templates.forMd')}
+
+          {/* Basic Template Guide */}
+          <View className="mt-4">
+            <Text className="text-start font-bold text-lg px-4 text-blue-600">
+              📝 Template Cơ Bản
             </Text>
-            <View className="ml-4 px-4"></View>
-            <Text className="text-start font-semibold mt-2 px-4">
-              {i18n.t('create_quiz_template.templates.forTemplate')}
+            <Text className="text-start mt-2 px-4 text-gray-600">
+              Chỉ hỗ trợ Single Choice và Multiple Choice (format cũ)
             </Text>
             <View
-              className="mt-2 p-4 rounded-xl"
+              className="mt-2 mx-4 p-4 rounded-xl"
               style={{
                 borderWidth: 2,
                 borderStyle: 'dashed',
                 borderColor: '#757575',
               }}
             >
-              <Text>{i18n.t('create_quiz_template.templates.mdExampleTitle')}</Text>
-              <View className="mt-2">
-                <Text>{i18n.t('create_quiz_template.templates.mdInstruction')}</Text>
-                <Text>{i18n.t('create_quiz_template.templates.mdAnswerA')}</Text>
-                <Text>{i18n.t('create_quiz_template.templates.mdAnswerB')}</Text>
-                <Text>{i18n.t('create_quiz_template.templates.mdAnswerC')}</Text>
-                <Text>{i18n.t('create_quiz_template.templates.mdAnswerD')}</Text>
-                <Text className="font-semibold">
-                  {i18n.t('create_quiz_template.templates.mdExampleAnswer')}
-                </Text>
-              </View>
+              <Text className="text-sm">Quiz Title: Tiêu đề quiz</Text>
+              <Text className="text-sm">Question: Câu hỏi của bạn?</Text>
+              <Text className="text-sm">Answer: A. Đáp án A</Text>
+              <Text className="text-sm">Answer: B. Đáp án B</Text>
+              <Text className="text-sm font-bold">Correct Answer: A</Text>
             </View>
           </View>
           <Text className="text-start font-semibold mt-2 px-4">

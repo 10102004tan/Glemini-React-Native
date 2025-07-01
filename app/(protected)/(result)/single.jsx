@@ -3,16 +3,16 @@ import { View, Text, Image, Alert, Animated } from 'react-native';
 import Button from '../../../components/customs/Button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useAuthContext } from '@/contexts/AuthContext';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { Audio } from 'expo-av';
 import { useRouter } from 'expo-router';
 import { useResultProvider } from '@/contexts/ResultProvider';
 import LottieView from 'lottie-react-native';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const ResultSingle = ({ resultId, handleRestart }) => {
   const { i18n } = useAppProvider();
-  const { userData } = useAuthContext();
+  const { user } = useAuthStore();
   const [sound, setSound] = useState(null);
   const router = useRouter();
   const { fetchOverViewData, overViewData } = useResultProvider();
@@ -108,7 +108,7 @@ const ResultSingle = ({ resultId, handleRestart }) => {
               {
                 text: i18n.t('play.single.buttonQuit'),
                 onPress: async () => {
-                  router.replace('/(app)/(home)');
+                  router.replace('/(app)/(homev2)');
                 },
               },
             ]);
@@ -148,12 +148,12 @@ const ResultSingle = ({ resultId, handleRestart }) => {
       {/* User Information */}
       <View className="flex-row p-5 bg-slate-600 mt-5 mx-3 rounded-lg items-center">
         <Image
-          source={{ uri: userData.user_avatar }}
+          source={{ uri: user.user_avatar }}
           className="w-20 h-20 rounded-full"
           style={{ resizeMode: 'cover' }}
         />
         <View className="flex ml-5">
-          <Text className="text-lg text-slate-50 font-psemibold">{userData.user_fullname}</Text>
+          <Text className="text-lg text-slate-50 font-psemibold">{user.fullname}</Text>
           <Text className="bg-slate-600 rounded-full text-sm px-2 text-slate-50 mt-1 flex-row items-center">
             <Icon name="person-outline" size={15} color="white" />{' '}
             {i18n.t('result.single.textDesc')}

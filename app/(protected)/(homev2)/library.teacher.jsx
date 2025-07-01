@@ -1,15 +1,6 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  Animated,
-  ScrollView,
-  Alert,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Animated, ScrollView, Alert } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
-import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 import Button from '@/components/customs/Button';
 import { useAppProvider } from '@/contexts/AppProvider';
 import BottomSheet from '@/components/customs/BottomSheet';
@@ -32,10 +23,6 @@ import QuizEmptyLottie from '@/components/customs/QuizEmptyLottie';
 import MainLayout from '@/components/layouts/MainLayout';
 import api from '@/libs/axios';
 import { useAuthStore } from '@/store/useAuthStore';
-import { FlashList } from '@shopify/flash-list';
-import QuizListSkeleton from '@/components/customs/QuizListSkeleton';
-import Tabs from '@/components/customs/Tabs';
-
 const Library = () => {
   const { i18n } = useAppProvider();
   //biến name của bộ sưu tập
@@ -146,6 +133,23 @@ const Library = () => {
   const getAllQuizzesShared = async () => {
     if (!quizLoading) {
       setQuizLoading(true);
+      // const response = await fetch(
+      //   `${API_URL}${API_VERSION.V1}${END_POINTS.GET_ALL_QUIZZES_SHARED}`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       "x-client-id": user.user_id,
+      //       authorization: userData.accessToken,
+      //     },
+      //     body: JSON.stringify({
+      //       user_id: userData._id,
+      //       skip,
+      //       limit: LIMIT,
+      //     }),
+      //   }
+      // );
+      // const data = await response.json();
       const body = {
         user_id: user.user_id,
         skip,
@@ -228,6 +232,26 @@ const Library = () => {
   };
 
   const resetFilters = async () => {
+    // const response = await fetch(
+    //   `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_FILTER}`,
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       "x-client-id": userData._id,
+    //       authorization: userData.accessToken,
+    //     },
+    //     body: JSON.stringify({
+    //       user_id: userData._id,
+    //       quiz_name: "",
+    //       quiz_status: "",
+    //       quiz_subjects: [],
+    //       start_filter_date: null,
+    //       end_filter_date: null,
+    //     }),
+    //   }
+    // );
+    // const data = await response.json();
     const body = {
       user_id: user.user_id,
       quiz_name: '',
@@ -275,6 +299,22 @@ const Library = () => {
     }
 
     if (check === false) {
+      // const response = await fetch(
+      //   `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_CREATE}`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       "x-client-id": userData._id,
+      //       authorization: userData.accessToken,
+      //     },
+      //     body: JSON.stringify({
+      //       collection_name: nameCollection,
+      //       user_id: userData._id,
+      //     }),
+      //   }
+      // );
+      // const data = await response.json();
       const body = {
         collection_name: nameCollection,
         user_id: user.user_id,
@@ -282,8 +322,15 @@ const Library = () => {
       const path = `${API_VERSION.V1}${END_POINTS.COLLECTION_CREATE}`;
       const response = await api.post(path, body);
       const data = response.data;
+
+      console.log(data);
       if (data.statusCode === 200) {
         setCollections([...collections, data.metadata]);
+      } else {
+        if (data.statusCode === 401 && data.message === 'expired') {
+          // processAccessTokenExpired();
+          console.log('Token expired, please login again.');
+        }
       }
     } else {
       alert('Đã tồn tại tên !!!');
@@ -291,6 +338,23 @@ const Library = () => {
   };
 
   const getAllCollections = async () => {
+    // console.log(userData._id);
+    // const response = await fetch(
+    //   `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_GETALL}`,
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       "x-client-id": userData._id,
+    //       authorization: userData.accessToken,
+    //     },
+    //     body: JSON.stringify({
+    //       user_id: userData._id,
+    //     }),
+    //   }
+    // );
+    // const data = await response.json();
+    // // console.log(data);
     const body = {
       user_id: user.user_id,
     };
@@ -307,9 +371,35 @@ const Library = () => {
     }
   };
 
+  // if (teacherStatus === "pedding" || teacherStatus === "rejected") {
+  //   return <LockFeature />;
+  // }
+
   const filter = async (spSkip = null) => {
     //biến mặc định để ghi đè lên skip
     const skipLoad = spSkip === null ? skip : spSkip;
+    // const response = await fetch(
+    //   `${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_FILTER}`,
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       "x-client-id": userData._id,
+    //       authorization: userData.accessToken,
+    //     },
+    //     body: JSON.stringify({
+    //       user_id: userData._id,
+    //       quiz_name: search === "" ? null : search,
+    //       quiz_status: status === "" ? null : status,
+    //       quiz_subjects: subject.length > 0 ? subject : null,
+    //       start_filter_date: startDate,
+    //       end_filter_date: endDate,
+    //       skip: skipLoad,
+    //       limit: LIMIT,
+    //     }),
+    //   }
+    // );
+    // const data = await response.json();
     const body = {
       user_id: userData._id,
       quiz_name: search === '' ? null : search,
@@ -359,6 +449,8 @@ const Library = () => {
 
   // Load more và refresh của thư viện của tôi
   const handleLoadMore = () => {
+    console.log('loadmore::' + hasMore);
+
     if (quizFetching) {
       console.log('Đang tải dữ liệu');
       return;
@@ -418,66 +510,256 @@ const Library = () => {
   };
 
   return (
-    <View className="flex-1">
-      <MainLayout>
-        <Tabs activeTab={activeTab} handleTabChange={handleTabChange} />
-        <View
-          style={{
-            backgroundColor: '#F2F4F7',
-            height: '100%',
-            padding: 12,
-            marginTop: 10,
-            borderRadius: 10,
-          }}
-        >
-          {/* Nội dung dựa trên tab được chọn */}
-          {activeTab === 'library' && (
-            <FlashList
-              data={quizzes}
-              estimatedItemSize={100}
-              renderItem={({ item }) => <ComponentItem data={item} />}
-              keyExtractor={(item) => item._id}
-              onEndReached={handleLoadMore}
-              numColumns={2}
-              ListHeaderComponent={() => (
-                <View className="flex flex-row justify-start mb-3 ml-2">
-                  <Button
-                    onPress={CreateNewBottomSheet}
-                    text={i18n.t('library.quizCreated')}
-                    icon={<AntDesign name="plus" size={16} color="white" />}
-                    otherStyles={'justify-center p-4 mr-3'}
-                    textStyles={'text-center text-white'}
-                  />
-                  <View className="flex-row items-center justify-center mr-2">
-                    <Button
-                      text={i18n.t('library.filter')}
-                      icon={<Ionicons name="options-outline" size={16} color="white" />}
-                      onPress={FilterBottomSheet}
-                      otherStyles={'bg-primary p-4 rounded-xl'}
-                    />
-                  </View>
-                </View>
-              )}
-              onEndReachedThreshold={0.1}
-              refreshing={isRefreshing}
-              onRefresh={handleRefresh}
-              ListEmptyComponent={() => {
-                if (isRefreshing || (quizFetching && quizzes.length === 0)) {
-                  return <QuizListSkeleton />;
-                }
-                return <QuizEmpty />;
-              }}
-              ListFooterComponent={() => {
-                if (!hasMore) {
-                  return <Text className="text-center text-gray-500">Không còn dữ liệu</Text>;
-                }
-                return <View>{/* icon loading */}</View>;
+    <MainLayout>
+      <View className="flex-1">
+        <Overlay
+          onPress={handleCloseBottomSheet}
+          visible={visibleBottomSheet || visibleCreateNewBottomSheet || visibleFilterBottomSheet}
+        ></Overlay>
+
+        {/* Bottom Sheet của Thư viện của tôi */}
+        <BottomSheet visible={visibleCreateNewBottomSheet} onClose={handleCloseBottomSheet}>
+          <View className="flex flex-col items-start justify-start">
+            <Text className="text-lg">{i18n.t('teacher_homepage.createQuizWithAi')}</Text>
+            <View className="flex items-center justify-start flex-row mt-4">
+              <QuizzCreateAction
+                handlePress={() => {
+                  setActionQuizType('ai/prompt');
+                  handleCloseBottomSheet();
+                  router.push('/(protected)/(quiz)/create_title');
+                }}
+                otherStyles="ml-2"
+                title={i18n.t('teacher_homepage.createFromText')}
+                icon={<Ionicons name="text-outline" size={24} color="black" />}
+              />
+            </View>
+            <Text className="text-lg mt-8">{i18n.t('teacher_homepage.createWithHand')}</Text>
+            <View className="flex items-center justify-start flex-row mt-4">
+              <QuizzCreateAction
+                handlePress={() => {
+                  setActionQuizType('template');
+                  handleCloseBottomSheet();
+                  router.push('/(protected)/(quiz)/create_title');
+                }}
+                title={i18n.t('teacher_homepage.uploadTemplate')}
+                icon={<Ionicons name="documents-outline" size={24} color="black" />}
+              />
+              <QuizzCreateAction
+                handlePress={() => {
+                  setActionQuizType('create');
+                  handleCloseBottomSheet();
+                  router.push('/(protected)/(quiz)/create_title');
+                }}
+                otherStyles="ml-2"
+                title={i18n.t('teacher_homepage.createWithHand')}
+                icon={<Ionicons name="hand-left-outline" size={24} color="black" />}
+              />
+            </View>
+          </View>
+        </BottomSheet>
+
+        {/* Bottom Sheet của Bộ sưu tập */}
+        <BottomSheet visible={visibleBottomSheet} onClose={handleCloseBottomSheet}>
+          <View className="m-3">
+            <Text className="text-gray mb-2">{i18n.t('library.collection.collectionName')}</Text>
+            <TextInput
+              value={nameCollection}
+              onChangeText={setNameCollection}
+              placeholder={i18n.t('library.collection.enterCollectionName')}
+              className="border border-gray w-[350px] h-[50px] rounded-xl px-4"
+            />
+          </View>
+          <View className="flex flex-row justify-between m-3">
+            <Button
+              text={i18n.t('library.collection.btnCancel')}
+              otherStyles="w-[45%] bg-gray-200 p-3 rounded-xl flex justify-center"
+              onPress={handleCloseBottomSheet}
+            />
+            <Button
+              text={i18n.t('library.collection.btnCreate')}
+              otherStyles="w-[50%] bg-blue-500 p-3 rounded-xl flex justify-center"
+              textStyles="text-white text-center"
+              onPress={() => {
+                createCollection(); // Tạo bộ sưu tập
+                setNameCollection(''); // Đặt lại giá trị ô nhập liệu về chuỗi rỗng
+                handleCloseBottomSheet(); // Đóng BottomSheet
               }}
             />
+          </View>
+        </BottomSheet>
+
+        {/* Bottom Sheet của Bộ lọc */}
+        <BottomSheet visible={visibleFilterBottomSheet} onClose={handleCloseBottomSheet}>
+          <View className="flex flex-col">
+            {/* search */}
+            <View className="flex-row mb-4">
+              <View className="border border-gray rounded-xl p-2 w-full flex-row items-center">
+                <AntDesign name="search1" size={18} color="black" />
+                <TextInput
+                  placeholder={i18n.t('library.search')}
+                  className="ml-2"
+                  onChangeText={(e) => {
+                    setSearch(e);
+                  }}
+                  value={search}
+                />
+              </View>
+            </View>
+
+            <View className="flex flex-col ">
+              <View className="mb-4">
+                <SelectList setSelected={(val) => setStatus(val)} data={data} />
+              </View>
+
+              <MultipleSelectList setSelected={(val) => setSubject(val)} data={subjectsData} />
+            </View>
+
+            <View className="flex flex-row mt-2 justify-between">
+              <TouchableOpacity
+                onPress={showStartDatePicker}
+                className="flex flex-row border border-gray rounded-lg w-1/2 p-3 items-center justify-between mr-2"
+              >
+                <DateTimePickerModal
+                  isVisible={isStartDatePickerVisible}
+                  mode="date"
+                  onConfirm={handleConfirmStartDate}
+                  onCancel={hideStartDatePicker}
+                />
+                <Text className="ml-2 text-gray">
+                  {startDate ? startDate.toLocaleDateString() : i18n.t('library.startTime')}
+                </Text>
+                <View className="mr-1">
+                  <AntDesign name="caretdown" size={12} color="black" />
+                </View>
+              </TouchableOpacity>
+
+              {/* Chọn Thời gian kết thúc */}
+              <TouchableOpacity
+                onPress={showEndDatePicker}
+                className="flex flex-row border border-gray rounded-lg ml-2 p-3 justify-between items-center flex-1"
+              >
+                <DateTimePickerModal
+                  isVisible={isEndDatePickerVisible}
+                  mode="date"
+                  onConfirm={handleConfirmEndDate}
+                  onCancel={hideEndDatePicker}
+                />
+                <Text className="ml-2 text-gray">
+                  {endDate ? endDate.toLocaleDateString() : i18n.t('library.endTime')}
+                </Text>
+                <View className="mr-1">
+                  <AntDesign name="caretdown" size={12} color="black" />
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <Button
+            text={i18n.t('library.filter')}
+            otherStyles="w-full bg-gray-200 p-3 rounded-xl flex justify-center mt-4 mb-2"
+            onPress={() => {
+              // setQuizzes([]); // Xóa danh sách hiện tại
+              setSkip(0);
+              filter(0);
+            }}
+          />
+          <Button
+            text={i18n.t('library.btnFresh')}
+            onPress={resetFilters}
+            otherStyles={'bg-primary p-3 rounded-xl flex items-center justify-center'}
+          />
+        </BottomSheet>
+
+        <View className="flex-1 bg-white">
+          {/* Tabs */}
+          <View className="flex flex-row justify-around items-center h-[60px] mt-[40px]">
+            {/* Tab Thư viện của tôi */}
+            <TouchableOpacity onPress={() => handleTabChange('library')}>
+              <Text
+                className={`font-normal text-[18px] ${
+                  activeTab === 'library' ? 'text-black font-bold' : 'text-gray-500'
+                }`}
+              >
+                {i18n.t('library.library')}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Tab Bộ sưu tập */}
+            <TouchableOpacity onPress={() => handleTabChange('collection')}>
+              <Text
+                className={`font-normal text-[18px] ${
+                  activeTab === 'collection' ? 'text-black font-bold' : 'text-gray-500'
+                }`}
+              >
+                {i18n.t('library.collection.title')}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => handleTabChange('shared')}>
+              <Text
+                className={`font-normal text-[18px] ${
+                  activeTab === 'shared' ? 'text-black font-bold' : 'text-gray-500'
+                }`}
+              >
+                {i18n.t('library.quizShared.title')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          {/* Đường phân cách dưới tab */}
+          <View>
+            <Animated.View
+              style={{
+                transform: [{ translateX: translateValue }],
+                width: '33%',
+                height: 2,
+                backgroundColor: '#1C2833',
+                borderRadius: 10,
+              }}
+            />
+            <View className="bg-primary h-[1px]"></View>
+          </View>
+          {/* Nội dung dựa trên tab được chọn */}
+          {activeTab === 'library' && (
+            <View>
+              {/* Nội dung của Thư viện của tôi */}
+              <View className="flex flex-row justify-between items-center p-3 ml-2">
+                <Button
+                  onPress={CreateNewBottomSheet}
+                  text={i18n.t('library.quizCreated')}
+                  icon={<AntDesign name="plus" size={16} color="white" />}
+                  otherStyles={'justify-center p-4'}
+                  textStyles={'text-center text-white'}
+                />
+                <View className="flex-row items-center justify-center mr-2">
+                  <Button
+                    text={i18n.t('library.filter')}
+                    icon={<Ionicons name="options-outline" size={16} color="white" />}
+                    onPress={FilterBottomSheet}
+                    otherStyles={'bg-primary p-4 rounded-xl'}
+                  />
+                </View>
+              </View>
+              <View
+                style={{
+                  height: '80%',
+                  padding: 12,
+                }}
+              >
+                <AntiFlatList
+                  colSpan={2}
+                  isRefreshing={isRefreshing}
+                  componentItem={ComponentItem}
+                  loading={quizFetching}
+                  handleLoadMore={handleLoadMore}
+                  data={quizzes}
+                  handleRefresh={handleRefresh}
+                />
+              </View>
+            </View>
           )}
 
           {activeTab === 'collection' && (
-            <View>
+            <View className="p-3">
               <Button
                 icon={<AntDesign name="plus" size={16} color="white" />}
                 onPress={OpenBottomSheet}
@@ -531,165 +813,8 @@ const Library = () => {
             </View>
           )}
         </View>
-      </MainLayout>
-      <Overlay
-        onPress={handleCloseBottomSheet}
-        visible={visibleBottomSheet || visibleCreateNewBottomSheet || visibleFilterBottomSheet}
-      ></Overlay>
-
-      {/* Bottom Sheet của Thư viện của tôi */}
-      <BottomSheet visible={visibleCreateNewBottomSheet} onClose={handleCloseBottomSheet}>
-        <View className="flex flex-col items-start justify-start">
-          <Text className="text-lg">{i18n.t('teacher_homepage.createQuizWithAi')}</Text>
-          <View className="flex items-center justify-start flex-row mt-4">
-            <QuizzCreateAction
-              handlePress={() => {
-                setActionQuizType('ai/prompt');
-                handleCloseBottomSheet();
-                router.push('/(app)/(quiz)/create_title');
-              }}
-              otherStyles="ml-2"
-              title={i18n.t('teacher_homepage.createFromText')}
-              icon={<Ionicons name="text-outline" size={24} color="black" />}
-            />
-          </View>
-          <Text className="text-lg mt-8">{i18n.t('teacher_homepage.createWithHand')}</Text>
-          <View className="flex items-center justify-start flex-row mt-4">
-            <QuizzCreateAction
-              handlePress={() => {
-                setActionQuizType('template');
-                handleCloseBottomSheet();
-                router.push('/(app)/(quiz)/create_title');
-              }}
-              title={i18n.t('teacher_homepage.uploadTemplate')}
-              icon={<Ionicons name="documents-outline" size={24} color="black" />}
-            />
-            <QuizzCreateAction
-              handlePress={() => {
-                setActionQuizType('create');
-                handleCloseBottomSheet();
-                router.push('(app)/(quiz)/create_title');
-              }}
-              otherStyles="ml-2"
-              title={i18n.t('teacher_homepage.createWithHand')}
-              icon={<Ionicons name="hand-left-outline" size={24} color="black" />}
-            />
-          </View>
-        </View>
-      </BottomSheet>
-
-      {/* Bottom Sheet của Bộ sưu tập */}
-      <BottomSheet visible={visibleBottomSheet} onClose={handleCloseBottomSheet}>
-        <View className="m-3">
-          <Text className="text-gray mb-2">{i18n.t('library.collection.collectionName')}</Text>
-          <TextInput
-            value={nameCollection}
-            onChangeText={setNameCollection}
-            placeholder={i18n.t('library.collection.enterCollectionName')}
-            className="border border-gray w-[350px] h-[50px] rounded-xl px-4"
-          />
-        </View>
-        <View className="flex flex-row justify-between m-3">
-          <Button
-            text={i18n.t('library.collection.btnCancel')}
-            otherStyles="w-[45%] bg-gray-200 p-3 rounded-xl flex justify-center"
-            onPress={handleCloseBottomSheet}
-          />
-          <Button
-            text={i18n.t('library.collection.btnCreate')}
-            otherStyles="w-[50%] bg-blue-500 p-3 rounded-xl flex justify-center"
-            textStyles="text-white text-center"
-            onPress={() => {
-              createCollection(); // Tạo bộ sưu tập
-              setNameCollection(''); // Đặt lại giá trị ô nhập liệu về chuỗi rỗng
-              handleCloseBottomSheet(); // Đóng BottomSheet
-            }}
-          />
-        </View>
-      </BottomSheet>
-
-      {/* Bottom Sheet của Bộ lọc */}
-      <BottomSheet visible={visibleFilterBottomSheet} onClose={handleCloseBottomSheet}>
-        <View className="flex flex-col">
-          {/* search */}
-          <View className="flex-row mb-4">
-            <View className="border border-gray rounded-xl p-2 w-full flex-row items-center">
-              <AntDesign name="search1" size={18} color="black" />
-              <TextInput
-                placeholder={i18n.t('library.search')}
-                className="ml-2"
-                onChangeText={(e) => {
-                  setSearch(e);
-                }}
-                value={search}
-              />
-            </View>
-          </View>
-
-          <View className="flex flex-col ">
-            <View className="mb-4">
-              <SelectList setSelected={(val) => setStatus(val)} data={data} />
-            </View>
-
-            <MultipleSelectList setSelected={(val) => setSubject(val)} data={subjectsData} />
-          </View>
-
-          <View className="flex flex-row mt-2 justify-between">
-            <TouchableOpacity
-              onPress={showStartDatePicker}
-              className="flex flex-row border border-gray rounded-lg w-1/2 p-3 items-center justify-between mr-2"
-            >
-              <DateTimePickerModal
-                isVisible={isStartDatePickerVisible}
-                mode="date"
-                onConfirm={handleConfirmStartDate}
-                onCancel={hideStartDatePicker}
-              />
-              <Text className="ml-2 text-gray">
-                {startDate ? startDate.toLocaleDateString() : i18n.t('library.startTime')}
-              </Text>
-              <View className="mr-1">
-                <AntDesign name="caretdown" size={12} color="black" />
-              </View>
-            </TouchableOpacity>
-
-            {/* Chọn Thời gian kết thúc */}
-            <TouchableOpacity
-              onPress={showEndDatePicker}
-              className="flex flex-row border border-gray rounded-lg ml-2 p-3 justify-between items-center flex-1"
-            >
-              <DateTimePickerModal
-                isVisible={isEndDatePickerVisible}
-                mode="date"
-                onConfirm={handleConfirmEndDate}
-                onCancel={hideEndDatePicker}
-              />
-              <Text className="ml-2 text-gray">
-                {endDate ? endDate.toLocaleDateString() : i18n.t('library.endTime')}
-              </Text>
-              <View className="mr-1">
-                <AntDesign name="caretdown" size={12} color="black" />
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <Button
-          text={i18n.t('library.filter')}
-          otherStyles="w-full bg-gray-200 p-3 rounded-xl flex justify-center mt-4 mb-2"
-          onPress={() => {
-            // setQuizzes([]); // Xóa danh sách hiện tại
-            setSkip(0);
-            filter(0);
-          }}
-        />
-        <Button
-          text={i18n.t('library.btnFresh')}
-          onPress={resetFilters}
-          otherStyles={'bg-primary p-3 rounded-xl flex items-center justify-center'}
-        />
-      </BottomSheet>
-    </View>
+      </View>
+    </MainLayout>
   );
 };
 

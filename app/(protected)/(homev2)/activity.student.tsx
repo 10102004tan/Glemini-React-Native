@@ -198,7 +198,6 @@ const ActivityStudent = () => {
         style={{
           flex: 1,
           backgroundColor: '#FFF', // bg-white
-          paddingBottom: 80, // pb-20
         }}
       >
         <View

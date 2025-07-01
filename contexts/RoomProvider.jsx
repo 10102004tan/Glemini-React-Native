@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import socket from '@/utils/socket';
 import Toast from 'react-native-toast-message-custom';
 import { useAppProvider } from './AppProvider';
+import api from '@/libs/axios';
 
 const RoomContext = createContext();
 
@@ -33,7 +34,7 @@ const RoomProvider = ({ children }) => {
       setCurrentRoom(data.metadata.room_code);
       socket.emit('joinRoom', { roomCode: data.metadata.room_code, user: userData });
       router.replace({
-        pathname: '/(app)/(teacher)/teacher_room_wait',
+        pathname: '/(protected)/(teacher)/teacher_room_wait',
         params: { roomCode: data.metadata.room_code },
       });
     }
@@ -82,38 +83,23 @@ const RoomProvider = ({ children }) => {
       } else {
         try {
           // Xóa kết quả cũ nếu có
-          const responseDeleteOldResult = await fetch(
-            `${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_RESET}`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'x-client-id': userData._id,
-                authorization: userData.accessToken,
-              },
-              body: JSON.stringify({
-                room_id: data.metadata._id,
-                user_id: userData._id,
-              }),
-            },
-          );
+          const bodyReset = {
+            room_id: data.metadata._id,
+            user_id: userData._id,
+          };
+          await api.post(`${API_VERSION.V1}${END_POINTS.RESULT_RESET}`, bodyReset);
         } catch (error) {
           console.log(error);
         } finally {
-          const checkAdded = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_ADD_USER}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-client-id': userData._id,
-              authorization: userData.accessToken,
-            },
-            body: JSON.stringify({
-              room_code: data.metadata.room_code,
-              user_id: userData._id,
-            }),
-          });
-          const checkData = await checkAdded.json();
-          // console.log(checkData)
+          const bodyAddUser = {
+            room_code: data.metadata.room_code,
+            user_id: userData._id,
+          };
+          const checkAdded = await api.post(
+            `${API_VERSION.V1}${END_POINTS.ROOM_ADD_USER}`,
+            bodyAddUser,
+          );
+          const checkData = checkAdded.data;
           if (checkData.statusCode === 200) {
             setCurrentRoom(data.metadata._id);
             socket.emit('joinRoom', { roomCode, user: userData });

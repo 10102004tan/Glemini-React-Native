@@ -50,7 +50,7 @@ const ClassroomProvider = ({ children }) => {
   // Hàm tạo lớp học
   const createClassroom = async (classData) => {
     try {
-      const response = await api.post(`${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_CREATE}`, {
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.CLASSROOM_CREATE}`, {
         classData,
       });
 
@@ -175,13 +175,16 @@ const ClassroomProvider = ({ children }) => {
 
   const addQuizToClassroom = async (name, classroomId, quizId, start, deadline) => {
     try {
-      const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_ADD_QUIZ}`, {
-        name: name,
-        classroomId: classroomId,
-        quizId: quizId,
-        start: start,
-        deadline: deadline,
-      });
+      const response = await api.post(
+        `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_ADD_QUIZ}`,
+        {
+          name: name,
+          classroomId: classroomId,
+          quizId: quizId,
+          start: start,
+          deadline: deadline,
+        },
+      );
 
       const data = await response.data;
 
