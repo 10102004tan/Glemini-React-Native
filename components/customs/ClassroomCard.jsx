@@ -1,13 +1,13 @@
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import React from 'react';
-import { useAuthContext } from '@/contexts/AuthContext';
 import Toast from 'react-native-toast-message-custom';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import { useAppProvider } from '@/contexts/AppProvider';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const ClassroomCard = ({ classroom }) => {
-  const { userData } = useAuthContext();
+  const { user } = useAuthStore();
   const { i18n } = useAppProvider();
   const { removeClassroom } = useClassroomProvider();
 
@@ -20,7 +20,7 @@ const ClassroomCard = ({ classroom }) => {
         <Text className="font-pbold text-lg">{`${classroom.class_name}`}</Text>
         <Text className="font-semibold text-base">
           {' '}
-          {userData.user_type === 'teacher'
+          {user.user_role === 'teacher'
             ? `${i18n.t('classroom.textSubject')} ${i18n.t(`subjects.${classroom.subject.name}`)}`
             : `${i18n.t('classroom.textTeacher')} ${classroom.user_id.user_fullname}`}
         </Text>
@@ -30,7 +30,7 @@ const ClassroomCard = ({ classroom }) => {
         </Text>
         <Text className="font-pregular">{`${classroom.students?.length} ${i18n.t('classroom.textStudent')}`}</Text>
       </View>
-      {userData.user_type === 'teacher' && (
+      {user.user_role === 'teacher' && (
         <TouchableOpacity
           className="bg-slate-50 rounded-full p-2"
           onPress={() => {

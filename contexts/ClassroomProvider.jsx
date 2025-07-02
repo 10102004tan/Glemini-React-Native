@@ -50,9 +50,9 @@ const ClassroomProvider = ({ children }) => {
   // Hàm tạo lớp học
   const createClassroom = async (classData) => {
     try {
-      const response = await api.post(`${API_VERSION.V1}${END_POINTS.CLASSROOM_CREATE}`, {
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.CLASSROOM_CREATE}`,
         classData,
-      });
+      );
 
       const data = await response.data;
 
@@ -106,34 +106,28 @@ const ClassroomProvider = ({ children }) => {
     }
   };
 
-  const removeStudent = async (classroomId, studentId) => {
-    try {
-      const response = await fetch(
-        `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_REMOVE_STUDENT}/${classroomId}/students/${studentId}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-client-id': userData._id,
-            authorization: userData.accessToken,
-          },
-        },
-      );
 
-      const data = await response.json();
+const removeStudent = async (classroomId, studentId) => {
+  try {
+    const response = await api.delete(
+      `${API_VERSION.V1}${END_POINTS.CLASSROOM_REMOVE_STUDENT}/${classroomId}/students/${studentId}`
+    );
 
-      if (data.statusCode === 200) {
-        setClassroom((prevClassroom) => ({
-          ...prevClassroom,
-          students: prevClassroom.students.filter((student) => student._id !== studentId),
-        }));
-      } else {
-        console.error('Failed to remove student:', data.message);
-      }
-    } catch (error) {
-      console.error('Error removing student:', error);
+    const data = response.data;
+
+    if (data.statusCode === 200) {
+      setClassroom((prevClassroom) => ({
+        ...prevClassroom,
+        students: prevClassroom.students.filter((student) => student._id !== studentId),
+      }));
+    } else {
+      console.error('Failed to remove student:', data.message);
     }
-  };
+  } catch (error) {
+    console.error('Error removing student:', error.response?.data || error.message);
+  }
+};
+
 
   const addStudent = async (classroomId, studentEmail) => {
     try {
