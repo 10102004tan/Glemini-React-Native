@@ -12,6 +12,7 @@ import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
 import Toast from 'react-native-toast-message-custom';
 import { useAppProvider } from '@/contexts/AppProvider';
+import api from '@/libs/axios';
 
 const UploadExcelScreen = () => {
   const [uploadStatus, setUploadStatus] = useState(null);
@@ -93,8 +94,6 @@ const UploadExcelScreen = () => {
     }
 
     try {
-      const path = `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_UPLOAD}`;
-
       const cleanFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
 
       const formData = new FormData();
@@ -105,18 +104,16 @@ const UploadExcelScreen = () => {
       });
       formData.append('classroomId', classroomId);
 
+      console.log(formData);
+      
       // Gửi yêu cầu POST
-      const response = await fetch(path, {
-        method: 'POST',
-        body: formData,
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.CLASSROOM_UPLOAD}`, formData,
+      {
         headers: {
-          'x-client-id': userData._id,
-          Authorization: userData.accessToken,
           'Content-Type': 'multipart/form-data',
         },
       });
-
-      const data = await response.json();
+      const data = await response.data;
       if (data.statusCode === 200) {
         setUploadStatus(data.message);
         handleUploadSuccess();
@@ -142,59 +139,74 @@ const UploadExcelScreen = () => {
     }
   };
 
-  const downloadAndOpenFile = async () => {
-    const fileUrl = `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_GET_EXCEL_TEMPLATE}`;
-    const fileName = 'template_excel.xlsx';
-    const fileUri = `${FileSystem.documentDirectory}${fileName}`;
+ const downloadAndOpenFile = async () => {
+  const fileUrl = `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_GET_EXCEL_TEMPLATE}`;
+  const fileName = 'template_excel.xlsx';
+  const fileUri = `${FileSystem.documentDirectory}${fileName}`;
 
-    try {
-      const fileInfo = await FileSystem.getInfoAsync(fileUri);
-      if (fileInfo.exists) {
-        Toast.show({
-          type: 'info',
-          text1: i18n.t('classroom.upload.notification'),
-          text2: i18n.t('classroom.upload.existFile'),
-        });
-        await Sharing.shareAsync(fileUri, {
-          mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        });
-        return;
-      }
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== 'granted') {
-        Toast.show({
-          type: 'error',
-          text1: i18n.t('classroom.upload.permissionFile'),
-          text2: i18n.t('classroom.upload.permissionMedia'),
-        });
-        return;
-      }
-      const downloadResult = await FileSystem.downloadAsync(fileUrl, fileUri);
-      if (!downloadResult || !downloadResult.uri) {
-        throw new Error('Failed to download file');
-      }
-      console.log('File downloaded to:', downloadResult.uri);
-      const save = await Sharing.shareAsync(downloadResult.uri, {
+  try {
+    const fileInfo = await FileSystem.getInfoAsync(fileUri);
+    if (fileInfo.exists) {
+      Toast.show({
+        type: 'info',
+        text1: i18n.t('classroom.upload.notification'),
+        text2: i18n.t('classroom.upload.existFile'),
+      });
+      await Sharing.shareAsync(fileUri, {
         mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
+      return;
+    }
 
-      if (save) {
-        Sharing.openFile(downloadResult.uri);
-      }
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    if (status !== 'granted') {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('classroom.upload.permissionFile'),
+        text2: i18n.t('classroom.upload.permissionMedia'),
+      });
+      return;
+    }
+
+    const res = await api.get(fileUrl, {
+      responseType: 'blob',
+    });
+
+    const blob = res.data;
+
+    const reader = new FileReader();
+
+    reader.onloadend = async () => {
+      const base64 = reader.result.split(',')[1];
+
+      await FileSystem.writeAsStringAsync(fileUri, base64, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
       setIsTemplateExist(true);
+
       Toast.show({
         type: 'success',
         text1: i18n.t('classroom.upload.success'),
         text2: i18n.t('classroom.upload.downloadFileExcel'),
       });
-    } catch (error) {
-      Toast.show({
-        type: 'error',
-        text1: 'Permission Denied',
-        text2: `${error.message}`,
+
+      await Sharing.shareAsync(fileUri, {
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
-    }
-  };
+    };
+
+    reader.readAsDataURL(blob); // chuyển blob → base64
+  } catch (error) {
+    Toast.show({
+      type: 'error',
+      text1: 'Lỗi tải xuống',
+      text2: `${error.message}`,
+    });
+  }
+};
+
+
 
   const deleteFile = async (fileUri) => {
     try {
