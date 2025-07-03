@@ -56,7 +56,7 @@ const Play = () => {
     useEffect(() => {
         const fetchData = async (quizId) => {
             try {
-                const response = await api.post(`/v2/quizzes/683e465299f227ed48405984/questions`);
+                const response = await api.post(`/v2/quizzes/${quizId}/questions`);
                 const data = response.data;
                 const { items } = data.metadata;
                 console.log('Fetched data:', items);
@@ -111,7 +111,7 @@ const Play = () => {
 
                 break;
 
-            case 'fill':                
+            case 'fill':
                 setArrayAnswer(option);
                 break;
 
@@ -183,21 +183,22 @@ const Play = () => {
             case 'match':
                 () => {
                     console.log('Match options:', options);
-                // return <MatchItems options={options} onClick={handleClickOption} />;
+                    // return <MatchItems options={options} onClick={handleClickOption} />;
                 }
             default:
                 return null;
         }
     };
 
-    const handleCheck = async () => {
+    const handleCheck = async (arrayAnswer) => {
         setIsNext(true);
         try {
             const body = {
                 questionId: item.id,
-                answersId: ['683e45e599f227ed48405981'],
+                answerIds: arrayAnswer,
             };
             const response = await api.post('/v2/questions/check', body);
+
             const data = response.data;
             const { isCorrect = true } = data.metadata;
             setIsCorrect(isCorrect);
@@ -364,7 +365,7 @@ const Play = () => {
                                 ],
                             }}
                         >
-                            <Pressable onPress={handleCheck}>
+                            <Pressable onPress={() => handleCheck(arrayAnswer)}>
                                 <Text
                                     style={{
                                         backgroundColor: '#4CAF50',

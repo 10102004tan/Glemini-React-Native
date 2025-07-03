@@ -87,7 +87,7 @@ const HomeStudent = () => {
       });
     } else {
       router.push({
-        pathname: '(play)/single',
+        pathname: '(play)/demo',
         params: { quizId: selectedQuiz._id, type: 'publish' },
       });
     }
