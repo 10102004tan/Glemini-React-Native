@@ -6,8 +6,10 @@ const Onechoice = ({ options, onClick }) => {
   const handleToggleSelect = (option) => {
     if (selected === option) {
       setSelected(null);
+      onClick(null);
     } else {
       setSelected(option);
+      onClick(option.id);
     }
   };
 

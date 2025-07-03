@@ -26,6 +26,7 @@ const TeacherView = () => {
   const [className, setClassName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { classrooms, createClassroom, fetchClassrooms } = useClassroomProvider();
   const { subjects } = useSubjectProvider();
   const { setIsHiddenNavigationBar, i18n } = useAppProvider();
@@ -36,10 +37,6 @@ const TeacherView = () => {
     setFirst(false);
     setIsHiddenNavigationBar(false);
   };
-
-  useEffect(() => {
-    fetchClassrooms();
-  }, []);
 
   useEffect(() => {
     fetchDetailUser()
@@ -81,8 +78,15 @@ const TeacherView = () => {
   };
 
   useEffect(() => {
-    fetchClassrooms();
-  }, []);
+  const loadData = async () => {
+    setIsLoading(true);
+    await fetchClassrooms();
+    setIsLoading(false);
+  };
+
+  loadData();
+}, []);
+
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -116,10 +120,10 @@ const TeacherView = () => {
         icon={<Icon className="text-lg" name="add-circle-outline" size={18} />}
       />
 
-      {refreshing ? (
+      {isLoading || refreshing ? (
         // Hiển thị skeleton loader khi đang tải dữ liệu
         <>
-          {[...Array(4)].map((_, index) => (
+          {[...Array(5)].map((_, index) => (
             <SkeletonClassroomCard key={index} />
           ))}
         </>

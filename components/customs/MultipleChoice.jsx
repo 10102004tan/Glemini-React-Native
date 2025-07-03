@@ -4,6 +4,7 @@ import { View, Text, Pressable, Image } from 'react-native';
 const MultipleChoice = ({ options, onClick }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const handleToggleSelect = (option) => {
+    onClick(option.id);
     if (selectedOptions.includes(option)) {
       setSelectedOptions(selectedOptions.filter((item) => item !== option));
     } else {

@@ -4,7 +4,7 @@ import { View, Text, Pressable } from 'react-native';
 const MatchItems = ({ options, onClick }) => {
   return (
     <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
-      {options.map((option, idx) => (
+      {options?.map((option, idx) => (
         <View
           key={idx}
           style={{
