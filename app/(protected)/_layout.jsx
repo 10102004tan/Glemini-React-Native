@@ -291,6 +291,14 @@ export default function AppRootLayout() {
       />
 
       <Stack.Screen
+        name="(play)/demo"
+        options={{
+          headerShown: false,
+          // headerTitle: "Chi tiết lớp học",
+        }}
+      />
+
+      <Stack.Screen
         name="(classroom)/student_detail"
         options={{
           headerTitle: i18n.t('classroom.student.titleScreen'),

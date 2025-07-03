@@ -47,7 +47,7 @@ const OrderInput = ({ options, onClick }) => {
       setSelectedOptions((prev) => [...prev, option]); // vào sau, hiện sau
     }
 
-    if (onClick) onClick(option);
+    if (onClick) onClick(option.id);
   };
 
   return (
