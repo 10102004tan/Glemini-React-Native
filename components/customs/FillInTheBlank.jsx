@@ -96,17 +96,16 @@ const handleUnselect = (index) => {
                     selected ? handleUnselect(index) : setSelectedBlankIndex(index)
                   }
                   style={{
-                    padding: selected ? 8 : 0,
-                    borderRadius: selected ? 15 : 0,
+                    padding: selected ? 6 : 0,
+                    borderRadius: selected ? 16 : 0,
                     backgroundColor: selected ? '#fff' : 'transparent',
                     shadowColor: selected ? '#000' : 'transparent',
                     borderColor: selected ?  '#e5e5e5' : 'transparent',
                     borderWidth: selected ? 2 : 0,
                     borderStyle: 'solid',
-                    borderBottomWidth: 2,
+                    borderBottomWidth: selected ? 4 : 2,
                     borderColor: selectedBlankIndex === index ? '#4CAF50' : '#ccc',
                     marginHorizontal: 4,
-                    paddingHorizontal: 8,
                     minWidth: 50,
                     alignItems: 'center',
                     justifyContent: 'center',

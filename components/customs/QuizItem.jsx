@@ -1,42 +1,55 @@
 import React from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, Text, View, StyleSheet } from 'react-native';
 import { useAppProvider } from '@/contexts/AppProvider';
 import moment from 'moment';
 import { SimpleLineIcons } from '@expo/vector-icons';
+
 function QuizItem({ quiz }) {
   const { i18n } = useAppProvider();
+
   return (
-    <View className="bg-slate-50 rounded-lg">
+    <View style={styles.container}>
+      {/* Thumbnail */}
       <View>
         <Image
           src={
             quiz.quiz_thumb ||
             'https://elearningindustry.com/wp-content/uploads/2021/10/Shareable-Quizzes-In-Online-Training-7-Reasons.jpg'
           }
-          className={'w-full h-[100px] rounded-b-[10px]'}
-          alt={quiz.quiz_name}
+          className="w-full h-[100px] rounded-[12px]"
+          style={styles.image}
         />
-        <Text className="absolute p-2 rounded bg-white/80 text-xs bottom-1 right-1">
+
+        {/* Overlay Tags */}
+        <Text style={styles.dateTag}>
           {moment(quiz.createdAt).fromNow()}
         </Text>
-        <Text className="absolute py-1 px-2 rounded bg-blue-300/80 text-xs top-1 left-1">
-          {quiz.total_questions} qs
+
+        <Text style={styles.qsTag}>
+          🎯 {quiz.total_questions} Qs
         </Text>
-        <View className="absolute bottom-1 left-1 bg-white/80 rounded py-2 px-2 flex-row items-center">
-          <SimpleLineIcons name={'game-controller'} size={12} />
-          <Text className={'ml-1 text-xs font-semibold'}>{quiz.quiz_turn}</Text>
+
+        <View style={styles.turnTag}>
+          <SimpleLineIcons name="game-controller" size={12} color="#000" />
+          <Text style={styles.turnText}>{quiz.quiz_turn}</Text>
         </View>
       </View>
-      <View className={'p-2'}>
-        <Text>
-          {quiz.quiz_name.length > 15 ? quiz.quiz_name.substring(0, 15) + '...' : quiz.quiz_name}
+
+      {/* Quiz info */}
+      <View style={styles.infoBox}>
+        <Text style={styles.quizName}>
+          {quiz.quiz_name.length > 20 ? quiz.quiz_name.slice(0, 15) + '...' : quiz.quiz_name}
         </Text>
-        <View className={'flex-row gap-2 items-center mt-3'}>
+        <View style={styles.userBox}>
           <Image
-            className={'w-[20px] h-[20px] rounded-full object-cover'}
-            src={quiz.user?.user_avatar.replace('h_100', 'h_30').replace('w_100', 'w_30')}
+            className="w-[24px] h-[24px] rounded-full object-cover"
+            src={
+              quiz.user?.user_avatar
+                ?.replace('h_100', 'h_40')
+                ?.replace('w_100', 'w_40')
+            }
           />
-          <Text className={'text-[10px]'}>{quiz.user?.user_fullname}</Text>
+          <Text style={styles.username}>{quiz.user?.user_fullname}</Text>
         </View>
       </View>
     </View>
@@ -44,3 +57,84 @@ function QuizItem({ quiz }) {
 }
 
 export default QuizItem;
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#F0F4FF',
+    borderRadius: 14,
+    padding: 8,
+    borderWidth: 1,
+    borderBottomWidth: 4,
+    borderColor: '#93c5fd',
+  },
+  image: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#93c5fd',
+  },
+  dateTag: {
+    position: 'absolute',
+    bottom: 6,
+    right: 6,
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#93c5fd',
+    fontSize: 10,
+    fontWeight: '500',
+    color: '#111',
+  },
+  qsTag: {
+    position: 'absolute',
+    top: 6,
+    left: 6,
+    backgroundColor: 'rgba(96,165,250,0.95)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    fontSize: 10,
+    color: '#fff',
+    fontWeight: '600',
+  },
+  turnTag: {
+    position: 'absolute',
+    bottom: 6,
+    left: 6,
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#93c5fd',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  turnText: {
+    marginLeft: 4,
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  infoBox: {
+    paddingTop: 8,
+    paddingHorizontal: 2,
+  },
+  quizName: {
+    fontSize: 14,
+    color: '#1F2937',
+    fontWeight: 'bold',
+  },
+  userBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+    gap: 6,
+  },
+  username: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#93c5fd',
+  },
+});

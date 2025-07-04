@@ -1,7 +1,6 @@
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import React from 'react';
-import Toast from 'react-native-toast-message-custom';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -12,27 +11,30 @@ const ClassroomCard = ({ classroom }) => {
   const { removeClassroom } = useClassroomProvider();
 
   return (
-    <View
-      className={`flex-row items-center p-5 mx-5 my-2 bg-white rounded-lg border-orange-600 border-l-[6px]`}
-      style={{ elevation: 3 }}
-    >
-      <View className="w-11/12">
-        <Text className="font-pbold text-lg">{`${classroom.class_name}`}</Text>
-        <Text className="font-semibold text-base">
-          {' '}
+    <View style={styles.cardContainer}>
+      {/* Icon Game-like / badge trái */}
+      <View style={styles.leftAccent}>
+        <Text style={styles.iconText}>🏫</Text>
+      </View>
+
+      {/* Nội dung lớp */}
+      <View style={styles.infoWrapper}>
+        <Text style={styles.className}>{classroom.class_name}</Text>
+        <Text style={styles.textLine}>
           {user.user_role === 'teacher'
             ? `${i18n.t('classroom.textSubject')} ${i18n.t(`subjects.${classroom.subject.name}`)}`
             : `${i18n.t('classroom.textTeacher')} ${classroom.user_id.user_fullname}`}
         </Text>
-        <Text className="font-semibold text-base">
-          {' '}
-          {classroom.school?.school_name || 'No data'}
+        <Text style={styles.textLine}>{classroom.school?.school_name || 'No data'}</Text>
+        <Text style={styles.studentText}>
+          👥 {classroom.students?.length} {i18n.t('classroom.textStudent')}
         </Text>
-        <Text className="font-pregular">{`${classroom.students?.length} ${i18n.t('classroom.textStudent')}`}</Text>
       </View>
+
+      {/* Nút dots */}
       {user.user_role === 'teacher' && (
         <TouchableOpacity
-          className="bg-slate-50 rounded-full p-2"
+          style={styles.moreButton}
           onPress={() => {
             Alert.alert(
               i18n.t('classroom.teacher.titleQuestionContinuteQUiz'),
@@ -49,7 +51,7 @@ const ClassroomCard = ({ classroom }) => {
             );
           }}
         >
-          <Entypo name="dots-three-horizontal" className="text-slate-400" size={20} />
+          <Entypo name="dots-three-horizontal" size={18} color="#4B5563" />
         </TouchableOpacity>
       )}
     </View>
@@ -57,3 +59,63 @@ const ClassroomCard = ({ classroom }) => {
 };
 
 export default ClassroomCard;
+
+const styles = StyleSheet.create({
+  cardContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#58CC02',
+    borderLeftWidth: 4,
+    borderBottomWidth: 4,
+    shadowColor: '#000',
+    marginVertical: 8,
+    alignItems: 'center',
+    elevation: 4,
+    position: 'relative',
+  },
+  leftAccent: {
+    backgroundColor: '#FCD34D',
+    padding: 10,
+    borderRadius: 12,
+    marginRight: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 1, height: 2 },
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  iconText: {
+    fontSize: 20,
+  },
+  infoWrapper: {
+    flex: 1,
+  },
+  className: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#1F2937',
+    marginBottom: 4,
+  },
+  textLine: {
+    fontSize: 14,
+    color: '#374151',
+    marginBottom: 2,
+  },
+  studentText: {
+    fontSize: 13,
+    color: '#6B7280',
+    marginTop: 4,
+  },
+  moreButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: '#E5E7EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
