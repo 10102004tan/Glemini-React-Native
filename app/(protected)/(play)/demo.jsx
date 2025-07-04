@@ -12,6 +12,7 @@ import MultipleChoice from '@/components/customs/MultipleChoice';
 import MainLayout from '@/components/layouts/MainLayout';
 import { useLocalSearchParams } from 'expo-router';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
+import Loading from '@/components/customs/Loading';
 
 const Play = () => {
     // Animation values
@@ -83,15 +84,7 @@ const Play = () => {
         }
     }, [isNext]);
 
-    useEffect(() => {
-        console.log('Current arrayAnswer:', arrayAnswer);
-    }, [arrayAnswer]);
-
     const handleClickOption = (option) => {
-        console.log('Option clicked:', option);
-        console.log('Item type:', item.type);
-
-
         switch (item.type) {
             case 'single':
                 if (option === null) {
@@ -100,7 +93,6 @@ const Play = () => {
                     setArrayAnswer([option]);
                 }
                 break;
-
             case 'multiple':
                 // option là 1 id
                 setArrayAnswer((prev) =>
@@ -108,13 +100,10 @@ const Play = () => {
                         ? prev.filter((id) => id !== option)
                         : [...prev, option]
                 );
-
                 break;
-
             case 'fill':
                 setArrayAnswer(option);
                 break;
-
             case 'order':
                 // option là 1 mảng sắp xếp lại các id
                 setArrayAnswer((prev) =>
@@ -122,13 +111,11 @@ const Play = () => {
                         ? prev.filter((id) => id !== option)
                         : [...prev, option]
                 );
-
                 break;
-
             case 'match':
                 // option là 1 mảng các cặp ghép
-                setArrayAnswer(option); // dạng: [{ left: id1, right: id2 }, ...]
-                console.log('Current arrayAnswer:', arrayAnswer);
+                // setArrayAnswer(option); // dạng: [{ left: id1, right: id2 }, ...]
+                // console.log('Current arrayAnswer:', arrayAnswer);
                 break;
 
             default:
@@ -200,6 +187,8 @@ const Play = () => {
             const response = await api.post('/v2/questions/check', body);
 
             const data = response.data;
+            // console.log('Check answer response::=>>>>', data.metadata);
+            
             const { isCorrect = true } = data.metadata;
             setIsCorrect(isCorrect);
         } catch (error) {
@@ -220,11 +209,7 @@ const Play = () => {
 
     if (!data.length) {
         return (
-            <MainLayout>
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text>Loading...</Text>
-                </View>
-            </MainLayout>
+                <Loading duration={3000} message={'Đang tải câu hỏi .....'} />
         );
     }
 

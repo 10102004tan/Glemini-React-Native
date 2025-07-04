@@ -36,7 +36,7 @@ const SkeletonClassroomCard = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 16,
+    marginHorizontal: 10,
     marginBottom: 16,
     borderRadius: 12,
     backgroundColor: '#f3f3f3',

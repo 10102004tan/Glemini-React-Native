@@ -14,6 +14,8 @@ import { router } from 'expo-router';
 import Lottie from '@/components/loadings/Lottie';
 import { useAppProvider } from '@/contexts/AppProvider';
 import SkeletonClassroomCard from '@/components/loadings/SkeletonClassroomCard';
+import MainLayout from '@/components/layouts/MainLayout';
+import ScaleTouchable from '@/components/customs/ScaleTouchable';
 const StudentView = () => {
   const { i18n } = useAppProvider();
   const { classrooms, fetchClassrooms } = useClassroomProvider();
@@ -40,13 +42,25 @@ const StudentView = () => {
     });
   };
   return (
-    <View className=" bg-white">
+    <MainLayout>
       {/* Bộ tìm kiếm */}
       <TextInput
         value={searchQuery}
         onChangeText={setSearchQuery}
         placeholder={i18n.t('classroom.student.titleSearchQuery')}
-        className="border border-slate-500 rounded-xl py-2 px-5 mx-5 my-4"
+        placeholderTextColor="#9CA3AF"
+        style={{
+          backgroundColor: '#fff',
+          color: '#111827', 
+          borderRadius: 8,
+          borderWidth: 1, 
+          borderColor: '#58CC02', 
+          borderRightWidth:3,
+          borderBottomWidth: 3, 
+          padding: 10,
+          marginBottom: 16, 
+          fontSize: 16
+        }}
       />
 
       {refreshing ? (
@@ -60,9 +74,9 @@ const StudentView = () => {
         <FlatList
           data={filteredClassrooms}
           renderItem={({ item }) => (
-            <Pressable onPress={() => handleNavigateToDetail(item._id)}>
+            <ScaleTouchable onPress={() => handleNavigateToDetail(item._id)}>
               <ClassroomCard classroom={item} />
-            </Pressable>
+            </ScaleTouchable>
           )}
           keyExtractor={(item) => item._id}
           contentContainerStyle={{ paddingBottom: 16 }}
@@ -82,7 +96,8 @@ const StudentView = () => {
           </View>
         </ScrollView>
       )}
-    </View>
+
+    </MainLayout>
   );
 };
 

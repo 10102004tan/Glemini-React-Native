@@ -23,6 +23,8 @@ import Toast from 'react-native-toast-message-custom';
 import Lottie from '@/components/loadings/Lottie';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import NotificationCard from '@/components/customs/NotificationCard';
+import AnimatedQuizItem from '@/components/customs/AnimatedQuizItem';
+import ScaleTouchable from '@/components/customs/ScaleTouchable';
 import MainLayout from '../layouts/MainLayout';
 import TestThoBayMau from './TestThoBayMau';
 import SearchQuizBar from './SearchQuizBar';
@@ -101,9 +103,8 @@ const HomeStudent = () => {
     <MainLayout>
       <View
         style={{
-          //className='flex-1 pt-10'
-          flex: 1,
-          paddingTop: 30,
+          paddingTop: 20,
+          marginBottom: 40,
         }}
       >
         <SearchQuizBar />
@@ -119,18 +120,18 @@ const HomeStudent = () => {
           />
 
           {filterQuizzes && filterQuizzes.length > 0 && !loading ? (
-            <View className="px-4 mt-4 flex-1">
+            <View className="px-2 mt-4 flex-1">
               {/* Display subjects and their quizzes */}
               {filterQuizzes.map(({ subject, quizzes }) => {
                 return (
                   <View key={subject._id} className="mb-4">
-                    <View className="flex-row justify-between mb-2">
-                      <Text className="text-xl font-bold">
+                    <View className="flex-row justify-between items-center mb-2 px-1">
+                      {/* Tên môn học */}
+                      <Text className="text-xl font-bold text-blue-800">
                         {i18n.t(`subjects.${subject.name}`)}
                       </Text>
 
-                      <TouchableOpacity
-                        className={'flex-row items-center rounded gap-1'}
+                      <ScaleTouchable
                         onPress={() => {
                           toggleFetch();
                           router.push({
@@ -139,26 +140,33 @@ const HomeStudent = () => {
                           });
                         }}
                       >
-                        <AntDesign name={'search1'} size={20} color={'black'} />
-                        <Text className="text-base">{i18n.t('student_homepage.btnSeeMore')}</Text>
-                      </TouchableOpacity>
+                        <View className="flex-row items-center bg-blue-100 px-2 py-1 rounded-lg shadow-sm border border-b-2 border-blue-200">
+                          <AntDesign name="search1" size={16} color="#2563EB" />
+                          <Text className="text-sm font-medium text-blue-600 ml-1">
+                            {i18n.t('student_homepage.btnSeeMore')}
+                          </Text>
+                        </View>
+                      </ScaleTouchable>
                     </View>
+
                     {/* Horizontal ScrollView to display quizzes in rows of two items each */}
                     <ScrollView
                       horizontal
                       showsHorizontalScrollIndicator={false}
                       className="w-full"
                     >
-                      {quizzes.map((quiz) => (
-                        <View key={quiz._id} className="flex-row px-[6px]">
-                          <TouchableOpacity
-                            onPress={() => handlePressQuizItem(quiz)}
-                            className="flex-1 w-40"
-                          >
-                            <QuizItem quiz={quiz} />
-                          </TouchableOpacity>
-                        </View>
+                      {quizzes.map((quiz, index) => (
+                        <AnimatedQuizItem key={quiz._id} delay={index * 100}>
+                          <View className="flex-row px-[6px]">
+                            <ScaleTouchable onPress={() => handlePressQuizItem(quiz)}>
+                              <View className="w-40">
+                                <QuizItem quiz={quiz} />
+                              </View>
+                            </ScaleTouchable>
+                          </View>
+                        </AnimatedQuizItem>
                       ))}
+
                     </ScrollView>
                   </View>
                 );
