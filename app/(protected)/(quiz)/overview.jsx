@@ -272,7 +272,7 @@ const QuizzOverViewScreen = () => {
       handleUpdateQuiz(id);
     }
 
-    // V2 Question Types: single, multiple, fill, order, match
+    // V2 Question Types: single, multiple, fill, order
     // All V2 question types use selectQuestionType for consistency
     selectQuestionType(questionType);
 
