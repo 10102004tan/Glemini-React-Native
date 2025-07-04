@@ -78,15 +78,14 @@ const TeacherView = () => {
   };
 
   useEffect(() => {
-  const loadData = async () => {
-    setIsLoading(true);
-    await fetchClassrooms();
-    setIsLoading(false);
-  };
+    const loadData = async () => {
+      setIsLoading(true);
+      await fetchClassrooms();
+      setIsLoading(false);
+    };
 
-  loadData();
-}, []);
-
+    loadData();
+  }, []);
 
   const onRefresh = async () => {
     setRefreshing(true);

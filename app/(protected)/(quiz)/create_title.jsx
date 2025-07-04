@@ -271,12 +271,9 @@ const CreateTitleQuizzScreen = () => {
 
       if (error.message === 'Network Error' || error.code === 'ECONNABORTED') {
         Toast.show({
-          type: 'error',
-          text1:
-            error.code === 'ECONNABORTED'
-              ? 'Timeout - AI đang xử lý quá lâu!'
-              : 'Lỗi kết nối mạng!',
-          text2: 'Vui lòng thử lại hoặc rút ngắn prompt',
+          type: 'info',
+          text1: 'AI đang xử lý câu hỏi...',
+          text2: 'Quá trình này có thể mất 1-2 phút, vui lòng thử lại',
           visibilityTime: 4000,
           autoHide: true,
         });

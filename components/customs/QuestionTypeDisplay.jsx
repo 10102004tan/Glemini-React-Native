@@ -36,6 +36,7 @@ const QuestionTypeDisplay = ({ type = 'single', size = 20, showText = true }) =>
         color: '#F59E0B',
         bgColor: '#FFFBEB',
       },
+      // Legacy types support - only for display, not for creation
       match: {
         title: 'Match Questions',
         shortTitle: 'Match',
@@ -43,7 +44,6 @@ const QuestionTypeDisplay = ({ type = 'single', size = 20, showText = true }) =>
         color: '#EF4444',
         bgColor: '#FEF2F2',
       },
-      // Legacy types support
       box: {
         title: 'Box Question',
         shortTitle: 'Box',

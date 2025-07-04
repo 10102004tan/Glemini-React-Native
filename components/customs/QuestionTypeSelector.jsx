@@ -46,15 +46,6 @@ const QuestionTypeSelector = ({ onSelectType, selectedType = 'single' }) => {
       bgColor: '#FFFBEB',
       borderColor: '#FEF3C7',
     },
-    {
-      type: 'match',
-      title: 'Match Questions',
-      description: 'Nối các cặp tương ứng',
-      icon: <MaterialIcons name="compare-arrows" size={24} color="#EF4444" />,
-      color: '#EF4444',
-      bgColor: '#FEF2F2',
-      borderColor: '#FECACA',
-    },
   ];
 
   const handleSelectType = (type) => {
