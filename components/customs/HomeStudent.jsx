@@ -15,8 +15,6 @@ import { useAppProvider } from '@/contexts/AppProvider';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import QuizItem from '@/components/customs/QuizItem';
 import QuizModal from '@/components/modals/QuizModal';
-import NotificationIcon from '@/components/customs/NotificationIcon';
-import { AuthContext } from '@/contexts/AuthContext';
 import { useResultProvider } from '@/contexts/ResultProvider';
 import { router } from 'expo-router';
 import Toast from 'react-native-toast-message-custom';
@@ -31,14 +29,17 @@ import SearchQuizBar from './SearchQuizBar';
 import BannerSkeleton from './BannerSkeleton';
 import Banners from './Banners';
 import CollectionQuizListSkeleton from './CollectionQuizListSkeleton';
+import { API_VERSION, END_POINTS } from '@/configs/api.config';
+import api from '@/libs/axios';
+import { useAuthStore } from '@/store/useAuthStore';
+import { isLoading } from 'expo-font';
 
 const width = Dimensions.get('window').width;
 
 const HomeStudent = () => {
+  const { user } = useAuthStore();
   const { i18n } = useAppProvider();
   const { fetchResultData } = useResultProvider();
-  const { filterQuizzes, getQuizzesPublished, bannerQuizzes, getQuizzesBanner, isBannerFetching } =
-    useQuizProvider();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -46,29 +47,63 @@ const HomeStudent = () => {
   const [isFetch, setIsFetch] = useState(false);
   const carouselHeight = (width * 2) / 3;
 
+  const { isBannerFetching } =
+    useQuizProvider();
+
+  const [filterQuizzes, setFilterQuizzes] = useState([]);
+  const [bannerQuizzes, setBannerQuizzes] = useState([]);
+
+  const fetchAllQuizzes = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([getQuizzesPublished(), getQuizzesBanner()]);
+    } catch (error) {
+      console.error('❌ Lỗi khi fetch dữ liệu:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      getQuizzesPublished().then(() => {
-        if (filterQuizzes && filterQuizzes.length > 0) {
-          setLoading(false);
-        }
-      });
-      getQuizzesBanner();
-    })();
+    fetchAllQuizzes();
   }, []);
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    setLoading(true);
-    getQuizzesPublished().then(() => {
-      if (filterQuizzes && filterQuizzes.length > 0) {
-        setLoading(false);
-      }
-      setRefreshing(false);
+
+
+  const getQuizzesPublished = async () => {
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`, {
+      user_id: user.user_id,
     });
-    getQuizzesBanner();
+
+    const data = response.data;
+
+    if (data.statusCode === 200) {
+      setFilterQuizzes(data.metadata);
+    } else {
+      setFilterQuizzes([]);
+    }
+    setLoading(false);
+
   };
+
+  const getQuizzesBanner = async () => {
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_BANNER}`, {
+      user_id: user.user_id,
+    });
+    const data = response.data;
+    if (data.statusCode === 200) {
+      setBannerQuizzes(data.metadata);
+    } else {
+      setBannerQuizzes([]);
+    }
+  };
+
+const onRefresh = async () => {
+  setRefreshing(true);
+  await fetchAllQuizzes();
+  setRefreshing(false);
+};
+
 
   const handlePressQuizItem = (quiz) => {
     setSelectedQuiz(quiz);
@@ -116,7 +151,7 @@ const HomeStudent = () => {
           <Banners
             onPress={handlePressQuizItem}
             bannerQuizzes={bannerQuizzes}
-            isBannerFetching={isBannerFetching}
+            isBannerFetching={loading || refreshing}
           />
 
           {filterQuizzes && filterQuizzes.length > 0 && !loading ? (

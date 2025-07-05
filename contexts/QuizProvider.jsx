@@ -90,35 +90,35 @@ const QuizProvider = ({ children }) => {
   };
 
   // Get Quiz Published - KEEP V1 (no V2 endpoint yet)
-  const getQuizzesPublished = async () => {
-    const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`, {
-      user_id: user.user_id,
-    });
+  // const getQuizzesPublished = async () => {
+  //   const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_PUBLISHED}`, {
+  //     user_id: user.user_id,
+  //   });
 
-    const data = response.data;
+  //   const data = response.data;
 
-    if (data.statusCode === 200) {
-      setFilterQuizzes(data.metadata);
-    } else {
-      setFilterQuizzes([]);
-    }
-  };
+  //   if (data.statusCode === 200) {
+  //     setFilterQuizzes(data.metadata);
+  //   } else {
+  //     setFilterQuizzes([]);
+  //   }
+  // };
 
   /**
    * Description: Get quizzes for banner - KEEP V1 (no V2 endpoint yet)
    * @returns {Promise<void>}
    */
-  const getQuizzesBanner = async () => {
-    const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_BANNER}`, {
-      user_id: user.user_id,
-    });
-    const data = response.data;
-    if (data.statusCode === 200) {
-      setBannerQuizzes(data.metadata);
-    } else {
-      setBannerQuizzes([]);
-    }
-  };
+  // const getQuizzesBanner = async () => {
+  //   const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_BANNER}`, {
+  //     user_id: user.user_id,
+  //   });
+  //   const data = response.data;
+  //   if (data.statusCode === 200) {
+  //     setBannerQuizzes(data.metadata);
+  //   } else {
+  //     setBannerQuizzes([]);
+  //   }
+  // };
 
   // Delete quiz - UPDATED TO V2
   const deleteQuiz = async (quizId) => {
@@ -240,10 +240,6 @@ const QuizProvider = ({ children }) => {
         setQuizFetching,
         isSave,
         setIsSave,
-        getQuizzesPublished,
-        filterQuizzes,
-        bannerQuizzes,
-        getQuizzesBanner,
         fetchQuizzes,
         LIMIT,
         isEdited,
