@@ -845,27 +845,6 @@ const QuestionProvider = ({ children }) => {
   };
 
   // Lưu kết quả mỗi câu
-  const saveQuestionResult = async (
-    exerciseId,
-    quizId,
-    questionId,
-    answerId,
-    correct,
-    score,
-    questionType,
-  ) => {
-    const body = {
-      exercise_id: exerciseId,
-      user_id: user.user_id,
-      quiz_id: quizId,
-      question_id: questionId,
-      answer: answerId,
-      correct,
-      score,
-      question_type: questionType,
-    };
-    await api.post(`${API_VERSION.V1}${END_POINTS.RESULT_SAVE_QUESTION}`, body);
-  };
 
   return (
     <QuestionContext.Provider
@@ -894,8 +873,7 @@ const QuestionProvider = ({ children }) => {
         deleteQuestion,
         isChangeData,
         setIsChangeData,
-        fetchQuestions,
-        saveQuestionResult,
+        fetchQuestions
       }}
     >
       {children}

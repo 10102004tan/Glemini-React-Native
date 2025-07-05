@@ -1,302 +1,348 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Modal, TouchableOpacity } from 'react-native';
-import Button from '@/components/customs/Button';
-import { useAppProvider } from '@/contexts/AppProvider';
+import React, { useState, useRef } from 'react';
+import {
+  View,
+  Text,
+  Modal,
+  ScrollView,
+  TouchableOpacity,
+  Animated,
+  StyleSheet,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
-import QuestionResultItem from '@/components/customs/QuestionResultItem';
-import { useGlobalSearchParams, useRouter } from 'expo-router';
 
-const ResultReview = () => {
-  const router = useRouter();
-  const { result } = useGlobalSearchParams();
-  const resultData = JSON.parse(result);
-  const { i18n } = useAppProvider();
+const ResultReview = ({ result, visible, onClose }) => {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const currentQuestion = result?.result_questions?.[selectedIndex];
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  // console.log("RESULT DATA")
-  // console.log(resultData)
-
-  // Trạng thái để lưu chỉ số câu hỏi được chọn và trạng thái hiển thị của Modal
-  const [selectedIndex, setSelectedIndex] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const openModal = (index) => {
-    setSelectedIndex(index);
-    setModalVisible(true);
+  const animateScale = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.96,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+    ]).start();
   };
-
-  const closeModal = () => {
-    setModalVisible(false);
-    setSelectedIndex(null);
-  };
-
-  const currentQuestion = resultData.result_questions[selectedIndex];
-  console.log(currentQuestion);
 
   const goToNextQuestion = () => {
-    if (selectedIndex < resultData.result_questions.length - 1) {
-      setSelectedIndex((prevIndex) => prevIndex + 1);
+    if (selectedIndex < result.result_questions.length - 1) {
+      setSelectedIndex((prev) => prev + 1);
+      animateScale();
     }
   };
 
   const goToPreviousQuestion = () => {
     if (selectedIndex > 0) {
-      setSelectedIndex((prevIndex) => prevIndex - 1);
+      setSelectedIndex((prev) => prev - 1);
+      animateScale();
     }
   };
 
-  // Hàm chuẩn hóa chuỗi văn bản
-  const normalizeText = (text) => {
-    return text
-      .toLowerCase() // Chuyển về chữ thường
-      .replace(/\s+/g, ' ') // Loại bỏ khoảng trắng thừa giữa các từ
-      .trim(); // Loại bỏ khoảng trắng đầu và cuối
+  const renderAnswer = (q) => {
+    const qType = q.question_id.question_type;
+    const correctAns = q.question_id.correct_answer_ids || [];
+    const userAns = q.answer || [];
+
+    if (qType === 'single' || qType === 'multiple') {
+      return (
+        <View style={{ gap: 12 }}>
+          {q.question_id.question_answer_ids.map((ans, i) => {
+            const isUser = userAns.some((u) => u._id === ans._id);
+            const isCorrect = correctAns.some((c) => c._id === ans._id);
+
+            let borderColor = '#334155';
+            let shadowColor = '#000';
+            if (isCorrect && isUser) {
+              borderColor = '#facc15';
+              shadowColor = '#facc15';
+            } else if (isCorrect) {
+              borderColor = '#22c55e';
+              shadowColor = '#22c55e';
+            } else if (isUser) {
+              borderColor = '#ef4444';
+              shadowColor = '#ef4444';
+            }
+
+            return (
+              <View
+                key={i}
+                style={[
+                  styles.answerBox,
+                  {
+                    borderColor,
+                    shadowColor,
+                  },
+                ]}
+              >
+                <Text style={styles.answerText}>{ans.text}</Text>
+              </View>
+            );
+          })}
+        </View>
+      );
+    }
+
+    if (qType === 'fill' || qType === 'order') {
+      const fullAnswers = q.question_id.question_answer_ids || [];
+
+      return (
+        <View>
+          {/* 1. Đáp án có thể chọn */}
+          <Text style={styles.sectionLabel}>📚 Các đáp án có thể chọn:</Text>
+          <View style={styles.tokenWrap}>
+            {fullAnswers.map((a, i) => (
+              <Text key={i} style={[styles.choiceOption, { color: '#facc15' }]}>{a.text}</Text>
+            ))}
+          </View>
+
+          {/* 3. Phần đã có sẵn */}
+          <Text style={styles.sectionLabel}>📌 Câu trả lời của bạn:</Text>
+          <View style={styles.tokenWrap}>
+            {userAns.length > 0 ? (
+              userAns.map((a, i) => (
+                <Text key={i} style={[styles.choiceOption, { color: '#f472b6' }]}>{a.text}</Text>
+              ))
+            ) : (
+              <Text style={styles.noAnswer}>Không có</Text>
+            )}
+          </View>
+
+          <Text style={styles.sectionLabel}>✅ Đáp án đúng:</Text>
+          <View style={styles.tokenWrap}>
+            {correctAns.length > 0 ? (
+              correctAns.map((a, i) => (
+                <Text key={i} style={[styles.choiceOption, { color: '#22c55e' }]}>{a.text}</Text>
+              ))
+            ) : (
+              <Text style={styles.noAnswer}>Chưa có đáp án chuẩn</Text>
+            )}
+          </View>
+        </View>
+      );
+    }
+
+
+    return <Text style={{ color: '#fff' }}>Không xác định loại câu hỏi</Text>;
   };
 
   return (
-    <View
-      style={{
-        paddingBottom: 20,
-        flex: 1,
-        backgroundColor: '#f8fafc',
-        paddingHorizontal: 20,
-        paddingTop: 40,
-      }}
-    >
-      <View style={{ flexDirection: 'column' }}>
-        <View style={{ alignItems: 'flex-end' }}>
-          <Button
-            text={<Icon name="close" size={20} />}
-            onPress={() => {
-              router.back();
-            }}
-            loading={false}
-            type="fill"
-            otherStyles={'bg-slate-300 rounded-full'}
-            textStyles={'text-sm text-black'}
-          />
-        </View>
-        <Text
-          style={{
-            fontSize: 24,
-            lineHeight: 32,
-            color: '#1e293b',
-            fontWeight: 600,
-            textAlign: 'center',
-          }}
-        >
-          {i18n.t('result.review.title')}
-        </Text>
-      </View>
-      <ScrollView style={{ paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
-        {resultData &&
-          resultData.result_questions.map((question, index) => (
-            <TouchableOpacity key={index} onPress={() => openModal(index)}>
-              <QuestionResultItem question={question} />
-            </TouchableOpacity>
-          ))}
-      </ScrollView>
+    <Modal visible={visible} animationType="slide" onRequestClose={onClose} transparent>
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <ScrollView contentContainerStyle={styles.containerScroll}>
+            <View style={{ alignItems: 'flex-end' }}>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <Text>❌</Text>
+              </TouchableOpacity>
+            </View>
 
-      {/* Modal hiển thị thông tin chi tiết */}
-      {currentQuestion && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={closeModal}
-        >
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            }}
-          >
-            <View
-              style={{
-                backgroundColor: '#fff',
-                padding: 20,
-                borderRadius: 6,
-                borderLeftWidth: 8,
-                borderColor: currentQuestion.correct ? '#22c55e' : '#ef4444',
-                width: '90%',
-              }}
-            >
-              <View style={{ alignItems: 'flex-end' }}>
-                <Button
-                  text={<Icon name="close" size={20} />}
-                  onPress={closeModal}
-                  loading={false}
-                  type="fill"
-                  otherStyles={'bg-slate-300/50 rounded-full'}
-                  textStyles={'text-sm text-black/50'}
-                />
-              </View>
+            {currentQuestion ? (
+              <Animated.View style={[styles.questionBox, { transform: [{ scale: scaleAnim }] }]}>
+                <View style={styles.header}>
+                  <Text style={styles.title}>🧠 Câu {selectedIndex + 1}</Text>
+                  <Text style={styles.points}>({currentQuestion.question_id.question_point} điểm)</Text>
+                  <Text style={currentQuestion.correct ? styles.correctMark : styles.wrongMark}>
+                    {currentQuestion.correct ? '✅ Đúng' : '❌ Sai'}
+                  </Text>
+                </View>
 
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  marginBottom: 20,
-                  alignItems: 'center',
-                  gap: 16,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 20,
-                    lineHeight: 24,
-                    fontFamily: 'Poppins-Regular, sans-serif',
-                  }}
-                >
-                  {i18n.t('result.review.indexQuestion')} {selectedIndex + 1}
-                </Text>
-                <Text
-                  style={{
-                    backgroundColor: '#e2e8f0',
-                    borderRadius: 6,
-                    paddingHorizontal: 12,
-                    paddingVertical: 4,
-                    fontFamily: 'Poppins-Regular, sans-serif',
-                    color: '#64748b',
-                  }}
-                >
-                  {currentQuestion.question_id.question_point} {i18n.t('result.review.point')}
-                </Text>
-              </View>
-
-              <View style={{ display: 'flex' }}>
-                <Text
-                  style={{
-                    fontSize: 18,
-                    lineHeight: 28,
-                    fontFamily: 'Poppins-Regular, sans-serif',
-                    marginBottom: 16,
-                    borderBottomWidth: 1,
-                    color: '#cbd5e1',
-                  }}
-                >
+                <Text style={styles.questionText}>
                   {currentQuestion.question_id.question_excerpt}
                 </Text>
 
-                {currentQuestion &&
-                  currentQuestion.question_id.question_answer_ids.map((answer, ansIndex) => {
-                    if (currentQuestion.question_id.question_type === 'box') {
-                      const correctTextAnswers = normalizeText(
-                        currentQuestion.question_id.correct_answer_ids[0].text,
-                      );
-                      const userAnswerText = normalizeText(answer.text);
+                {renderAnswer(currentQuestion)}
 
-                      const isAnswerCorrect = correctTextAnswers.includes(userAnswerText);
-
-                      return (
-                        <View
-                          key={ansIndex}
-                          style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}
-                        >
-                          <View
-                            style={{ width: 12, height: 12, borderRadius: 999, marginRight: 8 }}
-                          />
-                          <Text
-                            style={{
-                              fontSize: 16,
-                              lineHeight: 24,
-                              color: isAnswerCorrect ? '#22c55e' : '#ef4444',
-                            }}
-                          >
-                            {answer.text}
-                          </Text>
-                        </View>
-                      );
-                    } else {
-                      // Kiểm tra xem đây có phải là câu trả lời của người dùng hay không
-                      const isUserAnswer = currentQuestion.answer.some(
-                        (userAns) => userAns._id === answer._id,
-                      );
-                      // Kiểm tra xem đây có phải là câu trả lời đúng hay không
-                      const isCorrectAnswer = currentQuestion.question_id.correct_answer_ids.some(
-                        (correctAns) => correctAns._id === answer._id,
-                      );
-
-                      const bulletStyle =
-                        isCorrectAnswer && isUserAnswer
-                          ? 'bg-yellow-500' // Cả câu trả lời của bạn và câu trả lời đúng
-                          : isCorrectAnswer
-                            ? 'bg-green-500' // Chỉ là câu trả lời đúng
-                            : isUserAnswer
-                              ? 'bg-red-500' // Chỉ là câu trả lời của bạn
-                              : 'bg-slate-400/50'; // Các câu trả lời khác
-
-                      const textStyle =
-                        isCorrectAnswer && isUserAnswer
-                          ? 'text-yellow-500 font-semibold' // Cả câu trả lời của bạn và câu trả lời đúng
-                          : isCorrectAnswer
-                            ? 'text-green-500 font-semibold' // Chỉ là câu trả lời đúng
-                            : isUserAnswer
-                              ? 'text-red-500 font-regular' // Chỉ là câu trả lời của bạn
-                              : 'text-slate-400 font-regular'; // Các câu trả lời khác
-
-                      return (
-                        <View
-                          key={ansIndex}
-                          style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}
-                        >
-                          <View className={`w-3 h-3 rounded-full mr-2 ${bulletStyle}`} />
-                          <Text className={`text-base ${textStyle}`}>{answer.text}</Text>
-                        </View>
-                      );
-                    }
-                  })}
-              </View>
-
-              {!currentQuestion.correct && (
-                <View className="mt-4">
-                  <Text className="text-base text-slate-600 font-pregular">
-                    {i18n.t('result.review.userAnswer')}{' '}
-                    {currentQuestion && typeof currentQuestion.answer === 'string'
-                      ? currentQuestion.answer
-                      : currentQuestion.answer.map((userAns) => userAns.text).join(', ') ||
-                        i18n.t('result.review.noAnswer')}
+                <View style={styles.explanation}>
+                  <Text style={styles.sectionLabel}>📖 Giải thích:</Text>
+                  <Text style={styles.explanationText}>
+                    {currentQuestion.question_id.question_explanation || 'Không có giải thích chi tiết.'}
                   </Text>
                 </View>
-              )}
-              <View>
-                <Text className="text-base text-slate-600 font-pregular mt-4 underline">
-                  {i18n.t('result.review.explanation')}
-                </Text>
-                <Text className="text-sm text-slate-600/90 font-pextralight">
-                  {currentQuestion.question_id.question_explanation ||
-                    i18n.t('result.review.textExplanation')}
-                </Text>
-              </View>
+              </Animated.View>
+            ) : (
+              <Text style={{ color: 'white' }}>Không tìm thấy câu hỏi</Text>
+            )}
 
-              <View className="mt-4 flex flex-row items-center justify-center">
-                <Button
-                  text={i18n.t('result.review.btnNext')}
-                  onPress={goToPreviousQuestion}
-                  loading={false}
-                  type="fill"
-                  otherStyles={`bg-pink-600 rounded-lg px-4 ${selectedIndex === 0 ? 'opacity-50' : ''}`}
-                  textStyles={'text-base font-pregular'}
-                  disabled={selectedIndex === 0}
-                />
-
-                <Button
-                  text={i18n.t('result.review.btnPrev')}
-                  onPress={goToNextQuestion}
-                  loading={false}
-                  type="fill"
-                  otherStyles={`bg-pink-600 rounded-lg px-4  ml-3 ${resultData && selectedIndex === resultData.result_questions.length - 1 ? 'opacity-50' : ''}`}
-                  textStyles={'text-base font-pregular'}
-                  disabled={selectedIndex === resultData.result_questions.length - 1}
-                />
-              </View>
+            <View style={styles.navButtons}>
+              <TouchableOpacity
+                onPress={goToPreviousQuestion}
+                disabled={selectedIndex === 0}
+                style={[
+                  styles.navButton,
+                  selectedIndex === 0 && styles.disabledButton,
+                ]}
+              >
+                <Text style={styles.navText}>← Trước</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={goToNextQuestion}
+                disabled={selectedIndex === result.result_questions.length - 1}
+                style={[
+                  styles.navButton,
+                  selectedIndex === result.result_questions.length - 1 && styles.disabledButton,
+                ]}
+              >
+                <Text style={styles.navText}>Tiếp →</Text>
+              </TouchableOpacity>
             </View>
-          </View>
-        </Modal>
-      )}
-    </View>
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+
   );
 };
+
+const styles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  modalContent: {
+    backgroundColor: '#0f172a',
+    borderRadius: 12,
+    width: '100%',
+    maxHeight: '90%',
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+  },
+  containerScroll: {
+    paddingBottom: 24,
+  },
+  closeButton: {
+    backgroundColor: '#334155',
+    padding: 8,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#6366f1',
+    borderBottomWidth: 4,
+    marginBottom: 10,
+    alignSelf: 'flex-end',
+  },
+  questionBox: {
+    backgroundColor: '#1e293b',
+    padding: 16,
+    borderRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    marginBottom: 8,
+    gap: 8,
+  },
+  title: {
+    color: '#fbbf24',
+    fontSize: 20,
+    fontWeight: '900',
+  },
+  points: {
+    color: '#0ea5e9',
+    fontWeight: 'bold',
+  },
+  correctMark: {
+    color: '#22c55e',
+    fontWeight: '800',
+    fontSize: 13,
+
+  },
+  wrongMark: {
+    color: '#ef4444',
+    fontWeight: '800',
+    fontSize: 13,
+
+  },
+  questionText: {
+    color: '#e2e8f0',
+    fontSize: 18,
+    fontWeight: '800',
+    marginBottom: 12,
+    fontStyle: 'italic',
+    lineHeight: 24,
+  },
+  answerBox: {
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 2,
+    backgroundColor: '#1e293b',
+  },
+  answerText: {
+    color: '#f8fafc',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  sectionLabel: {
+    color: '#38bdf8',
+    fontWeight: 'bold',
+    marginTop: 16,
+    marginBottom: 6,
+  },
+  tokenWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginBottom: 10,
+  },
+  noAnswer: {
+    color: '#94a3b8',
+    fontStyle: 'italic',
+  },
+  choiceOption: {
+    fontWeight: '800',
+    fontSize: 16,
+    backgroundColor: '#334155',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginRight: 10,
+  },
+  explanation: {
+    marginTop: 24,
+    backgroundColor: '#0f172a',
+    padding: 12,
+    borderRadius: 8,
+  },
+  explanationText: {
+    color: '#cbd5e1',
+    marginTop: 4,
+  },
+  navButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 24,
+  },
+  navButton: {
+    backgroundColor: '#1e293b',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderBottomWidth: 4,
+    borderColor: '#6366f1',
+  },
+  disabledButton: {
+    opacity: 0.4,
+  },
+  navText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+});
+
 
 export default ResultReview;

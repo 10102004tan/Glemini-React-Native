@@ -13,7 +13,7 @@ import ScaleTouchable from '../customs/ScaleTouchable';
 
 const { width } = Dimensions.get('window');
 
-const GameModal = ({ visible, onClose, onStartQuiz, quiz }) => {
+const QuizModal = ({ visible, onClose, onStartQuiz, quiz }) => {
   return (
     <Modal animationType="fade" transparent={true} visible={visible} onRequestClose={onClose}>
       <View style={styles.overlay}>
@@ -30,7 +30,7 @@ const GameModal = ({ visible, onClose, onStartQuiz, quiz }) => {
             />
 
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <AntDesign name="close" size={20} color="#333" />
+              <Text>❌</Text>
             </TouchableOpacity>
           </View>
 
@@ -67,28 +67,28 @@ const GameModal = ({ visible, onClose, onStartQuiz, quiz }) => {
   );
 };
 
-export default GameModal;
+export default QuizModal;
 
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(255,255,255,0.5)', // nền sáng mờ
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContainer: {
     width: width * 0.9,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     borderRadius: 20,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
-    elevation: 6,
-    borderWidth: 1,
-    borderColor: '#E5E7EB', // màu xám nhạt
-    borderBottomWidth: 5,
+    shadowColor: '#aaa',
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 6 },
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 1.5,
+    borderBottomWidth: 4,
+    borderColor: '#93c5fd',
   },
   imageWrapper: {
     position: 'relative',
@@ -97,66 +97,85 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 180,
     resizeMode: 'cover',
+    borderBottomWidth: 2,
+    borderColor: '#c7d2fe',
   },
   closeButton: {
     position: 'absolute',
     top: 10,
     right: 10,
-    backgroundColor: 'white',
-    padding: 6,
+    backgroundColor: '#fff',
+    padding: 10,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#93c5fd',
+    borderBottomWidth: 4,
     elevation: 3,
+    shadowColor: '#00000020',
   },
   content: {
     padding: 16,
   },
   quizTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1E3A8A',
-    marginBottom: 8,
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#3B82F6', // xanh dương sáng
+    textAlign: 'center',
+    marginBottom: 10,
   },
   authorLabel: {
     fontSize: 14,
     color: '#6B7280',
-    marginBottom: 8,
+    marginBottom: 6,
+    textAlign: 'center',
   },
   authorName: {
-    fontWeight: '600',
-    color: '#1E40AF',
+    fontWeight: '700',
+    color: '#10B981', // xanh lá sáng
   },
   descriptionBox: {
-    backgroundColor: '#F3F4F6',
-    padding: 10,
-    borderRadius: 10,
+    backgroundColor: '#F9FAFB',
+    padding: 12,
+    borderRadius: 12,
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   descTitle: {
     fontWeight: '600',
     marginBottom: 4,
-    color: '#374151',
+    color: '#111827',
+    fontSize: 14,
   },
   descText: {
     color: '#4B5563',
     fontSize: 13,
+    lineHeight: 18,
   },
   playButton: {
     flexDirection: 'row',
-    backgroundColor: '#F45', // hồng nhạt hơn
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    backgroundColor: '#F59E0B', // cam sáng
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
     borderWidth: 2,
     borderBottomWidth: 4,
-    borderColor: '#F63', // viền màu hồng gốc
-    elevation: 2,
+    borderColor: '#D97706',
+    shadowColor: '#FBBF24',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 5,
   },
   playButtonText: {
     color: '#fff',
-    fontWeight: '700',
+    fontWeight: '800',
     fontSize: 15,
+    marginLeft: 8,
+    textTransform: 'uppercase',
   },
 });
+
+
