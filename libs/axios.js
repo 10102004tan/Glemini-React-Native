@@ -3,7 +3,7 @@ import axios from 'axios';
 const api = axios.create({
   withCredentials: true,
   baseURL: API_URL,
-  timeout: 5000,
+  timeout: 60000, // Tăng timeout lên 60 giây cho các request AI
   headers: {
     'Content-Type': 'application/json',
   },

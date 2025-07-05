@@ -36,7 +36,6 @@ const QUESTION_TYPES = [
   { id: 'multiple', name: 'Nhiều đáp án', icon: '☑️', description: 'Chọn nhiều đáp án đúng' },
   { id: 'fill', name: 'Điền từ', icon: '📝', description: 'Điền từ vào chỗ trống' },
   { id: 'order', name: 'Sắp xếp', icon: '🔢', description: 'Sắp xếp theo thứ tự' },
-  { id: 'match', name: 'Nối cặp', icon: '🔗', description: 'Nối các cặp tương ứng' },
 ];
 
 const EditQuizQuestion = () => {
@@ -172,7 +171,7 @@ const EditQuizQuestion = () => {
     if (question) {
       // Handle both V1 (question_type) and V2 (type) formats
       const questionType = question.type || question.question_type || 'single';
-      const isMultiple = ['multiple', 'fill', 'order', 'match'].includes(questionType);
+      const isMultiple = ['multiple', 'fill', 'order'].includes(questionType);
 
       if (mutipleChoice !== isMultiple) {
         setMutipleChoice(isMultiple);
@@ -199,7 +198,7 @@ const EditQuizQuestion = () => {
     }
 
     // Update multiple choice setting
-    const isMultiple = ['multiple', 'fill', 'order', 'match'].includes(newType);
+    const isMultiple = ['multiple', 'fill', 'order'].includes(newType);
     setMutipleChoice(isMultiple);
 
     setQuestionTypeBottomSheetVisible(false);

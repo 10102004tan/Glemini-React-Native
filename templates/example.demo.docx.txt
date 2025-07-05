@@ -1,7 +1,17 @@
-Quiz Title: Tiêu đề của bộ câu hỏi
-Question 1: Đây là câu hỏi thứ 1?
-A. Đáp án thứ 1
-B. Đáp án thứ 2
-C. Đáp án thứ 3
-D. Đáp án thứ 4
+Quiz Title: Mẫu câu hỏi trắc nghiệm một đáp án
+
+Question 1: Thủ đô của Việt Nam là gì?
+**Type:** single
+A. Hà Nội
+B. TP.HCM
+C. Đà Nẵng
+D. Huế
 Correct Answer: A
+
+Question 2: Việt Nam có bao nhiêu tỉnh thành?
+**Type:** single
+A. 61
+B. 62
+C. 63
+D. 64
+Correct Answer: C
