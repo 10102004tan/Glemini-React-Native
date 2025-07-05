@@ -294,7 +294,12 @@ export default function AppRootLayout() {
         name="(play)/demo"
         options={{
           headerShown: false,
-          // headerTitle: "Chi tiết lớp học",
+        }}
+      />
+      <Stack.Screen
+        name="(result)/single"
+        options={{
+          headerShown: false,
         }}
       />
 

@@ -98,11 +98,11 @@ const HomeStudent = () => {
     }
   };
 
-const onRefresh = async () => {
-  setRefreshing(true);
-  await fetchAllQuizzes();
-  setRefreshing(false);
-};
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchAllQuizzes();
+    setRefreshing(false);
+  };
 
 
   const handlePressQuizItem = (quiz) => {
@@ -136,14 +136,11 @@ const onRefresh = async () => {
 
   return (
     <MainLayout>
-      <View
-        style={{
-          paddingTop: 20,
-          marginBottom: 40,
-        }}
-      >
+      <View style={{ paddingTop: 20 }}>
         <SearchQuizBar />
         <ScrollView
+          style={{ borderTopWidth: 1, borderTopColor: '#E5E7EB' }}
+          contentContainerStyle={{ paddingBottom: 40 }}
           showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >

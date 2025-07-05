@@ -1,279 +1,325 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, Alert, Animated } from 'react-native';
-import Button from '../../../components/customs/Button';
+import { View, Text, Image, Alert, Pressable, StyleSheet, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAppProvider } from '@/contexts/AppProvider';
-import { Audio } from 'expo-av';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useResultProvider } from '@/contexts/ResultProvider';
-import LottieView from 'lottie-react-native';
 import { useAuthStore } from '@/store/useAuthStore';
+import MainLayout from '@/components/layouts/MainLayout';
+import Loading from '@/components/customs/Loading';
+import ResultReview from './review';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 
-const ResultSingle = ({ resultId, handleRestart }) => {
+const ResultSingle = () => {
   const { i18n } = useAppProvider();
   const { user } = useAuthStore();
-  const [sound, setSound] = useState(null);
   const router = useRouter();
+  const navigation = useNavigation();
   const { fetchOverViewData, overViewData } = useResultProvider();
   const [isLoading, setIsLoading] = useState(false);
+  const { resultID, quizId, exerciseId, type } = useLocalSearchParams();
+  const [showReviewModal, setShowReviewModal] = useState(false);
+
+
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        if (resultId) {
-          fetchOverViewData(resultId);
+        if (resultID) {
+          fetchOverViewData(resultID);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error:', error);
       } finally {
         setIsLoading(false);
       }
     };
-
     loadData();
-  }, [resultId]);
 
-  console.log(isLoading);
+    console.log('🚀 Loaded result data for:', { overViewData });
 
-  // const playCompletedSound = async () => {
-  //    try {
-  //       const { sound } = await Audio.Sound.createAsync(
-  //          require('@/assets/sounds/completed.mp3')
-  //       );
-  //       setSound(sound);
-  //       await sound.playAsync();
-  //    } catch (error) {
-  //       console.error('Error playing sound:', error);
-  //    }
-  // };
+  }, [resultID]);
 
-  // useEffect(() => {
-  //    playCompletedSound();
-  //    return () => sound && sound.unloadAsync();
-  // }, [overViewData]);
-
-  const correctCount = overViewData.result_questions?.filter((q) => q.correct)?.length;
-  const incorrectCount = overViewData.result_questions?.filter((q) => q.correct === false)?.length;
-
+  const correctCount = overViewData.result_questions?.filter((q) => q.correct)?.length || 0;
+  const incorrectCount = overViewData.result_questions?.filter((q) => q.correct === false)?.length || 0;
   const correctPercentage = overViewData.result_questions
     ? (correctCount / overViewData.result_questions.length) * 100
     : 0;
-  const wrongPercentage = overViewData.result_questions
-    ? (incorrectCount / overViewData.result_questions.length) * 100
-    : 0;
 
-  if (isLoading && !overViewData) {
+  const handleRestart = (quizId, exerciseId = null, type) => {
+    Alert.alert(i18n.t('result.single.titleQuizOut'), i18n.t('result.single.textQuizOut'), [
+      { text: i18n.t('result.single.btnCancel'), style: 'cancel' },
+      {
+        text: i18n.t('result.single.btnContinute'),
+        onPress: () => {
+          console.log('🚀 Restarting quiz with:', { quizId, exerciseId, type });
+          router.replace({
+            pathname: '(play)/demo',
+            params: { quizId, exerciseId, type },
+          });
+        }
+      },
+    ])
+  }
+
+  if (isLoading || !overViewData?.result_questions) {
     return (
-      <View className="flex-1 bg-[#1C2833] px-5 pb-4 pt-10">
-        {/* Skeleton for buttons */}
-        <Skeleton width="50%" height={40} style={{ marginBottom: 20 }} />
-        <Skeleton width="50%" height={40} style={{ marginBottom: 20 }} />
-
-        {/* Skeleton for user info */}
-        <View className="flex-row p-5 bg-slate-600 mt-5 mx-3 rounded-lg">
-          <Skeleton width={80} height={80} borderRadius={40} />
-          <View className="flex ml-5">
-            <Skeleton width="70%" height={20} style={{ marginBottom: 10 }} />
-            <Skeleton width="50%" height={15} />
-          </View>
-        </View>
-
-        {/* Skeleton for result summary */}
-        <View className="p-5 bg-slate-600 mt-5 mx-3 rounded-lg">
-          <Skeleton width="100%" height={20} style={{ marginBottom: 10 }} />
-          <Skeleton width="100%" height={10} style={{ marginBottom: 10 }} />
-          <Skeleton width="40%" height={20} style={{ marginBottom: 10 }} />
-        </View>
-
-        {/* Skeleton for detail boxes */}
-        <View className="flex-row justify-between mx-3 mt-5">
-          <Skeleton width="45%" height={80} borderRadius={10} />
-          <Skeleton width="45%" height={80} borderRadius={10} />
-        </View>
-      </View>
+      <MainLayout>
+        <Loading duration={3000} message="Đang tải, chờ xíu bạn nhé..." />
+      </MainLayout>
     );
   }
 
+
   return (
-    <View className="flex-1 bg-[#1C2833] px-5 pb-4 pt-10">
-      {/* Top Navigation Button */}
-      <View className="flex self-end mt-3">
-        <Button
-          text={i18n.t('result.single.buttonQuit')}
-          onPress={() => {
-            Alert.alert(i18n.t('play.single.titleQuizOut'), i18n.t('play.single.textQuizOut'), [
-              { text: i18n.t('play.single.btnCancel'), style: 'cancel' },
-              {
-                text: i18n.t('play.single.buttonQuit'),
-                onPress: async () => {
-                  router.replace('/(app)/(homev2)');
-                },
-              },
-            ]);
-          }}
-          type="fill"
-          otherStyles="bg-[#435362] p-2"
-          textStyles="text-sm"
-        />
-      </View>
+    <View style={styles.container}>
+      {/* Header */}
+      <Text style={styles.title}>{i18n.t('result.single.textResult')}</Text>
 
-      {/* Replay and New Quiz Buttons */}
-      <View className="flex-row justify-around pt-5">
-        <Button
-          text={i18n.t('result.single.buttonReplay')}
-          onPress={() => {
-            Alert.alert(i18n.t('result.single.titleQuizOut'), i18n.t('result.single.textQuizOut'), [
-              { text: i18n.t('result.single.btnCancel'), style: 'cancel' },
-              {
-                text: i18n.t('result.single.btnContinute'),
-                onPress: handleRestart,
-              },
-            ]);
-          }}
-          type="fill"
-          otherStyles="bg-violet-500 py-4 px-6 border-b-4 border-b-violet-600"
-          textStyles="text-lg"
-        />
-        <Button
-          text={i18n.t('result.single.buttonPlayNewQuiz')}
-          onPress={() => router.push('/(home)/search')}
-          type="fill"
-          otherStyles="bg-slate-100 p-4 border-b-4 border-b-slate-300"
-          textStyles="text-black text-lg"
-        />
-      </View>
-
-      {/* User Information */}
-      <View className="flex-row p-5 bg-slate-600 mt-5 mx-3 rounded-lg items-center">
-        <Image
-          source={{ uri: user.user_avatar }}
-          className="w-20 h-20 rounded-full"
-          style={{ resizeMode: 'cover' }}
-        />
-        <View className="flex ml-5">
-          <Text className="text-lg text-slate-50 font-psemibold">{user.fullname}</Text>
-          <Text className="bg-slate-600 rounded-full text-sm px-2 text-slate-50 mt-1 flex-row items-center">
-            <Icon name="person-outline" size={15} color="white" />{' '}
+      {/* Avatar */}
+      <View style={styles.profile}>
+        <Image source={{ uri: user.user_avatar }} style={styles.avatar} />
+        <View style={{ marginLeft: 12 }}>
+          <Text style={styles.username}>{user.fullname}</Text>
+          <Text style={styles.desc}>
+            <Icon name="person-outline" size={16} color="#38bdf8" />{' '}
             {i18n.t('result.single.textDesc')}
           </Text>
         </View>
       </View>
 
-      {/* Result Summary and Progress Bar */}
-      <View className="flex p-5 bg-slate-600 mt-5 mx-3 rounded-lg">
-        <Text className="text-slate-50 text-base font-pmedium">
-          {i18n.t('result.single.textResult')}
-        </Text>
-        <View className="flex-row h-5 mt-2 rounded-lg overflow-hidden">
-          <View style={{ width: `${correctPercentage}%`, backgroundColor: '#4CAF50' }} />
-          <View style={{ width: `${wrongPercentage}%`, backgroundColor: '#F44336' }} />
+      {/* Progress */}
+      <View style={styles.progressCard}>
+        <Text style={styles.label}>Tiến trình</Text>
+        <View style={styles.progressBar}>
+          <View style={[styles.progressGreen, { width: `${correctPercentage}%` }]} />
         </View>
-        <View className="flex flex-row justify-between mt-3">
-          <Text className="text-green-500 font-semibold">
-            {i18n.t('result.single.correct')}: {correctPercentage.toFixed(0)}%
-          </Text>
-          <Text className="text-red-500 font-semibold">
-            {i18n.t('result.single.incorrect')}: {wrongPercentage.toFixed(0)}%
-          </Text>
-        </View>
+        <Text style={styles.percent}>{correctPercentage.toFixed(0)}%</Text>
       </View>
 
-      {/* Result Details */}
-      <View className="flex-row justify-between mx-3 mt-5">
-        <DetailBox
+      {/* Score Boxes */}
+      <View style={styles.row}>
+        <ResultBox
           label={i18n.t('result.single.score')}
           value={correctCount}
-          icon={<Icon name="ribbon-outline" size={25} color="white" />}
-          background="bg-orange-400"
+          icon={<Icon2 name="star-circle" size={32} color="#facc15" />}
         />
-        <DetailBox
+        <ResultBox
           label={i18n.t('result.single.totalQuestions')}
           value={overViewData.result_questions?.length}
-          icon={<Icon name="help-circle-outline" size={25} color="white" />}
-          background="bg-violet-400"
+          icon={<Icon2 name="format-list-bulleted" size={32} color="#38bdf8" />}
         />
       </View>
 
-      <View className="flex-row justify-between mx-3 mt-5">
-        <DetailBox
+      <View style={styles.row}>
+        <ResultBox
           label={i18n.t('result.single.correct')}
           value={correctCount}
-          icon={<Icon2 name="checkbox-marked-outline" size={40} color="green" />}
+          icon={<Icon2 name="check-circle" size={32} color="#22c55e" />}
         />
-        <DetailBox
+        <ResultBox
           label={i18n.t('result.single.incorrect')}
           value={incorrectCount}
-          icon={<Icon2 name="close-box-outline" size={40} color="red" />}
+          icon={<Icon2 name="close-circle" size={32} color="#ef4444" />}
         />
       </View>
 
-      {/* Review Button */}
-      <View className="absolute bottom-5 left-5">
-        <Button
-          text={i18n.t('result.single.buttonReview')}
-          onPress={() =>
-            router.push({
-              pathname: '(result)/review',
-              params: { result: JSON.stringify(overViewData) },
-            })
-          }
-          type="fill"
-          otherStyles="bg-[#435362] p-2"
-          textStyles="text-white text-center text-sm"
+      {/* Buttons */}
+      <View style={styles.buttonRow}>
+        <GameButton
+          title={i18n.t('result.single.buttonReplay')}
+          color="#9333ea"
+          borderColor="#6b21a8"
+          onPress={() => handleRestart(quizId, exerciseId, type)}
+        />
+        <GameButton
+          title={i18n.t('result.single.buttonPlayNewQuiz')}
+          color="#f59e0b"
+          borderColor="#b45309"
+          textColor="#1e293b"
+          onPress={() => router.push({ pathname: '/(protected)/search-recent' })}
         />
       </View>
+
+      <View style={styles.reviewBtn}>
+        <GameButton
+          title={i18n.t('result.single.buttonReview')}
+          color="#10b981"
+          borderColor="#047857"
+          onPress={() => setShowReviewModal(true)}
+        />
+      </View>
+
+      <View style={[styles.reviewBtn, { bottom: 90 }]}>
+        <GameButton
+          title={i18n.t('result.single.buttonQuit')}
+          color="#3b82f6"
+          borderColor="#1d4ed8"
+          onPress={() =>
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{ name: '(homev2)' }],
+              })
+            )}
+        />
+      </View>
+
+      <ResultReview
+        visible={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        result={overViewData}
+      />
+
+
     </View>
   );
 };
 
-// Component for Detail Boxes
-const DetailBox = ({ label, value, icon, background }) => (
-  <View className={`flex-row p-3 rounded-lg bg-slate-600 items-center justify-between `}>
-    <View className="flex-col">
-      <Text className="text-sm text-slate-300">{label}</Text>
-      <Text className="text-slate-200 font-semibold text-lg">{value}</Text>
+const ResultBox = ({ label, value, icon }) => (
+  <View style={styles.resultBox}>
+    <View>
+      <Text style={styles.resultLabel}>{label}</Text>
+      <Text style={styles.resultValue}>{value}</Text>
     </View>
-    <View className={`p-2 rounded-lg ${background}`}>{icon}</View>
+    <View>{icon}</View>
   </View>
 );
 
-const Skeleton = ({ width, height, borderRadius = 4, style }) => {
-  const fadeAnim = useState(new Animated.Value(0.3))[0]; // Giá trị ban đầu cho hiệu ứng
+const GameButton = ({ title, color, borderColor, textColor = '#fff', onPress }) => (
+  <Pressable
+    onPress={onPress}
+    style={[
+      styles.gameButton,
+      { backgroundColor: color, borderColor: borderColor, shadowColor: borderColor },
+    ]}>
+    <Text style={[styles.gameButtonText, { color: textColor }]}>{title}</Text>
+  </Pressable>
+);
 
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(fadeAnim, {
-          toValue: 1, // Tăng độ sáng
-          duration: 800,
-          useNativeDriver: true,
-        }),
-        Animated.timing(fadeAnim, {
-          toValue: 0.3, // Giảm độ sáng
-          duration: 800,
-          useNativeDriver: true,
-        }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop(); // Dừng animation khi component bị unmount
-  }, [fadeAnim]);
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+    padding: 20,
+    paddingTop: 40,
+  },
+  title: {
+    fontSize: 22,
+    color: '#38bdf8',
+    fontWeight: '800',
+    marginBottom: 16,
+    alignSelf: 'center',
+  },
+  profile: {
+    flexDirection: 'row',
+    backgroundColor: '#1e293b',
+    padding: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  avatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    borderWidth: 3,
+    borderColor: '#38bdf8',
+  },
+  username: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  desc: {
+    color: '#94a3b8',
+    marginTop: 4,
+    fontSize: 14,
+  },
+  progressCard: {
+    backgroundColor: '#1e293b',
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 20,
+  },
+  label: {
+    color: '#38bdf8',
+    fontSize: 16,
+    textAlign: 'right',
+    marginBottom: 10,
+  },
+  progressBar: {
+    height: 14,
+    backgroundColor: '#334155',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  progressGreen: {
+    backgroundColor: '#22c55e',
+    height: 14,
+  },
+  percent: {
+    marginTop: 8,
+    color: '#22c55e',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'right',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
+    marginBottom: 16,
+  },
+  resultBox: {
+    flex: 1,
+    backgroundColor: '#1e293b',
+    padding: 16,
+    borderRadius: 16,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  resultLabel: {
+    color: '#cbd5e1',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  resultValue: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  gameButton: {
+    flex: 1,
+    paddingVertical: 14,
+    marginHorizontal: 6,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderBottomWidth: 6,
+    alignItems: 'center',
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  gameButtonText: {
+    fontSize: 15,
+    fontWeight: 600,
+    textTransform: 'uppercase',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    marginTop: 10,
+  },
+  reviewBtn: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+  },
+});
 
-  return (
-    <Animated.View
-      style={[
-        {
-          width,
-          height,
-          borderRadius,
-          backgroundColor: '#2C3E50', // Màu nền xám tối
-          opacity: fadeAnim, // Hiệu ứng mờ dần
-        },
-        style,
-      ]}
-    />
-  );
-};
 export default ResultSingle;

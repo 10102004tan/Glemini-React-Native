@@ -1,4 +1,4 @@
-import { Image, Pressable, Text, View, Animated, Easing, TextInput } from 'react-native';
+import { Image, Text, View, Animated, Easing } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { useState, useRef, useEffect } from 'react';
 import ThoBayMauGif from '@/assets/images/congratulations.1.webp';
@@ -10,9 +10,13 @@ import FillInTheBlank from '@/components/customs/FillInTheBlank';
 import MatchItems from '@/components/customs/MatchItems';
 import MultipleChoice from '@/components/customs/MultipleChoice';
 import MainLayout from '@/components/layouts/MainLayout';
-import { useLocalSearchParams } from 'expo-router';
-import { useQuestionProvider } from '@/contexts/QuestionProvider';
+import { router, useLocalSearchParams } from 'expo-router';
 import Loading from '@/components/customs/Loading';
+import { useAuthStore } from '@/store/useAuthStore';
+import { API_VERSION, END_POINTS } from '@/configs/api.config';
+import { useResultProvider } from '@/contexts/ResultProvider';
+import ScaleTouchable from '@/components/customs/ScaleTouchable';
+import { shuffleArray } from '@/utils';
 
 const Play = () => {
     // Animation values
@@ -21,15 +25,17 @@ const Play = () => {
     const buttonAnim = useRef(new Animated.Value(0)).current;
     const modalAnim = useRef(new Animated.Value(0)).current;
     const [data, setData] = useState([]);
+    const { user } = useAuthStore();
     // State management
     const [index, setIndex] = useState(0);
     const [isNext, setIsNext] = useState(false);
+    const [resultID, setResultID] = useState(null);
+    const [isCompleted, setIsCompleted] = useState(false);
     const item = data[index];
     const [isCorrect, setIsCorrect] = useState(false);
     const { quizId, exerciseId, type } = useLocalSearchParams();
     const [arrayAnswer, setArrayAnswer] = useState([]);
-
-
+    const { completed } = useResultProvider();
     // Animate in on question change
     useEffect(() => {
         questionAnim.setValue(0);
@@ -59,8 +65,20 @@ const Play = () => {
             try {
                 const response = await api.post(`/v2/quizzes/${quizId}/questions`);
                 const data = response.data;
-                const { items } = data.metadata;
-                console.log('Fetched data:', items);
+                let { items } = data.metadata;
+                // 🔀 Xáo trộn đáp án của từng câu hỏi
+                items = items.map((q) => {
+                    if (Array.isArray(q.options
+                    )) {
+                        return {
+                            ...q,
+                            options: shuffleArray(q.options),
+                        };
+                    }
+                    return q;
+                });
+
+                console.log('Fetched shuffled questions:', items);
                 setData(items);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -184,24 +202,42 @@ const Play = () => {
                 questionId: item.id,
                 answerIds: arrayAnswer,
             };
-            const response = await api.post('/v2/questions/check', body);
+            const response = await api.post(`${API_VERSION.V2}${END_POINTS.V2.QUESTION_CHECK}`, body);
 
             const data = response.data;
             // console.log('Check answer response::=>>>>', data.metadata);
-            
+
             const { isCorrect = true } = data.metadata;
             setIsCorrect(isCorrect);
+
+            // 👇 Lưu lại kết quả từng câu
+            const params = {
+                exercise_id: exerciseId,
+                user_id: user.user_id,
+                quiz_id: quizId,
+                question_id: item.id,
+                answer: arrayAnswer,
+                correct: isCorrect,
+                score: isCorrect ? item.question_point : 0,
+            };
+            console.log('📋 Saving question result:', params);
+            await api.post(`${API_VERSION.V1}${END_POINTS.RESULT_SAVE_QUESTION}`, params);
+
         } catch (error) {
             console.error('Error checking answer:', error);
         }
     };
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (index < data.length - 1) {
             setIndex(index + 1);
         } else {
-            alert('Game Over');
             setIndex(0);
+            const completedResult = await completed(exerciseId, quizId);
+            if (completedResult?._id) {
+                setResultID(completedResult._id);
+                setIsCompleted(true);
+            }
         }
         setArrayAnswer([]);
         setIsNext(false);
@@ -209,9 +245,114 @@ const Play = () => {
 
     if (!data.length) {
         return (
-                <Loading duration={3000} message={'Đang tải câu hỏi .....'} />
+            <Loading duration={3000} message={'Đang tải câu hỏi .....'} />
         );
     }
+
+
+    if (isCompleted && resultID) {
+        return (
+            <View
+                style={{
+                    position: 'absolute',
+                    zIndex: 10000,
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)', // lớp phủ mờ
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: 20,
+                }}
+            >
+                <View
+                    style={{
+                        width: '90%',
+                        backgroundColor: '#ffffff',
+                        padding: 28,
+                        borderRadius: 28,
+                        alignItems: 'center',
+                        borderColor: '#16a34a',
+                        borderWidth: 1,
+                        borderBottomWidth: 5,
+                        shadowColor: '#22c55e',
+                        shadowOffset: { width: 0, height: 8 },
+                        shadowOpacity: 0.4,
+                        shadowRadius: 16,
+                        elevation: 8,
+                    }}
+                >
+                    <Image
+                        source={ThoBayMauGif}
+                        style={{ width: 150, height: 150, marginBottom: 10 }}
+                        resizeMode="contain"
+                    />
+
+                    <Text
+                        style={{
+                            fontSize: 28,
+                            fontWeight: '800',
+                            color: '#22c55e',
+                            marginBottom: 8,
+                            textAlign: 'center',
+                        }}
+                    >
+                        Bạn đã hoàn thành! 🎉
+                    </Text>
+
+                    <Text
+                        style={{
+                            color: '#333',
+                            fontSize: 16,
+                            textAlign: 'center',
+                            marginBottom: 20,
+                        }}
+                    >
+                        Tuyệt vời! Bạn đã hoàn thành tất cả câu hỏi trong bài Quiz này.
+                    </Text>
+
+                    <ScaleTouchable
+                        onPress={() => {
+                            router.push({
+                                pathname: '(result)/single',
+                                params: { resultID, exerciseId, quizId, type },
+                            });
+                        }}
+
+                    >
+                        <View style={{
+                            backgroundColor: '#22c55e',
+                            paddingVertical: 14,
+                            paddingHorizontal: 30,
+                            borderRadius: 10,
+                            borderWidth: 2,
+                            borderBottomWidth: 4,
+                            borderColor: '#16a34a',
+                            shadowColor: '#16a34a',
+                            shadowOffset: { width: 0, height: 5 },
+                            shadowOpacity: 0.4,
+                            shadowRadius: 12,
+                            elevation: 5,
+                        }}>
+                            <Text
+                                style={{
+                                    color: 'white',
+                                    fontSize: 18,
+                                    fontWeight: '800',
+                                    textTransform: 'uppercase',
+                                }}
+                            >
+                                Xem kết quả
+                            </Text>
+                        </View>
+                    </ScaleTouchable>
+                </View>
+            </View>
+        );
+    }
+
+
 
     return (
         <>
@@ -350,7 +491,9 @@ const Play = () => {
                                 ],
                             }}
                         >
-                            <Pressable onPress={() => handleCheck(arrayAnswer)}>
+                            <ScaleTouchable
+                                onPress={() => handleCheck(arrayAnswer)}
+                                disabled={arrayAnswer.length === 0}>
                                 <Text
                                     style={{
                                         backgroundColor: '#4CAF50',
@@ -370,7 +513,7 @@ const Play = () => {
                                 >
                                     Confirm
                                 </Text>
-                            </Pressable>
+                            </ScaleTouchable>
                         </Animated.View>
                     )}
                 </View>
@@ -406,7 +549,7 @@ const Play = () => {
                         >
                             Correct!
                         </Text>
-                        <Pressable onPress={handleNext}>
+                        <ScaleTouchable onPress={handleNext}>
                             <Text
                                 style={{
                                     backgroundColor: '#4CAF50',
@@ -427,7 +570,7 @@ const Play = () => {
                             >
                                 Confirm
                             </Text>
-                        </Pressable>
+                        </ScaleTouchable>
                     </Animated.View>
                 ) : (
                     <Animated.View
@@ -457,7 +600,7 @@ const Play = () => {
                         >
                             Incorrect!
                         </Text>
-                        <Pressable onPress={handleNext}>
+                        <ScaleTouchable onPress={handleNext}>
                             <Text
                                 style={{
                                     backgroundColor: '#F44336',
@@ -478,7 +621,7 @@ const Play = () => {
                             >
                                 Confirm
                             </Text>
-                        </Pressable>
+                        </ScaleTouchable>
                     </Animated.View>
                 ))}
         </>

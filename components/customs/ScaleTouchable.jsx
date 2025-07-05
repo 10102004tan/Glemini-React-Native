@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Animated, TouchableOpacity } from "react-native";
 
-const ScaleTouchable = ({ children, onPress }) => {
+const ScaleTouchable = ({ children, onPress, disabled }) => {
   const scale = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
@@ -27,6 +27,7 @@ const ScaleTouchable = ({ children, onPress }) => {
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         onPress={onPress}
+        disabled={disabled || false}
       >
         {children}
       </TouchableOpacity>

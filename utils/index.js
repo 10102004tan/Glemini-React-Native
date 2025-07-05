@@ -137,6 +137,16 @@ const convertSubjectToDataKeyValue = (subjects) => {
 //   return 'Không tìm thấy địa chỉ IPv4';
 // }
 
+// Xáo trộn thứ tự phần tử trong mảng (Fisher-Yates Shuffle)
+const shuffleArray = (array) => {
+  const newArray = [...array]; // tránh thay đổi mảng gốc
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+};
+
 export {
   validateEmail,
   validatePassword,
@@ -149,5 +159,6 @@ export {
   sortRankBoardDesc,
   createdAtConvert,
   convertSubjectToDataKeyValue,
+  shuffleArray,
   // getWiFiIPv4
 };

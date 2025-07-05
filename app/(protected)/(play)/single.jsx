@@ -103,7 +103,7 @@ function gameReducer(state, action) {
 const SinglePlay = () => {
   const { quizId, exerciseId, type } = useLocalSearchParams();
   const { i18n } = useAppProvider();
-  const { questions, fetchQuestions, saveQuestionResult, setQuestions } = useQuestionProvider();
+  const { questions, saveQuestionResult, setQuestions } = useQuestionProvider();
   const { result, fetchResultData } = useResultProvider();
   const { completed } = useResultProvider();
   const [state, dispatch] = useReducer(gameReducer, initialState);
@@ -114,7 +114,7 @@ const SinglePlay = () => {
   useEffect(() => {
     if (quizId) {
       const fetchQuizQuestions = async (quizId) => {
-        console.log('[CONTEXT]:Fetch questions =>', quizId);
+        // console.log('[CONTEXT]:Fetch questions =>', quizId);
         setQuestions([]);
         try {
           const res = await api.post(`${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`, {

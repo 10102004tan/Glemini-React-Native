@@ -6,13 +6,11 @@ import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { AuthContext } from '@/contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export default function TabLayout() {
   const { isHiddenNavigationBar, i18n } = useAppProvider();
-  const {
-    userData: { user_type },
-    numberOfUnreadNoti,
-  } = useContext(AuthContext);
+  const {user} = useAuthStore();
   return (
     <Tabs
       screenOptions={{
@@ -52,7 +50,7 @@ export default function TabLayout() {
             <TabBarIcon name={focused ? 'library-sharp' : 'library-outline'} color={color} />
           ),
           tabBarButton: (props) => {
-            if (user_type === 'student') {
+            if (user.user_role === 'user') {
               return null;
             } else {
               return <TouchableOpacity {...props} />;
@@ -85,7 +83,7 @@ export default function TabLayout() {
             <TabBarIcon name={focused ? 'document-sharp' : 'document-outline'} color={color} />
           ),
           tabBarButton: (props) => {
-            if (user_type === 'student') {
+            if (user.user_role === 'user') {
               return null;
             } else {
               return <TouchableOpacity {...props} />;
@@ -102,7 +100,7 @@ export default function TabLayout() {
             <TabBarIcon name={focused ? 'analytics-sharp' : 'analytics-outline'} color={color} />
           ),
           tabBarButton: (props) => {
-            if (user_type === 'teacher') {
+            if (user.user_role === 'teacher') {
               return null;
             } else {
               return <TouchableOpacity {...props} />;
