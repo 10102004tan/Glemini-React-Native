@@ -35,8 +35,8 @@ const SkeletonClassroomCard = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 10,
-    marginBottom: 16,
+
+    marginVertical: 8,
     borderRadius: 12,
     backgroundColor: '#dbeafe', // 💙 Nền xanh dương nhạt
     padding: 16,

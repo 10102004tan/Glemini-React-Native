@@ -22,7 +22,7 @@ const Classroom = () => {
     }
   }
 
-  return <MainLayout>{content}</MainLayout>;
+  return <>{content}</>;
 };
 
 export default Classroom;
