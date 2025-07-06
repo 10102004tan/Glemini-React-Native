@@ -76,14 +76,10 @@ const Account = () => {
     <MainLayout>
       <Stack.Screen
         options={{
-          headerTitle: 'Account',
-          headerStyle: {
-            backgroundColor: '#58CC02',
-            paddingVertical: 10,
-          },
-          headerTitleStyle: {
-            color: '#fff',
-          },
+          headerTitle: 'Tài khoản',
+          headerTitleStyle:{
+            color:"#000"
+          }
         }}
       />
 
@@ -99,10 +95,10 @@ const Account = () => {
 
         <View>
           <Pressable onPress={handleLogout} style={styles.logoutBtn}>
-            <Text style={styles.logoutText}>Logout</Text>
+            <Text style={styles.logoutText}>Đăng xuất</Text>
           </Pressable>
           <Pressable style={styles.deleteBtn}>
-            <Text style={styles.deleteText}>Delete</Text>
+            <Text style={styles.deleteText}>Xoá tài khoản</Text>
           </Pressable>
         </View>
       </ScrollView>

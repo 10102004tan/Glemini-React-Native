@@ -5,13 +5,14 @@ import Button from '@/components/customs/Button';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
-import { router, useGlobalSearchParams } from 'expo-router';
+import { router, Stack, useGlobalSearchParams } from 'expo-router';
 import { useAuthContext } from '@/contexts/AuthContext';
 import Overlay from '@/components/customs/Overlay';
 import { I18n } from 'i18n-js';
 import { useAppProvider } from '@/contexts/AppProvider';
+import MainLayout from '@/components/layouts/MainLayout';
 
-const detail_collection = () => {
+const CollectionDetail = () => {
   const { i18n } = useAppProvider();
   // chỉnh sửa tên của collection
   const [newCollectionName, setNewCollectionName] = useState('');
@@ -24,8 +25,8 @@ const detail_collection = () => {
 
   const [quizzes, setQuizzes] = useState([]);
   // Tạo biến để lưu tên bộ sưu tập
-  const [collectionName, setCollectionName] = useState('');
-  const { id } = useGlobalSearchParams();
+  // const [collectionName, setCollectionName] = useState('');
+  const { id ,collectionName} = useGlobalSearchParams();
   const { userData } = useAuthContext();
 
   // lấy tất cả id của quiz
@@ -203,125 +204,135 @@ const detail_collection = () => {
     );
   };
   // khi dữ liệu bị thay đổi thì useEffect này sẽ dc gọi
-  useEffect(() => {
-    getAllQuizById(id);
-  }, []);
+  // useEffect(() => {
+  //   getAllQuizById(id);
+  // }, []);
 
   return (
-    <Wrapper>
-      <Overlay visible={isEditModalVisible}></Overlay>
-      <Modal transparent={true} visible={isEditModalVisible} animationType="slide">
-        <View className="flex-1 justify-center items-center bg-opacity-50">
-          <View className="bg-white rounded-lg p-4 shadow-lg w-11/12 max-w-md border border-black">
-            <Text className="text-lg font-semibold mb-2">
-              {i18n.t('library.collection.detailCollection.editCollectionName')}
-            </Text>
-            <TextInput
-              className="border border-gray-300 rounded-md p-2 mb-2"
-              placeholder={i18n.t('library.collection.detailCollection.enterNewName')}
-              value={newCollectionName}
-              onChangeText={setNewCollectionName}
-            />
-            <View className="flex-row justify-end">
-              <Button
-                text={i18n.t('library.collection.detailCollection.btnCancel')}
-                onPress={() => setEditModalVisible(false)}
-                otherStyles="bg-black text-white rounded-md px-4 py-2 mr-2"
-              />
-              <Button
-                text={i18n.t('library.collection.detailCollection.btnSave')}
-                onPress={() => updateCollectionName(id, newCollectionName)}
-                otherStyles="bg-blue-500 text-white rounded-md px-4 py-2"
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
+    // <Wrapper>
+    //   <Overlay visible={isEditModalVisible}></Overlay>
+    //   <Modal transparent={true} visible={isEditModalVisible} animationType="slide">
+    //     <View className="flex-1 justify-center items-center bg-opacity-50">
+    //       <View className="bg-white rounded-lg p-4 shadow-lg w-11/12 max-w-md border border-black">
+    //         <Text className="text-lg font-semibold mb-2">
+    //           {i18n.t('library.collection.detailCollection.editCollectionName')}
+    //         </Text>
+    //         <TextInput
+    //           className="border border-gray-300 rounded-md p-2 mb-2"
+    //           placeholder={i18n.t('library.collection.detailCollection.enterNewName')}
+    //           value={newCollectionName}
+    //           onChangeText={setNewCollectionName}
+    //         />
+    //         <View className="flex-row justify-end">
+    //           <Button
+    //             text={i18n.t('library.collection.detailCollection.btnCancel')}
+    //             onPress={() => setEditModalVisible(false)}
+    //             otherStyles="bg-black text-white rounded-md px-4 py-2 mr-2"
+    //           />
+    //           <Button
+    //             text={i18n.t('library.collection.detailCollection.btnSave')}
+    //             onPress={() => updateCollectionName(id, newCollectionName)}
+    //             otherStyles="bg-blue-500 text-white rounded-md px-4 py-2"
+    //           />
+    //         </View>
+    //       </View>
+    //     </View>
+    //   </Modal>
 
-      <View className="m-2">
-        {/* Hiển thị tên của bộ sưu tập */}
-        <Text className="mt-2 font-bold text-[18px] mb-4">{collectionName}</Text>
+    //   <View className="m-2">
+    //     {/* Hiển thị tên của bộ sưu tập */}
+    //     <Text className="mt-2 font-bold text-[18px] mb-4">{collectionName}</Text>
 
-        <View className="flex-row">
-          <TouchableOpacity onPress={handleEditPress}>
-            <View className="w-fit rounded-lg bg-slate-400 flex flex-row justify-between p-1">
-              <View className="flex justify-center">
-                <FontAwesome name="pencil" size={14} color="black" />
-              </View>
+    //     <View className="flex-row">
+    //       <TouchableOpacity onPress={handleEditPress}>
+    //         <View className="w-fit rounded-lg bg-slate-400 flex flex-row justify-between p-1">
+    //           <View className="flex justify-center">
+    //             <FontAwesome name="pencil" size={14} color="black" />
+    //           </View>
 
-              <Text className="mr-1 flex items-center">
-                {i18n.t('library.collection.detailCollection.edit')}
-              </Text>
-            </View>
-          </TouchableOpacity>
+    //           <Text className="mr-1 flex items-center">
+    //             {i18n.t('library.collection.detailCollection.edit')}
+    //           </Text>
+    //         </View>
+    //       </TouchableOpacity>
 
-          {/* <TouchableOpacity className="ml-2">
-            <View className="w-[80px] rounded-lg bg-slate-400 flex flex-row justify-between p-1">
-              <View className="flex justify-center">
-                <FontAwesome name="share" size={14} color="black" />
-              </View>
+    //       {/* <TouchableOpacity className="ml-2">
+    //         <View className="w-[80px] rounded-lg bg-slate-400 flex flex-row justify-between p-1">
+    //           <View className="flex justify-center">
+    //             <FontAwesome name="share" size={14} color="black" />
+    //           </View>
 
-              <Text className="mr-1 flex items-center">Chia sẻ</Text>
-            </View>
-          </TouchableOpacity> */}
+    //           <Text className="mr-1 flex items-center">Chia sẻ</Text>
+    //         </View>
+    //       </TouchableOpacity> */}
 
-          <TouchableOpacity className="ml-2" onPress={handleDeletePress}>
-            <View className="w-[60px] rounded-lg bg-slate-400 flex flex-row justify-between p-1">
-              <View className="flex justify-center">
-                <MaterialIcons name="delete" size={14} color="black" />
-              </View>
+    //       <TouchableOpacity className="ml-2" onPress={handleDeletePress}>
+    //         <View className="w-[60px] rounded-lg bg-slate-400 flex flex-row justify-between p-1">
+    //           <View className="flex justify-center">
+    //             <MaterialIcons name="delete" size={14} color="black" />
+    //           </View>
 
-              <Text className="mr-2 flex items-center">
-                {i18n.t('library.collection.detailCollection.btnDelete')}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+    //           <Text className="mr-2 flex items-center">
+    //             {i18n.t('library.collection.detailCollection.btnDelete')}
+    //           </Text>
+    //         </View>
+    //       </TouchableOpacity>
+    //     </View>
 
-        {/* Danh sách quiz */}
-        <FlatList
-          key={(name) => name._id}
-          style={{ marginBottom: 100, marginTop: 50 }}
-          data={quizzes}
-          keyExtractor={(name) => name._id}
-          renderItem={({ item: name }) => {
-            return (
-              <View className="h-[100px] w-full border rounded-xl flex-row mt-6 relative">
-                <View className="flex flex-row w-full">
-                  <View className="flex justify-center items-center m-2">
-                    <Image
-                      source={{
-                        uri:
-                          name.quiz_thumb ||
-                          'https://www.shutterstock.com/image-vector/quiz-time-3d-editable-text-260nw-2482374583.jpg',
-                      }}
-                      className="w-[80px] h-[80px] rounded-xl"
-                    ></Image>
-                  </View>
-                  <View className="flex flex-col ml-4 justify-around">
-                    <Text className="text-lg font-bold">{name.quiz_name}</Text>
+    //     {/* Danh sách quiz */}
+    //     <FlatList
+    //       key={(name) => name._id}
+    //       style={{ marginBottom: 100, marginTop: 50 }}
+    //       data={quizzes}
+    //       keyExtractor={(name) => name._id}
+    //       renderItem={({ item: name }) => {
+    //         return (
+    //           <View className="h-[100px] w-full border rounded-xl flex-row mt-6 relative">
+    //             <View className="flex flex-row w-full">
+    //               <View className="flex justify-center items-center m-2">
+    //                 <Image
+    //                   source={{
+    //                     uri:
+    //                       name.quiz_thumb ||
+    //                       'https://www.shutterstock.com/image-vector/quiz-time-3d-editable-text-260nw-2482374583.jpg',
+    //                   }}
+    //                   className="w-[80px] h-[80px] rounded-xl"
+    //                 ></Image>
+    //               </View>
+    //               <View className="flex flex-col ml-4 justify-around">
+    //                 <Text className="text-lg font-bold">{name.quiz_name}</Text>
 
-                    <Text className="text-gray-500">{name.quiz_description}</Text>
-                    <Text className="text-gray-500">
-                      {name.quiz_status === 'unpublished'
-                        ? i18n.t('library.public')
-                        : i18n.t('library.public')}
-                    </Text>
-                  </View>
-                </View>
-                <TouchableOpacity
-                  className=" border rounded-md absolute right-2 bottom-2"
-                  onPress={() => handleDeleteQuiz(name._id)}
-                >
-                  <MaterialIcons name="delete" size={24} color="black" />
-                </TouchableOpacity>
-              </View>
-            );
-          }}
-        ></FlatList>
-      </View>
-    </Wrapper>
+    //                 <Text className="text-gray-500">{name.quiz_description}</Text>
+    //                 <Text className="text-gray-500">
+    //                   {name.quiz_status === 'unpublished'
+    //                     ? i18n.t('library.public')
+    //                     : i18n.t('library.public')}
+    //                 </Text>
+    //               </View>
+    //             </View>
+    //             <TouchableOpacity
+    //               className=" border rounded-md absolute right-2 bottom-2"
+    //               onPress={() => handleDeleteQuiz(name._id)}
+    //             >
+    //               <MaterialIcons name="delete" size={24} color="black" />
+    //             </TouchableOpacity>
+    //           </View>
+    //         );
+    //       }}
+    //     ></FlatList>
+    //   </View>
+    // </Wrapper>
+    <MainLayout>
+      <Stack.Screen
+        options={{
+          headerTitle: collectionName,
+          animation: 'slide_from_right',
+        }}
+      />
+
+      <Text>detail collection with id {id}</Text>
+    </MainLayout>
   );
 };
 
-export default detail_collection;
+export default CollectionDetail;

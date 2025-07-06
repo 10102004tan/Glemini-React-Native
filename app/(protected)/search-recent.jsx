@@ -73,7 +73,7 @@ const SearchRecent = () => {
           // onSubmitEditing={refetch}
           autoCapitalize="none"
           autoCorrect={false}
-          placeholder="Search"
+          placeholder="Tìm kiếm"
           style={{
             paddingHorizontal: 5,
             paddingVertical: 10,
@@ -122,7 +122,7 @@ const SearchRecent = () => {
               marginLeft: 15,
             }}
           >
-            Recently searched
+            Tìm kiếm gần đây
           </Text>
 
           <AntDesign onPress={handleClearRecents} name="delete" size={20} color="black" />

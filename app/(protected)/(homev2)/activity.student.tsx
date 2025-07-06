@@ -192,8 +192,11 @@ const ActivityStudent = () => {
     }
   };
   return (
-    <MainLayout>
-      <View
+    // <MainLayout>
+      
+    // </MainLayout>
+    <>
+    <View
         //className="flex-1 bg-white pb-20"
         style={{
           flex: 1,
@@ -272,7 +275,7 @@ const ActivityStudent = () => {
           )}
         />
       </View>
-    </MainLayout>
+    </>
   );
 };
 
@@ -282,38 +285,6 @@ const ResultCompletedItem = ({ result, i18n }: { result: any; i18n: any }) => {
   const totalQuestions = result.result_questions?.length || 0;
   const accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
   return (
-    // <View style={{ width: itemWidth }} className="m-2 bg-slate-200/50 rounded-lg border-slate-200 border-b-[6px] overflow-hidden">
-    //     <Image
-    //         source={result.quiz_id?.quiz_thumb ? { uri: result.quiz_id?.quiz_thumb } : Images.banner1}
-    //         className="w-full h-28"
-    //         style={{ resizeMode: 'cover' }}
-    //     />
-    //     <View className='bg-black/50 px-1 rounded-lg absolute top-2 left-2 flex-row items-center'>
-    //         <FontAwesome6 name="chalkboard-user" color='white' />
-    //         <Text className="text-sm text-slate-50 ml-1">{result.exercise_id?._id ? i18n.t('activity.exercise') : result.room_id ? i18n.t('activity.room') : i18n.t('activity.publish')}</Text>
-    //     </View>
-    //     <View className='bg-slate-400/80 px-1 rounded-md absolute top-20 right-2 flex-row items-center'>
-    //         <Text className="text-sm text-slate-50 ml-1">{result?.quiz_id?.questionCount} Qs</Text>
-    //     </View>
-    //     <View className='absolute top-2 right-2'>
-    //         {totalQuestions < result.quiz_id?.questionCount ? <MaterialCommunityIcons name="clock-alert" size={25} color="red" /> : ''}
-    //     </View>
-    //     <View className='px-4 py-2'>
-    //         <Text className="text-sm font-pmedium">
-    //             {(result.exercise_id?.name.length > 20 ? result.exercise_id?.name.substring(0, 20) + "..." : result.exercise_id?.name) || result.room_id?.room_code}
-    //         </Text>
-    //         <Text className="text-sm font-light">
-    //             {(result.quiz_id?.quiz_name.length > 20 ? result.quiz_id?.quiz_name.substring(0, 20) + "..." : result.quiz_id?.quiz_name)}
-    //         </Text>
-    //         <Text className="text-xs font-light">
-    //             {i18n.t('activity.textCreated')} {result.quiz_id?.user_id?.user_fullname}
-    //         </Text>
-
-    //         <Text className={`${accuracy < 40 ? 'bg-red-600' : accuracy < 70 ? 'bg-yellow-400' : 'bg-green-500'} text-sm mt-4 font-light text-slate-50 rounded-full px-2`}>
-    //             {accuracy.toFixed(0)}% độ chính xác
-    //         </Text>
-    //     </View>
-    // </View>
     <View
       style={{
         width: itemWidth,

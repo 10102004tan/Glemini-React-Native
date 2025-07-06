@@ -6,7 +6,6 @@ import { Alert } from 'react-native';
 
 import { API_URL, END_POINTS, API_VERSION } from '../configs/api.config';
 import { registerForPushNotificationsAsync } from '@/helpers/notification';
-import socket from '@/utils/socket';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { useAuthStore } from '@/store/useAuthStore';
 import api from '@/libs/axios';

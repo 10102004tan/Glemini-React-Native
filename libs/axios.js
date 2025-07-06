@@ -1,5 +1,8 @@
 import { API_URL } from '@/configs/api.config';
+import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
+import { Alert } from 'react-native';
+import { router } from 'expo-router';
 const api = axios.create({
   withCredentials: true,
   baseURL: API_URL,
@@ -37,7 +40,7 @@ api.interceptors.response.use(
     });
     return response;
   },
-  (error) => {
+  async (error) => {
     console.log('❌ API Error:', {
       method: error.config?.method?.toUpperCase(),
       url: error.config?.url,
@@ -46,6 +49,45 @@ api.interceptors.response.use(
       message: error.message,
       data: error.response?.data,
     });
+    // handle token expired
+    if (error.response?.status === 401 && error.response?.data?.message === 'expired') {
+      console.log("path", error.config.url);
+      console.log('expired token, trying to refresh...',error.response?.data?.message);
+      if (error.config.url === '/v2/auth/refresh-token') {
+        Alert.alert('Session Expired', 'Your session has expired. Please log in again.', [
+          {
+            text: 'OK',
+            onPress: async() => {
+              await SecureStore.deleteItemAsync('Authorization');
+              await SecureStore.deleteItemAsync('refreshToken');
+              await SecureStore.deleteItemAsync('x-client-id');
+              // return to login screen
+              router.replace('/(auth)/login');
+            },
+          },
+        ]);
+      }else {
+        try {
+          const response = await api.post('/v2/auth/refresh-token');
+          const { accessToken,refreshToken } = response.data.metadata;
+          await SecureStore.setItemAsync('Authorization', accessToken);
+          await SecureStore.setItemAsync('refreshToken', refreshToken);
+          api.defaults.headers.common['Authorization'] = accessToken;
+          api.defaults.headers.common['x-refresh-token'] = refreshToken;
+
+          // retry the original request with new token
+          error.config.headers['Authorization'] = accessToken;
+          error.config.headers['x-refresh-token'] = refreshToken;
+          return api.request(error.config);
+        } catch (error) {
+          
+        }
+      }
+      // console.log("abc")
+      // await SecureStore.deleteItemAsync('Authorization');
+      // await SecureStore.deleteItemAsync('refreshToken');
+      // await SecureStore.deleteItemAsync('x-client-id');
+    }
     return Promise.reject(error);
   },
 );

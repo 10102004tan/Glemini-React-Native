@@ -18,14 +18,14 @@ const FormRegister = () => {
       router.replace({
         pathname: '/(auth)/',
         params: {
-          message: 'Akun berhasil dibuat, silahkan login',
+          message: 'Tạo tài khoản thành công, vui lòng đăng nhập',
         },
       });
     } else {
       Toast.show({
         type: 'error',
         position: 'top',
-        text1: 'Gagal membuat akun',
+        text1: 'Tạo tài khoản thất bại',
         text2: result.error,
       });
     }
@@ -57,7 +57,7 @@ const FormRegister = () => {
                 fontWeight: 'bold',
               }}
             >
-              Full Name
+              Họ và tên
             </Text>
             <TextInput
               style={{
@@ -124,7 +124,7 @@ const FormRegister = () => {
                 fontWeight: 'bold',
               }}
             >
-              Password
+              Mật khẩu
             </Text>
             <TextInput
               style={{
@@ -159,7 +159,7 @@ const FormRegister = () => {
                 fontWeight: 'bold',
               }}
             >
-              Confirm Password
+              Xác nhận mật khẩu
             </Text>
             <TextInput
               style={{
@@ -189,8 +189,7 @@ const FormRegister = () => {
               color: '#374151',
             }}
           >
-            Dengan mendaftar berarti kamu setuju dengan Terms of Service dan Privacy Policy dari
-            Namanyajugabelajar.io
+            Khi đăng ký, bạn đã đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của Glemini.
           </Text>
 
           <View style={{ marginBottom: 14 }}>
@@ -207,7 +206,7 @@ const FormRegister = () => {
               }}
             >
               <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: 'bold' }}>
-                {isSubmitting ? 'Loading...' : 'Buat Akun'}
+                {isSubmitting ? 'Đang xử lý...' : 'Đăng ký'}
               </Text>
             </TouchableOpacity>
           </View>

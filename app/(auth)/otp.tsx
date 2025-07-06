@@ -11,7 +11,7 @@ const Otp = () => {
 
   const handleOtpSubmit = async () => {
     if (!otp) {
-      alert('Kode OTP tidak boleh kosong');
+      alert('Mã OTP không được để trống');
       return;
     }
 
@@ -23,7 +23,7 @@ const Otp = () => {
         params: { otp, email },
       });
     } else {
-      alert(response.error || 'Kode OTP tidak valid, silakan coba lagi');
+      alert(response.error || 'Mã OTP không hợp lệ, vui lòng thử lại');
     }
   };
 
@@ -31,9 +31,9 @@ const Otp = () => {
     <AuthLayout>
       <View>
         <View style={{ marginBottom: 20 }}>
-          <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Masukkan kode OTP</Text>
+          <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Nhập mã xác nhận (OTP)</Text>
           <Text style={{ fontSize: 16, color: '#6B7280' }}>
-            Masukkan kode OTP yang telah dikirimkan ke email kamu.
+            Vui lòng nhập mã xác nhận đã được gửi tới email của bạn.
           </Text>
         </View>
         <View style={{ marginBottom: 20 }}>
@@ -45,7 +45,7 @@ const Otp = () => {
                 fontWeight: 'bold',
               }}
             >
-              Kode OTP
+              Mã OTP
             </Text>
 
             <TextInput
@@ -84,7 +84,7 @@ const Otp = () => {
               onPress={handleOtpSubmit}
             >
               <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: 'bold' }}>
-                Kirim Kode OTP!
+                Gửi mã xác nhận
               </Text>
             </TouchableOpacity>
           </View>

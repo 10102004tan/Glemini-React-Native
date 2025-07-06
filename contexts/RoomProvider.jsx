@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useAuthContext } from './AuthContext';
 import { useRouter } from 'expo-router';
-import socket from '@/utils/socket';
+import socket from '@/libs/socket';
 import Toast from 'react-native-toast-message-custom';
 import { useAppProvider } from './AppProvider';
 import api from '@/libs/axios';

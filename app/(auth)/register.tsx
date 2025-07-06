@@ -8,19 +8,19 @@ const Register = () => {
     <AuthLayout>
       <View>
         <View style={{ marginBottom: 20 }}>
-          <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Bikin akun baru</Text>
+          <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Tạo tài khoản mới</Text>
           <Text style={{ fontSize: 16, color: '#6B7280' }}>
-            Nggak susah kok, kamu cuma tinggal masukin beberapa data aja terus langsung jadi deh!
+            Chỉ cần nhập một vài thông tin cơ bản là bạn đã có thể bắt đầu hành trình học tập rồi!
           </Text>
         </View>
         {/* form input for login */}
         <FormRegister />
         <View style={{ marginBottom: 20, alignItems: 'center' }}>
           <Text style={{ fontSize: 16, color: '#6B7280' }}>
-            Sudah punya akun?
+            Đã có tài khoản?
             <Link href={'/(auth)/login'} style={{ color: '#4F46E5', fontWeight: 'bold' }}>
               {' '}
-              Login
+              Đăng nhập
             </Link>
           </Text>
         </View>

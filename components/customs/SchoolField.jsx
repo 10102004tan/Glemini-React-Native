@@ -4,7 +4,9 @@ import { router } from 'expo-router';
 
 const SchoolField = ({ schoolName }) => (
   <View style={styles.row}>
-    <Text style={styles.label}>School</Text>
+    <Text style={styles.label}>
+      Trường học
+    </Text>
     <Pressable
       onPress={() => {
         router.push({ pathname: '/(protected)/select-school' });

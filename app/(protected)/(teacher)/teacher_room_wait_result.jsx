@@ -10,7 +10,7 @@ import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { FlatList } from 'react-native-gesture-handler';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
-import socket from '@/utils/socket';
+import socket from '@/libs/socket';
 import Button from '@/components/customs/Button';
 import { sortRankBoardDesc } from '../../../utils';
 import { useAppProvider } from '@/contexts/AppProvider';

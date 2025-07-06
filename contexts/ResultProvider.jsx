@@ -33,22 +33,6 @@ const ResultProvider = ({ children }) => {
     };
 
     try {
-      // const response = await fetch(path, {
-      //    method: "POST",
-      //    headers: {
-      //       "Content-Type": "application/json",
-      //       "x-client-id": userData._id,
-      //       authorization: userData.accessToken,
-      //    },
-      //    body: JSON.stringify(requestBody),
-      // });
-
-      // const data = await response.json();
-
-      // if (data.statusCode === 200) {
-      //    setResults(data.metadata);
-      //    return data.metadata
-      // }
       const response = await api.post(path, requestBody);
       const data = response.data;
       if (data.statusCode === 200) {
@@ -57,7 +41,6 @@ const ResultProvider = ({ children }) => {
         return data.metadata;
       }
     } catch (error) {
-      // console.error("Failed to fetch results for teacher:", error);
       console.log('[CONTEXT]:Result=>', error);
     }
   };
@@ -78,19 +61,10 @@ const ResultProvider = ({ children }) => {
         return data.metadata;
       }
     } catch (error) {
-      // console.error("Failed to fetch results for student:", error);
       console.log('[CONTEXT]:Result=>', error);
     }
   };
 
-  const fetchResultData = async ({ quizId, exerciseId, roomId, type }) => {
-    const query = {
-      user_id: user.user_id,
-      quiz_id: quizId,
-      type,
-      ...(exerciseId && { exercise_id: exerciseId }),
-      ...(roomId && { room_id: roomId }),
-    };
     const fetchResultData = async ({ quizId, exerciseId, roomId, type }) => {
       const query = {
         user_id: user.user_id,
@@ -233,6 +207,5 @@ const ResultProvider = ({ children }) => {
       </ResultContext.Provider>
     );
   };
-}
 export const useResultProvider = () => useContext(ResultContext);
 export default ResultProvider;

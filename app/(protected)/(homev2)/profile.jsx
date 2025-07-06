@@ -10,7 +10,6 @@ const Profile = () => {
     <MainLayout>
       {/* header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
         <Link href={{ pathname: '/(protected)/settings' }} style={styles.headerSettingsLink}>
           <Ionicons name="settings" size={20} color="#AFAFAF" />
         </Link>
@@ -91,7 +90,7 @@ const Profile = () => {
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: '#fff',
     borderBottomWidth: 1,
@@ -103,7 +102,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#AFAFAF',
+    // color: '#AFAFAF',
   },
   headerSettingsLink: {
     marginRight: 10,

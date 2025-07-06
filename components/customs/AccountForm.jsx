@@ -69,7 +69,7 @@ const AccountForm = ({
             setImage={(img) => setFieldValue('image', img)}
           />
           <FieldRow
-            label="Name"
+            label="Họ và tên"
             value={values.name}
             placeholder="Họ và tên"
             onChangeText={handleChange('name')}
@@ -83,9 +83,9 @@ const AccountForm = ({
             onBlur={handleBlur('email')}
           />
           <FieldRow
-            label="Phone"
+            label="Số điện thoại"
             value={values.phone}
-            placeholder="Số điện thoại"
+            placeholder="09999xxxxx"
             keyboardType="phone-pad"
             onChangeText={handleChange('phone')}
             onBlur={handleBlur('phone')}

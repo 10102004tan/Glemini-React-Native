@@ -2,7 +2,7 @@ import { View, Text, Image } from 'react-native';
 import React from 'react';
 import Button from './Button';
 import { createdAtConvert } from '@/utils';
-import socket from '@/utils/socket';
+import socket from '@/libs/socket';
 import { useRouter } from 'expo-router';
 import { useRoomProvider } from '@/contexts/RoomProvider';
 import { useAuthContext } from '@/contexts/AuthContext';

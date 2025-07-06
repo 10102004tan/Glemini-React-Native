@@ -23,7 +23,7 @@ const FormLogin = () => {
       router.replace({
         pathname: '/(protected)/(homev2)/',
         params: {
-          message: 'Login berhasil',
+          message: 'Đăng nhập thành công',
         },
       });
     } else {
@@ -31,7 +31,7 @@ const FormLogin = () => {
       Toast.show({
         type: 'error',
         position: 'top',
-        text1: 'Gagal masuk',
+        text1: 'Đăng nhập thất bại',
         text2: result.error,
       });
     }
@@ -88,7 +88,7 @@ const FormLogin = () => {
                 fontWeight: 'bold',
               }}
             >
-              Password
+              Mật khẩu
             </Text>
             <TextInput
               style={{
@@ -120,7 +120,7 @@ const FormLogin = () => {
               }}
             >
               <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: 'bold' }}>
-                {isSubmitting ? 'Loading...' : 'Masuk'}
+                {isSubmitting ? 'Đang xử lý...' : 'Đăng nhập'}
               </Text>
             </TouchableOpacity>
           </View>

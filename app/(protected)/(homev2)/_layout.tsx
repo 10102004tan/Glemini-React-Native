@@ -2,7 +2,7 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Ionicons } from '@expo/vector-icons';
-import { Link, Slot, Tabs } from 'expo-router';
+import { Link, router, Slot, Tabs } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
 
 export default function TabLayout() {
@@ -65,10 +65,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name="library.teacher"
         options={{
-          title: 'Library',
+          // title: 'Thư viện',
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'library' : 'library-outline'} color={color} />
+            <TabBarIcon
+              name={focused ? 'library' : 'library-outline'}
+              color={color}
+            />
           ),
           tabBarButton: (props) =>
             user.user_role === 'teacher' ? <TouchableOpacity {...props} /> : null,

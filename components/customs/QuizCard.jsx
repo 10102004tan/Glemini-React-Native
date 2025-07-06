@@ -18,7 +18,7 @@ const QuizCard = ({
   const { moment } = useAppProvider();
   return (
     <TouchableOpacity
-      className={'flex-1 mx-1 mb-3 shadow px-2 bg-white pb-2 rounded'}
+      className={'flex-1 mx-1 mb-3 shadow px-2 bg-[#f9f9f9] pb-2 rounded'}
       onPress={onPress}
     >
       <View>

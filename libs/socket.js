@@ -2,7 +2,7 @@
 // import { getWiFiIPv4 } from '@/utils';
 import { io } from 'socket.io-client';
 // const base_url = getWiFiIPv4() || 'http://192.168.1.246:3000';
-const socket = io.connect('http://192.168.69.1:3000', {
+const socket = io.connect('http://172.21.159.1:3000', {
   reconnection: true,
   reconnectionAttempts: 5,
   // reconnectionAttempts: Infinity,

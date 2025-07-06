@@ -5,7 +5,7 @@ import Field from '@/components/customs/Field';
 import Button from '@/components/customs/Button';
 import Feather from '@expo/vector-icons/Feather';
 import UserJoinedRoomItem from '@/components/customs/UserJoinedRoomItem';
-import socket from '@/utils/socket';
+import socket from '@/libs/socket';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';

@@ -23,6 +23,7 @@ export const useAuthStore = create((set, get) => ({
       api.defaults.withCredentials = true;
       api.defaults.headers.common['Authorization'] = tokens.accessToken;
       api.defaults.headers.common['x-client-id'] = user.user_id;
+      api.defaults.headers.common['x-refresh-token'] = tokens.refreshToken;
       set({ user, isSignedIn: true });
       return { success: true };
     } catch (error) {
@@ -113,6 +114,7 @@ export const useAuthStore = create((set, get) => ({
       api.defaults.withCredentials = true;
       api.defaults.headers.common['Authorization'] = authorization;
       api.defaults.headers.common['x-client-id'] = xClientId;
+      api.defaults.headers.common['x-refresh-token'] = metadata.tokens.refreshToken;
       set({ user: metadata, isSignedIn: true, isLoading: false });
       return { success: true };
     } catch (error) {
@@ -127,9 +129,6 @@ export const useAuthStore = create((set, get) => ({
       } else if (error.response.status === 400) {
         message = 'Unauthorized. Please check your credentials.';
       }
-      await SecureStore.deleteItemAsync('Authorization');
-      await SecureStore.deleteItemAsync('refreshToken');
-      await SecureStore.deleteItemAsync('x-client-id');
       return { success: false, error: message };
     }
   },

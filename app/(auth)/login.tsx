@@ -14,10 +14,9 @@ const Login = () => {
     <AuthLayout>
       <View>
         <View style={{ marginBottom: 20 }}>
-          <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Masuk ke akun kamu</Text>
+          <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Đăng nhập vào tài khoản</Text>
           <Text style={{ fontSize: 16, color: '#6B7280' }}>
-            Belajar gratis di Namanyajugabelajar.io, dan memulai karir yang kamu cita-citata sejak
-            dalam embrio!
+            Học tập miễn phí và bắt đầu hành trình phát triển kỹ năng của bạn ngay hôm nay!
           </Text>
         </View>
 
@@ -26,9 +25,9 @@ const Login = () => {
 
         <View style={{ marginBottom: 20, alignItems: 'center' }}>
           <Text style={{ fontSize: 16, color: '#6B7280' }}>
-            Don't have an account?
+            Chưa có tài khoản?{' '}
             <Link href={'/(auth)/register'} style={{ color: '#4F46E5', fontWeight: 'bold' }}>
-              Register
+              Đăng ký
             </Link>
           </Text>
         </View>
@@ -39,7 +38,7 @@ const Login = () => {
         <View style={{ alignItems: 'center' }}>
           <TouchableOpacity onPress={() => router.push('/forgot')}>
             <Text style={{ fontSize: 16, color: '#4F46E5', fontWeight: 'bold' }}>
-              Lupa kata sandi?
+              Quên mật khẩu?
             </Text>
           </TouchableOpacity>
         </View>

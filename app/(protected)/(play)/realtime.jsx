@@ -18,7 +18,7 @@ import RenderHTML from 'react-native-render-html';
 import { Audio } from 'expo-av';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 import RealtimeResult from '../(result)/realtime';
-import socket from '@/utils/socket';
+import socket from '@/libs/socket';
 import RankBoard from '@/components/customs/RankBoard';
 import Overlay from '@/components/customs/Overlay';
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog';

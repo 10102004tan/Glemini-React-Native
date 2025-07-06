@@ -18,9 +18,13 @@ const ProfilePictureField = ({ setImage, image }) => {
 
   return (
     <View style={styles.row}>
-      <Text style={styles.label}>Profile Picture</Text>
+      <Text style={styles.label}>
+        Ảnh đại diện
+      </Text>
       <Pressable onPress={pickImage}>
-        <Text style={styles.chooseFileBtn}>choose file</Text>
+        <Text style={styles.chooseFileBtn}>
+          Chọn ảnh
+        </Text>
       </Pressable>
       {image && (
         <View style={{ marginLeft: 10 }}>

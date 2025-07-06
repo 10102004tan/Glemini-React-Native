@@ -8,7 +8,7 @@ import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
 import { Audio } from 'expo-av';
 import { useRouter } from 'expo-router';
 import RankBoard from '@/components/customs/RankBoard';
-import socket from '@/utils/socket';
+import socket from '@/libs/socket';
 
 const RealtimeResult = ({
   correctCount,

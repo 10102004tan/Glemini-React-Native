@@ -95,7 +95,7 @@ const TeacherView = () => {
   );
 
   return (
-    <View className="flex-1 bg-white pb-20">
+    <>
       {/* Bộ tìm kiếm */}
       <TextInput
         value={searchQuery}
@@ -145,13 +145,11 @@ const TeacherView = () => {
       )}
 
       {/* BottomSheet */}
-      <Overlay onPress={handleCloseBts} visible={first} />
       <BottomSheet onClose={handleCloseBts} visible={first}>
         <View className="items-center">
           <Text className="text-lg font-semibold">{i18n.t('classroom.teacher.titleBts')}</Text>
-
           <View className="pt-5 w-full">
-            <Text className="pb-2 text-base text-slate-700 font-semibold">
+            <Text className="mb-2 text-base text-slate-700 font-semibold">
               {i18n.t('classroom.teacher.fieldSchool')}
             </Text>
             <SelectList
@@ -203,7 +201,7 @@ const TeacherView = () => {
           </View>
         </View>
       </BottomSheet>
-    </View>
+    </>
   );
 };
 

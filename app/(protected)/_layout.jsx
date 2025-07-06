@@ -304,19 +304,14 @@ export default function AppRootLayout() {
         }}
       />
 
-      <Stack.Screen
-        name="(collection)/detail_collection"
-        options={{
-          headerTitle: 'Quay lại bộ sưu tập',
-        }}
-      />
-
+     
       <Stack.Screen
         name="notification"
         options={{
           headerTitle: i18n.t('notification.title'),
         }}
       />
+
     </Stack>
   );
 }

@@ -8,11 +8,11 @@ const Forgot = () => {
   const [email, setEmail] = React.useState('');
   const handleForgotPassword = async () => {
     if (!email) {
-      alert('Email tidak boleh kosong');
+      alert('Email không được để trống');
       return;
     }
     if (!/\S+@\S+\.\S+/.test(email)) {
-      alert('Email tidak valid');
+      alert('Email không hợp lệ');
       return;
     }
     const response = await forgotPassword(email);
@@ -22,16 +22,16 @@ const Forgot = () => {
         params: { email },
       });
     } else {
-      alert(response.error || 'Gagal mengirim email, silakan coba lagi');
+      alert(response.error || 'Gửi email không thành công, vui lòng thử lại');
     }
   };
   return (
     <AuthLayout>
       <View>
         <View style={{ marginBottom: 20 }}>
-          <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Lupa kata sandi</Text>
+          <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Quên mật khẩu</Text>
           <Text style={{ fontSize: 16, color: '#6B7280' }}>
-            Masukkan email yang kamu daftarkan sebelumnya, nanti kamu bakal dikirim email.
+            Nhập email bạn đã đăng ký, chúng tôi sẽ gửi mã xác nhận để đặt lại mật khẩu.
           </Text>
         </View>
         <View style={{ marginBottom: 20 }}>
@@ -78,15 +78,17 @@ const Forgot = () => {
               }}
               onPress={handleForgotPassword}
             >
-              <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: 'bold' }}>Euy!</Text>
+              <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: 'bold' }}>
+                Gửi mã xác nhận
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={{ marginBottom: 20, alignItems: 'center' }}>
           <Text style={{ fontSize: 16, color: '#6B7280' }}>
-            Lah, inget lagi kata sandinya?
-            <Text style={{ color: '#4f46e5', fontWeight: 'bold' }}>Login!</Text>
+            Nhớ lại mật khẩu?
+            <Text style={{ color: '#4f46e5', fontWeight: 'bold' }}>Đăng nhập!</Text>
           </Text>
         </View>
       </View>
