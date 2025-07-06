@@ -28,12 +28,13 @@ const Play = () => {
     const { user } = useAuthStore();
     // State management
     const [index, setIndex] = useState(0);
+
     const [isNext, setIsNext] = useState(false);
     const [resultID, setResultID] = useState(null);
     const [isCompleted, setIsCompleted] = useState(false);
     const item = data[index];
     const [isCorrect, setIsCorrect] = useState(false);
-    const { quizId, exerciseId, type } = useLocalSearchParams();
+    const { quizId, exerciseId, type, indexQuestion } = useLocalSearchParams();
     const [arrayAnswer, setArrayAnswer] = useState([]);
     const { completed } = useResultProvider();
     // Animate in on question change
@@ -59,6 +60,13 @@ const Play = () => {
             friction: 6,
         }).start();
     }, [index]);
+
+    useEffect(() => {
+        const i = parseInt(indexQuestion);
+        if (!isNaN(i)) {
+            setIndex(i);
+        }
+    }, [indexQuestion]);
 
     useEffect(() => {
         const fetchData = async (quizId) => {

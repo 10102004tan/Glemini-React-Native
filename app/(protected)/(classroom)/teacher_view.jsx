@@ -16,6 +16,8 @@ import { useNavigation } from '@react-navigation/native';
 import Lottie from '@/components/loadings/Lottie';
 import SkeletonClassroomCard from '@/components/loadings/SkeletonClassroomCard';
 import { useAuthStore } from '@/store/useAuthStore';
+import MainLayout from '@/components/layouts/MainLayout';
+import ScaleTouchable from '@/components/customs/ScaleTouchable';
 
 const TeacherView = () => {
   const { fetchDetailUser } = useAuthContext();
@@ -29,13 +31,12 @@ const TeacherView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { classrooms, createClassroom, fetchClassrooms } = useClassroomProvider();
   const { subjects } = useSubjectProvider();
-  const { setIsHiddenNavigationBar, i18n } = useAppProvider();
+  const { i18n } = useAppProvider();
   const navigation = useNavigation();
   const [schools, setSchools] = useState([]);
 
   const handleCloseBts = () => {
     setFirst(false);
-    setIsHiddenNavigationBar(false);
   };
 
   useEffect(() => {
@@ -98,115 +99,139 @@ const TeacherView = () => {
   );
 
   return (
-    <View className="flex-1 bg-white">
-      {/* Bộ tìm kiếm */}
-      <TextInput
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        placeholder={i18n.t('classroom.teacher.titleSearchQuery')}
-        className="border border-slate-500 rounded-xl py-2 px-5 mx-5 mt-4"
-      />
+    <MainLayout>
+      <View style={{ flex: 1 }}>
+        {/* Bộ tìm kiếm */}
+        <TextInput
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder={i18n.t('classroom.teacher.titleSearchQuery')}
+          style={{
+            marginVertical: 12,
+            borderWidth: 1,
+            borderColor: '#ccc',
+            borderRadius: 10,
+            padding: 12,
+            backgroundColor: '#f8f8f8',
+            color: '#333',
+            fontSize: 16,
+            borderBottomWidth: 3,
+            borderBottomColor: '#6c63ff',
+          }}
+        />
 
-      {/* Thêm lớp mới */}
-      <Button
-        onPress={() => {
+        <ScaleTouchable onPress={() => {
           setFirst(true);
-          setIsHiddenNavigationBar(true);
-        }}
-        otherStyles="mx-auto my-5 bg-[#fab1a0]"
-        textStyles="text-base text-black"
-        text={i18n.t('classroom.teacher.btnAddClass')}
-        icon={<Icon className="text-lg" name="add-circle-outline" size={18} />}
-      />
-
-      {isLoading || refreshing ? (
-        // Hiển thị skeleton loader khi đang tải dữ liệu
-        <>
-          {[...Array(5)].map((_, index) => (
-            <SkeletonClassroomCard key={index} />
-          ))}
-        </>
-      ) : filteredClassrooms && filteredClassrooms.length > 0 ? (
-        <FlatList
-          data={filteredClassrooms}
-          renderItem={({ item }) => (
-            <Pressable onPress={() => handleNavigateToDetail(item._id)}>
-              <ClassroomCard classroom={item} />
-            </Pressable>
-          )}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={{ paddingBottom: 16 }}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-        />
-      ) : (
-        <Lottie
-          source={require('@/assets/jsons/empty.json')}
-          width={250}
-          height={250}
-          text={i18n.t('classroom.teacher.emptyClassroom')}
-        />
-      )}
-
-      {/* BottomSheet */}
-      <Overlay onPress={handleCloseBts} visible={first} />
-      <BottomSheet onClose={handleCloseBts} visible={first}>
-        <View className="items-center">
-          <Text className="text-lg font-semibold">{i18n.t('classroom.teacher.titleBts')}</Text>
-
-          <View className="pt-5 w-full">
-            <Text className="pb-2 text-base text-slate-700 font-semibold">
-              {i18n.t('classroom.teacher.fieldSchool')}
-            </Text>
-            <SelectList
-              setSelected={setSelectedSchool}
-              data={schools.map((school) => ({ key: school._id, value: school.school_name }))}
-              placeholder={i18n.t('classroom.teacher.placeholderFieldSchool')}
-            />
+        }}>
+          <View style={{
+            backgroundColor: '#F59E0B', // cam sáng
+            paddingVertical: 12,
+            paddingHorizontal: 24,
+            borderRadius: 12,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderWidth: 2,
+            borderBottomWidth: 4,
+            borderColor: '#D97706',
+          }}>
+            <Text style={{ color: '#fff',
+    fontWeight: '800',
+    fontSize: 15,
+    marginLeft: 8,
+    textTransform: 'uppercase',}}>{i18n.t('classroom.teacher.btnAddClass')}</Text>
           </View>
+        </ScaleTouchable>
 
-          <View className="pt-5 w-full">
-            <Text className="pb-2 text-base text-slate-700 font-semibold">
-              {i18n.t('classroom.teacher.fieldSubject')}
-            </Text>
-            <SelectList
-              setSelected={setSelectedSubject}
-              data={subjects.map((subject) => ({
-                key: subject._id,
-                value: i18n.t(`subjects.${subject.name}`),
-              }))}
-              placeholder={i18n.t('classroom.teacher.placeholderFieldSubject')}
-            />
-          </View>
-
-          <View className="pt-5 w-full">
-            <Text className="pb-2 text-base text-slate-700 font-semibold">
-              {i18n.t('classroom.teacher.fieldClassroom')}
-            </Text>
-            <TextInput
-              value={className}
-              onChangeText={setClassName}
-              placeholder={i18n.t('classroom.teacher.placeholderFieldClassroom')}
-              className="border border-slate-500 rounded-xl py-2 px-5"
-            />
-          </View>
-
-          <View className="pt-8 flex-row justify-end w-full px-4">
-            <Button
-              otherStyles="mr-3 bg-transparent px-4"
-              textStyles="text-black text-base"
-              text={i18n.t('classroom.teacher.btnCancel')}
-              onPress={handleCloseBts}
-            />
-            <Button
-              otherStyles="ml-3 bg-violet-500 px-4"
-              textStyles="text-base"
-              text={i18n.t('classroom.teacher.btnSave')}
-              onPress={handleCreateClass}
-            />
-          </View>
+        <View style={{ marginTop: 16 }}>
+          {isLoading || refreshing ? (
+          // Hiển thị skeleton loader khi đang tải dữ liệu
+          <>
+            {[...Array(5)].map((_, index) => (
+              <SkeletonClassroomCard key={index} />
+            ))}
+          </>
+        ) : filteredClassrooms && filteredClassrooms.length > 0 ? (
+          <FlatList
+            data={filteredClassrooms}
+            renderItem={({ item }) => (
+              <ScaleTouchable onPress={() => handleNavigateToDetail(item._id)}>
+                <ClassroomCard classroom={item} />
+              </ScaleTouchable>
+            )}
+            keyExtractor={(item) => item._id}
+            contentContainerStyle={{ paddingBottom: 16 }}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          />
+        ) : (
+          <Lottie
+            source={require('@/assets/jsons/empty.json')}
+            width={250}
+            height={250}
+            text={i18n.t('classroom.teacher.emptyClassroom')}
+          />
+        )}
         </View>
-      </BottomSheet>
-    </View>
+
+        {/* BottomSheet */}
+        <BottomSheet onClose={handleCloseBts} visible={first} bottomSheetTitle={i18n.t('classroom.teacher.titleBts')}>
+          <View className="items-center">
+            <Text className="text-lg font-semibold"></Text>
+
+            <View className="pt-5 w-full">
+              <Text className="pb-2 text-base text-slate-700 font-semibold">
+                {i18n.t('classroom.teacher.fieldSchool')}
+              </Text>
+              <SelectList
+                setSelected={setSelectedSchool}
+                data={schools.map((school) => ({ key: school._id, value: school.school_name }))}
+                placeholder={i18n.t('classroom.teacher.placeholderFieldSchool')}
+              />
+            </View>
+
+            <View className="pt-5 w-full">
+              <Text className="pb-2 text-base text-slate-700 font-semibold">
+                {i18n.t('classroom.teacher.fieldSubject')}
+              </Text>
+              <SelectList
+                setSelected={setSelectedSubject}
+                data={subjects.map((subject) => ({
+                  key: subject._id,
+                  value: i18n.t(`subjects.${subject.name}`),
+                }))}
+                placeholder={i18n.t('classroom.teacher.placeholderFieldSubject')}
+              />
+            </View>
+
+            <View className="pt-5 w-full">
+              <Text className="pb-2 text-base text-slate-700 font-semibold">
+                {i18n.t('classroom.teacher.fieldClassroom')}
+              </Text>
+              <TextInput
+                value={className}
+                onChangeText={setClassName}
+                placeholder={i18n.t('classroom.teacher.placeholderFieldClassroom')}
+                className="border border-slate-500 rounded-xl py-2 px-5"
+              />
+            </View>
+
+            <View className="pt-8 flex-row justify-end w-full px-4">
+              <Button
+                otherStyles="mr-3 bg-transparent px-4"
+                textStyles="text-black text-base"
+                text={i18n.t('classroom.teacher.btnCancel')}
+                onPress={handleCloseBts}
+              />
+              <Button
+                otherStyles="ml-3 bg-violet-500 px-4"
+                textStyles="text-base"
+                text={i18n.t('classroom.teacher.btnSave')}
+                onPress={handleCreateClass}
+              />
+            </View>
+          </View>
+        </BottomSheet>
+      </View>
+    </MainLayout>
   );
 };
 

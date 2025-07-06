@@ -1,7 +1,8 @@
 import ResultReview from '@/app/(protected)/(result)/review';
 import { Images } from '@/constants';
 import { useState } from 'react';
-
+import moment from 'moment';
+import ScaleTouchable from './ScaleTouchable';
 const { useResultProvider } = require('@/contexts/ResultProvider');
 const { useAuthStore } = require('@/store/useAuthStore');
 const { FontAwesome6 } = require('@expo/vector-icons');
@@ -55,7 +56,7 @@ const DoingResults = ({
       showsVerticalScrollIndicator={false}
       data={results}
       renderItem={({ item }) => (
-        <Pressable
+        <ScaleTouchable
           onPress={() => {
             Alert.alert(
               i18n.t('activity.titleQuestionContinuteQUiz'),
@@ -65,11 +66,12 @@ const DoingResults = ({
                 {
                   text: i18n.t('activity.btnContinute'),
                   onPress: async () => {
+                    const indexQuestion = item.result_questions?.length || 0;
                     if (item.type === 'publish') {
                       router.push({
                         //(play)/single
                         pathname: '(play)/demo',
-                        params: { quizId: item.quiz_id?._id, type: item.type },
+                        params: { quizId: item.quiz_id?._id, type: item.type, indexQuestion },
                       });
                     } else if (item.type === 'exercise') {
                       const now = moment();
@@ -82,6 +84,7 @@ const DoingResults = ({
                             quizId: item.quiz_id?._id,
                             exerciseId: item.exercise_id?._id,
                             type: item.type,
+                            indexQuestion
                           },
                         });
                       } else {
@@ -120,7 +123,7 @@ const DoingResults = ({
           }}
         >
           <ResultDoingItem result={item} i18n={i18n} itemWidth={itemWidth}/>
-        </Pressable>
+        </ScaleTouchable>
       )}
       keyExtractor={(item) => item._id}
       numColumns={2}
