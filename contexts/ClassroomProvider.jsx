@@ -69,20 +69,8 @@ const ClassroomProvider = ({ children }) => {
 
   const removeClassroom = async (classroomId) => {
     try {
-      const response = await fetch(
-        `${API_URL}${API_VERSION.V1}${END_POINTS.CLASSROOM_DELETE}/${classroomId}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-client-id': userData._id,
-            authorization: userData.accessToken,
-          },
-        },
-      );
-
-      const data = await response.json();
-
+      const response = await api.delete(`${API_VERSION.V1}${END_POINTS.CLASSROOM_DELETE}/${classroomId}`);
+      const data = await response.data
       if (data.statusCode === 200) {
         if (data.metadata === true) {
           await fetchClassrooms();

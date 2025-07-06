@@ -55,7 +55,7 @@ const StudentDetail = () => {
   const startQuiz = async (quizId, exerciseId) => {
     const fetchedResult = await fetchResultData({ quizId, exerciseId, type: 'exercise' });
     if (fetchedResult) {
-      router.push({ pathname: '/(home)/activity' });
+      router.push({ pathname: '/(homev2)/activity.student' });
     } else {
       router.push({
         pathname: '(play)/demo',

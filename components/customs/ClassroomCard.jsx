@@ -4,6 +4,7 @@ import React from 'react';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { useAuthStore } from '@/store/useAuthStore';
+import ScaleTouchable from './ScaleTouchable';
 
 const ClassroomCard = ({ classroom }) => {
   const { user } = useAuthStore();
@@ -33,8 +34,7 @@ const ClassroomCard = ({ classroom }) => {
 
       {/* Nút dots */}
       {user.user_role === 'teacher' && (
-        <TouchableOpacity
-          style={styles.moreButton}
+        <ScaleTouchable
           onPress={() => {
             Alert.alert(
               i18n.t('classroom.teacher.titleQuestionContinuteQUiz'),
@@ -51,8 +51,11 @@ const ClassroomCard = ({ classroom }) => {
             );
           }}
         >
+          <View style={styles.moreButton}>
+
           <Entypo name="dots-three-horizontal" size={18} color="#4B5563" />
-        </TouchableOpacity>
+          </View>
+        </ScaleTouchable>
       )}
     </View>
   );
@@ -114,6 +117,9 @@ const styles = StyleSheet.create({
   moreButton: {
     padding: 8,
     borderRadius: 20,
+    borderWidth: 1,
+    borderBottomWidth: 3,
+    borderColor: '#D1D5DB',
     backgroundColor: '#E5E7EB',
     alignItems: 'center',
     justifyContent: 'center',
