@@ -520,7 +520,7 @@
     "student": {
       "titleScreen": "Chi tiết lớp học",
       "titleSearchQuery": "Nhập tên lớp cần tìm",
-      "title": "Bài tập được giao",
+      "title": "Bài tập về nhà",
       "textEnd": "Đã kết thúc",
       "notiDL": "Hết hạn làm bài",
       "notiChildDL": "Bạn không thể làm bài này nữa.",
@@ -560,7 +560,7 @@
     "textCompleted": "Đã hoàn thành",
     "emptyActivity": "Danh sách trống",
     "publish": "Công khai",
-    "exercise": "Được giao",
+    "exercise": "Bài tập",
     "room": "Phòng",
     "titleQuestionContinuteQUiz": "Tiếp tục thực hiện?",
     "textQuestionContinuteQuiz": "Bạn có muốn tiếp tục bài kiểm tra này?",

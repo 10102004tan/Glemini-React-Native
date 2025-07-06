@@ -8,7 +8,6 @@ import {
   Animated,
   StyleSheet,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign';
 
 const ResultReview = ({ result, visible, onClose }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -214,6 +213,9 @@ const styles = StyleSheet.create({
     maxHeight: '90%',
     paddingVertical: 16,
     paddingHorizontal: 12,
+    borderWidth: 1,
+    borderBottomWidth: 4,
+    borderColor: '#6366f1',
   },
   containerScroll: {
     paddingBottom: 24,
