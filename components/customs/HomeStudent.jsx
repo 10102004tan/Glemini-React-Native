@@ -120,7 +120,7 @@ const HomeStudent = () => {
         text1: 'Bạn đã chơi bộ câu hỏi này.',
       });
       router.push({
-        pathname: '/(home)/activity',
+        pathname: '/(homev2)/activity.student',
       });
     } else {
       router.push({

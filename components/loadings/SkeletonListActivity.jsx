@@ -5,79 +5,83 @@ const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 16; // Tính kích thước mỗi ô
 
 const SkeletonItem = () => {
-  const animation = new Animated.Value(0);
+  const animation = React.useRef(new Animated.Value(0)).current;
 
-  // Tạo hiệu ứng nhấp nháy cho Skeleton
   React.useEffect(() => {
     Animated.loop(
       Animated.timing(animation, {
         toValue: 1,
-        duration: 1000,
+        duration: 1200,
+        easing: Easing.linear,
         useNativeDriver: true,
-        easing: Easing.inOut(Easing.ease),
-      }),
+      })
     ).start();
   }, []);
 
-  // Hiệu ứng màu nhấp nháy
-  const opacityInterpolate = animation.interpolate({
+  const shimmerTranslate = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [0.1, 0.5],
+    outputRange: [-itemWidth, itemWidth],
   });
 
   return (
-    <View
-      style={{
-        backgroundColor: '#f1f5f9',
-        marginBottom: 12,
-        borderRadius: 12,
-        overflow: 'hidden',
-        marginHorizontal: 2,
-      }}
-    >
+  <View
+    style={{
+      backgroundColor: '#DCFCE7', // Xanh lá nhạt
+      borderWidth: 1,
+      borderColor: '#BBF7D0',
+      marginBottom: 16,
+      borderRadius: 10,
+      overflow: 'hidden',
+      marginHorizontal: 4,
+    }}
+  >
+    <View style={{ height: 110, backgroundColor: '#BBF7D0', position: 'relative' }}>
       <Animated.View
         style={{
-          opacity: opacityInterpolate,
-          backgroundColor: '#cbd5e1',
-          height: 128,
-          width: '100%',
+          position: 'absolute',
+          height: '100%',
+          width: itemWidth * 1.5,
+          backgroundColor: 'rgba(255, 255, 255, 0.4)',
+          transform: [{ translateX: shimmerTranslate }],
         }}
       />
-      <View style={{ padding: 16 }}>
-        <Animated.View
-          style={{
-            opacity: opacityInterpolate,
-            backgroundColor: '#cbd5e1',
-            height: 16,
-            marginBottom: 8,
-          }}
-        />
-        <Animated.View
-          style={{
-            opacity: opacityInterpolate,
-            backgroundColor: '#cbd5e1',
-            height: 16,
-            marginBottom: 8,
-            width: '75%',
-          }}
-        />
-        <Animated.View
-          style={{
-            opacity: opacityInterpolate,
-            backgroundColor: '#cbd5e1',
-            height: 16,
-            marginBottom: 8,
-            width: '50%',
-          }}
-        />
-      </View>
     </View>
-  );
+
+    <View style={{ padding: 16 }}>
+      {[100, 75, 50].map((w, i) => (
+        <View
+          key={i}
+          style={{
+            backgroundColor: '#BBF7D0',
+            height: 16,
+            marginBottom: 10,
+            borderRadius: 12,
+            width: `${w}%`,
+            overflow: 'hidden',
+            position: 'relative',
+          }}
+        >
+          <Animated.View
+            style={{
+              position: 'absolute',
+              height: '100%',
+              width: itemWidth * 1.5,
+              backgroundColor: 'rgba(255, 255, 255, 0.4)',
+              transform: [{ translateX: shimmerTranslate }],
+            }}
+          />
+        </View>
+      ))}
+    </View>
+  </View>
+);
+
 };
+
 
 const SkeletonList = ({ count = 6 }) => {
   return (
-    <View style={{ padding: 8 }}>
+    <View style={{ paddingVertical: 8 }}>
       {/* Sử dụng flex row và flex-wrap để tạo khoảng cách đều giữa các ô */}
       <View
         style={{
