@@ -49,7 +49,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Providers>
         <NotificationProvider>
-          <Slot/>
+          <Slot />
           <Toast />
           <ToastV2 />
           <ModalContainer />

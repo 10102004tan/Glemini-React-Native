@@ -26,7 +26,7 @@ const CollectionDetail = () => {
   const [quizzes, setQuizzes] = useState([]);
   // Tạo biến để lưu tên bộ sưu tập
   // const [collectionName, setCollectionName] = useState('');
-  const { id ,collectionName} = useGlobalSearchParams();
+  const { id, collectionName } = useGlobalSearchParams();
   const { userData } = useAuthContext();
 
   // lấy tất cả id của quiz

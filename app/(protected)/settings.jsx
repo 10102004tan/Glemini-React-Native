@@ -6,18 +6,17 @@ import { router, Stack } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
 import { Text, View } from 'react-native';
 export default function SettingsScreen() {
-   const { signOut } = useAuthStore();
-    const { expoPushToken } = useNotification();
-    const handleLogout = () => {
-      signOut({
-        deviceToken: expoPushToken || null,
-      }).then(() => {
-        router.replace('/(auth)/login');
-      });
-    };
+  const { signOut } = useAuthStore();
+  const { expoPushToken } = useNotification();
+  const handleLogout = () => {
+    signOut({
+      deviceToken: expoPushToken || null,
+    }).then(() => {
+      router.replace('/(auth)/login');
+    });
+  };
   return (
     <MainLayout>
-
       <Stack.Screen
         options={{
           headerTitle: 'Cài đặt',

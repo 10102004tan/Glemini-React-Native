@@ -22,7 +22,7 @@ const Classroom = () => {
     }
   }
 
-  return content
+  return content;
 };
 
 export default Classroom;

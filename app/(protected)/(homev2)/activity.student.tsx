@@ -193,10 +193,10 @@ const ActivityStudent = () => {
   };
   return (
     // <MainLayout>
-      
+
     // </MainLayout>
     <>
-    <View
+      <View
         //className="flex-1 bg-white pb-20"
         style={{
           flex: 1,

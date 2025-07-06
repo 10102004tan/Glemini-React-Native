@@ -85,7 +85,7 @@ const MyCollection = () => {
       <View className="p-3">
         <Button
           icon={<AntDesign name="plus" size={16} color="white" />}
-        //   onPress={OpenBottomSheet}
+          //   onPress={OpenBottomSheet}
           title="Tạo mới"
           otherStyles={'w-1/2 justify-center p-4'}
           textStyles={'text-center text-white'}
@@ -99,10 +99,9 @@ const MyCollection = () => {
               name={item.collection_name}
               count={item.quizzes ? item.quizzes.length : 0}
               onPress={() => {
-                router.push({ pathname: '/(protected)/collection/[id]',
-                  params: { id: item._id ,
-                    collectionName: item.collection_name
-                  },
+                router.push({
+                  pathname: '/(protected)/collection/[id]',
+                  params: { id: item._id, collectionName: item.collection_name },
                 });
               }}
             />

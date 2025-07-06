@@ -2,12 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 
-const CollectionItem = ({
-  name,
-  count,
-  onPress,
-  folderColor = '#4f46e5',
-}) => {
+const CollectionItem = ({ name, count, onPress, folderColor = '#4f46e5' }) => {
   return (
     <TouchableOpacity
       onPress={onPress}

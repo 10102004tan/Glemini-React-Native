@@ -77,9 +77,9 @@ const Account = () => {
       <Stack.Screen
         options={{
           headerTitle: 'Tài khoản',
-          headerTitleStyle:{
-            color:"#000"
-          }
+          headerTitleStyle: {
+            color: '#000',
+          },
         }}
       />
 

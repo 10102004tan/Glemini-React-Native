@@ -33,13 +33,9 @@ const Library = () => {
       renderScene={({ route }) => {
         switch (route.key) {
           case 'library':
-            return (
-              <MyLibrary/>
-            );
+            return <MyLibrary />;
           case 'collection':
-            return (
-              <MyCollection/>
-            );
+            return <MyCollection />;
           default:
             return null;
         }

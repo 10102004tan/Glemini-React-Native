@@ -68,10 +68,7 @@ export default function TabLayout() {
           // title: 'Thư viện',
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? 'library' : 'library-outline'}
-              color={color}
-            />
+            <TabBarIcon name={focused ? 'library' : 'library-outline'} color={color} />
           ),
           tabBarButton: (props) =>
             user.user_role === 'teacher' ? <TouchableOpacity {...props} /> : null,

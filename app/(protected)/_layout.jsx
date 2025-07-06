@@ -304,14 +304,12 @@ export default function AppRootLayout() {
         }}
       />
 
-     
       <Stack.Screen
         name="notification"
         options={{
           headerTitle: i18n.t('notification.title'),
         }}
       />
-
     </Stack>
   );
 }
