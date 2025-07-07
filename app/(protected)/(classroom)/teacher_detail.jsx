@@ -9,20 +9,125 @@ import {
   TouchableOpacity,
   Animated,
   Easing,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
 } from 'react-native';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Overlay from '@/components/customs/Overlay';
-import BottomSheet from '@/components/customs/BottomSheet';
 import { useAppProvider } from '@/contexts/AppProvider';
 import Button from '@/components/customs/Button';
 import { router, useFocusEffect } from 'expo-router';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import Toast from 'react-native-toast-message-custom';
 import LottieView from 'lottie-react-native';
-import moment from 'moment';
+import ScaleTouchable from '@/components/customs/ScaleTouchable';
+import Loading from '@/components/customs/Loading';
+import MainLayout from '@/components/layouts/MainLayout';
+
+const { width } = Dimensions.get('window');
+
+const mascotImg = require('@/assets/images/react-logo.png'); // Placeholder mascot
+const avatarPlaceholder = require('@/assets/images/icon.png'); // Placeholder avatar
+const quizIcon = require('@/assets/images/react-logo.png'); // Placeholder quiz icon
+
+const BackButton = ({ onPress }) => (
+  <TouchableOpacity onPress={onPress} style={styles.backBtn}>
+    <AntDesign name="arrowleft" size={24} color="#388E3C" />
+  </TouchableOpacity>
+);
+
+const TeacherHeader = ({ classroom, isLoading }) => (
+  <View style={styles.teacherHeaderWrap}>
+    <View style={styles.teacherAvatarWrap}>
+      <Image source={classroom?.user_id?.user_avatar ? { uri: classroom.user_id.user_avatar } : avatarPlaceholder} style={styles.teacherAvatar} />
+    </View>
+    <Text style={styles.classNameTextGreen}>{isLoading ? '' : classroom.class_name}</Text>
+    <Text style={styles.teacherName}>{classroom?.user_id?.user_fullname || ''}</Text>
+    <Text style={styles.teacherEmail}>{classroom?.user_id?.user_email || ''}</Text>
+    {/* School, District, Province Info */}
+    {classroom?.school && (
+      <View style={styles.schoolInfoWrap}>
+        <AntDesign name="home" size={14} color="#388E3C" style={{ marginRight: 4 }} />
+        <Text style={styles.schoolInfoText}>
+          {classroom.school.school_name}
+          {classroom.school.district?.district_name ? `, ${classroom.school.district.district_name}` : ''}
+          {classroom.school.province?.province_name ? `, ${classroom.school.province.province_name}` : ''}
+        </Text>
+      </View>
+    )}
+  </View>
+);
+
+const ExerciseCard = ({ item, index, moment }) => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 350,
+      delay: index * 80,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+  const endDate = moment(item.date_end);
+  const now = moment();
+  const isExpired = endDate.isBefore(now);
+  return (
+    <Animated.View style={[
+      styles.exerciseGridCard,
+      { backgroundColor: isExpired ? '#FFD6D6' : '#E6FFE6', borderColor: isExpired ? '#CC0000' : '#1CBF60' },
+      { opacity: fadeAnim, transform: [{ scale: fadeAnim }] }
+    ]}> 
+      <View style={styles.exerciseIconWrap}>
+        <Image source={item.quiz_id?.quiz_thumb ? { uri: item.quiz_id.quiz_thumb } : quizIcon} style={styles.exerciseIcon} />
+        <View style={styles.exerciseIconBadge}>
+          <AntDesign name="star" size={14} color="#FFD600" />
+        </View>
+      </View>
+      <Text style={styles.exerciseGridTitle}>{item.name}</Text>
+      <View style={styles.exerciseGridRow}>
+        <AntDesign name="calendar" size={14} color="#388E3C" style={{ marginRight: 4 }} />
+        <Text style={styles.exerciseGridDate}>{endDate.format('MMM D')}</Text>
+      </View>
+      <View style={styles.exerciseGridRow}>
+        <AntDesign name="checkcircle" size={14} color="#388E3C" style={{ marginRight: 4 }} />
+        <Text style={styles.exerciseGridTime}>{endDate.fromNow(true) ? `In ${endDate.fromNow(true)}` : ''}</Text>
+      </View>
+    </Animated.View>
+  );
+};
+
+const StudentItem = ({ item, index, confirmDeleteStudent, styles, avatarPlaceholder }) => {
+  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+  React.useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 350,
+      delay: index * 60,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+  return (
+    <Animated.View style={[styles.studentCardGaming, { opacity: fadeAnim, transform: [{ scale: fadeAnim }] }]}> 
+      <View style={styles.studentInfoRowGaming}>
+        <View style={styles.avatarBadgeWrap}>
+          <Image source={item.user_avatar ? { uri: item.user_avatar } : avatarPlaceholder} style={styles.avatarGaming} />
+          <View style={styles.avatarBadge}><AntDesign name="user" size={14} color="#fff" /></View>
+        </View>
+        <View style={{ flex: 1, marginLeft: 14 }}>
+          <Text style={styles.studentNameGaming}>{item.user_fullname}</Text>
+          <Text style={styles.studentEmailGaming}>{item.user_email}</Text>
+        </View>
+        <TouchableOpacity onPress={() => confirmDeleteStudent(item._id)} style={styles.deleteBtnGaming}>
+          <AntDesign name="delete" size={20} color="#fff" />
+        </TouchableOpacity>
+      </View>
+    </Animated.View>
+  );
+};
 
 const TeacherDetail = () => {
   const route = useRoute();
@@ -34,9 +139,13 @@ const TeacherDetail = () => {
   const { classroom, fetchClassroom, removeStudent, addStudent } = useClassroomProvider();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [index, setIndex] = useState(0); // 0: Exercises, 1: Students
 
-  useFocusEffect(
-    useCallback(() => {
+  // Modal animation
+  const modalScale = useRef(new Animated.Value(0.8)).current;
+  const modalOpacity = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
       const loadClassroom = async () => {
         setIsLoading(true);
         try {
@@ -47,10 +156,8 @@ const TeacherDetail = () => {
           setIsLoading(false);
         }
       };
-
       loadClassroom();
-    }, [classroomId]),
-  );
+    }, [classroomId]);
 
   const handleCloseBottomSheet = () => {
     setShowBottomSheet(0);
@@ -59,6 +166,10 @@ const TeacherDetail = () => {
   const confirmDeleteStudent = (studentId) => {
     setStudentToRemove(studentId);
     setModalVisible(true);
+    Animated.parallel([
+      Animated.spring(modalScale, { toValue: 1, useNativeDriver: true }),
+      Animated.timing(modalOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+    ]).start();
   };
 
   const handleDeleteStudent = async () => {
@@ -72,7 +183,10 @@ const TeacherDetail = () => {
         autoHide: true,
       });
     }
-    setModalVisible(false);
+    Animated.timing(modalOpacity, { toValue: 0, duration: 150, useNativeDriver: true }).start(() => {
+      setModalVisible(false);
+      modalScale.setValue(0.8);
+    });
   };
 
   const handleAddStudent = async () => {
@@ -103,308 +217,854 @@ const TeacherDetail = () => {
     }
   };
 
-  const SkeletonItem = ({ style }) => {
-    const [shimmerAnimation] = useState(new Animated.Value(0));
-
-    useEffect(() => {
-      const shimmerLoop = Animated.loop(
-        Animated.timing(shimmerAnimation, {
-          toValue: 1,
-          duration: 1000,
-          easing: Easing.circle,
-          useNativeDriver: true,
-        }),
-      );
-      shimmerLoop.start();
-      return () => shimmerLoop.stop();
-    }, [shimmerAnimation]);
-
-    const shimmerBackground = shimmerAnimation.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['#e0e0e0', '#f5f5f5'],
-    });
-
-    return <Animated.View style={[style, { backgroundColor: shimmerBackground }]} />;
-  };
-
-  const renderSkeletonList = (numItems) => (
-    <FlatList
-      data={Array(numItems).fill(0)}
-      keyExtractor={(_, index) => `skeleton-${index}`}
-      renderItem={() => (
-        <View className="bg-white p-4 mb-3 rounded-lg">
-          <SkeletonItem style={{ height: 20, width: '70%', marginBottom: 8 }} />
-          <SkeletonItem style={{ height: 14, width: '50%' }} />
-        </View>
-      )}
-    />
-  );
-
-  // Tab routes
-  const renderExercises = () => (
-    <View className="p-5">
-      {classroom.exercises?.length > 0 ? (
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={classroom.exercises}
-          keyExtractor={(exercise) => exercise._id}
-          renderItem={({ item }) => {
-            const endDate = moment(item.date_end);
-            const now = moment();
-            const duration = moment.duration(endDate.diff(now));
-            const isExpired = duration.asMilliseconds() <= 0;
-
-            return (
-              <Pressable onPress={() => console.log(item._id)}>
-                <View className="bg-slate-100 px-4 py-2 mb-2 rounded-md">
-                  <View className="flex-row items-center justify-between">
-                    <View className="flex items-start gap-1">
-                      <Text className="text-base font-semibold">{item.name}</Text>
-                      <Text
-                        className={`text-base ${new Date(item.date_end) > Date.now() ? 'text-green-500' : 'text-red-500'} `}
-                      >
-                        {moment(item.date_end).format('LLLL')}
-                      </Text>
-                      <Text
-                        className={`text-[12px] ${new Date(item.date_end) > Date.now() ? 'text-green-500' : 'text-red-500'} `}
-                      >
-                        {moment(item.date_end).fromNow()}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </Pressable>
-            );
-          }}
-        />
-      ) : (
-        <View className="h-full flex items-center justify-center">
-          <LottieView
-            source={require('@/assets/jsons/not-found.json')}
-            autoPlay
-            loop
-            style={{
-              width: 300,
-              height: 300,
-            }}
-          />
-        </View>
-      )}
-    </View>
-  );
-
-  const renderStudents = () => (
-    <View className="p-5">
-      {classroom.students?.length > 0 ? (
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={classroom.students}
-          keyExtractor={(student) => student._id}
-          renderItem={({ item }) => (
-            <Pressable onPress={() => console.log(item._id)}>
-              <View className="bg-slate-100 p-4 mb-2 rounded-md">
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-row items-center gap-3">
-                    <Image source={{ uri: item.user_avatar }} className="w-10 h-10 rounded-full" />
-                    <View>
-                      <Text className="text-base font-semibold">{item.user_fullname}</Text>
-                      <Text className="text-xs">{item.user_email}</Text>
-                    </View>
-                  </View>
-                  <Pressable onPress={() => confirmDeleteStudent(item._id)}>
-                    <AntDesign name="delete" size={20} />
-                  </Pressable>
-                </View>
-              </View>
-            </Pressable>
-          )}
-        />
-      ) : (
-        <View className="h-full flex items-center justify-center">
-          <LottieView
-            source={require('@/assets/jsons/not-found.json')}
-            autoPlay
-            loop
-            style={{
-              width: 300,
-              height: 300,
-            }}
-          />
-        </View>
-      )}
-    </View>
-  );
-
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: 'exercises', title: 'Danh sách bài tập' },
-    { key: 'students', title: 'Danh sách học sinh' },
-  ]);
-
-  const withLoading = (renderFn, isLoading) => (props) =>
-    isLoading ? renderSkeletonList(5) : renderFn(props);
-
-  const renderScene = SceneMap({
-    exercises: withLoading(renderExercises, isLoading),
-    students: withLoading(renderStudents, isLoading),
-  });
-
-  const [shimmerAnimation] = useState(new Animated.Value(0));
-
-  useEffect(() => {
-    const shimmerLoop = Animated.loop(
-      Animated.timing(shimmerAnimation, {
-        toValue: 1,
-        duration: 1200,
-        easing: Easing.circle,
-        useNativeDriver: true,
-      }),
+  // --- UI RENDERING ---
+  // Exercises grid (2 columns)
+  const renderExercisesGrid = () => (
+      <FlatList
+        key={index === 0 ? 'exercises-grid' : 'students-list'} // Force remount when switching numColumns
+        data={classroom.exercises || []}
+        keyExtractor={item => item._id}
+        numColumns={2}
+        columnWrapperStyle={styles.exerciseGridRowWrap}
+        renderItem={({ item, index }) => (
+          <ExerciseCard item={item} index={index} moment={moment} />
+        )}
+        ListEmptyComponent={<View style={styles.emptyLottieWrap}><LottieView source={require('@/assets/jsons/empty.json')} autoPlay loop style={{ width: 180, height: 180 }} /><Text style={{fontSize: 16, fontWeight: 600, color: '#1CBF60'}}>Không có bài tập</Text></View>}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <>
+            <TeacherHeader classroom={classroom} isLoading={isLoading} />
+            <View style={styles.tabSwitchWrapGreen}>
+              <TouchableOpacity
+                style={[styles.tabSwitchBtnGreen, index === 0 && styles.tabSwitchBtnActiveGreen]}
+                onPress={() => setIndex(0)}
+              >
+                <Text style={[styles.tabSwitchTextGreen, index === 0 && styles.tabSwitchTextActiveGreen]}>Exercises</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tabSwitchBtnGreen, index === 1 && styles.tabSwitchBtnActiveGreen]}
+                onPress={() => setIndex(1)}
+              >
+                <Text style={[styles.tabSwitchTextGreen, index === 1 && styles.tabSwitchTextActiveGreen]}>Students</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        }
+        contentContainerStyle={{ paddingBottom: 24 }}
+      />
     );
-    shimmerLoop.start();
 
-    return () => shimmerLoop.stop(); // Cleanup animation when component unmounts
-  }, [shimmerAnimation]);
+  // Students list
+  const renderStudentsList = () => (
+      <FlatList
+        key={index === 0 ? 'exercises-grid' : 'students-list'}
+        data={classroom.students || []}
+        keyExtractor={(student) => student._id}
+        renderItem={({ item, index }) => (
+          <StudentItem item={item} index={index} confirmDeleteStudent={confirmDeleteStudent} styles={styles} avatarPlaceholder={avatarPlaceholder} />
+        )}
+        ListEmptyComponent={<View style={styles.emptyLottieWrap}><LottieView source={require('@/assets/jsons/empty.json')} autoPlay loop style={{ width: 180, height: 180 }} /><Text style={{fontSize: 16, fontWeight: 600, color: '#1CBF60'}}>Không có bài tập</Text></View>}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <>
+            <TeacherHeader classroom={classroom} isLoading={isLoading} />
+            <View style={styles.tabSwitchWrapGreen}>
+              <TouchableOpacity
+                style={[styles.tabSwitchBtnGreen, index === 0 && styles.tabSwitchBtnActiveGreen]}
+                onPress={() => setIndex(0)}
+              >
+                <Text style={[styles.tabSwitchTextGreen, index === 0 && styles.tabSwitchTextActiveGreen]}>Exercises</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tabSwitchBtnGreen, index === 1 && styles.tabSwitchBtnActiveGreen]}
+                onPress={() => setIndex(1)}
+              >
+                <Text style={[styles.tabSwitchTextGreen, index === 1 && styles.tabSwitchTextActiveGreen]}>Students</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        }
+        contentContainerStyle={{ paddingBottom: 24 }}
+      />
+    );
 
-  const shimmerBackground = shimmerAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['#94a3b8', '#fff'],
-  });
+  if (isLoading) {
+    return <MainLayout>
+    <Loading/>
+      </MainLayout>
+  }
 
   return (
-    <View className="flex-1 bg-white">
-      <View className="w-full h-44 bg-red-800  flex justify-center items-center">
-        {isLoading ? (
-          <Animated.View
-            className="w-3/4 h-12 rounded-md"
-            style={{ backgroundColor: shimmerBackground }}
-          />
-        ) : (
-          <Text className="text-2xl text-white">
-            {classroom.class_name} - {i18n.t(`subjects.${classroom.subject?.name}`)}
-          </Text>
-        )}
+    <View style={styles.rootGreen}>
+      <BackButton onPress={() => router.back()} />
+      {index === 0 ? renderExercisesGrid() : renderStudentsList()}
+      {/* Floating Add Student Button */}
+      {showBottomSheet === 0 && (
         <TouchableOpacity
-          className="bg-white/70 rounded-full p-2 absolute bottom-5 right-5"
-          onPress={() => {
-            setShowBottomSheet(1);
-          }}
+          style={styles.fabAddStudent}
+          onPress={() => setShowBottomSheet(1)}
+          activeOpacity={0.8}
         >
-          <AntDesign name="adduser" size={25} />
+          <AntDesign name="plus" size={28} color="#fff" />
         </TouchableOpacity>
-      </View>
+      )}
 
-      <TabView
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        renderTabBar={(props) => (
-          <TabBar
-            {...props}
-            indicatorStyle={{ backgroundColor: 'green' }}
-            style={{ backgroundColor: 'white' }}
-            labelStyle={{ color: 'black' }}
-          />
-        )}
-      />
-
-      {/* Overlay and BottomSheets */}
-      <Overlay onPress={handleCloseBottomSheet} visible={showBottomSheet !== 0} />
-
-      {/* BottomSheet 1 */}
-      <BottomSheet onClose={handleCloseBottomSheet} visible={showBottomSheet === 1}>
-        <View className="items-center">
-          <Text className="text-lg font-semibold">
-            {i18n.t('classroom.teacher.titleBtsAddStudent')}
-          </Text>
-          <Button
-            otherStyles="bg-green-500 px-5 mt-5"
-            textStyles="text-base font-semibold"
-            text={'Excel'}
-            onPress={() => {
-              router.push({
-                pathname: '/(classroom)/upload_excel',
-                params: { classroomId: classroom._id },
-              });
-            }}
-          />
-          <View className="h-[1px] bg-green-100 rounded-full w-40 my-4" />
-          <Button
-            otherStyles="bg-blue-500 px-4"
-            textStyles="text-base font-semibold"
-            text={i18n.t('classroom.teacher.btnSave')}
-            onPress={() => setShowBottomSheet(2)}
-          />
-        </View>
-      </BottomSheet>
-
-      {/* BottomSheet 2 */}
-      <BottomSheet onClose={handleCloseBottomSheet} visible={showBottomSheet === 2}>
-        <View className="items-center">
-          <Text className="text-lg font-semibold">
-            {i18n.t('classroom.teacher.btsTitleAddStudent')}
-          </Text>
-
-          <View className="pt-5 w-full">
-            <Text className="pb-2 mt-3 text-base text-slate-700 font-semibold">
-              {i18n.t('classroom.teacher.btsTitleEmail')}
-            </Text>
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-              placeholder={i18n.t('classroom.teacher.btsPlaceholder')}
-              className="border border-slate-500 rounded-xl py-2 px-5"
-            />
-          </View>
-
-          <View className="pt-8 flex-row justify-end w-full px-4">
-            <Button
-              otherStyles="mr-3 bg-transparent px-4"
-              textStyles="text-black text-base"
-              text={i18n.t('classroom.teacher.btnCancel')}
-              onPress={handleCloseBottomSheet}
-            />
-            <Button
-              otherStyles="ml-3 bg-violet-500 px-4"
-              textStyles="text-base"
-              text={i18n.t('classroom.teacher.btnSave')}
-              onPress={() => {
-                handleAddStudent();
-              }}
-            />
+      {/* Modal Add Student Options (Bottom) */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showBottomSheet === 1}
+        onRequestClose={handleCloseBottomSheet}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalBottomSheetContainer]}>
+            <View style={[styles.modalBottomSheetContent]}>
+              <TouchableOpacity style={styles.modalSheetCloseBtn} onPress={handleCloseBottomSheet}>
+                <AntDesign name="close" size={22} color="#999" />
+              </TouchableOpacity>
+              <Text style={styles.modalSheetTitle}>{i18n.t('classroom.teacher.titleBtsAddStudent')}</Text>
+              <ScaleTouchable
+                onPress={() => {
+                  setShowBottomSheet(0);
+                  router.push({ pathname: '/(classroom)/upload_excel', params: { classroomId: classroom._id } });
+                }}
+              >
+                <View style={styles.modalSheetBtnExcel}>
+                  <Text style={styles.modalSheetBtnText}>Excel</Text>
+                </View>
+              </ScaleTouchable>
+              <View style={styles.modalSheetDivider} />
+              <ScaleTouchable onPress={() => setShowBottomSheet(2)}>
+                <View style={styles.modalSheetBtnEmail}>
+                  <Text style={styles.modalSheetBtnText}>{i18n.t('classroom.teacher.btnSave')}</Text>
+                </View>
+              </ScaleTouchable>
+            </View>
           </View>
         </View>
-      </BottomSheet>
-
-      {/* Confirmation Modal for Student Deletion */}
+      </Modal>
+      {/* Modal Add Student by Email (Bottom) */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showBottomSheet === 2}
+        onRequestClose={handleCloseBottomSheet}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBottomSheetContainer}>
+            <View style={styles.modalBottomSheetContent}>
+              <TouchableOpacity style={styles.modalSheetCloseBtn} onPress={handleCloseBottomSheet}>
+                <AntDesign name="close" size={22} color="#888" />
+              </TouchableOpacity>
+              <Text style={styles.modalSheetTitle}>{i18n.t('classroom.teacher.btsTitleAddStudent')}</Text>
+              <View style={{ paddingTop: 20, width: '100%' }}>
+                <Text style={styles.modalSheetLabel}>{i18n.t('classroom.teacher.btsTitleEmail')}</Text>
+                <TextInput
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder={i18n.t('classroom.teacher.btsPlaceholder')}
+                  style={styles.modalSheetInput}
+                />
+              </View>
+              <View style={styles.modalSheetBtnRow}>
+                <ScaleTouchable onPress={handleCloseBottomSheet}>
+                <View style={styles.modalSheetBtnCancel}>
+                  <Text style={styles.modalSheetBtnCancelText}>{i18n.t('classroom.teacher.btnCancel')}</Text>
+                </View>
+              </ScaleTouchable>
+              <ScaleTouchable onPress={()=>{handleAddStudent()}}>
+                <View style={styles.modalSheetBtnSave}>
+                  <Text style={styles.modalSheetBtnSaveText}>{i18n.t('classroom.teacher.btnSave')}</Text>
+                </View>
+              </ScaleTouchable>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      {/* Confirmation Modal for Student Deletion (remains as before) */}
       <Modal
         animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View className="flex-1 justify-center items-center bg-black/50">
-          <View className="bg-white p-5 rounded-lg w-3/4">
-            <Text className="text-lg font-semibold mb-3">
-              {i18n.t('classroom.teacher.titleDelStudent')}
-            </Text>
-            <Text>{i18n.t('classroom.teacher.textDelStudent')}</Text>
-            <View className="flex-row justify-between mt-4">
-              <Pressable onPress={() => setModalVisible(false)}>
-                <Text className="text-red-500 bg-red-500/30 rounded-lg font-semibold px-3 py-2">
-                  {i18n.t('classroom.teacher.btnCancel')}
-                </Text>
-              </Pressable>
-              <Pressable onPress={handleDeleteStudent}>
-                <Text className="text-blue-500 bg-blue-500/30 rounded-lg font-semibold px-3 py-2">
-                  {i18n.t('classroom.teacher.btnDel')}
-                </Text>
-              </Pressable>
+        <View style={styles.modalOverlay}>
+          <Animated.View style={[styles.modalContent, { transform: [{ scale: modalScale }], opacity: modalOpacity }]}> 
+            <Text style={styles.modalTitle}>{i18n.t('classroom.teacher.titleDelStudent') || 'Remove student?'}</Text>
+            <Text style={styles.modalText}>{i18n.t('classroom.teacher.textDelStudent') || 'Are you sure you want to remove this student?'}</Text>
+            <View style={styles.modalBtnRow}>
+              <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.cancelBtn}>
+                <Text style={styles.cancelBtnText}>{i18n.t('classroom.teacher.btnCancel') || 'Cancel'}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleDeleteStudent} style={styles.removeBtn}>
+                <Text style={styles.removeBtnText}>{i18n.t('classroom.teacher.btnDel') || 'Remove'}</Text>
+              </TouchableOpacity>
             </View>
-          </View>
+          </Animated.View>
         </View>
       </Modal>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  rootGreen: {
+    flex: 1,
+    backgroundColor: '#C6E5B6',
+    minHeight: '100%',
+    paddingHorizontal: 12,
+    paddingTop: 50,
+    paddingBottom: 0,
+  },
+  backBtn: {
+    position: 'absolute',
+    left: 20,
+    top: 32,
+    zIndex: 10,
+    backgroundColor: '#fff',
+    borderRadius: 99,
+    borderWidth: 2,
+    borderColor: '#1CBF60',
+    padding: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 1 },
+  },
+  teacherHeaderWrap: {
+    backgroundColor: '#6DD47E',
+    borderRadius: 22,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#1CBF60',
+    borderBottomWidth: 4,
+    paddingTop: 48,
+    paddingBottom: 18,
+    marginBottom: 12,
+    position: 'relative',
+  },
+  teacherAvatarWrap: {
+    backgroundColor: '#fff',
+    borderRadius: 99,
+    padding: 4,
+    marginBottom: 8,
+    marginTop: -36,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 1 },
+  },
+  teacherAvatar: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    resizeMode: 'cover',
+  },
+  classNameTextGreen: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#fff',
+    marginTop: 2,
+    marginBottom: 2,
+    textAlign: 'center',
+  },
+  teacherName: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#1B5E20',
+    textAlign: 'center',
+    marginBottom: 1,
+  },
+  teacherEmail: {
+    fontSize: 14,
+    color: '#388E3C',
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  tabSwitchWrapGreen: {
+    flexDirection: 'row',
+    backgroundColor: '#A3ECA3',
+    borderRadius: 24,
+    padding: 6,
+    alignSelf: 'center',
+    marginTop: 8,
+    marginBottom: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 1 },
+  },
+  tabSwitchBtnGreen: {
+    paddingVertical: 10,
+    paddingHorizontal: 32,
+    borderRadius: 20,
+    backgroundColor: 'transparent',
+  },
+  tabSwitchBtnActiveGreen: {
+    backgroundColor: '#C6F6C6',
+  },
+  tabSwitchTextGreen: {
+    fontSize: 19,
+    fontWeight: '600',
+    color: '#388E3C',
+  },
+  tabSwitchTextActiveGreen: {
+    color: '#1B5E20',
+  },
+  exerciseGridWrap: {
+    flex: 1,
+    paddingHorizontal: 0,
+    paddingTop: 0,
+    paddingBottom: 24,
+  },
+  exerciseGridRowWrap: {
+    flex: 1,
+    justifyContent: 'space-around',
+    marginBottom: 18,
+  },
+  exerciseGridCard: {
+    backgroundColor: '#E6FFE6',
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: '#1CBF60',
+    borderBottomWidth: 3,
+    padding: 18,
+    marginBottom: 0,
+    width: (width - 48) / 2,
+    marginHorizontal: 0,
+    alignItems: 'flex-start',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 1 },
+  },
+  exerciseIconWrap: {
+    position: 'relative',
+    marginBottom: 8,
+  },
+  exerciseIcon: {
+    width: 54,
+    height: 54,
+    borderRadius: 14,
+    backgroundColor: '#B6F5B6',
+    borderWidth: 1.5,
+    borderColor: '#1CBF60',
+    resizeMode: 'cover',
+  },
+  exerciseIconBadge: {
+    borderWidth: 1,
+    borderLeftWidth: 0.5,
+    borderColor: '#1CBF60',
+    position: 'absolute',
+    right: -10,
+    top: -10,
+    backgroundColor: '#fff',
+    borderRadius: 99,
+    padding: 3,
+    elevation: 2,
+  },
+  exerciseGridTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#222',
+    marginBottom: 4,
+  },
+  exerciseGridRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  exerciseGridDate: {
+    fontSize: 15,
+
+    fontWeight: '600',
+  },
+  exerciseGridTime: {
+    fontSize: 15,
+
+    fontWeight: 'bold',
+  },
+  // Custom Student Card
+  studentCardCustom: {
+    backgroundColor: '#E6FFE6',
+    borderRadius: 22,
+    padding: 18,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 1 },
+  },
+  studentInfoRowCustom: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  avatarCustom: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: '#F3F4F6',
+  },
+  studentNameCustom: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#222',
+    marginBottom: 2,
+  },
+  studentEmailCustom: {
+    fontSize: 15,
+    color: '#388E3C',
+  },
+  deleteBtnCustom: {
+    backgroundColor: '#FFE5E0',
+    borderRadius: 99,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
+  },
+  fabAddStudent: {
+    position: 'absolute',
+    right: 28,
+    bottom: 36,
+    backgroundColor: '#1CBF60',
+    borderRadius: 32,
+    width: 60,
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    zIndex: 20,
+  },
+  schoolInfoWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+    marginBottom: 2,
+    justifyContent: 'center',
+  },
+  schoolInfoText: {
+    fontSize: 13,
+    color: '#388E3C',
+    textAlign: 'center',
+  },
+  sheetTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#222',
+    marginBottom: 8,
+  },
+  sheetLabel: {
+    paddingBottom: 8,
+    marginTop: 12,
+    fontSize: 16,
+    color: '#222',
+    fontWeight: 'bold',
+  },
+  sheetInput: {
+    borderWidth: 1,
+    borderColor: '#B4E1FA',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    fontSize: 16,
+    backgroundColor: '#F3F4F6',
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 28,
+    borderRadius: 20,
+    width: width * 0.8,
+    alignItems: 'center',
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#222',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    color: '#444',
+    textAlign: 'center',
+    marginBottom: 18,
+  },
+  modalBtnRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 8,
+  },
+  cancelBtn: {
+    backgroundColor: '#B4E1FA',
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    marginRight: 8,
+  },
+  cancelBtnText: {
+    color: '#222',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  removeBtn: {
+    backgroundColor: '#FF5A36',
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    marginLeft: 8,
+  },
+  removeBtnText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  emptyLottieWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 40,
+  },
+  studentCardGaming: {
+    backgroundColor: '#FFF9C4',
+    borderRadius: 22,
+    padding: 18,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#FFD600',
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    borderWidth: 2,
+    borderColor: '#FFD600',
+  },
+  studentInfoRowGaming: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  avatarGaming: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: '#FFFDE7',
+    borderWidth: 2,
+    borderColor: '#FFD600',
+  },
+  avatarBadgeWrap: {
+    position: 'relative',
+    marginRight: 0,
+  },
+  avatarBadge: {
+    position: 'absolute',
+    right: -8,
+    bottom: -8,
+    backgroundColor: '#7C5CFA',
+    borderRadius: 99,
+    padding: 4,
+    elevation: 2,
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
+  studentNameGaming: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#222',
+    marginBottom: 2,
+  },
+  studentEmailGaming: {
+    fontSize: 15,
+    color: '#7C5CFA',
+    fontWeight: 'bold',
+  },
+  deleteBtnGaming: {
+    backgroundColor: '#FF5A36',
+    borderRadius: 99,
+    padding: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
+    elevation: 3,
+    shadowColor: '#FF5A36',
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  // BottomSheet gaming styles
+  sheetGamingContent: {
+    alignItems: 'center',
+    backgroundColor: '#FFF9C4',
+    borderRadius: 24,
+    padding: 24,
+    margin: 8,
+    shadowColor: '#FFD600',
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  sheetGamingTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sheetGamingTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#7C5CFA',
+  },
+  sheetGamingBtnExcel: {
+    backgroundColor: '#1CBF60',
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 16,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  sheetGamingBtnEmail: {
+    backgroundColor: '#FFD600',
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 16,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  sheetGamingBtnText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#222',
+  },
+  sheetGamingDivider: {
+    height: 1,
+    backgroundColor: '#FFE082',
+    borderRadius: 99,
+    width: 160,
+    marginVertical: 12,
+  },
+  sheetGamingLabel: {
+    fontSize: 16,
+    color: '#7C5CFA',
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  sheetGamingInput: {
+    borderWidth: 2,
+    borderColor: '#FFD600',
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    fontSize: 16,
+    backgroundColor: '#FFFDE7',
+    marginBottom: 8,
+  },
+  sheetGamingBtnRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    width: '100%',
+    paddingHorizontal: 0,
+    marginTop: 18,
+  },
+  sheetGamingBtnCancel: {
+    marginRight: 12,
+    backgroundColor: '#E0E7FF',
+    borderRadius: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  sheetGamingBtnCancelText: {
+    color: '#7C5CFA',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  sheetGamingBtnSave: {
+    marginLeft: 12,
+    backgroundColor: '#7C5CFA',
+    borderRadius: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  sheetGamingBtnSaveText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  modalSheetContent: {
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    padding: 28,
+    marginHorizontal: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 10,
+    minWidth: 280,
+    maxWidth: 400,
+    alignSelf: 'center',
+    position: 'relative',
+  },
+  modalSheetCloseBtn: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 10,
+    padding: 8,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 99,
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: '#DDD',
+
+  },
+  modalSheetTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#222',
+    marginBottom: 18,
+    textAlign: 'center',
+  },
+  modalSheetBtnExcel: {
+    backgroundColor: '#5ABF60',
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#1CAE60',
+    borderBottomWidth: 4,
+    marginTop: 10,
+    marginBottom: 10,
+    width: 200,
+  },
+  modalSheetBtnEmail: {
+    backgroundColor: '#7C5CFA',
+    borderColor: '#5C4BF5',
+    borderWidth: 1,
+    borderBottomWidth: 4,
+    paddingVertical: 12,
+    borderRadius: 16,
+    marginTop: 10,
+    marginBottom: 10,
+    width: 200,
+  },
+  modalSheetBtnText: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#fff',
+    textTransform: 'uppercase',
+    textAlign: 'center',
+    paddingVertical: 4,
+  },
+  modalSheetDivider: {
+    height: 1,
+    backgroundColor: '#5ABF60',
+    borderRadius: 99,
+    width: 200,
+    marginVertical: 14,
+  },
+  modalSheetLabel: {
+    fontSize: 16,
+    color: '#7C5CFA',
+    fontWeight: '600',
+    marginBottom: 8,
+    textAlign: 'left',
+  },
+  modalSheetInput: {
+    borderWidth: 1.5,
+    borderColor: '#DDD',
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    fontSize: 16,
+    backgroundColor: '#F8F8F8',
+    marginBottom: 8,
+    },
+  modalSheetBtnRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    width: '100%',
+    paddingHorizontal: 0,
+    marginTop: 24,
+    gap: 12,
+  },
+  modalSheetBtnCancel: {
+    backgroundColor: '#E0E7FF',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#A0A7FF',
+    borderBottomWidth: 2,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  modalSheetBtnCancelText: {
+    color: '#A0A7FF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  modalSheetBtnSave: {
+    marginLeft: 12,
+    backgroundColor: '#7C5CFA',
+    borderColor: '#5C4BF5',
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderRadius: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  modalSheetBtnSaveText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  modalBottomSheetContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    width: '100%',
+  },
+  modalBottomSheetContent: {
+    width: '100%',
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 28,
+    paddingTop: 70,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: -8 },
+    elevation: 10,
+    minHeight: 220,
+    maxWidth: 500,
+  },
+});
 
 export default TeacherDetail;

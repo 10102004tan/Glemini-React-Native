@@ -247,7 +247,7 @@ export default function AppRootLayout() {
       <Stack.Screen
         name="(classroom)/teacher_detail"
         options={{
-          headerTitle: i18n.t('classroom.student.titleScreen'),
+          headerShown: false,
         }}
       />
 
