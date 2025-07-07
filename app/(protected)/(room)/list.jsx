@@ -1,15 +1,16 @@
 import { View, Text, ScrollView, Image, FlatList, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Wrapper from '@/components/customs/Wrapper';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useAuthStore } from '@/store/useAuthStore';
 import Toast from 'react-native-toast-message-custom';
-import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
+import { API_VERSION, END_POINTS } from '@/configs/api.config';
+import api from '@/libs/axios';
 import Field from '@/components/customs/Field';
 import RoomItem from '@/components/customs/RoomItem';
 import { useAppProvider } from '@/contexts/AppProvider';
 
 const ListRoomScreen = () => {
-  const { userData } = useAuthContext();
+  const { user } = useAuthStore();
   const [rooms, setRooms] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
   const [page, setPage] = useState(1);
@@ -22,19 +23,11 @@ const ListRoomScreen = () => {
     try {
       setIsFetching(true);
       setRoomSearch([]);
-      const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_CODE}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          room_code: roomCode,
-        }),
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.ROOM_CODE}`, {
+        room_code: roomCode,
       });
 
-      const data = await response.json();
+      const data = response.data;
       if (data.statusCode === 200) {
         setRoomSearch(data.metadata);
       }
@@ -66,20 +59,12 @@ const ListRoomScreen = () => {
 
     try {
       setIsFetching(true);
-      const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_LIST}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_created_id: userData._id,
-          page: page,
-          limit: LIMIT,
-        }),
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.ROOM_LIST}`, {
+        user_created_id: user.user_id,
+        page: page,
+        limit: LIMIT,
       });
-      const data = await response.json();
+      const data = response.data;
       if (data.statusCode === 200) {
         if (data.metadata.length > 0) {
           if (page === 1) {
@@ -105,10 +90,10 @@ const ListRoomScreen = () => {
   };
 
   useEffect(() => {
-    if (userData) {
+    if (user) {
       fetchRecentCreatedRooms(1);
     }
-  }, [userData]);
+  }, [user]);
 
   const renderFooter = () => {
     if (!isFetching) return null;

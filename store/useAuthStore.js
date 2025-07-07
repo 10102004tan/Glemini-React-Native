@@ -118,18 +118,27 @@ export const useAuthStore = create((set, get) => ({
     } catch (error) {
       console.log('error', error);
       let message = 'An error occurred. Please try again.';
+
       if (error.message === 'Network Error') {
-        throw new Error('Network Error');
-      } else if (error.response.status === 500) {
-        message = 'Server error. Please try again later.';
-      } else if (error.response.status === 401) {
-        message = 'Unauthorized. Please check your credentials.';
-      } else if (error.response.status === 400) {
-        message = 'Unauthorized. Please check your credentials.';
+        message = 'Network Error - Cannot connect to server';
+        set({ isLoading: false });
+        return { success: false, error: message };
       }
+
+      if (error.response) {
+        if (error.response.status === 500) {
+          message = 'Server error. Please try again later.';
+        } else if (error.response.status === 401) {
+          message = 'Unauthorized. Please check your credentials.';
+        } else if (error.response.status === 400) {
+          message = 'Unauthorized. Please check your credentials.';
+        }
+      }
+
       await SecureStore.deleteItemAsync('Authorization');
       await SecureStore.deleteItemAsync('refreshToken');
       await SecureStore.deleteItemAsync('x-client-id');
+      set({ isLoading: false });
       return { success: false, error: message };
     }
   },

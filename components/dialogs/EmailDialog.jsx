@@ -12,15 +12,15 @@ import {
 } from 'react-native';
 import Button from '@/components/customs/Button';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
-import { useAuthContext } from '@/contexts/AuthContext';
 import { useAppProvider } from '@/contexts/AppProvider';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const EmailDialog = ({ visible, onClose, quiz_id }) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [isEdit, setIsEdit] = useState(false);
   const [isDetailsVisible, setIsDetailsVisible] = useState(false);
-  const { userData } = useAuthContext();
+  const { user } = useAuthStore();
   const [clicked, setClicked] = useState([]);
   const [loading, setLoading] = useState(false);
   const { i18n } = useAppProvider();
@@ -46,11 +46,11 @@ const EmailDialog = ({ visible, onClose, quiz_id }) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
+        'x-client-id': user.user_id,
+        authorization: user.accessToken,
       },
       body: JSON.stringify({
-        user_id: userData._id,
+        user_id: user.user_id,
         email: user_email,
         quiz_id,
         isEdit,
@@ -136,7 +136,7 @@ const EmailDialog = ({ visible, onClose, quiz_id }) => {
     try {
       if (!email.includes('@gmail.com')) {
         setError('Email phải có đuôi @gmail.com');
-      } else if (email === userData.user_email) {
+      } else if (email === user.email) {
         setError('Bạn không thể gửi quiz cho chính mình');
       } else {
         setError('');

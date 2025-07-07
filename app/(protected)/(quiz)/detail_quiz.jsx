@@ -9,7 +9,7 @@ import BottomSheet from '@/components/customs/BottomSheet';
 import Overlay from '@/components/customs/Overlay';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { MultipleSelectList, SelectList } from 'react-native-dropdown-select-list';
-import { useAuthContext } from '@/contexts/AuthContext';
+
 import { router, useGlobalSearchParams } from 'expo-router';
 import { useQuizProvider } from '@/contexts/QuizProvider';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config.js';

@@ -17,18 +17,18 @@ const QuestionOverview = ({ quizId = null, question = {}, index = 0, editable = 
   const { i18n } = useAppProvider();
 
   // Debug log để kiểm tra dữ liệu
-  console.log(`🎯 QuestionOverview ${index + 1}:`, JSON.stringify(question, null, 2));
+//   console.log(`🎯 QuestionOverview ${index + 1}:`, JSON.stringify(question, null, 2));
 
   // Check if it's V1 or V2 structure
   const isV1 = question.question_excerpt !== undefined;
   const isV2 = question.question !== undefined;
 
-  console.log(`📋 Question structure:`, {
-    isV1,
-    isV2,
-    hasV1Fields: !!question.question_excerpt && !!question.question_answer_ids,
-    hasV2Fields: !!question.question && !!question.options,
-  });
+//   console.log(`📋 Question structure:`, {
+//     isV1,
+//     isV2,
+//     hasV1Fields: !!question.question_excerpt && !!question.question_answer_ids,
+//     hasV2Fields: !!question.question && !!question.options,
+//   });
 
   const renderAnswerIcon = (correct) => (
     <View className="mr-2">
@@ -78,12 +78,12 @@ const QuestionOverview = ({ quizId = null, question = {}, index = 0, editable = 
 
   // Debug for match questions specifically - AFTER questionData is defined
   if (questionData?.type === 'match') {
-    console.log('🔍 MATCH QUESTION DEBUG:');
-    console.log('🔍 Raw question keys:', Object.keys(question || {}));
-    console.log('🔍 Has correct_answer_ids?', !!question?.correct_answer_ids);
-    console.log('🔍 Has correctAnswers?', !!question?.correctAnswers);
-    console.log('🔍 question.correct_answer_ids:', question?.correct_answer_ids);
-    console.log('🔍 question.correctAnswers:', question?.correctAnswers);
+    // console.log('🔍 MATCH QUESTION DEBUG:');
+    // console.log('🔍 Raw question keys:', Object.keys(question || {}));
+    // console.log('🔍 Has correct_answer_ids?', !!question?.correct_answer_ids);
+    // console.log('🔍 Has correctAnswers?', !!question?.correctAnswers);
+    // console.log('🔍 question.correct_answer_ids:', question?.correct_answer_ids);
+    // console.log('🔍 question.correctAnswers:', question?.correctAnswers);
   }
 
   return (
@@ -128,13 +128,13 @@ const QuestionOverview = ({ quizId = null, question = {}, index = 0, editable = 
                   ? question.correct_answer_ids || []
                   : question.correctAnswers || questionData.correctAnswers || [];
 
-                console.log('🔄 Overview correctAnswers source:', {
-                  isV1,
-                  isV2,
-                  v1CorrectAnswers: question.correct_answer_ids?.length || 0,
-                  v2CorrectAnswers: question.correctAnswers?.length || 0,
-                  finalCorrectAnswers: correctAnswers.length,
-                });
+                // console.log('🔄 Overview correctAnswers source:', {
+                //   isV1,
+                //   isV2,
+                //   v1CorrectAnswers: question.correct_answer_ids?.length || 0,
+                //   v2CorrectAnswers: question.correctAnswers?.length || 0,
+                //   finalCorrectAnswers: correctAnswers.length,
+                // });
 
                 const pairs = createDisplayPairs(questionData.options, correctAnswers);
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,105 +8,217 @@ import {
   Alert,
   AppState,
   TextInput,
+  Animated,
+  Easing,
+  Image,
 } from 'react-native';
 import Button from '../../../components/customs/Button';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useAuthStore } from '@/store/useAuthStore';
 import { useAppProvider } from '@/contexts/AppProvider';
 import Toast from 'react-native-toast-message-custom';
-import { API_URL, API_VERSION, END_POINTS } from '../../../configs/api.config';
+import { API_VERSION, END_POINTS } from '../../../configs/api.config';
+import api from '@/libs/axios';
 import RenderHTML from 'react-native-render-html';
 import { Audio } from 'expo-av';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 import RealtimeResult from '../(result)/realtime';
-import socket from '@/utils/socket';
+import socket from '@/libs/socket';
 import RankBoard from '@/components/customs/RankBoard';
 import Overlay from '@/components/customs/Overlay';
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { sortRankBoardDesc } from '../../../utils';
+import { AntDesign } from '@expo/vector-icons';
+import OrderInput from '@/components/customs/OrderInput';
+import Onechoice from '@/components/customs/Onechoice';
+import FillInTheBlank from '@/components/customs/FillInTheBlank';
+import MatchItems from '@/components/customs/MatchItems';
+import MultipleChoice from '@/components/customs/MultipleChoice';
+import ScaleTouchable from '@/components/customs/ScaleTouchable';
+import ThoBayMauGif from '@/assets/images/congratulations.1.webp';
+import InCorrectGif from '@/assets/images/incorrect.1.webp';
+import { shuffleArray } from '@/utils';
+
 const RealtimePlay = () => {
   const { quizId, roomId, roomCode, createdUserId } = useGlobalSearchParams();
   const { i18n } = useAppProvider();
   const { width } = useWindowDimensions();
+  const { user } = useAuthStore();
+  const router = useRouter();
+
+  // Animation values
+  const questionAnim = useRef(new Animated.Value(0)).current;
+  const optionsAnim = useRef(new Animated.Value(0)).current;
+  const buttonAnim = useRef(new Animated.Value(0)).current;
+  const modalAnim = useRef(new Animated.Value(0)).current;
+
+  // State management
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState([]);
-  const [correctCount, setCorrectCount] = useState(0);
-  const [wrongCount, setWrongCount] = useState(0);
-  const [score, setScore] = useState(0);
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [arrayAnswer, setArrayAnswer] = useState([]);
+  const [isNext, setIsNext] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
   const [isChosen, setIsChosen] = useState(false);
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
   const [buttonText, setButtonText] = useState(i18n.t('play.single.buttonConfirm'));
   const [buttonColor, setButtonColor] = useState('bg-white');
   const [buttonTextColor, setButtonTextColor] = useState('text-black');
-  const { userData } = useAuthContext();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [questions, setQuestions] = useState([]);
   const [sound, setSound] = useState(null);
-  const { processAccessTokenExpired } = useAuthContext();
-  const [questionTimeCountDown, setQuestionTimeCountDown] = useState(
-    questions.length > 0 ? questions[0].question_time : 30,
-  );
+  const [questionTimeCountDown, setQuestionTimeCountDown] = useState(30);
   const [rankData, setRankData] = useState([]);
   const [showRankBoard, setShowRankBoard] = useState(false);
-  const router = useRouter();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [confirmFn, setConfirmFn] = useState('close');
   const [alertMessage, setAlertMessage] = useState('');
   const [loading, setLoading] = useState(true);
-  const [userAnswer, setUserAnswer] = useState('');
+  const [correctCount, setCorrectCount] = useState(0);
+  const [wrongCount, setWrongCount] = useState(0);
+  const [score, setScore] = useState(0);
 
   const SHOW_RANK_BOARD_TIME = 2000;
   const HIDDEN_RANK_BOARD_TIME = 6000;
   const QUESTION_RESET_TIME = 8000;
 
-  // Lấy câu hỏi của bộ quiz
+  const currentQuestion = questions[currentQuestionIndex];
+
+  // Animate in on question change
+  useEffect(() => {
+    questionAnim.setValue(0);
+    optionsAnim.setValue(0);
+    buttonAnim.setValue(0);
+    Animated.timing(questionAnim, {
+      toValue: 1,
+      duration: 400,
+      useNativeDriver: true,
+      easing: Easing.out(Easing.cubic),
+    }).start();
+    Animated.timing(optionsAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+      easing: Easing.out(Easing.cubic),
+    }).start();
+    Animated.spring(buttonAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      friction: 6,
+    }).start();
+  }, [currentQuestionIndex]);
+
+  // Animate modal result
+  useEffect(() => {
+    if (isNext) {
+      modalAnim.setValue(0);
+      Animated.timing(modalAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.cubic),
+      }).start();
+    }
+  }, [isNext]);
+
+    // Lấy câu hỏi của bộ quiz và ranking data
   useEffect(() => {
     const fetchQuestions = async () => {
-      const res = await fetch(API_URL + API_VERSION.V1 + END_POINTS.GET_QUIZ_QUESTIONS, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
+      try {
+        const res = await api.post(API_VERSION.V1 + END_POINTS.GET_QUIZ_QUESTIONS, {
           quiz_id: quizId,
-        }),
-      });
+        });
 
-      const data = await res.json();
-      // console.log(data)
-      if (data.statusCode !== 200) {
-        if (data.statusCode === 404 && data.message === 'Access denied') {
-          Toast.show({
-            type: 'error',
-            text1: 'Error',
-            text2: 'Không thể truy cập bài thi này.',
+        const data = res.data;
+        if (data.statusCode !== 200) {
+          if (data.statusCode === 404 && data.message === 'Access denied') {
+            Toast.show({
+              type: 'error',
+              text1: 'Error',
+              text2: 'Không thể truy cập bài thi này.',
+            });
+          }
+        } else {
+          // Chuyển đổi format từ v1 sang v2 để tương thích với components
+          const convertedQuestions = data.metadata.map((question, index) => ({
+            id: question._id,
+            question: question.question_excerpt,
+            type: question.question_type,
+            options: question.question_answer_ids.map(answer => ({
+              id: answer._id,
+              text: answer.text,
+              image: answer.image || '',
+            })),
+            correctAnswers: question.correct_answer_ids.map(answer => answer._id),
+            question_point: question.question_point,
+            question_time: question.question_time,
+            image: question.question_image || '',
+          }));
+
+          // Xáo trộn đáp án của từng câu hỏi
+          const shuffledQuestions = convertedQuestions.map((q) => {
+            if (Array.isArray(q.options)) {
+              return {
+                ...q,
+                options: shuffleArray(q.options),
+              };
+            }
+            return q;
           });
-          await processAccessTokenExpired();
-        } else if (data.message === 'expired') {
-          await processAccessTokenExpired();
+
+          setQuestions(shuffledQuestions);
+          setQuestionTimeCountDown(shuffledQuestions[0]?.question_time || 30);
         }
-      } else {
-        setQuestions(data.metadata);
-        setQuestionTimeCountDown(data.metadata[0].question_time);
+      } catch (error) {
+        console.error('Error fetching questions:', error);
+      } finally {
+        setLoading(false);
       }
     };
+
+        const fetchInitialRanking = async () => {
+      try {
+        console.log('Fetching initial ranking...');
+        const response = await api.post(`${API_VERSION.V1}${END_POINTS.RESULT_RANK}`, {
+          room_id: roomId,
+          user_id: user.user_id,
+          quiz_id: quizId,
+        });
+
+        const data = response.data;
+        if (data.statusCode === 200) {
+          console.log('Initial ranking data:', data.metadata);
+          // Xử lý format ranking data
+          if (data.metadata && data.metadata.rank && Array.isArray(data.metadata.rank)) {
+            setRankData(data.metadata.rank);
+          } else if (Array.isArray(data.metadata)) {
+            setRankData(data.metadata);
+          } else {
+            setRankData([]);
+          }
+        } else {
+          console.log('Initial ranking API returned non-200 status:', data.statusCode);
+        }
+      } catch (error) {
+        console.error('Error fetching initial ranking:', error);
+        // Không hiển thị Toast error cho initial ranking fetch
+      }
+    };
+
     if (quizId) {
       fetchQuestions();
+      if (roomId && user.user_id) {
+        fetchInitialRanking();
+      }
     }
-  }, [quizId]);
+  }, [quizId, roomId, user.user_id]);
 
   // Lắng nghe khi người dùng thoát ra khỏi ứng dụng
   useEffect(() => {
     const handleAppStateChange = (nextAppState) => {
       if (nextAppState === 'background' || nextAppState === 'inactive') {
-        // Gửi sự kiện thoát phòng đến server
         console.log('User has left the app');
-        socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
+        socket.emit('leaveRoom', { roomCode: roomCode, user: user });
       }
     };
 
@@ -117,7 +229,7 @@ const RealtimePlay = () => {
     };
   }, []);
 
-  // Lắng nghe sự kiện khi chủ phòng kết thúc  phòng chơi
+  // Lắng nghe sự kiện khi chủ phòng kết thúc phòng chơi
   useEffect(() => {
     socket.on('quizEnded', () => {
       setConfirmFn('endquiz');
@@ -127,118 +239,137 @@ const RealtimePlay = () => {
 
     // Cập nhật bảng xếp hạng của người chơi
     socket.on('updateRanking', (rank) => {
-      console.log(JSON.stringify(rank, null, 2));
-      setRankData(sortRankBoardDesc(rank));
+      console.log('Received ranking data:', JSON.stringify(rank, null, 2));
+      // Backend trả về object có rank array, cần extract ra
+      if (rank && rank.rank && Array.isArray(rank.rank)) {
+        setRankData(rank.rank);
+      } else if (Array.isArray(rank)) {
+        setRankData(rank);
+      } else {
+        console.log('Invalid ranking data format:', rank);
+        setRankData([]);
+      }
+    });
+
+    // Lắng nghe sự kiện khi user join room
+    socket.on('userJoined', (data) => {
+      console.log('User joined room event:', data);
+    });
+
+    // Lắng nghe danh sách user cập nhật
+    socket.on('updateUserList', (users) => {
+      console.log('User list updated:', users);
     });
 
     return () => {
       socket.off('quizEnded');
       socket.off('updateRanking');
+      socket.off('userJoined');
+      socket.off('updateUserList');
     };
   }, []);
 
-  // Kiểm tra xem người dùng có đang làm giở câu hỏi nào không
+  // Debug khi rankData thay đổi
   useEffect(() => {
-    // Lấy dữ liệu từ local storage
+    console.log('RankData changed:', rankData);
+    console.log('RankData type:', typeof rankData);
+    console.log('RankData is array:', Array.isArray(rankData));
+  }, [rankData]);
 
-    const getData = async () => {
-      setLoading(true);
-      try {
-        const value = await AsyncStorage.getItem(
-          'User_' + userData._id + '_Room_' + roomCode + '_Doing',
-        );
-        const correct = await AsyncStorage.getItem(
-          'User_' + userData._id + '_Room_' + roomCode + '_CorrectPercent',
-        );
-        const wrong = await AsyncStorage.getItem(
-          'User_' + userData._id + '_Room_' + roomCode + '_WrongPercent',
-        );
+      // Authenticate socket và join room khi component mount
+  useEffect(() => {
+    if (user && user.accessToken && roomCode) {
+      console.log('Setting up socket connection...');
+      authenticateSocket(user.accessToken, user.refreshToken);
 
-        if (value !== null && correct !== null && wrong !== null) {
-          await AsyncStorage.removeItem('User_' + userData._id + '_Room_' + roomCode + '_Doing');
-          await AsyncStorage.removeItem(
-            'User_' + userData._id + '_Room_' + roomCode + '_CorrectPercent',
-          );
-          await AsyncStorage.removeItem(
-            'User_' + userData._id + '_Room_' + roomCode + '_WrongPercent',
-          );
-          // Người dùng đã thoát ra khỏi phòng thi và đang làm câu hỏi nào đó
-          const data = JSON.parse(value);
-          const correctData = JSON.parse(correct);
-          const wrongData = JSON.parse(wrong);
+      // Join room khi vào màn hình chơi
+      setTimeout(() => {
+        console.log('Joining room:', roomCode);
+        socket.emit('joinRoom', { roomCode, user });
+      }, 1000);
+    }
+  }, [user, roomCode]);
 
-          // Cho người dùng tiếp tục làm câu hỏi đó
-          const index = questions.findIndex((question) => question._id === data);
+  // Thêm useEffect riêng để đảm bảo join room sau khi socket đã connect
+  useEffect(() => {
+    const joinRoomIfConnected = () => {
+      console.log('Checking socket status:', {
+        connected: socket.connected,
+        hasUser: !!user,
+        hasRoomCode: !!roomCode,
+        roomCode: roomCode
+      });
 
-          if (index > -1) {
-            setCurrentQuestionIndex(index + 1);
-            setQuestionTimeCountDown(questions[index + 1].question_time);
-          } else {
-            setCurrentQuestionIndex(0);
-            setQuestionTimeCountDown(questions[0].question_time);
-          }
-          const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.RESULT_RANK}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-client-id': userData._id,
-              authorization: userData.accessToken,
-            },
-            body: JSON.stringify({
-              room_id: roomId,
-              user_id: userData._id,
-              quiz_id: quizId,
-            }),
-          });
-
-          const resData = await response.json();
-          if (resData.statusCode === 200) {
-            const currentData = resData.metadata.rank.filter(
-              (rank) => rank.user_id._id === userData._id,
-            );
-            console.log('correct: ' + correctData);
-            console.log('wrong: ' + wrongData);
-            setScore(currentData[0].userScore);
-            setCorrectCount(correctData);
-            setWrongCount(wrongData);
-          }
-        }
-      } catch (error) {
-        // error reading value
-      } finally {
-        setLoading(false);
+      if (socket.connected && user && roomCode) {
+        console.log('Socket connected, joining room:', roomCode);
+        socket.emit('joinRoom', { roomCode, user });
+      } else {
+        console.log('Cannot join room:', {
+          socketConnected: socket.connected,
+          hasUser: !!user,
+          hasRoomCode: !!roomCode
+        });
       }
     };
 
-    if (questions.length > 0) {
-      getData();
-    }
-  }, [questions]);
+    // Kiểm tra ngay lập tức
+    joinRoomIfConnected();
+
+    // Lắng nghe sự kiện connect để join room
+    socket.on('connect', () => {
+      console.log('Socket connected, joining room:', roomCode);
+      joinRoomIfConnected();
+    });
+
+    return () => {
+      socket.off('connect');
+    };
+  }, [socket.connected, user, roomCode]);
+
+  // Lắng nghe socket connect/disconnect
+  useEffect(() => {
+    socket.on('disconnect', () => {
+      console.log('Socket disconnected');
+    });
+
+    socket.on('error', (error) => {
+      console.error('Socket error:', error);
+    });
+
+    socket.on('reconnect', () => {
+      console.log('Socket reconnected, rejoining room:', roomCode);
+      if (user && user.accessToken) {
+        authenticateSocket(user.accessToken, user.refreshToken);
+        setTimeout(() => {
+          socket.emit('joinRoom', { roomCode, user });
+        }, 500);
+      }
+    });
+
+    return () => {
+      socket.off('disconnect');
+      socket.off('error');
+      socket.off('reconnect');
+    };
+  }, [user, roomCode]);
 
   // Hàm xử lý lưu kết quả của người dùng sau khi làm xong câu hỏi
   const saveQuestionResult = async (questionId, answerId, correct, score, questionType) => {
     try {
-      const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_UPDATE_RESULT}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          room_id: roomId,
-          user_id: userData._id,
-          quiz_id: quizId,
-          question_id: questionId,
-          answer: answerId,
-          correct,
-          score,
-          question_type: questionType,
-        }),
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.ROOM_UPDATE_RESULT}`, {
+        room_id: roomId,
+        user_id: user.user_id,
+        quiz_id: quizId,
+        question_id: questionId,
+        answer: answerId,
+        correct,
+        score,
+        question_type: questionType,
       });
 
-      const data = await response.json();
+      const data = response.data;
       if (data.statusCode !== 200) {
+        console.log('Save question result failed with status:', data.statusCode);
         Toast.show({
           type: 'error',
           text1: 'Lỗi khi lưu kết quả câu hỏi.',
@@ -247,14 +378,19 @@ const RealtimePlay = () => {
       } else {
         console.log('Save question result successfully');
         // emit event to server
-        socket.emit('submitAnswer', {
+        const submitData = {
           roomCode: roomCode,
-          userId: userData._id,
+          userId: user.user_id,
           quizId: quizId,
           roomId: roomId,
-        });
+          point: currentQuestion.question_point,
+          isCorrect: correct,
+        };
+        console.log('Emitting submitAnswer:', submitData);
+        socket.emit('submitAnswer', submitData);
       }
     } catch (error) {
+      console.error('Error in saveQuestionResult:', error);
       Toast.show({
         type: 'error',
         text1: 'Lỗi khi lưu kết quả câu hỏi.',
@@ -266,45 +402,54 @@ const RealtimePlay = () => {
   // Hàm xử lý khi người dùng đã hoàn thành bộ câu hỏi
   const completed = async () => {
     try {
-      const data = await fetch(API_URL + API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          room_id: roomId,
-          user_id: userData._id,
-          quiz_id: quizId,
-          status: 'completed',
-        }),
+      console.log('Calling completed API...');
+      const data = await api.post(API_VERSION.V1 + END_POINTS.RESULT_COMPLETED, {
+        room_id: roomId,
+        user_id: user.user_id,
+        quiz_id: quizId,
+        status: 'completed',
       });
 
-      const dataRes = await data.json();
-      console.log(dataRes);
+      const dataRes = data.data;
+      console.log('Completed API response:', dataRes);
       if (dataRes.statusCode !== 200) {
+        console.log('Completed API returned non-200 status:', dataRes.statusCode);
         Toast.show({
           type: 'error',
           text1: 'Lỗi khi cập nhật trạng thái hoàn thành.',
           text2: dataRes.message,
         });
       } else {
+        console.log('Completed API successful');
         setIsCompleted(true);
-        await AsyncStorage.removeItem('User_' + userData._id + '_Room_' + roomCode + '_Doing');
+        await AsyncStorage.removeItem('User_' + user.user_id + '_Room_' + roomCode + '_Doing');
         await AsyncStorage.removeItem(
-          'User_' + userData._id + '_Room_' + roomCode + '_CorrectPercent',
+          'User_' + user.user_id + '_Room_' + roomCode + '_CorrectPercent',
         );
         await AsyncStorage.removeItem(
-          'User_' + userData._id + '_Room_' + roomCode + '_WrongPercent',
+          'User_' + user.user_id + '_Room_' + roomCode + '_WrongPercent',
         );
       }
     } catch (error) {
-      Toast.show({
-        type: 'error',
-        text1: 'Lỗi khi cập nhật trạng thái hoàn thành.',
-        text2: { error },
-      });
+      console.error('Error in completed function:', error);
+
+      // Xử lý lỗi cụ thể
+      if (error.response?.status === 400 && error.response?.data?.message === 'Result not found') {
+        Toast.show({
+          type: 'warn',
+          text1: 'Bạn chưa làm câu nào nên không có kết quả để nộp.',
+          visibilityTime: 2000,
+          autoHide: true,
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Lỗi khi cập nhật trạng thái hoàn thành.',
+          text2: error.message || 'Vui lòng thử lại sau.',
+          visibilityTime: 2000,
+          autoHide: true,
+        });
+      }
     }
   };
 
@@ -328,14 +473,14 @@ const RealtimePlay = () => {
   // Hàm cập nhật thời gian đếm ngược cho mỗi câu hỏi
   useEffect(() => {
     let interval = null;
-    if (!isProcessing && !isCompleted && !showConfirmDialog) {
+    if (!isProcessing && !isCompleted && !showConfirmDialog && !isNext) {
       interval = setInterval(() => {
         setQuestionTimeCountDown((prevTime) => {
           if (prevTime > 0) {
             return prevTime - 1;
           } else {
             clearInterval(interval);
-            handleSubmit();
+            handleCheck(arrayAnswer);
             return 30;
           }
         });
@@ -343,138 +488,281 @@ const RealtimePlay = () => {
     }
 
     return () => clearInterval(interval);
-  }, [isProcessing, questionTimeCountDown]);
+  }, [isProcessing, questionTimeCountDown, isNext]);
 
-  // Hàm xử lý khi người dùng vào đáp án trả lời câu hỏi
-  const handleAnswerPress = (answerId) => {
-    if (questions[currentQuestionIndex].question_type === 'single') {
-      setSelectedAnswers([answerId]);
-      setIsChosen(true);
-      setButtonColor('bg-[#0D70D2]');
-      setButtonTextColor('text-white');
-    } else if (questions[currentQuestionIndex].question_type === 'multiple') {
-      if (selectedAnswers.includes(answerId)) {
-        setSelectedAnswers(selectedAnswers.filter((id) => id !== answerId));
-      } else {
-        setSelectedAnswers([...selectedAnswers, answerId]);
-      }
-    } else if (questions[currentQuestionIndex].question_type === 'box') {
-      // answerId will be a text answer of user
-      console.log(answerId);
-      setButtonColor('bg-[#0D70D2]');
-      setButtonTextColor('text-white');
+  const handleClickOption = (option) => {
+    if (!currentQuestion) return;
+
+    switch (currentQuestion.type) {
+      case 'single':
+        if (option === null) {
+          setArrayAnswer([]);
+          setIsChosen(false);
+        } else {
+          setArrayAnswer([option]);
+          setIsChosen(true);
+          setButtonColor('bg-[#0D70D2]');
+          setButtonTextColor('text-white');
+        }
+        break;
+      case 'multiple':
+        setArrayAnswer((prev) => {
+          const newAnswers = prev.includes(option)
+            ? prev.filter((id) => id !== option)
+            : [...prev, option];
+          setIsChosen(newAnswers.length > 0);
+          if (newAnswers.length > 0) {
+            setButtonColor('bg-[#0D70D2]');
+            setButtonTextColor('text-white');
+          } else {
+            setButtonColor('bg-white');
+            setButtonTextColor('text-black');
+          }
+          return newAnswers;
+        });
+        break;
+      case 'fill':
+        console.log('Fill question answer:', option);
+        setArrayAnswer(option);
+        setIsChosen(true);
+        setButtonColor('bg-[#0D70D2]');
+        setButtonTextColor('text-white');
+        break;
+      case 'order':
+        setArrayAnswer((prev) => {
+          const newAnswers = prev.includes(option)
+            ? prev.filter((id) => id !== option)
+            : [...prev, option];
+          setIsChosen(newAnswers.length > 0);
+          if (newAnswers.length > 0) {
+            setButtonColor('bg-[#0D70D2]');
+            setButtonTextColor('text-white');
+          } else {
+            setButtonColor('bg-white');
+            setButtonTextColor('text-black');
+          }
+          return newAnswers;
+        });
+        break;
+      default:
+        break;
     }
   };
 
-  // Hàm sử lý khi người dùng xác nhận câu trả lời
-  const handleSubmit = async () => {
-    if (!isProcessing) {
-      setIsProcessing(true);
-      const currentQuestion = questions[currentQuestionIndex];
+  const renderOptions = () => {
+    if (!currentQuestion) return null;
+
+    const { options, type, image = '', question } = currentQuestion;
+
+    switch (type) {
+      case 'single':
+        return (
+          <View
+            style={{
+              flexWrap: 'wrap',
+              gap: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: 600,
+            }}
+          >
+            <Onechoice
+              options={options}
+              onClick={handleClickOption}
+              image={image}
+              selectedAnswers={arrayAnswer}
+              showCorrectAnswer={showCorrectAnswer}
+              correctAnswers={currentQuestion.correctAnswers}
+            />
+          </View>
+        );
+      case 'multiple':
+        return (
+          <View
+            style={{
+              flexWrap: 'wrap',
+              gap: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: 600,
+            }}
+          >
+            <MultipleChoice
+              options={options}
+              onClick={handleClickOption}
+              image={image}
+              selectedAnswers={arrayAnswer}
+              showCorrectAnswer={showCorrectAnswer}
+              correctAnswers={currentQuestion.correctAnswers}
+            />
+          </View>
+        );
+      case 'fill':
+        return (
+          <FillInTheBlank
+            options={options}
+            onClick={handleClickOption}
+            image={image}
+            question={question}
+            selectedAnswers={arrayAnswer}
+            showCorrectAnswer={showCorrectAnswer}
+            correctAnswers={currentQuestion.correctAnswers}
+          />
+        );
+      case 'order':
+        return (
+          <OrderInput
+            options={options}
+            onClick={handleClickOption}
+            selectedAnswers={arrayAnswer}
+            showCorrectAnswer={showCorrectAnswer}
+            correctAnswers={currentQuestion.correctAnswers}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  const handleCheck = async (arrayAnswer) => {
+    if (!currentQuestion || arrayAnswer.length === 0) return;
+
+    setIsNext(true);
+    setIsProcessing(true);
+
+    try {
+            // Kiểm tra đáp án đúng
       let isAnswerCorrect = false;
 
-      if (currentQuestion.question_type === 'box') {
+      if (currentQuestion.type === 'fill') {
+        // Xử lý câu hỏi fill
         const normalizeText = (text) => {
-          // Loại bỏ khoảng trắng thừa và chuyển về chữ thường
-          return text
-            .toLowerCase() // Chuyển về chữ thường
-            .replace(/\s+/g, '') // Loại bỏ khoảng trắng thừa giữa các từ
-            .trim();
+          if (!text || typeof text !== 'string') return '';
+          return text.toLowerCase().replace(/\s+/g, '').trim();
         };
 
-        const correctTextAnswers = currentQuestion.correct_answer_ids.map((a) =>
-          normalizeText(a.text),
-        );
-        const userAnswerText = normalizeText(userAnswer || 'Không có đáp án');
-        isAnswerCorrect = correctTextAnswers.includes(userAnswerText);
+                // Lấy correct answers từ correctAnswers hoặc correct_answer_ids
+        let correctTextAnswers = [];
+        if (currentQuestion.correctAnswers && Array.isArray(currentQuestion.correctAnswers)) {
+          correctTextAnswers = currentQuestion.correctAnswers.map((a) =>
+            normalizeText(a.text || a),
+          );
+        } else if (currentQuestion.correct_answer_ids && Array.isArray(currentQuestion.correct_answer_ids)) {
+          correctTextAnswers = currentQuestion.correct_answer_ids.map((a) =>
+            normalizeText(a.text || a),
+          );
+        }
+
+        const userAnswer = normalizeText(arrayAnswer || '');
+        console.log('Fill question check:', {
+          correctTextAnswers,
+          userAnswer,
+          arrayAnswer,
+          currentQuestion: {
+            type: currentQuestion.type,
+            correctAnswers: currentQuestion.correctAnswers,
+            correct_answer_ids: currentQuestion.correct_answer_ids
+          }
+        });
+        isAnswerCorrect = correctTextAnswers.includes(userAnswer);
       } else {
-        const correctAnswerIds = currentQuestion.correct_answer_ids.map((answer) => answer._id);
-        if (currentQuestion.question_type === 'single') {
-          isAnswerCorrect = selectedAnswers[0] === correctAnswerIds[0];
+        // Xử lý các loại câu hỏi khác
+        const correctAnswerIds = currentQuestion.correctAnswers;
+        if (currentQuestion.type === 'single') {
+          isAnswerCorrect = arrayAnswer[0] === correctAnswerIds[0];
         } else {
           isAnswerCorrect =
-            selectedAnswers.length === correctAnswerIds.length &&
-            selectedAnswers.every((answerId) => correctAnswerIds.includes(answerId));
+            arrayAnswer.length === correctAnswerIds.length &&
+            arrayAnswer.every((answerId) => correctAnswerIds.includes(answerId));
         }
+      }
+
+      setIsCorrect(isAnswerCorrect);
+
+      if (isAnswerCorrect) {
+        setCorrectCount(prev => prev + 1);
+        setScore(prev => prev + currentQuestion.question_point);
+      } else {
+        setWrongCount(prev => prev + 1);
       }
 
       await playSound(isAnswerCorrect);
 
-      if (isAnswerCorrect) {
-        setIsCorrect(true);
-        setCorrectCount(correctCount + 1);
-        setScore(score + currentQuestion.question_point);
-        setButtonColor('bg-[#4CAF50]');
-        setButtonText(`+ ${currentQuestion.question_point}`);
-      } else {
-        setIsCorrect(false);
-
-        setWrongCount(wrongCount + 1);
-        setButtonColor('bg-[#F44336]');
-        setButtonTextColor('text-white');
-        setButtonText(i18n.t('play.single.incorrect'));
-      }
-
+      // Lưu kết quả
       saveQuestionResult(
-        currentQuestion._id,
-        currentQuestion.question_type === 'box' ? userAnswer : selectedAnswers,
+        currentQuestion.id,
+        currentQuestion.type === 'fill' ? arrayAnswer : arrayAnswer,
         isAnswerCorrect,
         currentQuestion.question_point,
-        currentQuestion.question_type,
+        currentQuestion.type,
       );
 
-      // Lưu câu hỏi hiện tại của người dùng đang làm vào local storage
-      // Nếu người dùng có lỡ thoát ra vào lại thì cho phép làm tiếp từ vị trí câu hỏi đó
-      await AsyncStorage.setItem(
-        'User_' + userData._id + '_Room_' + roomCode + '_Doing',
-        JSON.stringify(currentQuestion._id),
-      );
+                  // Hiển thị bảng xếp hạng
+      setTimeout(async () => {
+        console.log('Showing rank board, current rankData:', rankData);
+        console.log('RankData length:', rankData?.length || 0);
 
-      await AsyncStorage.setItem(
-        'User_' + userData._id + '_Room_' + roomCode + '_CorrectPercent',
-        JSON.stringify(correctCount + 1),
-      );
+        // Nếu rankData trống, thử lấy từ API
+        if (!rankData || rankData.length === 0) {
+          try {
+            console.log('Fetching ranking from API...');
+            const response = await api.post(`${API_VERSION.V1}${END_POINTS.RESULT_RANK}`, {
+              room_id: roomId,
+              user_id: user.user_id,
+              quiz_id: quizId,
+            });
 
-      await AsyncStorage.setItem(
-        'User_' + userData._id + '_Room_' + roomCode + '_WrongPercent',
-        JSON.stringify(wrongCount + 1),
-      );
+            const data = response.data;
+            if (data.statusCode === 200) {
+              console.log('API ranking data:', data.metadata);
+              // Xử lý format ranking data
+              if (data.metadata && data.metadata.rank && Array.isArray(data.metadata.rank)) {
+                setRankData(data.metadata.rank);
+              } else if (Array.isArray(data.metadata)) {
+                setRankData(data.metadata);
+              } else {
+                setRankData([]);
+              }
+            } else {
+              console.log('Ranking API returned non-200 status:', data.statusCode);
+            }
+          } catch (error) {
+            console.error('Error fetching ranking:', error);
+            // Không hiển thị Toast error cho ranking fetch
+          }
+        } else {
+          console.log('Using existing rankData for display');
+        }
 
-      // emit event to server
-      socket.emit('submitAnswer', {
-        roomCode: roomCode,
-        userId: userData._id,
-        quizId: quizId,
-        roomId: roomId,
-      });
-
-      setShowCorrectAnswer(true);
-      setTimeout(() => {
         setShowRankBoard(true);
       }, SHOW_RANK_BOARD_TIME);
 
+      // Tự động ẩn bảng xếp hạng sau một thời gian
       setTimeout(() => {
         setShowRankBoard(false);
       }, HIDDEN_RANK_BOARD_TIME);
 
-      setTimeout(() => {
-        setIsProcessing(false);
-        if (currentQuestionIndex < questions.length - 1) {
-          setCurrentQuestionIndex(currentQuestionIndex + 1);
-          setSelectedAnswers([]);
-          setIsChosen(false);
-          setShowCorrectAnswer(false);
-          setButtonText(i18n.t('play.single.buttonConfirm'));
-          setButtonColor('bg-white');
-          setButtonTextColor('text-black');
-          setQuestionTimeCountDown(questions[currentQuestionIndex + 1].question_time);
-          setUserAnswer('');
-          // setQuestionTimeCountDown(500);
-        } else {
-          completed();
-        }
-      }, QUESTION_RESET_TIME);
+    } catch (error) {
+      console.error('Error checking answer:', error);
     }
+  };
+
+  const handleNext = async () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setQuestionTimeCountDown(questions[currentQuestionIndex + 1]?.question_time || 30);
+    } else {
+      await completed();
+    }
+
+    setArrayAnswer([]);
+    setIsNext(false);
+    setIsProcessing(false);
+    setIsChosen(false);
+    setShowCorrectAnswer(false);
+    setButtonText(i18n.t('play.single.buttonConfirm'));
+    setButtonColor('bg-white');
+    setButtonTextColor('text-black');
   };
 
   const handleRestart = () => {
@@ -484,13 +772,35 @@ const RealtimePlay = () => {
     setWrongCount(0);
     setScore(0);
     setIsCompleted(false);
-    setSelectedAnswers([]);
+    setArrayAnswer([]);
     setIsChosen(false);
     setShowCorrectAnswer(false);
     setButtonText(i18n.t('play.single.buttonConfirm'));
     setButtonColor('bg-white');
     setButtonTextColor('text-black');
-    setQuestionTimeCountDown(-1);
+    setQuestionTimeCountDown(questions[0]?.question_time || 30);
+  };
+
+  // Function để kiểm tra và join room thủ công
+  const checkAndJoinRoom = () => {
+    console.log('Manual check and join room...');
+    console.log('Socket status:', {
+      connected: socket.connected,
+      id: socket.id,
+      hasUser: !!user,
+      hasRoomCode: !!roomCode
+    });
+
+    if (user && user.accessToken) {
+      authenticateSocket(user.accessToken, user.refreshToken);
+
+      if (socket.connected && roomCode) {
+        console.log('Manually joining room:', roomCode);
+        socket.emit('joinRoom', { roomCode, user });
+      } else {
+        console.log('Socket not ready for manual join');
+      }
+    }
   };
 
   // Nếu đã hoàn thành thì trả về component kết quả
@@ -512,8 +822,12 @@ const RealtimePlay = () => {
   }
 
   // Xử lý khi đang tải dữ liệu
-  if (loading) {
-    return <Text>Loading</Text>;
+  if (loading || !questions.length) {
+    return (
+      <View className="flex-1 justify-center items-center bg-[#1C2833]">
+        <Text className="text-white text-lg">Đang tải câu hỏi...</Text>
+      </View>
+    );
   }
 
   return (
@@ -522,9 +836,31 @@ const RealtimePlay = () => {
       <RankBoard
         users={rankData}
         visible={showRankBoard}
-        currentUser={userData}
+        currentUser={user}
         createdUser={createdUserId}
+        onClose={() => setShowRankBoard(false)}
       />
+
+      {/* Debug info */}
+      {__DEV__ && (
+        <View className="absolute top-20 left-4 right-4 bg-black bg-opacity-50 p-2 rounded">
+          <Text className="text-white text-xs">
+            RankData length: {rankData?.length || 0}
+          </Text>
+          <Text className="text-white text-xs">
+            RoomCode: {roomCode}
+          </Text>
+          <Text className="text-white text-xs">
+            Socket: {socket.connected ? 'Connected' : 'Disconnected'}
+          </Text>
+          <TouchableOpacity
+            onPress={checkAndJoinRoom}
+            className="bg-blue-500 p-1 rounded mt-1"
+          >
+            <Text className="text-white text-xs text-center">Rejoin Room</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <ConfirmDialog
         disableCancel={true}
@@ -539,13 +875,14 @@ const RealtimePlay = () => {
           setConfirmFn('close');
           if (confirmFn === 'endquiz') {
             completed();
-            socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
+            socket.emit('leaveRoom', { roomCode: roomCode, user: user });
             setIsCompleted(true);
           }
         }}
         message={alertMessage}
       />
 
+      {/* Header */}
       <View className="flex-row justify-between items-center px-5 pt-10 pb-3 bg-black">
         <Button
           text={i18n.t('play.single.buttonQuit')}
@@ -561,27 +898,16 @@ const RealtimePlay = () => {
                 {
                   text: 'Thoát',
                   onPress: async () => {
-                    const exitRoom = await fetch(
-                      `${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_REMOVE_USER}`,
-                      {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                          'x-client-id': userData._id,
-                          authorization: userData.accessToken,
-                        },
-                        body: JSON.stringify({
-                          room_code: roomCode,
-                          user_id: userData._id,
-                        }),
-                      },
-                    );
+                    const exitRoom = await api.post(`${API_VERSION.V1}${END_POINTS.ROOM_REMOVE_USER}`, {
+                      room_code: roomCode,
+                      user_id: user.user_id,
+                    });
 
-                    const data = await exitRoom.json();
+                    const data = exitRoom.data;
                     if (data.statusCode === 200) {
                       completed();
                       setIsCompleted(true);
-                      socket.emit('leaveRoom', { roomCode: roomCode, user: userData });
+                      socket.emit('leaveRoom', { roomCode: roomCode, user: user });
                     } else {
                       Alert.alert('Thông báo', 'Không thể thoát khỏi phòng chơi');
                     }
@@ -595,104 +921,154 @@ const RealtimePlay = () => {
           otherStyles={'bg-[#F41D1D]'}
           textStyles={'font-medium text-sm text-white'}
         />
-      </View>
 
-      <View className="flex-1 bg-[#1C2833] px-5 py-4 justify-between">
-        <View className="flex-row items-center justify-between">
-          <Text className="bg-[#484E54] rounded-2xl text-white p-3 self-start">
-            {`${i18n.t('play.single.score')}: ${score}`}
-          </Text>
-          <Text className="p-3 bg-[#484E54] rounded-2xl text-white self-start">
-            {i18n.t('realtime_play.countDownTime')}: {questionTimeCountDown}
-          </Text>
-        </View>
-        <View className="bg-[#fff] rounded-2xl p-4 py-10">
-          <Text className="text-sm font-semibold text-black absolute top-2 left-2">
-            {`${i18n.t('play.single.questionCouter')} ` +
-              (currentQuestionIndex + 1) +
-              ' / ' +
-              questions.length}
-          </Text>
-
-          <ScrollView style={{ maxHeight: 200 }} showsVerticalScrollIndicator={false}>
-            <RenderHTML
-              defaultViewProps={{}}
-              defaultTextProps={{
-                style: {
-                  color: 'black',
-                  fontSize: 25,
-                  fontWeight: '400',
-                },
-              }}
-              contentWidth={width}
-              source={{
-                html: questions[currentQuestionIndex]?.question_excerpt || '',
+        {/* Progress bar */}
+        <View className="flex-1 mx-4">
+          <View className="bg-[#484E54] rounded-full h-2 overflow-hidden">
+            <View
+              className="bg-[#0D70D2] h-2 rounded-full"
+              style={{
+                width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`,
               }}
             />
-          </ScrollView>
+          </View>
         </View>
-        <View>
-          {questions[currentQuestionIndex]?.question_type === 'box' ? (
-            <View className="my-3">
-              <TextInput
-                placeholder={'Nhập câu trả lời'}
-                value={userAnswer}
-                onChangeText={(text) => setUserAnswer(text)}
-                className="p-4 rounded-lg bg-[#484E54] text-white"
-                placeholderTextColor="#B0B0B0"
-              />
-            </View>
-          ) : (
-            questions[currentQuestionIndex]?.question_answer_ids.map((answer, index) => {
-              let backgroundColor = '#484E54'; // Màu mặc định
-              if (showCorrectAnswer) {
-                if (questions[currentQuestionIndex].question_type === 'single') {
-                  if (answer._id === questions[currentQuestionIndex].correct_answer_ids[0]._id) {
-                    backgroundColor = '#4CAF50'; // Green - Đúng
-                  } else if (answer._id === selectedAnswers[0]) {
-                    backgroundColor = '#F44336'; // Red - Sai
-                  }
-                } else {
-                  if (
-                    questions[currentQuestionIndex].correct_answer_ids
-                      .map((answer) => answer._id)
-                      .includes(answer._id)
-                  ) {
-                    backgroundColor = '#4CAF50'; // Green - Đúng
-                  } else if (selectedAnswers.includes(answer._id)) {
-                    backgroundColor = '#F44336'; // Red - Sai
-                  }
-                }
-              } else if (selectedAnswers.includes(answer._id)) {
-                backgroundColor = '#0D70D2'; // Màu xanh khi người dùng chọn
-              }
-              return (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => handleAnswerPress(answer._id)}
-                  style={{
-                    backgroundColor,
-                    padding: 8,
-                    marginVertical: 5,
-                    borderRadius: 20,
-                  }}
-                  disabled={showCorrectAnswer} // Vô hiệu hóa khi đã hiển thị kết quả
-                >
-                  <Text className="text-white font-pregular text-lg m-4">{answer.text}</Text>
-                </TouchableOpacity>
-              );
-            })
-          )}
+
+        {/* Score and Timer */}
+        <View className="flex-row items-center gap-2">
+          <Text className="bg-[#484E54] rounded-lg text-white px-2 py-1 text-xs">
+            {score}
+          </Text>
+          <Text className="bg-[#484E54] rounded-lg text-white px-2 py-1 text-xs">
+            {questionTimeCountDown}s
+          </Text>
         </View>
-        <Button
-          text={buttonText}
-          onPress={handleSubmit}
-          type="fill"
-          otherStyles={`${buttonColor} p-4 `}
-          textStyles={`text-white ${buttonTextColor} mx-auto text-lg`}
-          disabled={!isChosen || showCorrectAnswer}
-        />
       </View>
+
+      {/* Content */}
+      <View className="flex-1 bg-[#1C2833] px-5 py-4">
+        {!isNext ? (
+          <View key={currentQuestionIndex}>
+            <Animated.Text
+              className="text-white text-lg font-bold mb-4"
+              style={{
+                opacity: questionAnim,
+                transform: [
+                  {
+                    translateX: questionAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [-40, 0],
+                    }),
+                  },
+                ],
+              }}
+            >
+              {currentQuestion.type === 'fill' ? 'Điền vào chỗ trống' : currentQuestion.question}
+            </Animated.Text>
+
+            <Animated.View
+              style={{
+                opacity: optionsAnim,
+                transform: [
+                  {
+                    scale: optionsAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.95, 1],
+                    }),
+                  },
+                ],
+              }}
+            >
+              {renderOptions()}
+            </Animated.View>
+          </View>
+        ) : (
+          <Animated.View
+            className="items-center justify-center py-8"
+            style={{
+              opacity: modalAnim,
+              transform: [
+                {
+                  translateY: modalAnim.interpolate({ inputRange: [0, 1], outputRange: [60, 0] }),
+                },
+                { scale: modalAnim.interpolate({ inputRange: [0, 1], outputRange: [0.95, 1] }) },
+              ],
+            }}
+          >
+            <Image
+              source={isCorrect ? ThoBayMauGif : InCorrectGif}
+              resizeMode="contain"
+              style={{ width: 150, height: 150, borderRadius: 8, marginBottom: 10 }}
+            />
+            <View className="bg-white rounded-lg p-4 min-w-[200px]">
+              <Text className="text-center text-lg font-bold">
+                {isCorrect ? 'Chính xác! 🎉' : 'Sai rồi! 😔'}
+              </Text>
+            </View>
+          </Animated.View>
+        )}
+
+        {/* Button */}
+        {!isNext && (
+          <Animated.View
+            className="mt-4"
+            style={{
+              opacity: buttonAnim,
+              transform: [
+                {
+                  translateY: buttonAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [20, 0],
+                  }),
+                },
+                { scale: buttonAnim },
+              ],
+            }}
+          >
+            <ScaleTouchable
+              onPress={() => handleCheck(arrayAnswer)}
+              disabled={!isChosen || arrayAnswer.length === 0}
+            >
+              <View className={`${buttonColor} py-4 px-6 rounded-lg`}>
+                <Text className={`${buttonTextColor} text-center text-lg font-bold`}>
+                  {buttonText}
+                </Text>
+              </View>
+            </ScaleTouchable>
+          </Animated.View>
+        )}
+      </View>
+
+      {/* Modal result */}
+      {isNext && (
+        <Animated.View
+          className={`absolute bottom-0 left-0 right-0 p-5 ${
+            isCorrect ? 'bg-green-100' : 'bg-red-100'
+          }`}
+          style={{
+            transform: [
+              {
+                translateY: modalAnim.interpolate({ inputRange: [0, 1], outputRange: [100, 0] }),
+              },
+            ],
+          }}
+        >
+          <Text
+            className={`text-2xl font-bold text-center mb-4 ${
+              isCorrect ? 'text-green-600' : 'text-red-600'
+            }`}
+          >
+            {isCorrect ? 'Chính xác!' : 'Sai rồi!'}
+          </Text>
+          <ScaleTouchable onPress={handleNext}>
+            <View className={`${isCorrect ? 'bg-green-500' : 'bg-red-500'} py-3 px-6 rounded-lg`}>
+              <Text className="text-white text-center text-lg font-bold">
+                Tiếp tục
+              </Text>
+            </View>
+          </ScaleTouchable>
+        </Animated.View>
+      )}
     </View>
   );
 };
