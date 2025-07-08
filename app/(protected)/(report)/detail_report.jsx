@@ -155,7 +155,7 @@ export default function DetailReport() {
             <Text>{moment(reportData.date_end).format('MMMM Do YYYY | h:mm A')}</Text>
           </View>
           <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={onOpen}>
-            <Text style={{ padding: 4, backgroundColor: rgb(34, 197, 94 / 0.6), borderRadius: 8 }}>
+            <Text style={{ padding: 4, backgroundColor: 'rgb(34, 197, 94 / 0.6)', borderRadius: 8 }}>
               {i18n.t('report.reportDetail.btnViewQuiz')}
             </Text>
             <MaterialCommunityIcons name="menu-right" size={30} />

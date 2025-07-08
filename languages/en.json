@@ -391,6 +391,8 @@
     "optionNew": "Newest",
     "optionOld": "Oldest",
     "emptyReport": "No data to display",
+    "filter": "Filter",
+    "btnApply": "Apply",
     "reportDetail": {
       "title": "Report Details",
       "starting": "In Progress",
