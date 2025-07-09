@@ -146,7 +146,7 @@ const ResultDoingItem = ({ result, i18n, itemWidth }) => {
   return (
     <View
       style={{
-        margin: 8,
+        margin: 6,
         backgroundColor: '#F0FDF4', // nền sáng nhẹ
         borderRadius: 25,
         overflow: 'hidden',
