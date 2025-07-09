@@ -23,6 +23,7 @@ export const useAuthStore = create((set, get) => ({
       api.defaults.withCredentials = true;
       api.defaults.headers.common['Authorization'] = tokens.accessToken;
       api.defaults.headers.common['x-client-id'] = user.user_id;
+      api.defaults.headers.common['x-refresh-token'] = tokens.refreshToken;
       set({ user, isSignedIn: true });
       return { success: true };
     } catch (error) {
@@ -76,7 +77,7 @@ export const useAuthStore = create((set, get) => ({
       set({ user: response.data.metadata });
       return { success: true };
     } catch (error) {
-      let message = 'An error occurred. Please try again.';
+let message = 'An error occurred. Please try again.';
       if (error.response) {
         if (error.response.status === 400) {
           message = 'Invalid input. Please check your details.';
@@ -94,6 +95,7 @@ export const useAuthStore = create((set, get) => ({
     try {
       const authorization = await SecureStore.getItemAsync('Authorization');
       const xClientId = await SecureStore.getItemAsync('x-client-id');
+      const refreshToken = await SecureStore.getItemAsync('refreshToken');
       console.log('/me=>authorization::::', authorization);
       console.log('/me=>xClientId::::', xClientId);
       if (!authorization) {
@@ -113,6 +115,7 @@ export const useAuthStore = create((set, get) => ({
       api.defaults.withCredentials = true;
       api.defaults.headers.common['Authorization'] = authorization;
       api.defaults.headers.common['x-client-id'] = xClientId;
+      api.defaults.headers.common['x-refresh-token'] = refreshToken;
       set({ user: metadata, isSignedIn: true, isLoading: false });
       return { success: true };
     } catch (error) {
@@ -127,9 +130,6 @@ export const useAuthStore = create((set, get) => ({
       } else if (error.response.status === 400) {
         message = 'Unauthorized. Please check your credentials.';
       }
-      await SecureStore.deleteItemAsync('Authorization');
-      await SecureStore.deleteItemAsync('refreshToken');
-      await SecureStore.deleteItemAsync('x-client-id');
       return { success: false, error: message };
     }
   },
@@ -151,7 +151,7 @@ export const useAuthStore = create((set, get) => ({
         }
       }
       set({ error: message });
-      return { success: false, error: message };
+return { success: false, error: message };
     }
   },
   forgotPassword: async (email) => {
@@ -238,7 +238,7 @@ export const useAuthStore = create((set, get) => ({
           message = 'Invalid input. Please check your details.';
         } else if (error.response.status === 500) {
           message = 'Server error. Please try again later.';
-        }
+}
       }
       set({ error: message });
       return { success: false, error: message };

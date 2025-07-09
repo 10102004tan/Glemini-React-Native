@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useAuthContext } from '@/contexts/AuthContext';
@@ -231,105 +231,194 @@ const UploadExcelScreen = () => {
   };
 
   return (
-    <View className="flex-1 pt-10">
-      <ScrollView className="px-4">
-        <View className="flex items-center justify-center flex-1">
-          <View
-            className="w-full p-4 flex items-center justify-center rounded-2xl border-dashed "
-            style={{
-              borderWidth: 2,
-              borderColor: '#757575',
-            }}
-          >
-            <TouchableOpacity onPress={pickExcelDocument}>
-              <LottieView
-                source={require('@/assets/jsons/clound-upload.json')}
-                autoPlay
-                loop
-                style={{
-                  width: 200,
-                  height: 120,
-                }}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={pickExcelDocument}>
-              <Text className="font-semibold">{i18n.t('classroom.upload.textAddFile')}</Text>
-            </TouchableOpacity>
-          </View>
+    <View style={styles.container}>
+  <ScrollView contentContainerStyle={styles.scrollContent}>
+    <View style={styles.wrapper}>
+      {/* Upload Box */}
+      <View style={styles.uploadBox}>
+        <TouchableOpacity onPress={pickExcelDocument}>
+          <LottieView
+            source={require('@/assets/jsons/clound-upload.json')}
+            autoPlay
+            loop
+            style={styles.lottie}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={pickExcelDocument}>
+          <Text style={styles.uploadText}>
+            {i18n.t('classroom.upload.textAddFile')}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-          <View className="mt-4">
-            <Text className="text-center font-semibold">
-              {i18n.t('classroom.upload.textDownloadFileExcel')}
-            </Text>
-            <View className="flex items-center justify-center mt-2 flex-row">
-              <Button
-                onPress={() => {
-                  if (!isTemplateExist) {
-                    downloadAndOpenFile();
-                  }
-                }}
-                otherStyles={`p-3 ${isTemplateExist ? 'opacity-50' : ''}`}
-                text={i18n.t('classroom.upload.textFieldDownloadFileExcel')}
-                icon={<SimpleLineIcons name="docs" size={18} color="white" />}
-                disabled={isTemplateExist}
-              />
-
-              <Button
-                onPress={() => {
-                  if (isTemplateExist) {
-                    clearTemplatedDownload();
-                  }
-                }}
-                otherStyles={`p-3 ml-2 ${!isTemplateExist ? 'opacity-50' : ''}`}
-                text={i18n.t('classroom.upload.textFieldDelFileExcel')}
-                icon={<SimpleLineIcons name="trash" size={18} color="white" />}
-                disabled={!isTemplateExist}
-              />
-            </View>
-
-            {/* New Section for Excel File Template */}
-            <View className="mt-6 p-4 bg-gray-100 rounded-lg">
-              <Text className="font-semibold text-center text-lg mb-2">
-                {i18n.t('classroom.upload.guildText')}
-              </Text>
-
-              {/* Column Headers */}
-              <View className="flex flex-row bg-gray-200 border border-gray-300">
-                <Text className="flex-1 font-bold p-2 text-center border-r border-gray-300">
-                  full_name
-                </Text>
-                <Text className="flex-1 font-bold p-2 text-center">email</Text>
-              </View>
-
-              {/* Example Rows */}
-              <View className="flex flex-row bg-white border border-gray-300">
-                <Text className="flex-1 p-2 text-center border-r border-gray-300">
-                  Nguyen Van A
-                </Text>
-                <Text className="flex-1 p-2 text-center">vana@gmail.com</Text>
-              </View>
-              <View className="flex flex-row bg-gray-100 border border-gray-300">
-                <Text className="flex-1 p-2 text-center border-r border-gray-300">
-                  Nguyen Van B
-                </Text>
-                <Text className="flex-1 p-2 text-center">vanb@gmail.com</Text>
-              </View>
-              <View className="flex flex-row bg-white border border-gray-300">
-                <Text className="flex-1 p-2 text-center border-r border-gray-300">
-                  Nguyen Van C
-                </Text>
-                <Text className="flex-1 p-2 text-center">vanc@gmail.com</Text>
-              </View>
-
-              <Text className="mt-4 text-sm text-gray-600">
-                {i18n.t('classroom.upload.guildRule')}
-              </Text>
-            </View>
-          </View>
+      {/* Download template section */}
+      <View style={styles.downloadSection}>
+        <Text style={styles.sectionTitle}>
+          {i18n.t('classroom.upload.textDownloadFileExcel')}
+        </Text>
+        <View style={styles.buttonRow}>
+          <Button
+            onPress={() => !isTemplateExist && downloadAndOpenFile()}
+            otherStyles={`p-3 bg-green-500 border border-b-2 border-green-600 ${isTemplateExist ? 'opacity-50' : ''}`}
+            text={i18n.t('classroom.upload.textFieldDownloadFileExcel')}
+            icon={<SimpleLineIcons name="docs" size={18} color="white" />}
+            disabled={isTemplateExist}
+          />
+          <Button
+            onPress={() => isTemplateExist && clearTemplatedDownload()}
+            otherStyles={`p-3 ml-2 bg-orange-500 border border-b-2 border-orange-600 ${!isTemplateExist ? 'opacity-50' : ''}`}
+            text={i18n.t('classroom.upload.textFieldDelFileExcel')}
+            icon={<SimpleLineIcons name="trash" size={18} color="white" />}
+            disabled={!isTemplateExist}
+          />
         </View>
-      </ScrollView>
+
+        {/* Table */}
+        <View style={styles.templateBox}>
+          <Text style={styles.templateTitle}>
+            {i18n.t('classroom.upload.guildText')}
+          </Text>
+
+          {/* Table Header */}
+          <View style={styles.tableRowHeader}>
+            <Text style={styles.cellHeader}>full_name</Text>
+            <Text style={styles.cellHeader}>email</Text>
+          </View>
+
+          {/* Example Rows */}
+          <View style={styles.tableRow}>
+            <Text style={styles.cell}>Nguyen Van A</Text>
+            <Text style={styles.cell}>vana@gmail.com</Text>
+          </View>
+          <View style={[styles.tableRow, styles.rowAlt]}>
+            <Text style={styles.cell}>Nguyen Van B</Text>
+            <Text style={styles.cell}>vanb@gmail.com</Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={styles.cell}>Nguyen Van C</Text>
+            <Text style={styles.cell}>vanc@gmail.com</Text>
+          </View>
+
+          <Text style={styles.footerNote}>
+            {i18n.t('classroom.upload.guildRule')}
+          </Text>
+        </View>
+      </View>
     </View>
+  </ScrollView>
+</View>
+
+
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 40,
+    backgroundColor: '#FDFCFB',
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+  },
+  wrapper: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  uploadBox: {
+    width: '100%',
+    padding: 16,
+    borderWidth: 2,
+    borderColor: '#FFD93D',
+    borderStyle: 'dashed',
+    borderRadius: 16,
+    backgroundColor: '#FFFDEB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lottie: {
+    width: 200,
+    height: 120,
+  },
+  uploadText: {
+    fontWeight: '600',
+    color: '#333',
+    fontSize: 16,
+    marginTop: 4,
+  },
+  downloadSection: {
+    marginTop: 24,
+    width: '100%',
+  },
+  sectionTitle: {
+    textAlign: 'center',
+    fontWeight: '600',
+    color: '#333',
+    fontSize: 16,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 12,
+  },
+  templateBox: {
+    marginTop: 24,
+    padding: 16,
+    backgroundColor: '#FFF9D6',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderBottomWidth: 2,
+    borderColor: '#FFD93D',
+  },
+  templateTitle: {
+    fontWeight: '600',
+    textAlign: 'center',
+    fontSize: 18,
+    marginBottom: 12,
+    color: '#333',
+  },
+  tableRowHeader: {
+    flexDirection: 'row',
+    backgroundColor: '#FFE66D',
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    borderBottomWidth: 1,
+    borderColor: '#FACC15',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderColor: '#FDE047',
+  },
+  rowAlt: {
+    backgroundColor: '#FFFBE6',
+  },
+  cellHeader: {
+    flex: 1,
+    fontWeight: 'bold',
+    padding: 12,
+    textAlign: 'center',
+    color: '#333',
+    borderRightWidth: 1,
+    borderColor: '#FACC15',
+  },
+  cell: {
+    flex: 1,
+    padding: 12,
+    textAlign: 'center',
+    color: '#333',
+    borderRightWidth: 1,
+    borderColor: '#FDE047',
+  },
+  footerNote: {
+    marginTop: 16,
+    fontSize: 13,
+    color: '#666',
+    textAlign: 'center',
+  },
+});
+
 
 export default UploadExcelScreen;
