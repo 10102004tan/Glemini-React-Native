@@ -668,9 +668,37 @@ const RealtimePlay = () => {
       } else {
         // Xử lý các loại câu hỏi khác
         const correctAnswerIds = currentQuestion.correctAnswers;
+        console.log('Question type check:', {
+          type: currentQuestion.type,
+          arrayAnswer,
+          correctAnswerIds,
+        });
+
         if (currentQuestion.type === 'single') {
           isAnswerCorrect = arrayAnswer[0] === correctAnswerIds[0];
+        } else if (currentQuestion.type === 'order') {
+          // Đối với câu hỏi sắp xếp, thứ tự phải chính xác
+          isAnswerCorrect =
+            arrayAnswer.length === correctAnswerIds.length &&
+            arrayAnswer.every((answerId, index) => answerId === correctAnswerIds[index]);
+          console.log('Order question check:', {
+            isCorrect: isAnswerCorrect,
+            userOrder: arrayAnswer,
+            correctOrder: correctAnswerIds,
+            orderMatches: arrayAnswer.map((id, idx) => ({
+              position: idx,
+              userAnswer: id,
+              correctAnswer: correctAnswerIds[idx],
+              match: id === correctAnswerIds[idx]
+            }))
+          });
+        } else if (currentQuestion.type === 'multiple') {
+          // Đối với câu hỏi nhiều lựa chọn, chỉ cần có đủ đáp án đúng, không cần thứ tự
+          isAnswerCorrect =
+            arrayAnswer.length === correctAnswerIds.length &&
+            arrayAnswer.every((answerId) => correctAnswerIds.includes(answerId));
         } else {
+          // Default fallback cho các loại khác
           isAnswerCorrect =
             arrayAnswer.length === correctAnswerIds.length &&
             arrayAnswer.every((answerId) => correctAnswerIds.includes(answerId));

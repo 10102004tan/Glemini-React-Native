@@ -31,12 +31,14 @@ import api from '@/libs/axios';
 import { useAuthStore } from '@/store/useAuthStore';
 import MainLayout from '@/components/layouts/MainLayout';
 import SearchQuizBar from './SearchQuizBar';
+import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 
 const HomeTeacher = () => {
   const { setIsHiddenNavigationBar } = useAppProvider();
   const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
   const { setActionQuizType } = useQuizProvider();
   const router = useRouter();
+  const { fetchClassrooms } = useClassroomProvider();
   const [recentCreatedRooms, setRecentCreatedRooms] = useState([]);
   const [isFetching, setIsFetching] = useState(true);
   const [users, setUsers] = useState([]);
@@ -96,6 +98,7 @@ const HomeTeacher = () => {
     setIsFetching(true);
     fetchRecentCreatedRooms();
     fetchNewQuizzes();
+    fetchClassrooms();
     setIsFetching(false);
   }, []);
 

@@ -58,6 +58,7 @@ const StudentView = () => {
           borderRightWidth:3,
           borderBottomWidth: 3, 
           padding: 10,
+          marginTop: 40,
           marginBottom: 16, 
           fontSize: 16
         }}

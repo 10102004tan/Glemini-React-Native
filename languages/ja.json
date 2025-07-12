@@ -389,6 +389,8 @@
     "optionNew": "最新",
     "optionOld": "最古",
     "emptyReport": "表示するデータがありません",
+    "filter": "フィルター",
+    "btnApply": "適用",
     "reportDetail": {
       "title": "レポートの詳細",
       "starting": "進行中",

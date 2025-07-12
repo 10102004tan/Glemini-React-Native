@@ -23,6 +23,7 @@ export const useAuthStore = create((set, get) => ({
       api.defaults.withCredentials = true;
       api.defaults.headers.common['Authorization'] = tokens.accessToken;
       api.defaults.headers.common['x-client-id'] = user.user_id;
+      api.defaults.headers.common['x-refresh-token'] = tokens.refreshToken;
       set({ user, isSignedIn: true });
       return { success: true };
     } catch (error) {
@@ -94,6 +95,7 @@ export const useAuthStore = create((set, get) => ({
     try {
       const authorization = await SecureStore.getItemAsync('Authorization');
       const xClientId = await SecureStore.getItemAsync('x-client-id');
+      const refreshToken = await SecureStore.getItemAsync('refreshToken');
       console.log('/me=>authorization::::', authorization);
       console.log('/me=>xClientId::::', xClientId);
       if (!authorization) {
@@ -113,6 +115,7 @@ export const useAuthStore = create((set, get) => ({
       api.defaults.withCredentials = true;
       api.defaults.headers.common['Authorization'] = authorization;
       api.defaults.headers.common['x-client-id'] = xClientId;
+      api.defaults.headers.common['x-refresh-token'] = refreshToken;
       set({ user: metadata, isSignedIn: true, isLoading: false });
       return { success: true };
     } catch (error) {

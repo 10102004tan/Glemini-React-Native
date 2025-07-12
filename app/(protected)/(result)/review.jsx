@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,9 @@ const ResultReview = ({ result, visible, onClose }) => {
   const params = useLocalSearchParams();
   const router = useRouter();
 
+  // Move all hooks to the top, before any conditional logic
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
   // Xử lý dữ liệu từ navigation params
   useEffect(() => {
     if (params.result) {
@@ -30,8 +33,48 @@ const ResultReview = ({ result, visible, onClose }) => {
     }
   }, [params.result]);
 
-  // Sử dụng dữ liệu từ props hoặc từ navigation params
-  const finalResult = result || reviewData;
+  // Sử dụng useMemo để tối ưu việc tính toán finalResult
+  const finalResult = useMemo(() => {
+    return result || reviewData;
+  }, [result, reviewData]);
+
+  // Animation functions - moved after all hooks
+  const animateScale = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.96,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const goToNextQuestion = () => {
+    if (finalResult && finalResult.result_questions && selectedIndex < finalResult.result_questions.length - 1) {
+      setSelectedIndex((prev) => prev + 1);
+      animateScale();
+    }
+  };
+
+  const goToPreviousQuestion = () => {
+    if (selectedIndex > 0) {
+      setSelectedIndex((prev) => prev - 1);
+      animateScale();
+    }
+  };
+
+  // Reset selectedIndex when finalResult changes
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [finalResult]);
+
+  // Calculate current question after all hooks
+  const currentQuestion = finalResult?.result_questions?.[selectedIndex];
 
   // Kiểm tra null safety cho result
   if (!finalResult || !finalResult.result_questions) {
@@ -78,38 +121,6 @@ const ResultReview = ({ result, visible, onClose }) => {
       </Modal>
     );
   }
-
-  const currentQuestion = finalResult.result_questions[selectedIndex];
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const animateScale = () => {
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 0.96,
-        duration: 80,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 80,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
-
-  const goToNextQuestion = () => {
-    if (finalResult && finalResult.result_questions && selectedIndex < finalResult.result_questions.length - 1) {
-      setSelectedIndex((prev) => prev + 1);
-      animateScale();
-    }
-  };
-
-  const goToPreviousQuestion = () => {
-    if (selectedIndex > 0) {
-      setSelectedIndex((prev) => prev - 1);
-      animateScale();
-    }
-  };
 
   const renderAnswer = (q) => {
     const qType = q.question_id.question_type;

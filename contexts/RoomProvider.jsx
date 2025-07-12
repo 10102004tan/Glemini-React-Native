@@ -89,7 +89,10 @@ const RoomProvider = ({ children }) => {
           };
           await api.post(`${API_VERSION.V1}${END_POINTS.RESULT_RESET}`, bodyReset);
         } catch (error) {
-          console.log(error);
+          // Ignore error if result not found (user hasn't played this room before)
+          if (error.response?.data?.message !== 'Result not found') {
+            console.log('Error resetting result:', error);
+          }
         } finally {
           const bodyAddUser = {
             room_code: data.metadata.room_code,

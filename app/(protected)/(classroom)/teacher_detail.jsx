@@ -15,11 +15,8 @@ import {
 } from 'react-native';
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useRoute } from '@react-navigation/native';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import Overlay from '@/components/customs/Overlay';
 import { useAppProvider } from '@/contexts/AppProvider';
-import Button from '@/components/customs/Button';
 import { router, useFocusEffect } from 'expo-router';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import Toast from 'react-native-toast-message-custom';
@@ -30,9 +27,7 @@ import MainLayout from '@/components/layouts/MainLayout';
 
 const { width } = Dimensions.get('window');
 
-const mascotImg = require('@/assets/images/react-logo.png'); // Placeholder mascot
-const avatarPlaceholder = require('@/assets/images/icon.png'); // Placeholder avatar
-const quizIcon = require('@/assets/images/react-logo.png'); // Placeholder quiz icon
+const avatarPlaceholder = require('@/assets/images/icon.png');
 
 const BackButton = ({ onPress }) => (
   <TouchableOpacity onPress={onPress} style={styles.backBtn}>
@@ -43,7 +38,7 @@ const BackButton = ({ onPress }) => (
 const TeacherHeader = ({ classroom, isLoading }) => (
   <View style={styles.teacherHeaderWrap}>
     <View style={styles.teacherAvatarWrap}>
-      <Image source={classroom?.user_id?.user_avatar ? { uri: classroom.user_id.user_avatar } : avatarPlaceholder} style={styles.teacherAvatar} />
+      <Text style={styles.teacherAvatar}>🏫</Text>
     </View>
     <Text style={styles.classNameTextGreen}>{isLoading ? '' : classroom.class_name}</Text>
     <Text style={styles.teacherName}>{classroom?.user_id?.user_fullname || ''}</Text>
@@ -80,7 +75,7 @@ const ExerciseCard = ({ item, index, moment }) => {
       styles.exerciseGridCard,
       { backgroundColor: isExpired ? '#FFD6D6' : '#E6FFE6', borderColor: isExpired ? '#CC0000' : '#1CBF60' },
       { opacity: fadeAnim, transform: [{ scale: fadeAnim }] }
-    ]}> 
+    ]}>
       <View style={styles.exerciseIconWrap}>
         <Image source={item.quiz_id?.quiz_thumb ? { uri: item.quiz_id.quiz_thumb } : quizIcon} style={styles.exerciseIcon} />
         <View style={styles.exerciseIconBadge}>
@@ -111,7 +106,7 @@ const StudentItem = ({ item, index, confirmDeleteStudent, styles, avatarPlacehol
     }).start();
   }, []);
   return (
-    <Animated.View style={[styles.studentCardGaming, { opacity: fadeAnim, transform: [{ scale: fadeAnim }] }]}> 
+    <Animated.View style={[styles.studentCardGaming, { opacity: fadeAnim, transform: [{ scale: fadeAnim }] }]}>
       <View style={styles.studentInfoRowGaming}>
         <View style={styles.avatarBadgeWrap}>
           <Image source={item.user_avatar ? { uri: item.user_avatar } : avatarPlaceholder} style={styles.avatarGaming} />
@@ -145,19 +140,20 @@ const TeacherDetail = () => {
   const modalScale = useRef(new Animated.Value(0.8)).current;
   const modalOpacity = useRef(new Animated.Value(0)).current;
 
-    useEffect(() => {
-      const loadClassroom = async () => {
-        setIsLoading(true);
-        try {
-          await fetchClassroom(classroomId);
-        } catch (error) {
-          console.error('Error fetching classroom:', error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      loadClassroom();
-    }, [classroomId]);
+  useFocusEffect(
+    useCallback(() => {
+    const loadClassroom = async () => {
+      setIsLoading(true);
+      try {
+        await fetchClassroom(classroomId);
+      } catch (error) {
+        console.error('Error fetching classroom:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadClassroom();
+  }, [classroomId]))
 
   const handleCloseBottomSheet = () => {
     setShowBottomSheet(0);
@@ -220,78 +216,78 @@ const TeacherDetail = () => {
   // --- UI RENDERING ---
   // Exercises grid (2 columns)
   const renderExercisesGrid = () => (
-      <FlatList
-        key={index === 0 ? 'exercises-grid' : 'students-list'} // Force remount when switching numColumns
-        data={classroom.exercises || []}
-        keyExtractor={item => item._id}
-        numColumns={2}
-        columnWrapperStyle={styles.exerciseGridRowWrap}
-        renderItem={({ item, index }) => (
-          <ExerciseCard item={item} index={index} moment={moment} />
-        )}
-        ListEmptyComponent={<View style={styles.emptyLottieWrap}><LottieView source={require('@/assets/jsons/empty.json')} autoPlay loop style={{ width: 180, height: 180 }} /><Text style={{fontSize: 16, fontWeight: 600, color: '#1CBF60'}}>Không có bài tập</Text></View>}
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={
-          <>
-            <TeacherHeader classroom={classroom} isLoading={isLoading} />
-            <View style={styles.tabSwitchWrapGreen}>
-              <TouchableOpacity
-                style={[styles.tabSwitchBtnGreen, index === 0 && styles.tabSwitchBtnActiveGreen]}
-                onPress={() => setIndex(0)}
-              >
-                <Text style={[styles.tabSwitchTextGreen, index === 0 && styles.tabSwitchTextActiveGreen]}>Exercises</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.tabSwitchBtnGreen, index === 1 && styles.tabSwitchBtnActiveGreen]}
-                onPress={() => setIndex(1)}
-              >
-                <Text style={[styles.tabSwitchTextGreen, index === 1 && styles.tabSwitchTextActiveGreen]}>Students</Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        }
-        contentContainerStyle={{ paddingBottom: 24 }}
-      />
-    );
+    <FlatList
+      key={index === 0 ? 'exercises-grid' : 'students-list'} // Force remount when switching numColumns
+      data={classroom.exercises || []}
+      keyExtractor={item => item._id}
+      numColumns={2}
+      columnWrapperStyle={styles.exerciseGridRowWrap}
+      renderItem={({ item, index }) => (
+        <ExerciseCard item={item} index={index} moment={moment} />
+      )}
+      ListEmptyComponent={<View style={styles.emptyLottieWrap}><LottieView source={require('@/assets/jsons/empty.json')} autoPlay loop style={{ width: 180, height: 180 }} /><Text style={{ fontSize: 16, fontWeight: 600, color: '#1CBF60' }}>Không có bài tập</Text></View>}
+      showsVerticalScrollIndicator={false}
+      ListHeaderComponent={
+        <>
+          <TeacherHeader classroom={classroom} isLoading={isLoading} />
+          <View style={styles.tabSwitchWrapGreen}>
+            <TouchableOpacity
+              style={[styles.tabSwitchBtnGreen, index === 0 && styles.tabSwitchBtnActiveGreen]}
+              onPress={() => setIndex(0)}
+            >
+              <Text style={[styles.tabSwitchTextGreen, index === 0 && styles.tabSwitchTextActiveGreen]}>Exercises</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tabSwitchBtnGreen, index === 1 && styles.tabSwitchBtnActiveGreen]}
+              onPress={() => setIndex(1)}
+            >
+              <Text style={[styles.tabSwitchTextGreen, index === 1 && styles.tabSwitchTextActiveGreen]}>Students</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      }
+      contentContainerStyle={{ paddingBottom: 24 }}
+    />
+  );
 
   // Students list
   const renderStudentsList = () => (
-      <FlatList
-        key={index === 0 ? 'exercises-grid' : 'students-list'}
-        data={classroom.students || []}
-        keyExtractor={(student) => student._id}
-        renderItem={({ item, index }) => (
-          <StudentItem item={item} index={index} confirmDeleteStudent={confirmDeleteStudent} styles={styles} avatarPlaceholder={avatarPlaceholder} />
-        )}
-        ListEmptyComponent={<View style={styles.emptyLottieWrap}><LottieView source={require('@/assets/jsons/empty.json')} autoPlay loop style={{ width: 180, height: 180 }} /><Text style={{fontSize: 16, fontWeight: 600, color: '#1CBF60'}}>Không có bài tập</Text></View>}
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={
-          <>
-            <TeacherHeader classroom={classroom} isLoading={isLoading} />
-            <View style={styles.tabSwitchWrapGreen}>
-              <TouchableOpacity
-                style={[styles.tabSwitchBtnGreen, index === 0 && styles.tabSwitchBtnActiveGreen]}
-                onPress={() => setIndex(0)}
-              >
-                <Text style={[styles.tabSwitchTextGreen, index === 0 && styles.tabSwitchTextActiveGreen]}>Exercises</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.tabSwitchBtnGreen, index === 1 && styles.tabSwitchBtnActiveGreen]}
-                onPress={() => setIndex(1)}
-              >
-                <Text style={[styles.tabSwitchTextGreen, index === 1 && styles.tabSwitchTextActiveGreen]}>Students</Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        }
-        contentContainerStyle={{ paddingBottom: 24 }}
-      />
-    );
+    <FlatList
+      key={index === 0 ? 'exercises-grid' : 'students-list'}
+      data={classroom.students || []}
+      keyExtractor={(student) => student._id}
+      renderItem={({ item, index }) => (
+        <StudentItem item={item} index={index} confirmDeleteStudent={confirmDeleteStudent} styles={styles} avatarPlaceholder={avatarPlaceholder} />
+      )}
+      ListEmptyComponent={<View style={styles.emptyLottieWrap}><LottieView source={require('@/assets/jsons/empty.json')} autoPlay loop style={{ width: 180, height: 180 }} /><Text style={{ fontSize: 16, fontWeight: 600, color: '#1CBF60' }}>Học sinh trống</Text></View>}
+      showsVerticalScrollIndicator={false}
+      ListHeaderComponent={
+        <>
+          <TeacherHeader classroom={classroom} isLoading={isLoading} />
+          <View style={styles.tabSwitchWrapGreen}>
+            <TouchableOpacity
+              style={[styles.tabSwitchBtnGreen, index === 0 && styles.tabSwitchBtnActiveGreen]}
+              onPress={() => setIndex(0)}
+            >
+              <Text style={[styles.tabSwitchTextGreen, index === 0 && styles.tabSwitchTextActiveGreen]}>Exercises</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tabSwitchBtnGreen, index === 1 && styles.tabSwitchBtnActiveGreen]}
+              onPress={() => setIndex(1)}
+            >
+              <Text style={[styles.tabSwitchTextGreen, index === 1 && styles.tabSwitchTextActiveGreen]}>Students</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      }
+      contentContainerStyle={{ paddingBottom: 24 }}
+    />
+  );
 
   if (isLoading) {
     return <MainLayout>
-    <Loading/>
-      </MainLayout>
+      <Loading />
+    </MainLayout>
   }
 
   return (
@@ -368,15 +364,15 @@ const TeacherDetail = () => {
               </View>
               <View style={styles.modalSheetBtnRow}>
                 <ScaleTouchable onPress={handleCloseBottomSheet}>
-                <View style={styles.modalSheetBtnCancel}>
-                  <Text style={styles.modalSheetBtnCancelText}>{i18n.t('classroom.teacher.btnCancel')}</Text>
-                </View>
-              </ScaleTouchable>
-              <ScaleTouchable onPress={()=>{handleAddStudent()}}>
-                <View style={styles.modalSheetBtnSave}>
-                  <Text style={styles.modalSheetBtnSaveText}>{i18n.t('classroom.teacher.btnSave')}</Text>
-                </View>
-              </ScaleTouchable>
+                  <View style={styles.modalSheetBtnCancel}>
+                    <Text style={styles.modalSheetBtnCancelText}>{i18n.t('classroom.teacher.btnCancel')}</Text>
+                  </View>
+                </ScaleTouchable>
+                <ScaleTouchable onPress={() => { handleAddStudent() }}>
+                  <View style={styles.modalSheetBtnSave}>
+                    <Text style={styles.modalSheetBtnSaveText}>{i18n.t('classroom.teacher.btnSave')}</Text>
+                  </View>
+                </ScaleTouchable>
               </View>
             </View>
           </View>
@@ -390,7 +386,7 @@ const TeacherDetail = () => {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <Animated.View style={[styles.modalContent, { transform: [{ scale: modalScale }], opacity: modalOpacity }]}> 
+          <Animated.View style={[styles.modalContent, { transform: [{ scale: modalScale }], opacity: modalOpacity }]}>
             <Text style={styles.modalTitle}>{i18n.t('classroom.teacher.titleDelStudent') || 'Remove student?'}</Text>
             <Text style={styles.modalText}>{i18n.t('classroom.teacher.textDelStudent') || 'Are you sure you want to remove this student?'}</Text>
             <View style={styles.modalBtnRow}>
@@ -461,7 +457,12 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    resizeMode: 'cover',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontSize: 40,
+    backgroundColor: '#F0F0F0',
+    overflow: 'hidden',
+    lineHeight: 72,
   },
   classNameTextGreen: {
     fontSize: 26,
@@ -635,7 +636,7 @@ const styles = StyleSheet.create({
   fabAddStudent: {
     position: 'absolute',
     right: 28,
-    bottom: 36,
+    bottom: 5,
     backgroundColor: '#1CBF60',
     borderRadius: 32,
     width: 60,
@@ -762,7 +763,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.12,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
-    borderWidth: 2,
+    borderWidth: 1,
+    borderBottomWidth: 4,
     borderColor: '#FFD600',
   },
   studentInfoRowGaming: {
@@ -1005,7 +1007,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#F8F8F8',
     marginBottom: 8,
-    },
+  },
   modalSheetBtnRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
