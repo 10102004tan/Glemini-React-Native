@@ -4,7 +4,7 @@ import Button from '@/components/customs/Button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import BottomSheet from '@/components/customs/BottomSheet';
 import Overlay from '@/components/customs/Overlay';
-import { useAuthContext } from '@/contexts/AuthContext';
+
 import { useAppProvider } from '@/contexts/AppProvider';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
 import { useSubjectProvider } from '@/contexts/SubjectProvider';
@@ -18,7 +18,7 @@ import SkeletonClassroomCard from '@/components/loadings/SkeletonClassroomCard';
 import { useAuthStore } from '@/store/useAuthStore';
 
 const TeacherView = () => {
-  const { fetchDetailUser } = useAuthContext();
+
   const { user } = useAuthStore();
   const [first, setFirst] = useState(false);
   const [selectedSchool, setSelectedSchool] = useState(null);
@@ -42,14 +42,10 @@ const TeacherView = () => {
   }, []);
 
   useEffect(() => {
-    fetchDetailUser()
-      .then((data) => {
-        setSchools(data.schools);
-      })
-      .catch((err) => {
-        console.log('Error fetching user details:', err);
-      });
-  }, [fetchDetailUser]);
+    if (user && user.schools) {
+      setSchools(user.schools);
+    }
+  }, [user]);
 
   const handleCreateClass = async () => {
     if (!selectedSchool || !selectedSubject || !className) {

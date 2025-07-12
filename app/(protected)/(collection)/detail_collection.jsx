@@ -4,9 +4,10 @@ import Wrapper from '@/components/customs/Wrapper';
 import Button from '@/components/customs/Button';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
+import { API_VERSION, END_POINTS } from '@/configs/api.config';
+import api from '@/libs/axios';
 import { router, useGlobalSearchParams } from 'expo-router';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useAuthStore } from '@/store/useAuthStore';
 import Overlay from '@/components/customs/Overlay';
 import { I18n } from 'i18n-js';
 import { useAppProvider } from '@/contexts/AppProvider';
@@ -26,27 +27,16 @@ const detail_collection = () => {
   // Tạo biến để lưu tên bộ sưu tập
   const [collectionName, setCollectionName] = useState('');
   const { id } = useGlobalSearchParams();
-  const { userData } = useAuthContext();
+  const { user } = useAuthStore();
 
   // lấy tất cả id của quiz
   const getAllQuizById = async (collection_id) => {
     // console.log(collection_id);
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_GET_DETAILS}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_id: userData._id,
-          collection_id,
-        }),
-      },
-    );
-    const data = await response.json();
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.COLLECTION_GET_DETAILS}`, {
+      user_id: user.user_id,
+      collection_id,
+    });
+    const data = response.data;
     if (data.statusCode === 200) {
       // Lưu tên của collection vào
       setCollectionName(data.metadata.collection_name);
@@ -62,19 +52,11 @@ const detail_collection = () => {
 
   const getQuizById = async (quiz_id) => {
     console.log(quiz_id);
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify({
-        user_id: userData._id,
-        quiz_id,
-      }),
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUIZ_DETAIL}`, {
+      user_id: user.user_id,
+      quiz_id,
     });
-    const data = await response.json();
+    const data = response.data;
     console.log(data);
     if (data.statusCode === 200) {
       setQuizzes((prev) => {
@@ -84,19 +66,11 @@ const detail_collection = () => {
   };
 
   const deleteCollection = async (collection_id) => {
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_DELETE}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-client-id': userData._id,
-        authorization: userData.accessToken,
-      },
-      body: JSON.stringify({
-        user_id: userData._id,
-        collection_id,
-      }),
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.COLLECTION_DELETE}`, {
+      user_id: user.user_id,
+      collection_id,
     });
-    const data = await response.json();
+    const data = response.data;
     console.log(data);
     if (data.statusCode === 200) {
       // khi xóa xong thì chuyển lại về trang thư viện
@@ -109,24 +83,13 @@ const detail_collection = () => {
   //fetch api để cập nhật tên mới của collection từ backend server về database của collection
   const updateCollectionName = async (collection_id, collection_name, quiz_ids) => {
     console.log('Updating collection name...');
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_UPDATE_NAME}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          user_id: userData._id,
-          collection_id,
-          collection_name,
-          quiz_ids,
-        }),
-      },
-    );
-    const data = await response.json();
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.COLLECTION_UPDATE_NAME}`, {
+      user_id: user.user_id,
+      collection_id,
+      collection_name,
+      quiz_ids,
+    });
+    const data = response.data;
     console.log(data);
     if (data.statusCode === 200) {
       // Cập nhật lại tên collection sau khi cập nhật thành công
@@ -140,22 +103,11 @@ const detail_collection = () => {
 
   const deleteQuizInCollection = async (quiz_id) => {
     console.log('Deleting quiz with ID:', quiz_id);
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.COLLECTION_REMOVE_QUIZ}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          quiz_id,
-          collection_id: id,
-        }),
-      },
-    );
-    const data = await response.json();
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.COLLECTION_REMOVE_QUIZ}`, {
+      quiz_id,
+      collection_id: id,
+    });
+    const data = response.data;
     console.log(data);
     if (data.statusCode === 200) {
       // Cập nhật danh sách quiz sau khi xóa thành công

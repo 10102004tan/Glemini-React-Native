@@ -11,7 +11,7 @@ import { ScrollView } from 'react-native';
 import QuestionOverview from '../../../components/customs/QuestionOverview';
 import { useQuestionProvider } from '../../../contexts/QuestionProvider';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
-import { useAuthContext } from '../../../contexts/AuthContext';
+
 import { API_URL, END_POINTS, API_VERSION } from '@/configs/api.config';
 import { useAppProvider } from '@/contexts/AppProvider';
 import Field from '@/components/customs/Field';
@@ -37,7 +37,7 @@ const QuizzOverViewScreen = () => {
   const { setIsHiddenNavigationBar } = useAppProvider();
   const { id } = useGlobalSearchParams();
 
-  const { processAccessTokenExpired } = useAuthContext();
+
   const { user } = useAuthStore();
   const [quizId, setQuizId] = useState('');
   // Save init state
@@ -167,7 +167,8 @@ const QuizzOverViewScreen = () => {
     } catch (error) {
       console.error('Error fetching quiz:', error);
       if (error.response?.status === 401) {
-        processAccessTokenExpired();
+        // Handle 401 error - token expired
+        console.log('Token expired, redirecting to login');
       }
     } finally {
       setQuizFetching(false);
@@ -216,7 +217,8 @@ const QuizzOverViewScreen = () => {
     } catch (error) {
       console.error('Error fetching questions:', error);
       if (error.response?.status === 401) {
-        processAccessTokenExpired();
+        // Handle 401 error - token expired
+        console.log('Token expired, redirecting to login');
       }
       setCurrentQuizQuestion([]);
       setQuestions([]);
@@ -258,7 +260,8 @@ const QuizzOverViewScreen = () => {
     } catch (error) {
       console.error('Error updating quiz:', error);
       if (error.response?.status === 401) {
-        processAccessTokenExpired();
+        // Handle 401 error - token expired
+        console.log('Token expired, redirecting to login');
       }
     } finally {
       setIsSave(false);

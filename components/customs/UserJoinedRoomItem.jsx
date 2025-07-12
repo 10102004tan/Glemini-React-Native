@@ -1,7 +1,7 @@
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { FontAwesome6 } from '@expo/vector-icons';
-import socket from '@/utils/socket';
+import socket from '@/libs/socket';
 
 const UserJoinedRoomItem = ({ user, roomCode, showDelete = false }) => {
   const handleDelete = () => {

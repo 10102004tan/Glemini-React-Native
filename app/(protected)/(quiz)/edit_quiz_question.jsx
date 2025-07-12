@@ -17,7 +17,7 @@ import { useQuizProvider } from '../../../contexts/QuizProvider';
 import { useGlobalSearchParams, useLocalSearchParams, useRouter } from 'expo-router';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
 import api from '@/libs/axios';
-import { useAuthContext } from '@/contexts/AuthContext';
+
 import QuestionEditScreenSkeleton from '../../../components/loadings/QuestionEditScreenSkeleton';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { useAuthStore } from '@/store/useAuthStore';

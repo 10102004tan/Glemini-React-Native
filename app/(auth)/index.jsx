@@ -62,8 +62,8 @@ const Home = () => {
   const { isLoading, isSignedIn, checkAuth } = useAuthStore();
 
   useEffect(() => {
-    checkAuth().catch((error) => {
-      if (error.message === 'Network Error') {
+    checkAuth().then((result) => {
+      if (!result.success && result.error && result.error.includes('Network Error')) {
         Alert.alert('[DEV] lỗi kết nối mạng', 'Thay đổi ip hoặc thử lại sau', []);
       }
     });

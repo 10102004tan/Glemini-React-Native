@@ -5,7 +5,7 @@ import ja from '../languages/ja.json';
 import vi from '../languages/vi.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const AppContext = createContext();
-import socket from '../utils/socket';
+import socket from '@/libs/socket';
 import moment from 'moment/moment';
 // if language is not set, default to vi
 import 'moment/locale/vi';

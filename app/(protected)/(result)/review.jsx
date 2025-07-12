@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,12 +8,37 @@ import {
   Animated,
   StyleSheet,
 } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const ResultReview = ({ result, visible, onClose }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const currentQuestion = result?.result_questions?.[selectedIndex];
+  const [reviewData, setReviewData] = useState(null);
+  const params = useLocalSearchParams();
+  const router = useRouter();
+
+  // Move all hooks to the top, before any conditional logic
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
+  // Xử lý dữ liệu từ navigation params
+  useEffect(() => {
+    if (params.result) {
+      try {
+        const parsedResult = JSON.parse(params.result);
+        console.log('📊 Parsed Result:', JSON.stringify(parsedResult, null, 2));
+        setReviewData(parsedResult);
+      } catch (error) {
+        console.error('❌ Error parsing result:', error);
+        console.log('❌ Raw result:', params.result);
+      }
+    }
+  }, [params.result]);
+
+  // Sử dụng useMemo để tối ưu việc tính toán finalResult
+  const finalResult = useMemo(() => {
+    return result || reviewData;
+  }, [result, reviewData]);
+
+  // Animation functions - moved after all hooks
   const animateScale = () => {
     Animated.sequence([
       Animated.timing(scaleAnim, {
@@ -30,7 +55,7 @@ const ResultReview = ({ result, visible, onClose }) => {
   };
 
   const goToNextQuestion = () => {
-    if (selectedIndex < result.result_questions.length - 1) {
+    if (finalResult && finalResult.result_questions && selectedIndex < finalResult.result_questions.length - 1) {
       setSelectedIndex((prev) => prev + 1);
       animateScale();
     }
@@ -42,6 +67,60 @@ const ResultReview = ({ result, visible, onClose }) => {
       animateScale();
     }
   };
+
+  // Reset selectedIndex when finalResult changes
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [finalResult]);
+
+  // Calculate current question after all hooks
+  const currentQuestion = finalResult?.result_questions?.[selectedIndex];
+
+  // Kiểm tra null safety cho result
+  if (!finalResult || !finalResult.result_questions) {
+    console.log('❌ No valid result data:', { finalResult, result, reviewData });
+    return (
+      <Modal visible={visible || !!params.result} animationType="slide" onRequestClose={onClose || (() => router.back())} transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={{ alignItems: 'flex-end' }}>
+              <TouchableOpacity onPress={onClose || (() => router.back())} style={styles.closeButton}>
+                <Text>❌</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.questionBox}>
+              <Text style={styles.title}>📊 Không có kết quả</Text>
+              <Text style={styles.questionText}>
+                {!finalResult
+                  ? 'Bạn chưa làm câu nào nên không có kết quả để hiển thị.'
+                  : 'Không thể tải dữ liệu kết quả. Vui lòng thử lại sau.'
+                }
+              </Text>
+              {__DEV__ && (
+                <>
+                  <Text style={styles.explanationText}>
+                    Debug Info:
+                  </Text>
+                  <Text style={styles.explanationText}>
+                    Has result prop: {!!result}
+                  </Text>
+                  <Text style={styles.explanationText}>
+                    Has reviewData: {!!reviewData}
+                  </Text>
+                  <Text style={styles.explanationText}>
+                    Has params.result: {!!params.result}
+                  </Text>
+                  <Text style={styles.explanationText}>
+                    Final result: {JSON.stringify(finalResult, null, 2)}
+                  </Text>
+                </>
+              )}
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
 
   const renderAnswer = (q) => {
     const qType = q.question_id.question_type;
@@ -131,12 +210,12 @@ const ResultReview = ({ result, visible, onClose }) => {
   };
 
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onClose} transparent>
+    <Modal visible={visible || !!params.result} animationType="slide" onRequestClose={onClose || (() => router.back())} transparent>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <ScrollView contentContainerStyle={styles.containerScroll}>
             <View style={{ alignItems: 'flex-end' }}>
-              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <TouchableOpacity onPress={onClose || (() => router.back())} style={styles.closeButton}>
                 <Text>❌</Text>
               </TouchableOpacity>
             </View>
@@ -181,10 +260,10 @@ const ResultReview = ({ result, visible, onClose }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={goToNextQuestion}
-                disabled={selectedIndex === result.result_questions.length - 1}
+                disabled={selectedIndex === (finalResult?.result_questions?.length || 0) - 1}
                 style={[
                   styles.navButton,
-                  selectedIndex === result.result_questions.length - 1 && styles.disabledButton,
+                  selectedIndex === (finalResult?.result_questions?.length || 0) - 1 && styles.disabledButton,
                 ]}
               >
                 <Text style={styles.navText}>Tiếp →</Text>

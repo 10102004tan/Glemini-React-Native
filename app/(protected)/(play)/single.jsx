@@ -235,9 +235,44 @@ const SinglePlay = () => {
       isAnswerCorrect = correctTextAnswers.includes(userAnswer);
     } else {
       const correctAnswerIds = currentQuestion.correct_answer_ids.map((answer) => answer._id);
-      isAnswerCorrect =
-        state.selectedAnswers.length === correctAnswerIds.length &&
-        state.selectedAnswers.every((answerId) => correctAnswerIds.includes(answerId));
+      console.log('Single play question check:', {
+        type: questionType,
+        selectedAnswers: state.selectedAnswers,
+        correctAnswerIds,
+      });
+
+      if (questionType === 'single') {
+        // Câu hỏi đơn lựa chọn
+        isAnswerCorrect =
+          state.selectedAnswers.length === 1 &&
+          correctAnswerIds.includes(state.selectedAnswers[0]);
+      } else if (questionType === 'order') {
+        // Câu hỏi sắp xếp theo thứ tự - thứ tự phải chính xác
+        isAnswerCorrect =
+          state.selectedAnswers.length === correctAnswerIds.length &&
+          state.selectedAnswers.every((answerId, index) => answerId === correctAnswerIds[index]);
+        console.log('Order question check (single):', {
+          isCorrect: isAnswerCorrect,
+          userOrder: state.selectedAnswers,
+          correctOrder: correctAnswerIds,
+          orderMatches: state.selectedAnswers.map((id, idx) => ({
+            position: idx,
+            userAnswer: id,
+            correctAnswer: correctAnswerIds[idx],
+            match: id === correctAnswerIds[idx]
+          }))
+        });
+      } else if (questionType === 'multiple') {
+        // Câu hỏi đa lựa chọn - chỉ cần có đủ đáp án đúng, không cần thứ tự
+        isAnswerCorrect =
+          state.selectedAnswers.length === correctAnswerIds.length &&
+          state.selectedAnswers.every((answerId) => correctAnswerIds.includes(answerId));
+      } else {
+        // Default fallback
+        isAnswerCorrect =
+          state.selectedAnswers.length === correctAnswerIds.length &&
+          state.selectedAnswers.every((answerId) => correctAnswerIds.includes(answerId));
+      }
     }
 
     // await playSound(isAnswerCorrect);

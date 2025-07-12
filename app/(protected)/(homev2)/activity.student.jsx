@@ -11,7 +11,7 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import Field from '@/components/customs/Field';
 import { API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useRoomProvider } from '@/contexts/RoomProvider';
-import socket from '@/libs/socket';
+import socket, { authenticateSocket } from '@/libs/socket';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useCameraPermissions } from 'expo-camera';
 import { useAppProvider } from '@/contexts/AppProvider';
@@ -41,6 +41,11 @@ const ActivityStudent = () => {
   ]);
 
   useEffect(() => {
+    // Authenticate socket khi component mount
+    if (user && user.accessToken) {
+      authenticateSocket(user.accessToken, user.refreshToken);
+    }
+
     if (!isPermissionGranted) requestPermission();
 
     const loadData = async () => {
@@ -55,7 +60,7 @@ const ActivityStudent = () => {
     };
 
     loadData();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const checkRoom = async () => {
@@ -68,13 +73,15 @@ const ActivityStudent = () => {
         if (data.statusCode === 200) {
           if (["completed", "deleted"].includes(data.metadata.status)) {
             Alert.alert('Thông báo', 'Không thể tham gia vào phòng chơi lúc này !!!');
-          } else {
+          } else if (data.metadata.status === 'doing') {
+            // Phòng đang chơi, kiểm tra user đã join chưa
             const userCheckRes = await api.post(`${API_VERSION.V1}${END_POINTS.ROOM_CHECK_USER}`, {
               room_code: roomTemp,
               user_id: user.user_id,
             });
 
             if (userCheckRes.data.metadata) {
+              // User đã join rồi, chuyển vào chơi
               setCurrentRoom(data.metadata._id);
               socket.emit('joinRoom', { roomCode, user });
               router.replace({
@@ -87,7 +94,31 @@ const ActivityStudent = () => {
                 },
               });
             } else {
-              Alert.alert('Thông báo', 'Bạn đã hoàn thành phòng chơi này !!!');
+              // User chưa join, không cho phép join khi đã bắt đầu
+              Alert.alert('Thông báo', 'Phòng chơi đã bắt đầu, bạn không thể tham gia lúc này !!!');
+            }
+          } else if (data.metadata.status === 'start') {
+            // Phòng chưa bắt đầu, thêm user vào phòng
+            try {
+              const addUserRes = await api.post(`${API_VERSION.V1}${END_POINTS.ROOM_ADD_USER}`, {
+                room_code: roomTemp,
+                user_id: user.user_id,
+              });
+
+              if (addUserRes.data.statusCode === 200) {
+                setCurrentRoom(data.metadata._id);
+                console.log('User object being sent to socket:', user);
+                console.log('🚀 Student emitting joinRoom with roomCode:', roomTemp);
+                socket.emit('joinRoom', { roomCode: roomTemp, user });
+                router.replace({
+                  pathname: '/(protected)/(room)/[value]',
+                  params: { value: roomTemp },
+                });
+              } else {
+                Alert.alert('Thông báo', addUserRes.data.message || 'Không thể tham gia phòng chơi');
+              }
+            } catch (error) {
+              Alert.alert('Thông báo', 'Không thể tham gia phòng chơi');
             }
           }
         } else {
