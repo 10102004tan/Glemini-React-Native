@@ -11,9 +11,9 @@ import {
 } from 'react-native';
 import { Overlay } from './overlay';
 import { useEffect, useRef } from 'react';
-import { useAuthContext } from '@/contexts/AuthContext';
+
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
-import socket from '@/utils/socket';
+import socket from '@/libs/socket';
 import { useRoomProvider } from '@/contexts/RoomProvider';
 
 export default function Scanner() {

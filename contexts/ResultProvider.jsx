@@ -165,13 +165,26 @@ const ResultProvider = ({ children }) => {
         return null;
       }
     } catch (error) {
-      Toast.show({
-        type: 'error',
-        text1: 'Lỗi khi cập nhật trạng thái hoàn thành.',
-        text2: { error },
-        visibilityTime: 1000,
-        autoHide: true,
-      });
+      console.error('Error in completed function:', error);
+
+      // Xử lý lỗi cụ thể
+      if (error.response?.status === 400 && error.response?.data?.message === 'Result not found') {
+        Toast.show({
+          type: 'warn',
+          text1: 'Bạn chưa làm câu nào nên không có kết quả để nộp.',
+          visibilityTime: 2000,
+          autoHide: true,
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Lỗi khi cập nhật trạng thái hoàn thành.',
+          text2: error.message || 'Vui lòng thử lại sau.',
+          visibilityTime: 2000,
+          autoHide: true,
+        });
+      }
+      return null;
     }
   };
 

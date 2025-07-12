@@ -6,8 +6,9 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as ImagePicker from 'expo-image-picker';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import { Status } from '@/constants';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useAuthStore } from '@/store/useAuthStore';
 import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
+import api from '@/libs/axios';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message-custom';
 import { useAppProvider } from '@/contexts/AppProvider';
@@ -24,7 +25,7 @@ const RichTextEditor = ({
 }) => {
   const [editorValue, setEditorValue] = useState('');
   const { question, setQuestion, editAnswerContent, resetQuestion } = useQuestionProvider();
-  const { userData } = useAuthContext();
+  const { user } = useAuthStore();
   const richText = useRef(null);
   const fieldRef = useRef(null);
   const selectedAnswerRef = useRef(selectedAnswer);
@@ -144,24 +145,17 @@ const RichTextEditor = ({
         type: file.mimeType,
       });
 
-      const response = await fetch(
-        `${API_URL}${API_VERSION.V1}${END_POINTS.QUESTION_UPLOAD_IMAGE}`,
-        {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'x-client-id': userData._id,
-            authorization: userData.accessToken,
-          },
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.QUESTION_UPLOAD_IMAGE}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         },
-      );
+      });
 
       // console.log(
       //    `${API_URL}${API_VERSION.V1}${END_POINTS.QUESTION_UPLOAD_IMAGE}`
       // );
 
-      const data = await response.json();
+      const data = response.data;
       // console.log(data);
       return data.metadata.url; // URL của ảnh trên server
     } catch (error) {

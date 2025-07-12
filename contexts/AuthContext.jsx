@@ -6,7 +6,7 @@ import { Alert } from 'react-native';
 
 import { API_URL, END_POINTS, API_VERSION } from '../configs/api.config';
 import { registerForPushNotificationsAsync } from '@/helpers/notification';
-import socket from '@/utils/socket';
+import socket from '@/libs/socket';
 import { useAppProvider } from '@/contexts/AppProvider';
 import { useAuthStore } from '@/store/useAuthStore';
 import api from '@/libs/axios';
@@ -100,15 +100,13 @@ export const AuthProvider = ({ children }) => {
   const signIn = async ({ email, password }) => {
     email = email.trim();
     password = password.trim();
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.LOGIN}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password, user_push_token: expoPushToken }),
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.LOGIN}`, {
+      email,
+      password,
+      user_push_token: expoPushToken
     });
 
-    const data = await response.json();
+    const data = response.data;
     if (data.statusCode === 200) {
       return await storeUserData(data);
     }
@@ -141,14 +139,12 @@ export const AuthProvider = ({ children }) => {
       });
     }
 
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.SIGN_UP}`, {
-      method: 'POST',
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.SIGN_UP}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-      body: formData,
     });
-    const data = await response.json();
+    const data = response.data;
     if (data.statusCode === 200) {
       return await storeUserData(data);
     }
@@ -156,16 +152,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signOut = async () => {
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.LOGOUT}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `${userData.accessToken}`,
-        'x-client-id': userData._id,
-      },
-      body: JSON.stringify({ expo_push_token: expoPushToken }),
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.LOGOUT}`, {
+      expo_push_token: expoPushToken
     });
-    const data = await response.json();
+    const data = response.data;
     if (data.statusCode === 200) {
       await AsyncStorage.removeItem('userData');
       setUserData(null);
@@ -224,17 +214,12 @@ export const AuthProvider = ({ children }) => {
     if (!userData) return;
     const { accessToken, _id: user_id } = userData;
 
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.CHANGE_PASSWORD}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `${accessToken}`,
-        'x-client-id': user_id,
-      },
-      body: JSON.stringify({ oldPassword, newPassword }),
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.CHANGE_PASSWORD}`, {
+      oldPassword,
+      newPassword
     });
 
-    const data = await response.json();
+    const data = response.data;
 
     // if old password is incorrect
     if (data.statusCode === 400) {
@@ -265,16 +250,14 @@ export const AuthProvider = ({ children }) => {
    * @description : Xu ly khi access token het han, su dung refresh token de lay access token moi
    */
   const processAccessTokenExpired = async () => {
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.REFRESH_TOKEN}`, {
-      method: 'POST',
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.REFRESH_TOKEN}`, {}, {
       headers: {
-        'Content-Type': 'application/json',
         'x-refresh-token': `${userData.refreshToken}`,
         'x-client-id': userData._id,
       },
     });
 
-    const data = await response.json();
+    const data = response.data;
     if (data.statusCode === 200) {
       const {
         tokens: { accessToken, refreshToken },
@@ -300,15 +283,8 @@ export const AuthProvider = ({ children }) => {
    */
   const fetchStatus = async () => {
     try {
-      const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.USER_STATUS}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          authorization: `${userData.accessToken}`,
-          'x-client-id': userData._id,
-        },
-      });
-      const data = await response.json();
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.USER_STATUS}`);
+      const data = response.data;
       const { statusCode, message } = data;
 
       if (message === 'expired') {
@@ -343,14 +319,10 @@ export const AuthProvider = ({ children }) => {
    */
   const forgotPassword = async ({ email }) => {
     email = email.trim();
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.FORGOT_PASSWORD}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email }),
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.FORGOT_PASSWORD}`, {
+      email
     });
-    const data = await response.json();
+    const data = response.data;
     if (data.statusCode === 200) {
       return data.message;
     }
@@ -365,15 +337,12 @@ export const AuthProvider = ({ children }) => {
    */
   const verifyOTP = async ({ email, otp }) => {
     email = email.trim();
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.VERIFY_OTP}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, otp }),
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.VERIFY_OTP}`, {
+      email,
+      otp
     });
 
-    const data = await response.json();
+    const data = response.data;
 
     if (data.statusCode === 200) {
       return data.message;
@@ -389,15 +358,13 @@ export const AuthProvider = ({ children }) => {
    * @returns {Promise<*>}
    */
   const resetPassword = async ({ email, otp, password }) => {
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.RESET_PASSWORD}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, otp, password }),
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.RESET_PASSWORD}`, {
+      email,
+      otp,
+      password
     });
 
-    const data = await response.json();
+    const data = response.data;
 
     if (data.statusCode === 200) {
       return data.message;
@@ -412,16 +379,11 @@ export const AuthProvider = ({ children }) => {
    * @returns {Promise<number>}
    */
   const fetchNotification = async ({ skip = 0, limit = 10 }) => {
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `${userData.accessToken}`,
-        'x-client-id': `${userData._id}`,
-      },
-      body: JSON.stringify({ skip, limit }),
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.USER_NOTIFICATION}`, {
+      skip,
+      limit
     });
-    const data = await response.json();
+    const data = response.data;
     if (data.statusCode === 200) {
       const { totalUnread, listNoti } = data.metadata;
       setNumberOfUnreadNoti(totalUnread);
@@ -449,32 +411,17 @@ export const AuthProvider = ({ children }) => {
    * @returns {Promise<*>}
    */
   const updateNotificationStatus = async ({ notiId, status = 'read' }) => {
-    const response = await fetch(
-      `${API_URL}${API_VERSION.V1}${END_POINTS.UPDATE_NOTIFICATION_STATUS}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          authorization: `${userData.accessToken}`,
-          'x-client-id': `${userData._id}`,
-        },
-        body: JSON.stringify({ notiId, status }),
-      },
-    );
-    const data = await response.json();
+    const response = await api.put(`${API_VERSION.V1}${END_POINTS.UPDATE_NOTIFICATION_STATUS}`, {
+      notiId,
+      status
+    });
+    const data = response.data;
     return data.statusCode;
   };
 
   const readAllNotification = async () => {
-    const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.READ_ALL_NOTIFICATION}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `${userData.accessToken}`,
-        'x-client-id': `${userData._id}`,
-      },
-    });
-    const data = await response.json();
+    const response = await api.post(`${API_VERSION.V1}${END_POINTS.READ_ALL_NOTIFICATION}`);
+    const data = response.data;
     console.log(data);
     return data.statusCode;
   };

@@ -5,7 +5,6 @@ import Field from '../../../components/customs/Field';
 import Button from '../../../components/customs/Button';
 import { router } from 'expo-router';
 import { useQuizProvider } from '../../../contexts/QuizProvider';
-import { useAuthContext } from '@/contexts/AuthContext';
 import { API_URL, END_POINTS, API_VERSION } from '@/configs/api.config';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import * as ImagePicker from 'expo-image-picker';
@@ -17,7 +16,6 @@ import api from '@/libs/axios';
 import Toast from 'react-native-toast-message-custom';
 
 const CreateTitleQuizzScreen = () => {
-  const { processAccessTokenExpired } = useAuthContext();
   const { user } = useAuthStore();
 
   const [quizName, setQuizName] = useState('');
@@ -163,7 +161,8 @@ const CreateTitleQuizzScreen = () => {
         console.error('Create quiz error:', error);
 
         if (error.response?.status === 401) {
-          await processAccessTokenExpired();
+          // Token hết hạn, chuyển hướng hoặc thông báo
+          console.log('Token expired, please login again!');
         } else {
           Toast.show({
             type: 'error',
@@ -278,7 +277,8 @@ const CreateTitleQuizzScreen = () => {
           autoHide: true,
         });
       } else if (error.response?.status === 401) {
-        await processAccessTokenExpired();
+        // Token hết hạn, chuyển hướng hoặc thông báo
+        console.log('Token expired, please login again!');
       } else {
         Toast.show({
           type: 'error',
@@ -371,7 +371,8 @@ const CreateTitleQuizzScreen = () => {
           autoHide: true,
         });
       } else if (error.response?.status === 401) {
-        await processAccessTokenExpired();
+        // Token hết hạn, chuyển hướng hoặc thông báo
+        console.log('Token expired, please login again!');
       } else {
         Toast.show({
           type: 'error',

@@ -1,19 +1,22 @@
-import { View, Text, Dimensions, Animated, TouchableOpacity, Easing, Alert } from 'react-native';
+import { View, Text, Dimensions, Animated, TouchableOpacity, Easing, Alert, StyleSheet, ScrollView } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import Wrapper from '@/components/customs/Wrapper';
 import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/Ionicons';
+import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 import RankBoardUserItem from '@/components/customs/RankBoardUserItem';
 import { useQuestionProvider } from '@/contexts/QuestionProvider';
 import QuestionOverview from '@/components/customs/QuestionOverview';
-import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { API_VERSION, END_POINTS } from '@/configs/api.config';
+import api from '@/libs/axios';
+import { useAuthStore } from '@/store/useAuthStore';
 import { FlatList } from 'react-native-gesture-handler';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
-import socket from '@/utils/socket';
-import Button from '@/components/customs/Button';
+import socket from '@/libs/socket';
 import { sortRankBoardDesc } from '../../../utils';
 import { useAppProvider } from '@/contexts/AppProvider';
+import { CommonActions, useNavigation } from '@react-navigation/native';
+
 const TeacherRoomWaitResultScreen = () => {
   const [translateValue] = useState(new Animated.Value(0));
   const screenWidth = Dimensions.get('window').width;
@@ -23,34 +26,31 @@ const TeacherRoomWaitResultScreen = () => {
   const { getQuestionsByQuizId } = useQuestionProvider();
 
   const { quizId, users, roomCode, roomTime, createdAt } = useGlobalSearchParams();
-  const joinedUsers = JSON.parse(users); // Parse JSON string back to array
+  const joinedUsers = JSON.parse(users);
   const [questions, setQuestions] = useState([]);
-  const { userData } = useAuthContext();
+  const { user } = useAuthStore();
   const [rankData, setRankData] = useState([]);
   const [accuracy, setAccuracy] = useState(0);
   const animatedWidthGreen = useRef(new Animated.Value(50)).current;
   const animatedWidthRed = useRef(new Animated.Value(50)).current;
-  const [minutesLeft, setMinutesLeft] = useState(0); // đơn vị phút
-  // const [roomStatus, setRoomStatus] = useState('Phòng vẫn đang mở');
   const router = useRouter();
+  const navigation = useNavigation();
   const { i18n } = useAppProvider();
 
   useEffect(() => {
-    // Chạy animation khi giá trị `accuracy` thay đổi
     Animated.timing(animatedWidthGreen, {
       toValue: accuracy > 0 ? accuracy : 50,
-      duration: 500, // Thời gian animation (miligiây)
-      useNativeDriver: false, // `false` vì `width` không hỗ trợ `native driver`
+      duration: 500,
+      useNativeDriver: false,
     }).start();
 
     Animated.timing(animatedWidthRed, {
       toValue: accuracy > 0 ? 100 - accuracy : 50,
-      duration: 500, // Thời gian animation (miligiây)
+      duration: 500,
       useNativeDriver: false,
     }).start();
   }, [accuracy]);
 
-  // Interpolate giá trị để chuyển thành chuỗi `%`
   const greenWidth = animatedWidthGreen.interpolate({
     inputRange: [0, 100],
     outputRange: ['0%', '100%'],
@@ -61,23 +61,13 @@ const TeacherRoomWaitResultScreen = () => {
     outputRange: ['100%', '0%'],
   });
 
-  // Call API to get questions by quizId
   useEffect(() => {
-    // console.log(quizId)
     const fetchQuestion = async () => {
-      const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': userData._id,
-          authorization: userData.accessToken,
-        },
-        body: JSON.stringify({
-          quiz_id: quizId,
-        }),
+      const response = await api.post(`${API_VERSION.V1}${END_POINTS.GET_QUIZ_QUESTIONS}`, {
+        quiz_id: quizId,
       });
 
-      const data = await response.json();
+      const data = response.data;
       if (data.statusCode === 200) {
         setQuestions(data.metadata);
       }
@@ -89,16 +79,12 @@ const TeacherRoomWaitResultScreen = () => {
   }, [quizId]);
 
   useEffect(() => {
-    // Lắng nghe sự kiện 'updateRanking' từ socket
     socket.on('updateRanking', (rank) => {
       setRankData(sortRankBoardDesc(rank));
     });
 
-    // Lắng nghe sự kiện cập nhật lại thanh process
     socket.on('updateStats', (rank) => {
-      // console.log(rank);
       setAccuracy(Math.round((rank.correct_answer / rank.total_answer) * 100) || 0);
-      // setErrorRate(data.errorRate);
     });
 
     return () => {
@@ -129,214 +115,426 @@ const TeacherRoomWaitResultScreen = () => {
     }).start();
   }, [tabResult]);
 
-  // useEffect(() => {
-  //    const createdAtDate = new Date(createdAt);
-  //    const roomCloseTime = new Date(createdAtDate.getTime() + roomTime * 60 * 1000);
-  //    console.log(createdAtDate)
-  //    console.log(roomCloseTime)
-
-  //    const updateMinutesLeft = () => {
-  //       const currentTime = new Date();
-  //       const timeDifference = roomCloseTime - currentTime;
-  //       const minutesRemaining = Math.max(Math.floor(timeDifference / (1000 * 60)), 0);
-  //       console.log(minutesRemaining)
-  //       setMinutesLeft(minutesRemaining);
-
-  //       if (currentTime >= roomCloseTime) {
-  //          Alert.alert('Thông báo', 'Hết thời gian làm bài', [
-  //             {
-  //                text: 'Thoát',
-  //                onPress: async () => {
-  //                   try {
-  //                      const response = await fetch(`${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_UPDATE_STATUS}`, {
-  //                         method: 'POST',
-  //                         headers: {
-  //                            'Content-Type': 'application/json',
-  //                            'x-client-id': userData._id,
-  //                            authorization: userData.accessToken,
-  //                         },
-  //                         body: JSON.stringify({
-  //                            room_code: roomCode,
-  //                            status: 'completed',
-  //                         }),
-  //                      });
-  //                      const data = await response.json();
-  //                      if (data.statusCode === 200) {
-  //                         socket.emit('endQuiz', { roomCode: roomCode, user: userData });
-  //                         router.replace({
-  //                            pathname: '/(app)/(home)',
-  //                            params: {},
-  //                         });
-  //                      }
-  //                   } catch (error) {
-  //                      console.error('Error updating room status:', error);
-  //                   }
-  //                },
-  //             },
-  //          ]);
-  //          setRoomStatus('Đã quá thời gian, đóng phòng.');
-  //          clearInterval(interval);
-  //       }
-  //    };
-
-  //    // Cập nhật ngay khi component render lần đầu
-  //    updateMinutesLeft();
-
-  //    // Thiết lập interval để kiểm tra và cập nhật mỗi phút
-  //    const interval = setInterval(updateMinutesLeft, 1000 * 60);
-
-  //    // Dọn dẹp khi component bị unmount
-  //    return () => clearInterval(interval);
-  // }, [createdAt, roomTime]);
+  const handleDone = () => {
+    Alert.alert(i18n.t('room_wait.alert'), i18n.t('room_wait.exitRoomConfirmation'), [
+      {
+        text: i18n.t('room_wait.cancel'),
+        onPress: () => {},
+      },
+      {
+        text: i18n.t('room_wait.leave'),
+        onPress: async () => {
+          const response = await api.post(`${API_VERSION.V1}${END_POINTS.ROOM_UPDATE_STATUS}`, {
+            room_code: roomCode,
+            status: 'completed',
+          });
+          const data = response.data;
+          if (data.statusCode === 200) {
+            socket.emit('endQuiz', { roomCode: roomCode, user: user });
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{ name: '(homev2)' }],
+              })
+            );
+          }
+        },
+      },
+    ]);
+  };
 
   return (
-    <Wrapper>
-      <View className="flex-1 p-4 bg-primary">
-        <View className="flex items-center justify-between flex-row mb-4 mt-[40px]">
-          <Text className="text-white font-semibold text-lg">
-            {/* Thời gian còn lại: {minutesLeft} phút */}
-          </Text>
-          <Button
-            text={i18n.t('room_wait_result.done')}
-            otherStyles="p-3 bg-red-500"
-            onPress={() => {
-              Alert.alert(i18n.t('room_wait.alert'), i18n.t('room_wait.exitRoomConfirmation'), [
-                {
-                  text: i18n.t('room_wait.cancel'),
-                  onPress: () => {},
-                },
-                {
-                  text: i18n.t('room_wait.leave'),
-                  onPress: async () => {
-                    const response = await fetch(
-                      `${API_URL}${API_VERSION.V1}${END_POINTS.ROOM_UPDATE_STATUS}`,
-                      {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                          'x-client-id': userData._id,
-                          authorization: userData.accessToken,
-                        },
-                        body: JSON.stringify({
-                          room_code: roomCode,
-                          status: 'completed',
-                        }),
-                      },
-                    );
-                    const data = await response.json();
-                    console.log(data);
-                    if (data.statusCode === 200) {
-                      socket.emit('endQuiz', { roomCode: roomCode, user: userData });
-                      router.replace({
-                        pathname: '/(app)/(home)',
-                        params: {},
-                      }); // Redirect to home
-                    }
-                  },
-                },
-              ]);
-            }}
-          />
-        </View>
-        <View className="p-4 rounded-2xl bg-black flex flex-row items-center justify-between">
-          <View>
-            <Text className="text-sm text-gray">{i18n.t('room_item.roomCode')}</Text>
-            <Text className="text-white text-lg">{roomCode}</Text>
-          </View>
-          <Feather name="copy" size={20} color="white" />
-        </View>
-        <View className="mt-10 bg-black p-4 rounded-2xl flex items-center justify-between flex-row">
-          <Animated.View
-            className="h-8 rounded-tl-lg border-black border rounded-bl-lg bg-green-500"
-            style={{ width: greenWidth }}
-          ></Animated.View>
-          <Animated.View
-            className="w-2 h-8 rounded-tr-lg border-black border rounded-br-lg bg-red-500"
-            style={{ width: redWidth }}
-          ></Animated.View>
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Kết quả phòng chơi</Text>
+        <TouchableOpacity style={styles.doneButton} onPress={handleDone}>
+          <Icon name="close-circle" size={24} color="#ef4444" />
+          <Text style={styles.doneButtonText}>{i18n.t('room_wait_result.done')}</Text>
+        </TouchableOpacity>
+      </View>
 
-          <View
-            className={`w-[100px] h-[100px] absolute rounded-full flex items-center justify-center flex-col left-[40%] bg-white border-4 border-white ${accuracy > 50 ? 'border-green-500' : 'border-red-500'}`}
-          >
-            <Text className="font-semibold text-black text-2xl">{accuracy}%</Text>
-            <Text className="text-gray text-sm">{i18n.t('room_wait_result.correctPercent')}</Text>
-          </View>
+      {/* Room Code Card */}
+      <View style={styles.roomCodeCard}>
+        <View style={styles.roomCodeContent}>
+          <Text style={styles.roomCodeLabel}>{i18n.t('room_item.roomCode')}</Text>
+          <Text style={styles.roomCodeText}>{roomCode}</Text>
         </View>
+        <TouchableOpacity style={styles.copyButton}>
+          <Feather name="copy" size={20} color="#38bdf8" />
+        </TouchableOpacity>
+      </View>
 
-        <View className="w-full relative">
-          <View className="mt-[40px] mx-auto overflow-hidden flex items-center w-[90%] justify-center flex-row p-4 bg-black rounded-tl-2xl  rounded-tr-2xl">
-            <TouchableOpacity className="w-1/2" onPress={() => setTabResult('rankboard')}>
-              <Text className="text-white text-center">{i18n.t('room_wait_result.rankboard')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="w-1/2" onPress={() => setTabResult('question')}>
-              <Text className="text-white text-center">{i18n.t('room_wait_result.question')}</Text>
-            </TouchableOpacity>
-            <Animated.View
-              className="w-1/2 absolute h-1 bg-white rounded-2xl bottom-0 left-0"
-              style={{
-                transform: [{ translateX: translateValue }],
-              }}
-            ></Animated.View>
-            {/* Line bottom */}
+      {/* Progress Card */}
+      <View style={styles.progressCard}>
+        <View style={styles.progressBarWrapper}>
+          <View style={styles.progressBar}>
+            <Animated.View style={[styles.progressGreen, { width: greenWidth }]} />
+            <Animated.View style={[styles.progressRed, { width: redWidth }]} />
           </View>
-        </View>
-        {/* Board Content */}
-        <View className="relative flex-1">
-          {/* Rank Board */}
-          <Animated.View
-            style={{
-              transform: [{ translateX: rankBoardTransform }],
-            }}
-            className="p-4 w-full absolute rounded-2xl bg-gray"
-          >
-            <View className="flex items-center flex-row justify-start">
-              <AntDesign name="user" size={14} color="white" />
-              <Text className="text-white ml-1">
-                {joinedUsers.length - 1} {i18n.t('room_wait_result.userJoined')}
-              </Text>
+          <View style={styles.progressCenter}>
+            <View style={[styles.progressCircle, accuracy > 50 && styles.progressCircleGreen]}>
+              <Text style={styles.progressPercent}>{accuracy}%</Text>
+              <Text style={styles.progressLabel}>{i18n.t('room_wait_result.correctPercent')}</Text>
             </View>
-            {/* Items */}
-            {userData &&
-              rankData.rank &&
-              rankData.rank.length > 0 &&
-              rankData.rank.map((rank, index) => {
-                if (userData._id !== rank.user_id._id) {
-                  return (
-                    <RankBoardUserItem
-                      key={index}
-                      user={{
-                        user_fullname: rank.user_id.user_fullname,
-                        user_avatar: rank.user_id.user_avatar,
-                      }}
-                      point={rank.userScore}
-                      rankIndex={index}
-                    />
-                  );
-                }
-              })}
-          </Animated.View>
-
-          {/* Question Board */}
-          <Animated.View
-            style={{
-              transform: [{ translateX: questionBoardTransform }],
-            }}
-            className="w-full absolute rounded-2xl overflow-hidden h-full"
-          >
-            <FlatList
-              style={{ flex: 1, borderRadius: 20, overflow: 'hidden' }}
-              data={questions}
-              key={(item) => item._id}
-              keyExtractor={(item) => item._id}
-              renderItem={({ item, index }) => (
-                <QuestionOverview question={item} index={index} quizId={quizId} editable={false} />
-              )}
-            />
-          </Animated.View>
+          </View>
         </View>
       </View>
-    </Wrapper>
+
+      {/* Tab Navigation */}
+      <View style={styles.tabContainer}>
+        <View style={styles.tabBar}>
+          <TouchableOpacity
+            style={styles.tabButton}
+            onPress={() => setTabResult('rankboard')}
+          >
+            <Text style={[styles.tabText, tabResult === 'rankboard' && styles.tabTextActive]}>
+              <Icon2 name="trophy" size={16} color={tabResult === 'rankboard' ? '#facc15' : '#64748b'} />
+              {' '}{i18n.t('room_wait_result.rankboard')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.tabButton}
+            onPress={() => setTabResult('question')}
+          >
+            <Text style={[styles.tabText, tabResult === 'question' && styles.tabTextActive]}>
+              <Icon2 name="format-list-bulleted" size={16} color={tabResult === 'question' ? '#38bdf8' : '#64748b'} />
+              {' '}{i18n.t('room_wait_result.question')}
+            </Text>
+          </TouchableOpacity>
+          <Animated.View
+            style={[
+              styles.tabIndicator,
+              { transform: [{ translateX: translateValue }] }
+            ]}
+          />
+        </View>
+      </View>
+
+      {/* Content */}
+      <View style={styles.contentContainer}>
+        {/* Rank Board */}
+        <Animated.View
+          style={[
+            styles.contentPanel,
+            { transform: [{ translateX: rankBoardTransform }] }
+          ]}
+        >
+          <View style={styles.rankHeader}>
+            <Icon name="people" size={16} color="#38bdf8" />
+            <Text style={styles.rankHeaderText}>
+              {joinedUsers.length - 1} {i18n.t('room_wait_result.userJoined')}
+            </Text>
+          </View>
+
+          <ScrollView style={styles.rankList} showsVerticalScrollIndicator={false}>
+            {user && rankData.rank && rankData.rank.length > 0 ? (
+              rankData.rank.map((rank, index) => {
+                if (user.user_id !== rank.user_id._id) {
+                  return (
+                    <View key={index} style={styles.rankItem}>
+                      <View style={styles.rankPosition}>
+                        <Text style={styles.rankNumber}>{index + 1}</Text>
+                        {index === 0 && <Icon2 name="trophy" size={16} color="#facc15" />}
+                        {index === 1 && <Icon2 name="trophy" size={16} color="#c0c0c0" />}
+                        {index === 2 && <Icon2 name="trophy" size={16} color="#cd7f32" />}
+                      </View>
+
+                      <View style={styles.userInfo}>
+                        <View style={styles.userAvatar}>
+                          <Text style={styles.userAvatarText}>
+                            {(rank.user_id.user_fullname || 'U').charAt(0).toUpperCase()}
+                          </Text>
+                        </View>
+                        <View style={styles.userDetails}>
+                          <Text style={styles.userName}>{rank.user_id.user_fullname}</Text>
+                          <Text style={styles.userScore}>
+                            <Icon name="star" size={12} color="#facc15" /> {rank.userScore} điểm
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  );
+                }
+              })
+            ) : (
+              <View style={styles.emptyRanking}>
+                <Icon2 name="trophy-outline" size={32} color="#64748b" />
+                <Text style={styles.emptyText}>Chưa có dữ liệu xếp hạng</Text>
+              </View>
+            )}
+          </ScrollView>
+        </Animated.View>
+
+        {/* Question Board */}
+        <Animated.View
+          style={[
+            styles.contentPanel,
+            { transform: [{ translateX: questionBoardTransform }] }
+          ]}
+        >
+          <FlatList
+            style={styles.questionList}
+            data={questions}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item, index }) => (
+              <QuestionOverview question={item} index={index} quizId={quizId} editable={false} />
+            )}
+            showsVerticalScrollIndicator={false}
+          />
+        </Animated.View>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+    padding: 20,
+    paddingTop: 40,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  headerTitle: {
+    fontSize: 22,
+    color: '#38bdf8',
+    fontWeight: '800',
+  },
+  doneButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1e293b',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#ef4444',
+  },
+  doneButtonText: {
+    color: '#ef4444',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 4,
+  },
+  roomCodeCard: {
+    backgroundColor: '#1e293b',
+    padding: 16,
+    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  roomCodeContent: {
+    flex: 1,
+  },
+  roomCodeLabel: {
+    color: '#94a3b8',
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  roomCodeText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  copyButton: {
+    padding: 8,
+  },
+  progressCard: {
+    backgroundColor: '#1e293b',
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 20,
+    position: 'relative',
+    minHeight: 100,
+  },
+  progressBarWrapper: {
+    position: 'relative',
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  progressBar: {
+    height: 16,
+    backgroundColor: '#334155',
+    borderRadius: 8,
+    overflow: 'hidden',
+    flexDirection: 'row',
+    width: '100%',
+    position: 'relative',
+    zIndex: 1,
+  },
+  progressGreen: {
+    backgroundColor: '#22c55e',
+    height: 16,
+  },
+  progressRed: {
+    backgroundColor: '#ef4444',
+    height: 16,
+  },
+  progressCenter: {
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    transform: [{ translateX: -40 }, { translateY: -40 }],
+    zIndex: 2,
+  },
+  progressCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#1e293b',
+    borderWidth: 4,
+    borderColor: '#ef4444',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressCircleGreen: {
+    borderColor: '#22c55e',
+  },
+  progressPercent: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  progressLabel: {
+    color: '#94a3b8',
+    fontSize: 10,
+    textAlign: 'center',
+  },
+  tabContainer: {
+    marginBottom: 20,
+  },
+  tabBar: {
+    backgroundColor: '#1e293b',
+    borderRadius: 16,
+    flexDirection: 'row',
+    position: 'relative',
+    padding: 4,
+  },
+  tabButton: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  tabText: {
+    color: '#64748b',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  tabTextActive: {
+    color: '#fff',
+  },
+  tabIndicator: {
+    position: 'absolute',
+    bottom: 4,
+    left: 4,
+    width: '50%',
+    height: 2,
+    backgroundColor: '#38bdf8',
+    borderRadius: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    position: 'relative',
+  },
+  contentPanel: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#1e293b',
+    borderRadius: 16,
+    padding: 16,
+  },
+  rankHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  rankHeaderText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  rankList: {
+    flex: 1,
+  },
+  rankItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#334155',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  rankPosition: {
+    width: 30,
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  rankNumber: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#fff',
+    marginBottom: 2,
+  },
+  userInfo: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  userAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#38bdf8',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  userAvatarText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  userDetails: {
+    flex: 1,
+  },
+  userName: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  userScore: {
+    color: '#94a3b8',
+    fontSize: 12,
+  },
+  emptyRanking: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+  },
+  emptyText: {
+    color: '#64748b',
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 8,
+  },
+  questionList: {
+    flex: 1,
+    borderRadius: 16,
+  },
+});
 
 export default TeacherRoomWaitResultScreen;

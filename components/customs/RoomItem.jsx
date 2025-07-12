@@ -2,16 +2,16 @@ import { View, Text } from 'react-native';
 import React from 'react';
 import { createdAtConvert } from '@/utils';
 import Button from './Button';
-import socket from '@/utils/socket';
+import socket from '@/libs/socket';
 import { useRouter } from 'expo-router';
 import { useRoomProvider } from '@/contexts/RoomProvider';
-import { useAuthContext } from '@/contexts/AuthContext';
 import { useAppProvider } from '@/contexts/AppProvider';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const RoomItem = ({ room = {} }) => {
   const router = useRouter();
   const { setCurrentRoom } = useRoomProvider();
-  const { userData } = useAuthContext();
+  const { user } = useAuthStore();
   const { i18n } = useAppProvider();
   return (
     <View className="flex-1 rounded-xl overflow-hidden border border-gray mb-2">
@@ -35,7 +35,7 @@ const RoomItem = ({ room = {} }) => {
             otherStyles="p-3 mt-2 justify-center"
             onPress={() => {
               setCurrentRoom(room.room_code);
-              socket.emit('joinRoom', { roomCode: room.room_code, user: userData });
+              socket.emit('joinRoom', { roomCode: room.room_code, user: user });
               router.push({
                 pathname: '/(teacher)/teacher_room_wait',
                 params: { roomCode: room.room_code },
