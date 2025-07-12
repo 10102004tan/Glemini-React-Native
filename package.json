@@ -30,6 +30,8 @@
     "@shopify/flash-list": "^1.8.2",
     "@shopify/react-native-skia": "^1.5.7",
     "axios": "^1.8.4",
+    "buffer": "^6.0.3",
+    "exceljs": "^4.4.0",
     "expo": "^51.0.39",
     "expo-application": "~5.9.1",
     "expo-asset": "^11.1.6",

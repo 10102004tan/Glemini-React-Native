@@ -1,5 +1,5 @@
 import { createRef, useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, Pressable, TouchableOpacity, ScrollView, Image, Alert, StyleSheet, Animated } from 'react-native';
+import { View, Text, Pressable, TouchableOpacity, ScrollView, Image, Alert, StyleSheet, Animated, FlatList } from 'react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useResultProvider } from '@/contexts/ResultProvider';
 import { MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
@@ -13,7 +13,11 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { useAppProvider } from '@/contexts/AppProvider';
 import ResultReview from '../(result)/review';
-
+import MainLayout from '@/components/layouts/MainLayout';
+import Loading from '@/components/customs/Loading';
+import { API_URL, API_VERSION, END_POINTS } from '@/configs/api.config';
+import Toast from 'react-native-toast-message-custom';
+import api from '@/libs/axios';
 
 // Duolingo-style Animated Report Card
 function AnimatedReportCard({ result, onPress, index }) {
@@ -75,7 +79,7 @@ function AnimatedReportCard({ result, onPress, index }) {
 }
 
 // Report Summary Card
-function ReportSummaryCard({ quizName, quizThumb, className, assignmentName, status, endTime, onDownload, onViewQuestions }) {
+function ReportSummaryCard({ quizName, quizThumb, className, assignmentName, status, endTime, onDownload, onViewQuestions, downloadDisabled }) {
   return (
     <View style={styles.summaryCard}>
       <View style={styles.summaryHeaderRow}>
@@ -85,7 +89,11 @@ function ReportSummaryCard({ quizName, quizThumb, className, assignmentName, sta
           ) : null}
           <View style={styles.duoQuizBadge}><Text style={styles.duoQuizBadgeText}>{quizName}</Text></View>
         </View>
-        <TouchableOpacity style={styles.summaryDownloadBtn} onPress={onDownload}>
+        <TouchableOpacity
+          style={[styles.summaryDownloadBtn, downloadDisabled && { opacity: 0.5 }]}
+          onPress={downloadDisabled ? undefined : onDownload}
+          disabled={downloadDisabled}
+        >
           <MaterialCommunityIcons name="download" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -111,17 +119,43 @@ export default function DetailReport() {
   const { i18n } = useAppProvider();
   const modal = createRef();
   const { reportId, type } = useLocalSearchParams();
-  const { reportData, fetchReportDetail } = useResultProvider();
   const { fetchQuestions, questions } = useQuestionProvider();
   const [showModal, setShowModal] = useState(false);
   const [overViewData, setOverViewData] = useState(null);
+const [reportData, setReportData] = useState(null);
+const [isLoading, setIsLoading] = useState(true);
 
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchReportDetail(reportId, type);
-    }, [reportId]),
-  );
+ useEffect(() => {
+  fetchReportDetail();
+}, [reportId]);
+
+
+  const fetchReportDetail = async () => {
+  setIsLoading(true); // ✅ Thêm dòng này ngay đầu
+  const path =
+    type === 'room'
+      ? `${API_VERSION.V1}${END_POINTS.ROOM_REPORT}`
+      : `${API_VERSION.V1}${END_POINTS.EXERCISE_REPORT}`;
+
+  try {
+    const res = await api.post(path, { id: reportId });
+    const data = res.data;
+    setReportData(data.metadata);
+  } catch (error) {
+    Toast.show({
+      type: 'warn',
+      text1: 'Đang lấy chi tiết báo cáo thất bại',
+      text2: error.message,
+      visibilityTime: 1000,
+      autoHide: true,
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
 
   const getStatus = () => {
     const currentDate = new Date();
@@ -150,7 +184,7 @@ export default function DetailReport() {
     const ws = XLSX.utils.aoa_to_sheet(sheetData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Results');
-    const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
+    const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx', cellStyles: true });
     const fileUri = `${FileSystem.cacheDirectory}${reportData.name || reportData.room_code}_report.xlsx`;
     try {
       await FileSystem.writeAsStringAsync(fileUri, wbout, {
@@ -168,6 +202,14 @@ export default function DetailReport() {
     }
   }, [reportData]);
 
+  if (isLoading || !reportData) {
+  return (
+    <MainLayout>  
+      <Loading duration={3000} message="Đang tải chi tiết báo cáo..." />
+    </MainLayout>
+  );
+}
+
   return (
     <View style={styles.screenBg}>
       {/* Report Summary Card */}
@@ -181,23 +223,28 @@ export default function DetailReport() {
           endTime={moment(reportData.date_end).format('MMM D, YYYY | h:mm A')}
           onDownload={downloadExcel}
           onViewQuestions={onOpen}
+          downloadDisabled={!reportData.result_ids || reportData.result_ids.length === 0}
         />
       )}
       {/* Student Cards */}
       {reportData.result_ids && reportData.result_ids.length > 0 ? (
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
-          {reportData.result_ids?.map((result, idx) => (
-            <AnimatedReportCard
-              key={result._id}
-              result={result}
-              index={idx}
-              onPress={() => {
-    setOverViewData(result);
-    setShowModal(true); // Mở ResultReview modal
-  }}
-            />
-          ))}
-        </ScrollView>
+        <FlatList
+  data={reportData.result_ids}
+  keyExtractor={(item) => item._id}
+  renderItem={({ item, index }) => (
+    <AnimatedReportCard
+      result={item}
+      index={index}
+      onPress={() => {
+        setOverViewData(item);
+        setShowModal(true);
+      }}
+    />
+  )}
+  contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+  showsVerticalScrollIndicator={false}
+/>
+
       ) : (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Lottie source={require('@/assets/jsons/empty.json')} width={200} height={200} text={'Chưa có học sinh nào tham gia'} />
