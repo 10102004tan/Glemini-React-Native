@@ -1,8 +1,9 @@
-import { Image, Text, View, Animated, Easing } from 'react-native';
+import { Image, Text, View, Animated, Easing, StyleSheet, ScrollView, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { useState, useRef, useEffect } from 'react';
 import ThoBayMauGif from '@/assets/images/congratulations.1.webp';
 import InCorrectGif from '@/assets/images/incorrect.1.webp';
+import images from '@/constants/images';
 import api from '@/libs/axios';
 import OrderInput from '@/components/customs/OrderInput';
 import Onechoice from '@/components/customs/Onechoice';
@@ -10,13 +11,15 @@ import FillInTheBlank from '@/components/customs/FillInTheBlank';
 import MatchItems from '@/components/customs/MatchItems';
 import MultipleChoice from '@/components/customs/MultipleChoice';
 import MainLayout from '@/components/layouts/MainLayout';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import Loading from '@/components/customs/Loading';
 import { useAuthStore } from '@/store/useAuthStore';
 import { API_VERSION, END_POINTS } from '@/configs/api.config';
 import { useResultProvider } from '@/contexts/ResultProvider';
 import ScaleTouchable from '@/components/customs/ScaleTouchable';
 import { shuffleArray } from '@/utils';
+import { CommonActions } from '@react-navigation/native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const Play = () => {
     // Animation values
@@ -28,12 +31,13 @@ const Play = () => {
     const { user } = useAuthStore();
     // State management
     const [index, setIndex] = useState(0);
-
+    const navigation = useNavigation();
     const [isNext, setIsNext] = useState(false);
     const [resultID, setResultID] = useState(null);
     const [isCompleted, setIsCompleted] = useState(false);
     const item = data[index];
     const [isCorrect, setIsCorrect] = useState(false);
+    const [randomImage, setRandomImage] = useState(null);
     const { quizId, exerciseId, type, indexQuestion } = useLocalSearchParams();
     const [arrayAnswer, setArrayAnswer] = useState([]);
     const { completed } = useResultProvider();
@@ -86,7 +90,6 @@ const Play = () => {
                     return q;
                 });
 
-                console.log('Fetched shuffled questions:', items);
                 setData(items);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -217,6 +220,12 @@ const Play = () => {
 
             const { isCorrect = true } = data.metadata;
             setIsCorrect(isCorrect);
+            setRandomImage(
+                isCorrect
+                    ? images.congratulations[Math.floor(Math.random() * images.congratulations.length)]
+                    : images.incorrects[Math.floor(Math.random() * images.incorrects.length)]
+            );
+
 
             // 👇 Lưu lại kết quả từng câu
             const params = {
@@ -250,6 +259,109 @@ const Play = () => {
         setArrayAnswer([]);
         setIsNext(false);
     };
+
+    // Animated progress bar fill
+    const progress = data.length > 0 ? (index + 1) / data.length : 0;
+    const progressAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.timing(progressAnim, {
+            toValue: progress,
+            duration: 400,
+            useNativeDriver: false, // width cannot use native driver
+            easing: Easing.out(Easing.cubic),
+        }).start();
+    }, [progress]);
+
+    // Exit Game handler
+    const handleExitGame = () => {
+        Alert.alert(
+            'Thoát game',
+            'Bạn có chắc chắn muốn thoát không?',
+            [
+                { text: 'Hủy', style: 'cancel' },
+                {
+                    text: 'Thoát',
+                    style: 'destructive',
+                    onPress: () => {
+                        navigation.dispatch(
+                            CommonActions.reset({
+                                index: 0,
+                                routes: [{ name: '(homev2)' }],
+                            })
+                        );
+                    },
+                },
+            ]
+        );
+    };
+
+    // Helper to get question type info (label, color, bg, icon)
+    const getQuestionTypeInfo = (type) => {
+        switch (type) {
+            case 'single':
+                return {
+                    label: 'Trắc nghiệm 1 đáp án',
+                    color: '#43a047',
+                    bg: '#e8f5e9',
+                    icon: <MaterialCommunityIcons name='checkbox-marked-circle-outline' size={18} color='#43a047' style={{ marginRight: 6 }} />
+                };
+            case 'multiple':
+                return {
+                    label: 'Trắc nghiệm nhiều đáp án',
+                    color: '#1976d2',
+                    bg: '#e3f2fd',
+                    icon: <MaterialCommunityIcons name='checkbox-multiple-marked-outline' size={18} color='#1976d2' style={{ marginRight: 6 }} />
+                };
+            case 'fill':
+                return {
+                    label: 'Điền vào chỗ trống',
+                    color: '#f57c00',
+                    bg: '#fff3e0',
+                    icon: <MaterialCommunityIcons name='form-textbox' size={18} color='#f57c00' style={{ marginRight: 6 }} />
+                };
+            case 'order':
+                return {
+                    label: 'Sắp xếp thứ tự',
+                    color: '#8e24aa',
+                    bg: '#f3e5f5',
+                    icon: <MaterialCommunityIcons name='format-list-numbered' size={18} color='#8e24aa' style={{ marginRight: 6 }} />
+                };
+            case 'match':
+                return {
+                    label: 'Ghép cặp',
+                    color: '#d32f2f',
+                    bg: '#ffebee',
+                    icon: <MaterialCommunityIcons name='link-variant' size={18} color='#d32f2f' style={{ marginRight: 6 }} />
+                };
+            default:
+                return { label: '', color: '#333', bg: '#eee', icon: null };
+        }
+    };
+
+    // Diverse congratulation and encouragement messages
+    const correctMessages = [
+        "Awesome! You got it right!",
+        "Correct! You're amazing!",
+        "Well done! That's the right answer!",
+        "You're making great progress!",
+        "Fantastic! Keep it up!",
+        "You chose the right answer, great job!",
+        "Spot on! You're so smart!",
+    ];
+    const incorrectMessages = [
+        "Don't worry, try again!",
+        "Just a little mistake, keep going!",
+        "No problem, you'll do better next time!",
+        "Almost there, don't give up!",
+        "Give it another shot, you can do it!",
+        "Mistakes are normal, keep moving forward!",
+        "Keep trying, you'll succeed!",
+    ];
+
+    function getRandomMessage(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
 
     if (!data.length) {
         return (
@@ -360,59 +472,53 @@ const Play = () => {
         );
     }
 
-
-
     return (
-        <>
-            <MainLayout>
-                {/* header */}
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        gap: 10,
-                        marginTop: 20,
-                        marginBottom: 20,
-                    }}
-                >
-                    {/* exit icon */}
-                    <AntDesign name="close" size={24} color="black" />
-
-                    {/* bars process */}
-                    <View
-                        style={{
-                            padding: 10,
-                            backgroundColor: '#f0f0f0',
-                            borderRadius: 10,
-                            flex: 1,
-                            position: 'relative',
-                            height: 20,
-                            overflow: 'hidden',
-                            zIndex: 0,
-                        }}
-                    >
-                        <View
-                            style={{
-                                position: 'absolute',
-                                left: 0,
-                                top: 0,
-                                width: '50%',
-                                height: '100%',
-                                backgroundColor: '#000',
-                                zIndex: 999,
-                            }}
-                        ></View>
+        <MainLayout>
+            {/* Fixed Header */}
+            <View style={styles.headerContainer}>
+                {/* Exit Game button */}
+                <ScaleTouchable onPress={handleExitGame} >
+                    <View style={styles.exitButton}>
+                        <AntDesign name="close" size={24} color="black" />
                     </View>
+                </ScaleTouchable>
+                {/* Progress Bar */}
+                <View style={styles.progressBarContainer}>
+                    <View style={styles.progressBarBackground}>
+                        <Animated.View
+                            style={[
+                                styles.progressBarFill,
+                                {
+                                    width: progressAnim.interpolate({
+                                        inputRange: [0, 1],
+                                        outputRange: ['0%', '100%'],
+                                    }),
+                                },
+                            ]}
+                        />
+                    </View>
+                    <Text style={styles.progressText}>{`${index + 1} / ${data.length}`}</Text>
                 </View>
-                {/* content game */}
-                <View>
+            </View>
+
+            {/* Game Content */}
+            <View style={styles.contentContainer}>
+                <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
                     {!isNext ? (
                         <View key={index} style={{ marginBottom: 20 }}>
+                            {(() => {
+                                const typeInfo = getQuestionTypeInfo(item.type);
+                                return (
+                                    <View style={[styles.questionTypeBadge, { backgroundColor: typeInfo.bg, borderColor: typeInfo.color }]}>
+                                        {typeInfo.icon}
+                                        <Text style={[styles.questionTypeBadgeText, { color: typeInfo.color }]}>{typeInfo.label}</Text>
+                                    </View>
+                                );
+                            })()}
                             <Animated.Text
                                 style={{
                                     fontSize: 20,
-                                    fontWeight: 'bold',
+                                    fontWeight: '600',
                                     opacity: questionAnim,
                                     transform: [
                                         {
@@ -424,7 +530,7 @@ const Play = () => {
                                     ],
                                 }}
                             >
-                                {item.type === 'fill' ? 'Fill in the blank ' : item.question}
+                                {item.type === 'fill' ? '' : item.question}
                             </Animated.Text>
                             <Animated.View
                                 style={{
@@ -459,11 +565,14 @@ const Play = () => {
                                 ],
                             }}
                         >
-                            <Image
-                                source={isCorrect ? ThoBayMauGif : InCorrectGif}
-                                resizeMode="contain"
-                                style={{ width: 150, height: 150, borderRadius: 8, marginBottom: 10 }}
-                            />
+                            {randomImage && (
+                                <Image
+                                    source={randomImage}
+                                    resizeMode="contain"
+                                    style={{ width: 150, height: 150, borderRadius: 8, marginTop: 100 }}
+                                />
+                            )}
+
                             <View
                                 style={{
                                     width: 200,
@@ -475,57 +584,42 @@ const Play = () => {
                                     borderRadius: 8,
                                 }}
                             >
-                                <Text>
+                                <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 10 }}>
                                     {isCorrect
-                                        ? 'Congratulations! You answered correctly.'
-                                        : 'Sorry, your answer is incorrect. Please try again.'}
+                                        ? getRandomMessage(correctMessages)
+                                        : getRandomMessage(incorrectMessages)}
                                 </Text>
                             </View>
                         </Animated.View>
                     )}
-                    {/* button confirm */}
-                    {!isNext && (
-                        <Animated.View
-                            style={{
-                                opacity: buttonAnim,
-                                transform: [
-                                    {
-                                        translateY: buttonAnim.interpolate({
-                                            inputRange: [0, 1],
-                                            outputRange: [20, 0],
-                                        }),
-                                    },
-                                    { scale: buttonAnim },
-                                ],
-                            }}
-                        >
+                </ScrollView>
+            </View>
+
+            {/* Fixed Confirm Button */}
+            {!isNext && (
+                <View style={styles.confirmButtonContainer}>
+                    {(() => {
+                        const isConfirmDisabled = arrayAnswer.length === 0;
+                        return (
                             <ScaleTouchable
                                 onPress={() => handleCheck(arrayAnswer)}
-                                disabled={arrayAnswer.length === 0}>
+                                disabled={isConfirmDisabled}
+                                style={{ opacity: isConfirmDisabled ? 0.6 : 1 }}
+                            >
                                 <Text
-                                    style={{
-                                        backgroundColor: '#4CAF50',
-                                        color: '#fff',
-                                        padding: 10,
-                                        borderRadius: 8,
-                                        textAlign: 'center',
-                                        fontSize: 18,
-                                        fontWeight: 'bold',
-                                        textTransform: 'uppercase',
-                                        borderTopWidth: 2,
-                                        borderColor: '#eee',
-                                        borderBottomWidth: 4,
-                                        borderStyle: 'solid',
-                                        shadowColor: '#000',
-                                    }}
+                                    style={[
+                                        styles.confirmButton,
+                                        isConfirmDisabled && styles.confirmButtonDisabled,
+                                    ]}
                                 >
                                     Confirm
                                 </Text>
                             </ScaleTouchable>
-                        </Animated.View>
-                    )}
+                        );
+                    })()}
                 </View>
-            </MainLayout>
+            )}
+
             {/* modal result */}
             {isNext &&
                 (isCorrect ? (
@@ -549,32 +643,27 @@ const Play = () => {
                         <Text
                             style={{
                                 fontSize: 24,
-                                fontWeight: 'bold',
+                                fontWeight: '800',
                                 color: '#4CAF50',
-                                // color: isCorrect ? '#4CAF50' : '#F44336',
                                 marginBottom: 20,
                             }}
                         >
                             Correct!
                         </Text>
+                        <Text
+                            style={{
+                                fontSize: 14,
+                                fontWeight: '800',
+                                color: '#4CAF50',
+                                marginBottom: 20,
+                            }}
+                        >
+                            {item.question_explanation || 'Câu hỏi này chưa có giải thích.'}
+                        </Text>
+
                         <ScaleTouchable onPress={handleNext}>
                             <Text
-                                style={{
-                                    backgroundColor: '#4CAF50',
-                                    // backgroundColor: isCorrect ? '#4CAF50' : '#F44336',
-                                    color: '#fff',
-                                    padding: 10,
-                                    borderRadius: 8,
-                                    textAlign: 'center',
-                                    fontSize: 18,
-                                    fontWeight: 'bold',
-                                    textTransform: 'uppercase',
-                                    borderTopWidth: 2,
-                                    borderColor: '#eee',
-                                    borderBottomWidth: 4,
-                                    borderStyle: 'solid',
-                                    shadowColor: '#000',
-                                }}
+                                style={[styles.confirmButton, { backgroundColor: '#4CAF50', borderColor: '#81C784' }]}
                             >
                                 Confirm
                             </Text>
@@ -601,39 +690,147 @@ const Play = () => {
                         <Text
                             style={{
                                 fontSize: 24,
-                                fontWeight: 'bold',
+                                fontWeight: '600',
                                 color: '#F44336',
                                 marginBottom: 20,
                             }}
                         >
                             Incorrect!
                         </Text>
+                        <Text
+                            style={{
+                                fontSize: 16,
+                                color: '#F44336',
+                                marginBottom: 20,
+                            }}
+                        >
+                            {item.question_explanation || 'Câu hỏi này chưa có giải thích.'}
+                        </Text>
+
                         <ScaleTouchable onPress={handleNext}>
                             <Text
-                                style={{
-                                    backgroundColor: '#F44336',
-                                    // backgroundColor: isCorrect ? '#4CAF50' : '#F44336',
-                                    color: '#fff',
-                                    padding: 10,
-                                    borderRadius: 8,
-                                    textAlign: 'center',
-                                    fontSize: 18,
-                                    fontWeight: 'bold',
-                                    textTransform: 'uppercase',
-                                    borderTopWidth: 2,
-                                    borderColor: '#eee',
-                                    borderBottomWidth: 4,
-                                    borderStyle: 'solid',
-                                    shadowColor: '#000',
-                                }}
+                                style={[styles.confirmButtonRed]}
                             >
                                 Confirm
                             </Text>
                         </ScaleTouchable>
                     </Animated.View>
                 ))}
-        </>
+        </MainLayout>
     );
 };
+
+const styles = StyleSheet.create({
+    headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingTop: 16,
+        paddingBottom: 8,
+        backgroundColor: '#fff',
+        zIndex: 10,
+        borderBottomWidth: 1,
+        borderColor: '#eee',
+    },
+    exitButton: {
+        marginRight: 12,
+        padding: 8,
+    },
+    progressBarContainer: {
+        flex: 1,
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: 8,
+    },
+    progressBarBackground: {
+        flex: 1,
+        height: 16,
+        backgroundColor: '#e0e0e0',
+        borderRadius: 8,
+        overflow: 'hidden',
+        marginRight: 8,
+    },
+    progressBarFill: {
+        height: 16,
+        backgroundColor: '#4CAF50',
+        borderRadius: 8,
+    },
+    progressText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#333',
+        minWidth: 48,
+        textAlign: 'right',
+    },
+    contentContainer: {
+        flex: 1,
+        paddingTop: 8,
+        paddingBottom: 80,
+    },
+    confirmButtonContainer: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: '#fff',
+        padding: 16,
+        borderTopWidth: 1,
+        borderColor: '#eee',
+        zIndex: 20,
+    },
+    confirmButton: {
+        backgroundColor: '#4CAF50',
+        color: '#fff',
+        padding: 14,
+        borderRadius: 8,
+        textAlign: 'center',
+        fontSize: 18,
+        fontWeight: '600',
+        textTransform: 'uppercase',
+        borderWidth: 1,
+        borderBottomWidth: 3,
+        borderColor: '#81C784', // lighter green
+        borderStyle: 'solid',
+        shadowColor: '#000',
+    },
+    confirmButtonDisabled: {
+        backgroundColor: '#cccccc',
+        color: '#888888',
+        borderColor: '#e0e0e0', // lighter gray
+        borderWidth: 1,
+        borderBottomWidth: 3,
+    },
+    confirmButtonRed: {
+        backgroundColor: '#F44336',
+        color: '#fff',
+        borderColor: '#FF7961',
+        borderWidth: 1,
+        borderBottomWidth: 3,
+        borderRadius: 8,
+        textAlign: 'center',
+        fontSize: 18,
+        fontWeight: '600',
+        textTransform: 'uppercase',
+        padding: 14,
+    },
+    questionTypeBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+        borderRadius: 20,
+        paddingHorizontal: 14,
+        paddingVertical: 6,
+        marginBottom: 8,
+        borderWidth: 1.5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 2,
+    },
+    questionTypeBadgeText: {
+        fontSize: 15,
+        fontWeight: '700',
+    },
+});
 
 export default Play;
