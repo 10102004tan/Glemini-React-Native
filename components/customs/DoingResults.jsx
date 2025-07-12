@@ -3,6 +3,7 @@ import { Images } from '@/constants';
 import { useState } from 'react';
 import moment from 'moment';
 import ScaleTouchable from './ScaleTouchable';
+import socket from '@/libs/socket';
 const { useResultProvider } = require('@/contexts/ResultProvider');
 const { useAuthStore } = require('@/store/useAuthStore');
 const { FontAwesome6 } = require('@expo/vector-icons');
