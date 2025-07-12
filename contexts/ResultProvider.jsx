@@ -12,6 +12,7 @@ const ResultProvider = ({ children }) => {
   const [result, setResult] = useState([]);
   const [reportData, setReportData] = useState([]);
   const [overViewData, setOverviewData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuthStore();
   // Lấy dữ liệu từ API
   // Fetch results for teachers with optional filters
@@ -180,6 +181,7 @@ const ResultProvider = ({ children }) => {
    * @param {*} type
    */
   const fetchReportDetail = async (id, type) => {
+     setIsLoading(true);
     const path =
       type === 'room'
         ? API_URL + API_VERSION.V1 + END_POINTS.ROOM_REPORT
@@ -189,6 +191,8 @@ const ResultProvider = ({ children }) => {
 
       const data = await res.data;
       setReportData(data.metadata);
+
+      setIsLoading(false);
     } catch (error) {
       Toast.show({
         type: 'warn',
@@ -219,6 +223,7 @@ const ResultProvider = ({ children }) => {
         overViewData,
         fetchOverViewData,
         fetchResetResultOfQuiz,
+        isLoading
       }}
     >
       {children}
