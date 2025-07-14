@@ -72,53 +72,6 @@ const ResultSingle = () => {
     );
   }
 
-  // Kiểm tra null safety cho overViewData
-  if (!overViewData || !overViewData.result_questions) {
-    return (
-      <MainLayout>
-        <View style={styles.container}>
-          <Text style={styles.title}>{i18n.t('result.single.textResult')}</Text>
-
-          <View style={styles.profile}>
-            <Image source={{ uri: user.user_avatar }} style={styles.avatar} />
-            <View style={{ marginLeft: 12 }}>
-              <Text style={styles.username}>{user.fullname}</Text>
-              <Text style={styles.desc}>
-                <Icon name="person-outline" size={16} color="#38bdf8" />{' '}
-                {i18n.t('result.single.textDesc')}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.progressCard}>
-            <Text style={styles.label}>📊 Không có kết quả</Text>
-            <Text style={styles.questionText}>
-              {!overViewData
-                ? 'Bạn chưa làm câu nào nên không có kết quả để hiển thị.'
-                : 'Không thể tải dữ liệu kết quả. Vui lòng thử lại sau.'
-              }
-            </Text>
-            {__DEV__ && (
-              <Text style={styles.explanationText}>
-                Debug: {JSON.stringify(overViewData, null, 2)}
-              </Text>
-            )}
-          </View>
-
-          <View style={styles.buttonRow}>
-            <GameButton
-              title="Quay lại"
-              color="#3b82f6"
-              borderColor="#1d4ed8"
-              onPress={() => router.back()}
-            />
-          </View>
-        </View>
-      </MainLayout>
-    );
-  }
-
-
   return (
     <View style={styles.container}>
       {/* Header */}
