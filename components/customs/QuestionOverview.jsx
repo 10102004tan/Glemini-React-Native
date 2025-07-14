@@ -178,28 +178,42 @@ const QuestionOverview = ({ quizId = null, question = {}, index = 0, editable = 
             // Special rendering for order questions
             <View>
               <Text className="font-semibold mb-2 text-orange-600">🔢 Thứ tự đúng:</Text>
+              {/* <View className="mb-2 p-2 bg-orange-50 rounded-lg">
+                <Text className="text-sm text-orange-700 mb-1">
+                  📋 Số trong vòng tròn là thứ tự đúng của câu trả lời
+                </Text>
+              </View> */}
               {questionData.options
                 .sort((a, b) => (a.position || 0) - (b.position || 0))
                 .map((option, index) => (
                   <View
                     key={index}
-                    className="flex flex-row items-center justify-start max-w-[340px] mb-1"
+                    className="flex flex-row items-center justify-between max-w-[340px] mb-1 p-2 bg-orange-50 rounded-lg"
                   >
-                    <View className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center mr-2">
-                      <Text className="text-white text-sm font-bold">
-                        {option.position || index + 1}
+                    <View className="flex flex-row items-center flex-1">
+                      <View className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center mr-2">
+                        <Text className="text-white text-sm font-bold">
+                          {option.position || index + 1}
+                        </Text>
+                      </View>
+                      <View className="flex-1">
+                        <RenderHTML
+                          defaultTextProps={{
+                            style: {
+                              color: 'black',
+                              fontSize: 16,
+                            },
+                          }}
+                          contentWidth={width * 0.7}
+                          source={{ html: option.text || 'No answer text' }}
+                        />
+                      </View>
+                    </View>
+                    <View className="ml-2 bg-orange-600 px-2 py-1 rounded">
+                      <Text className="text-white text-xs font-bold">
+                        Thứ tự: {option.position || index + 1}
                       </Text>
                     </View>
-                    <RenderHTML
-                      defaultTextProps={{
-                        style: {
-                          color: 'black',
-                          fontSize: 16,
-                        },
-                      }}
-                      contentWidth={width}
-                      source={{ html: option.text || 'No answer text' }}
-                    />
                   </View>
                 ))}
             </View>
@@ -207,34 +221,49 @@ const QuestionOverview = ({ quizId = null, question = {}, index = 0, editable = 
             // Special rendering for fill questions
             <View>
               <Text className="font-semibold mb-2 text-purple-600">📝 Điền từ:</Text>
+              {/* <View className="mb-2 p-2 bg-purple-50 rounded-lg">
+                <Text className="text-sm text-purple-700 mb-1">
+                  ✅ Màu xanh: Đáp án đúng | ❌ Màu xám: Đáp án sai
+                </Text>
+              </View> */}
               {questionData.options
                 .sort((a, b) => (a.position || 0) - (b.position || 0))
-                .map((option, index) => (
-                  <View
-                    key={index}
-                    className="flex flex-row items-center justify-start max-w-[340px] mb-1"
-                  >
-                    <View className="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center mr-2">
-                      <Text className="text-white text-sm font-bold">
-                        {option.position || index + 1}
+                .map((option, index) => {
+                  // Determine if this option is correct
+                  const isCorrect = option.correct || false;
+                  const bgColor = isCorrect ? 'bg-green-500' : 'bg-gray-400';
+                  const textColor = isCorrect ? 'text-green-600' : 'text-gray-500';
+
+                  return (
+                    <View
+                      key={index}
+                      className={`flex flex-row items-center justify-start max-w-[340px] mb-1 p-2 rounded-lg ${isCorrect ? 'bg-green-50' : 'bg-gray-50'}`}
+                    >
+                      {/* Icon để phân biệt đáp án đúng/sai */}
+                      {renderAnswerIcon(isCorrect)}
+
+                      <View className={`w-6 h-6 rounded-full ${bgColor} flex items-center justify-center mr-2`}>
+                        <Text className="text-white text-sm font-bold">
+                          {option.position || index + 1}
+                        </Text>
+                      </View>
+                      <Text className={`${textColor} font-semibold mr-2`}>
+                        Từ {option.position || index + 1}:
                       </Text>
+                      <RenderHTML
+                        defaultTextProps={{
+                          style: {
+                            color: isCorrect ? '#16a34a' : '#6b7280', // green-600 or gray-500
+                            fontSize: 16,
+                            fontWeight: isCorrect ? '600' : '400',
+                          },
+                        }}
+                        contentWidth={width}
+                        source={{ html: option.text || 'No answer text' }}
+                      />
                     </View>
-                    <Text className="text-purple-600 font-semibold mr-2">
-                      Từ {option.position || index + 1}:
-                    </Text>
-                    <RenderHTML
-                      defaultTextProps={{
-                        style: {
-                          color: 'black',
-                          fontSize: 16,
-                          fontWeight: '500',
-                        },
-                      }}
-                      contentWidth={width}
-                      source={{ html: option.text || 'No answer text' }}
-                    />
-                  </View>
-                ))}
+                  );
+                })}
             </View>
           ) : (
             // Default rendering for single/multiple choice
