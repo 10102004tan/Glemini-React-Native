@@ -1,14 +1,11 @@
 import { Image, Text, View, Animated, Easing, StyleSheet, ScrollView, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { useState, useRef, useEffect } from 'react';
-import ThoBayMauGif from '@/assets/images/congratulations.1.webp';
-import InCorrectGif from '@/assets/images/incorrect.1.webp';
 import images from '@/constants/images';
 import api from '@/libs/axios';
 import OrderInput from '@/components/customs/OrderInput';
 import Onechoice from '@/components/customs/Onechoice';
 import FillInTheBlank from '@/components/customs/FillInTheBlank';
-import MatchItems from '@/components/customs/MatchItems';
 import MultipleChoice from '@/components/customs/MultipleChoice';
 import MainLayout from '@/components/layouts/MainLayout';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
@@ -404,7 +401,7 @@ const Play = () => {
                     }}
                 >
                     <Image
-                        source={ThoBayMauGif}
+                        source={images.congratulations[Math.floor(Math.random() * images.congratulations.length)]}
                         style={{ width: 150, height: 150, marginBottom: 10 }}
                         resizeMode="contain"
                     />
