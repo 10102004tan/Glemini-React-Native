@@ -7,19 +7,21 @@ import { useAuthStore } from '@/store/useAuthStore';
 const Classroom = () => {
   const { user } = useAuthStore();
 
+  console.log('user classroom', user);
+  
   let content = null;
 
   if (user?.user_role === 'user') {
     content = <StudentView />;
   } else if (user?.user_role === 'teacher') {
-    if (
-      user?.status_teacher_verified === 'pending' ||
-      user?.status_teacher_verified === 'inactive'
-    ) {
-      content = <LockFeature />;
-    } else {
+    // if (
+    //   user?.status_teacher_verified === 'pending' ||
+    //   user?.status_teacher_verified === 'inactive'
+    // ) {
+    //   content = <LockFeature />;
+    // } else {
       content = <TeacherView />;
-    }
+    // }
   }
 
   return <>{content}</>;

@@ -7,6 +7,9 @@ import { Images } from '@/constants';
 import { useState } from 'react';
 import ResultReview from '@/app/(protected)/(result)/review';
 import ScaleTouchable from './ScaleTouchable';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
 
 const CompletedResults = ({
@@ -114,6 +117,9 @@ const ResultCompletedItem = ({ result, i18n, itemWidth }) => {
 
   const badgeEmoji = accuracy >= 90 ? '🏆' : accuracy >= 70 ? '🔥' : accuracy >= 40 ? '💪' : '🧠';
 
+  // Thời gian hoàn thành
+  const completedTime = result.createdAt ? dayjs(result.createdAt).fromNow() : '';
+
   return (
     <View
       style={{
@@ -136,7 +142,6 @@ const ResultCompletedItem = ({ result, i18n, itemWidth }) => {
           resizeMode: 'cover',
         }}
       />
-
       {/* Chip loại */}
       <View
         style={{
@@ -160,7 +165,6 @@ const ResultCompletedItem = ({ result, i18n, itemWidth }) => {
             : i18n.t('activity.publish')}
         </Text>
       </View>
-
       {/* Chip số câu */}
       <View
         style={{
@@ -177,14 +181,12 @@ const ResultCompletedItem = ({ result, i18n, itemWidth }) => {
           {result.quiz_id?.questionCount} 🎮 
         </Text>
       </View>
-
       {/* Cảnh báo chưa hoàn thành */}
       {totalQuestions < result.quiz_id?.questionCount && (
         <View style={{ position: 'absolute', top: 40, right: 10 }}>
           <MaterialCommunityIcons name="clock-alert-outline" size={22} color="#DC2626" />
         </View>
       )}
-
       {/* Nội dung chi tiết */}
       <View style={{ padding: 12 }}>
         <Text
@@ -198,7 +200,6 @@ const ResultCompletedItem = ({ result, i18n, itemWidth }) => {
             ? result.exercise_id?.name.slice(0, 15) + '...'
             : result.exercise_id?.name) || result.room_id?.room_code}
         </Text>
-
         <Text
           style={{
             fontSize: 14,
@@ -211,11 +212,15 @@ const ResultCompletedItem = ({ result, i18n, itemWidth }) => {
             ? result.quiz_id?.quiz_name.slice(0, 18) + '...'
             : result.quiz_id?.quiz_name}
         </Text>
-
+        {/* Thời gian hoàn thành */}
+        {completedTime && (
+          <Text style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>
+            {completedTime}
+          </Text>
+        )}
         <Text style={{ fontSize: 12, fontWeight: 600, color: '#64748B', marginTop: 2 }}>
           👤 {result.quiz_id?.user_id?.user_fullname}
         </Text>
-
         {/* Độ chính xác */}
         <View
           style={{
