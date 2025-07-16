@@ -127,12 +127,14 @@ const ResultSingle = () => {
 
       {/* Buttons */}
       <View style={styles.buttonRow}>
-        <GameButton
-          title={i18n.t('result.single.buttonReplay')}
-          color="#9333ea"
-          borderColor="#6b21a8"
-          onPress={() => handleRestart(quizId, exerciseId, type)}
-        />
+        {type !== 'exercise' && (
+  <GameButton
+    title={i18n.t('result.single.buttonReplay')}
+    color="#9333ea"
+    borderColor="#6b21a8"
+    onPress={() => handleRestart(quizId, exerciseId, type)}
+  />
+)}
         <GameButton
           title={i18n.t('result.single.buttonPlayNewQuiz')}
           color="#f59e0b"

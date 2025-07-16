@@ -72,7 +72,7 @@ const DoingResults = ({
                       router.push({
                         //(play)/single
                         pathname: '(play)/demo',
-                        params: { quizId: item.quiz_id?._id, type: item.type, indexQuestion },
+                        params: { quizId: item.quiz_id?._id, type: 'publish', indexQuestion },
                       });
                     } else if (item.type === 'exercise') {
                       const now = moment();

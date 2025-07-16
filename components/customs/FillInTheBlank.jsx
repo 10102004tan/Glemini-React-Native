@@ -84,13 +84,13 @@ const handleUnselect = (index) => {
   const renderQuestionWithBlanks = () => {
     const parts = question.split('_');
     return (
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, flexShrink: 1 }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', rowGap: 20, paddingBottom: 4 }}>
         {parts.map((part, index) => {
           if (index < parts.length - 1) {
             const selected = selectedOptions[index];
             return (
-              <View key={index} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: 16 }}>{part}</Text>
+              <React.Fragment key={index}>
+                <Text style={{ fontSize: 16, flexShrink: 1, flexWrap: 'wrap', maxWidth: '100%', fontWeight: 600 }}>{part}</Text>
                 <Pressable
                   onPress={() =>
                     selected ? handleUnselect(index) : setSelectedBlankIndex(index)
@@ -109,6 +109,7 @@ const handleUnselect = (index) => {
                     minWidth: 50,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    maxWidth: '100%',
                   }}
                 >
                   <Animated.Text
@@ -133,15 +134,18 @@ const handleUnselect = (index) => {
                           }),
                         },
                       ],
+                      flexShrink: 1,
+                      flexWrap: 'wrap',
+                      maxWidth: '100%',
                     }}
                   >
                     {selected?.text || ''}
                   </Animated.Text>
                 </Pressable>
-              </View>
+              </React.Fragment>
             );
           }
-          return <Text key={index} style={{ fontSize: 16 }}>{part}</Text>;
+          return <Text key={index} style={{ fontSize: 16, flexShrink: 1, flexWrap: 'wrap', maxWidth: '100%', fontWeight: 600 }}>{part}</Text>;
         })}
       </View>
     );
@@ -155,27 +159,40 @@ const handleUnselect = (index) => {
           style={{ width: 150, height: 150, borderRadius: 8, marginBottom: 10 }}
         />
       )}
-      <View style={{ marginBottom: 10 }}>{renderQuestionWithBlanks()}</View>
-      <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
-        {optionsState.map((option, idx) => (
-          <Pressable
-            key={idx}
-            onPress={() => handleToggleSelect(option)}
-            style={{
-              padding: 8,
-              borderRadius: 15,
-              backgroundColor: '#fff',
-              shadowColor: '#000',
-              borderColor: '#e5e5e5',
-              borderWidth: 2,
-              borderBottomWidth: 4,
-              borderStyle: 'solid',
-              alignItems: 'center',
-            }}
-          >
-            <Text style={{ fontSize: 16, color: '#4B4B4B' }}>{option.text}</Text>
-          </Pressable>
-        ))}
+      {/* Phần câu hỏi có chỗ trống */}
+      <View style={{ marginBottom: 16 }}>
+        {renderQuestionWithBlanks()}
+      </View>
+      {/* Ranh giới giữa phần câu hỏi và phần chọn fill */}
+      <View style={{ borderBottomWidth: 1, borderColor: '#e5e7eb', marginBottom: 18, marginHorizontal: -8 }} />
+      {/* Phần chọn fill */}
+      <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap', marginTop: 8 }}>
+        {options.map((option, idx) => {
+          const isSelected = selectedOptions.some(sel => sel && sel.id === option.id);
+          return (
+            <Pressable
+              key={option.id}
+              onPress={() => !isSelected && handleToggleSelect(option)}
+              disabled={isSelected}
+              style={{
+                padding: 8,
+                borderRadius: 15,
+                backgroundColor: isSelected ? '#e5e5e5' : '#fff',
+                shadowColor: '#000',
+                borderColor: '#e5e5e5',
+                borderWidth: 2,
+                borderBottomWidth: 4,
+                borderStyle: 'solid',
+                alignItems: 'center',
+                marginBottom: 6,
+                opacity: isSelected ? 0.5 : 1,
+                minWidth: 100,
+              }}
+            >
+              <Text style={{ fontSize: 16, color: isSelected ? '#e5e5e5' : '#4B4B4B', opacity: isSelected ? 0: 1, }}>{option.text}</Text>
+            </Pressable>
+          );
+        })}
       </View>
     </View>
   );

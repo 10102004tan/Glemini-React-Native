@@ -1,6 +1,6 @@
 import { Image, Text, View, Animated, Easing, StyleSheet, ScrollView, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import images from '@/constants/images';
 import api from '@/libs/axios';
 import OrderInput from '@/components/customs/OrderInput';
@@ -28,6 +28,7 @@ const Play = () => {
     const { user } = useAuthStore();
     // State management
     const [index, setIndex] = useState(0);
+    const [questionExplanation, setQuestionExplanation] = useState(null);
     const navigation = useNavigation();
     const [isNext, setIsNext] = useState(false);
     const [resultID, setResultID] = useState(null);
@@ -60,6 +61,7 @@ const Play = () => {
             useNativeDriver: true,
             friction: 6,
         }).start();
+        setQuestionExplanation(item?.explanation);
     }, [index]);
 
     useEffect(() => {
@@ -655,7 +657,7 @@ const Play = () => {
                                 marginBottom: 20,
                             }}
                         >
-                            {item.question_explanation || 'Câu hỏi này chưa có giải thích.'}
+                            {questionExplanation ? questionExplanation : 'Chưa có lời giải thích cho câu hỏi này.'}
                         </Text>
 
                         <ScaleTouchable onPress={handleNext}>
@@ -701,7 +703,7 @@ const Play = () => {
                                 marginBottom: 20,
                             }}
                         >
-                            {item.question_explanation || 'Câu hỏi này chưa có giải thích.'}
+                            {questionExplanation ? questionExplanation : 'Chưa có lời giải thích cho câu hỏi này.'}
                         </Text>
 
                         <ScaleTouchable onPress={handleNext}>

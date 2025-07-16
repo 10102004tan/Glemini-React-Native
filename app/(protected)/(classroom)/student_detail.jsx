@@ -5,6 +5,7 @@ import {
   Pressable,
   Image,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import { useClassroomProvider } from '@/contexts/ClassroomProvider';
@@ -21,6 +22,7 @@ import { useAppProvider } from '@/contexts/AppProvider';
 import SkeletonClassroomCard from '@/components/loadings/SkeletonClassroomCard';
 import MainLayout from '@/components/layouts/MainLayout';
 import ScaleTouchable from '@/components/customs/ScaleTouchable';
+import ResultReview from '../(result)/review';
 
 const StudentDetail = () => {
   const { i18n, moment } = useAppProvider();
@@ -29,7 +31,8 @@ const StudentDetail = () => {
   const { fetchResultData } = useResultProvider();
   const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-
+  const [resultData, setResultData] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   useFocusEffect(
     useCallback(() => {
       const loadClassroom = async () => {
@@ -55,7 +58,22 @@ const StudentDetail = () => {
   const startQuiz = async (quizId, exerciseId) => {
     const fetchedResult = await fetchResultData({ quizId, exerciseId, type: 'exercise' });
     if (fetchedResult) {
-      router.push({ pathname: '/(homev2)/activity.student' });
+      // router.push({ pathname: '/(homev2)/activity.student' });
+      setResultData(fetchedResult);
+      Alert.alert(
+        'Đã có kết quả',
+        'Bạn có muốn xem kết quả của bài tập này không?',
+        [
+          {            text: 'Hủy',
+            style: 'cancel',
+          },
+          {            text: 'Xem kết quả',
+            onPress: () => {
+              setShowModal(true);
+            },
+          },
+        ]
+      );
     } else {
       router.push({
         pathname: '(play)/demo',
@@ -131,7 +149,7 @@ const StudentDetail = () => {
                     shadowRadius: 6,
                     elevation: 3,
                     borderWidth: 1,
-                    borderColor: '#34D399',
+                    borderColor: isExpired ? '#DC2626' : isNotStartedYet ? '#F59E0B' : '#34D399',
                     borderRightWidth: 4,
                     borderBottomWidth: 4,
                     opacity: isExpired || isNotStartedYet ? 0.5 : 1,
@@ -178,6 +196,14 @@ const StudentDetail = () => {
           text={i18n.t('classroom.student.emptyExercise')}
         />
       )}
+      {resultData && showModal && (
+        <ResultReview
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        result={resultData}
+      />
+      )}
+
     </MainLayout>
   );
 };
