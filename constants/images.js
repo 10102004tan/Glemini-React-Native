@@ -2,6 +2,9 @@
   import banner1 from '../assets/images/banner-1.png';
   import banner2 from '../assets/images/banner-2.png';
   import banner3 from '../assets/images/banner-3.png';
+  import googleLogo from '../assets/images/google-logo.png';
+  import facebookLogo from '../assets/images/facebook-logo.webp';
+  import zaloLogo from '../assets/images/zalo-logo.webp';
   import notFound from '../assets/jsons/not-found.json';
 
   import Congratulation1 from '../assets/images/congratulations.1.webp';
@@ -69,4 +72,9 @@
     // ✅ Useful grouped arrays
     congratulations,
     incorrects,
+
+    // logos
+    googleLogo,
+    facebookLogo,
+    zaloLogo,
   };

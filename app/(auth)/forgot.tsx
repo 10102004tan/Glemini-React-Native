@@ -8,11 +8,11 @@ const Forgot = () => {
   const [email, setEmail] = React.useState('');
   const handleForgotPassword = async () => {
     if (!email) {
-      alert('Email tidak boleh kosong');
+      alert('Email is required');
       return;
     }
     if (!/\S+@\S+\.\S+/.test(email)) {
-      alert('Email tidak valid');
+      alert('Invalid email address');
       return;
     }
     const response = await forgotPassword(email);
@@ -22,16 +22,16 @@ const Forgot = () => {
         params: { email },
       });
     } else {
-      alert(response.error || 'Gagal mengirim email, silakan coba lagi');
+      alert(response.error || 'Failed to send email, please try again');
     }
   };
   return (
     <AuthLayout>
       <View>
         <View style={{ marginBottom: 20 }}>
-          <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Lupa kata sandi</Text>
+          <Text style={{ fontSize: 24, fontWeight: '600' }}>Forgot Password</Text>
           <Text style={{ fontSize: 16, color: '#6B7280' }}>
-            Masukkan email yang kamu daftarkan sebelumnya, nanti kamu bakal dikirim email.
+            Enter the email you registered with and we will send you a password reset link.
           </Text>
         </View>
         <View style={{ marginBottom: 20 }}>
@@ -40,7 +40,7 @@ const Forgot = () => {
               style={{
                 fontSize: 16,
                 color: '#374151',
-                fontWeight: 'bold',
+                fontWeight: '600',
               }}
             >
               Email
@@ -62,7 +62,7 @@ const Forgot = () => {
                 marginTop: 10,
                 backgroundColor: '#F9FAFB',
               }}
-              placeholder="email@example.com"
+              placeholder="Enter your email"
               placeholderTextColor="#9CA3AF"
             />
           </View>
@@ -78,15 +78,15 @@ const Forgot = () => {
               }}
               onPress={handleForgotPassword}
             >
-              <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: 'bold' }}>Euy!</Text>
+              <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: '600' }}>Send Reset Link</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={{ marginBottom: 20, alignItems: 'center' }}>
           <Text style={{ fontSize: 16, color: '#6B7280' }}>
-            Lah, inget lagi kata sandinya?
-            <Text style={{ color: '#4f46e5', fontWeight: 'bold' }}>Login!</Text>
+            Remembered your password?
+            <Text style={{ color: '#4f46e5', fontWeight: '600' }}> Login</Text>
           </Text>
         </View>
       </View>
