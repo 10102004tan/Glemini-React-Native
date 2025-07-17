@@ -1,8 +1,9 @@
+import images from '@/constants/images';
 import { useAuthStore } from '@/store/useAuthStore';
 import loginSchema from '@/validation/loginSchema';
 import { router } from 'expo-router';
 import { Formik } from 'formik';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View, Image } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 const FormLogin = () => {
@@ -10,28 +11,22 @@ const FormLogin = () => {
 
   const handleLogin = async (
     values: any,
-    {
-      setSubmitting,
-    }: {
-      setSubmitting: (isSubmitting: boolean) => void;
-    },
+    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
   ) => {
     setSubmitting(true);
     const result = await signIn(values.email, values.password);
-    console.log('handleLogin result', result);
     if (result.success) {
       router.replace({
         pathname: '/(protected)/(homev2)/',
         params: {
-          message: 'Login berhasil',
+          message: 'Login successful',
         },
       });
     } else {
-      console.log('handleLogin error', error);
       Toast.show({
         type: 'error',
         position: 'top',
-        text1: 'Gagal masuk',
+        text1: 'Login failed',
         text2: result.error,
       });
     }
@@ -54,7 +49,7 @@ const FormLogin = () => {
               style={{
                 fontSize: 16,
                 color: '#374151',
-                fontWeight: 'bold',
+                fontWeight: '600',
               }}
             >
               Email
@@ -85,7 +80,7 @@ const FormLogin = () => {
               style={{
                 fontSize: 16,
                 color: '#374151',
-                fontWeight: 'bold',
+                fontWeight: '600',
               }}
             >
               Password
@@ -119,9 +114,22 @@ const FormLogin = () => {
                 alignItems: 'center',
               }}
             >
-              <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: 'bold' }}>
-                {isSubmitting ? 'Loading...' : 'Masuk'}
+              <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: '600' }}>
+                {isSubmitting ? 'Loading...' : 'Sign In'}
               </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Social login row */}
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 16, marginBottom: 8 }}>
+            <TouchableOpacity style={{ padding: 5, borderRadius: 50, borderWidth: 1, borderColor: '#eee', marginHorizontal: 4 }} disabled>
+              <Image source={images.googleLogo} style={{ width: 32, height: 32, resizeMode: 'contain' }} />
+            </TouchableOpacity>
+            <TouchableOpacity style={{ padding: 5, borderRadius: 50, borderWidth: 1, borderColor: '#eee', marginHorizontal: 4 }} disabled>
+              <Image source={images.facebookLogo} style={{ width: 32, height: 32, resizeMode: 'contain' }} />
+            </TouchableOpacity>
+            <TouchableOpacity style={{ padding: 10, borderRadius: 50, borderWidth: 1, borderColor: '#eee', marginHorizontal: 4 }} disabled>
+              <Image source={images.zaloLogo} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
             </TouchableOpacity>
           </View>
         </View>

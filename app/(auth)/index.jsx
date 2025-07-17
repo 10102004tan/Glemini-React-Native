@@ -104,7 +104,7 @@ const Home = () => {
         <Text
           style={{
             fontSize: 24,
-            fontWeight: 'bold',
+            fontWeight: '800',
             borderRadius: 10,
             marginBottom: 10,
             shadowColor: '#000',
@@ -114,7 +114,7 @@ const Home = () => {
             textTransform: 'uppercase',
           }}
         >
-          Glemini
+          PROQUIZ
         </Text>
       </View>
 

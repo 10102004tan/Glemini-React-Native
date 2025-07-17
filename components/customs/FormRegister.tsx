@@ -11,21 +11,20 @@ const FormRegister = () => {
     values: { fullname: string; email: string; password: string },
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    // chặn không cho chuyển trang khi đang submit
     setSubmitting(true);
     const result = await signUp(values);
     if (result.success) {
       router.replace({
         pathname: '/(auth)/',
         params: {
-          message: 'Akun berhasil dibuat, silahkan login',
+          message: 'Account created successfully, please login.',
         },
       });
     } else {
       Toast.show({
         type: 'error',
         position: 'top',
-        text1: 'Gagal membuat akun',
+        text1: 'Registration failed',
         text2: result.error,
       });
     }
@@ -34,10 +33,10 @@ const FormRegister = () => {
   return (
     <Formik
       initialValues={{
-        fullname: 'Nguyen Phuong Tan',
-        email: 'tan987@gmail.com',
-        password: '12345678',
-        confirmPassword: '12345678',
+        fullname: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
       }}
       validationSchema={registerSchema}
       onSubmit={handleRegister}
@@ -54,7 +53,7 @@ const FormRegister = () => {
               style={{
                 fontSize: 16,
                 color: '#374151',
-                fontWeight: 'bold',
+                fontWeight: '600',
               }}
             >
               Full Name
@@ -73,7 +72,7 @@ const FormRegister = () => {
               onBlur={handleBlur('fullname')}
               value={values.fullname}
               autoCapitalize="words"
-              placeholder="John Doe"
+              placeholder="Enter your full name"
               placeholderTextColor="#9CA3AF"
             />
           </View>
@@ -88,7 +87,7 @@ const FormRegister = () => {
               style={{
                 fontSize: 16,
                 color: '#374151',
-                fontWeight: 'bold',
+                fontWeight: '600',
               }}
             >
               Email
@@ -107,7 +106,7 @@ const FormRegister = () => {
               onBlur={handleBlur('email')}
               value={values.email}
               autoCapitalize="none"
-              placeholder="email@example.com"
+              placeholder="Enter your email"
               placeholderTextColor="#9CA3AF"
             />
           </View>
@@ -121,7 +120,7 @@ const FormRegister = () => {
               style={{
                 fontSize: 16,
                 color: '#374151',
-                fontWeight: 'bold',
+                fontWeight: '600',
               }}
             >
               Password
@@ -136,7 +135,7 @@ const FormRegister = () => {
                 backgroundColor: '#F9FAFB',
                 marginTop: 10,
               }}
-              placeholder="********"
+              placeholder="Enter your password"
               onChangeText={handleChange('password')}
               onBlur={handleBlur('password')}
               value={values.password}
@@ -156,7 +155,7 @@ const FormRegister = () => {
               style={{
                 fontSize: 16,
                 color: '#374151',
-                fontWeight: 'bold',
+                fontWeight: '600',
               }}
             >
               Confirm Password
@@ -171,7 +170,7 @@ const FormRegister = () => {
                 backgroundColor: '#F9FAFB',
                 marginTop: 10,
               }}
-              placeholder="********"
+              placeholder="Re-enter your password"
               onChangeText={handleChange('confirmPassword')}
               onBlur={handleBlur('confirmPassword')}
               value={values.confirmPassword}
@@ -189,8 +188,7 @@ const FormRegister = () => {
               color: '#374151',
             }}
           >
-            Dengan mendaftar berarti kamu setuju dengan Terms of Service dan Privacy Policy dari
-            Namanyajugabelajar.io
+            By signing up, you agree to the Terms of Service and Privacy Policy of ProQuiz.
           </Text>
 
           <View style={{ marginBottom: 14 }}>
@@ -206,8 +204,8 @@ const FormRegister = () => {
                 handleSubmit();
               }}
             >
-              <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: 'bold' }}>
-                {isSubmitting ? 'Loading...' : 'Buat Akun'}
+              <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: '600' }}>
+                {isSubmitting ? 'Registering...' : 'Create Account'}
               </Text>
             </TouchableOpacity>
           </View>
